@@ -1,0 +1,1145 @@
+  body {
+  background-color: #eff3f4;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  height: 110vh;
+  background: #103932;
+  border-right: 1px solid #103932;
+  position: fixed;
+  top: 0;
+  left: -250px; /* hidden by default */
+  transition: all 0.3s;
+  z-index: 1050;
+}
+.sidebar.active {
+  left: 0; /* show sidebar */
+}
+.sidebar .profile img {
+  border: 3px solid #dee2e6;
+}
+
+/* Content */
+.content {
+  transition: margin-left 0.3s;
+  margin-top: 60px; /* offset top nav */
+}
+.content.shift {
+  margin-left: 250px; /* shift content when sidebar open */
+}
+
+.top-navbar.shift {
+  margin-left: 250px;
+}
+
+/* Top Navbar */
+.top-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #103932;
+  border-bottom: 1px solid #103932;
+  z-index: 1100;
+  transition: margin-left 0.3s ease; /* para gumalaw kapag nag-toggle */
+}
+.top-navbar .notification i {
+  color: #ffc107; /* yellow notif bell */
+  cursor: pointer;
+}
+
+/* desktop: sidebar pushes content */
+@media (min-width: 992px) {
+  .sidebar {
+    left: 0; /* default open sa desktop */
+  }
+
+  .content {
+    margin-left: 250px; /* adjust content */
+    transition: margin-left 0.3s ease;
+  }
+
+  .sidebar.collapsed {
+    left: -250px; /* hide sa desktop kapag collapse */
+  }
+
+  .content.shift {
+    margin-left: 0; /* pag collapse, balik sa full */
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .sidebar {
+    margin-left: -250px;
+  }
+
+  .sidebar.show {
+    margin-left: 0;
+  }
+
+  .top-navbar {
+    margin-left: 0;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+}
+
+ /* Profile Section */
+.sidebar .profile h5 {
+  color: #ffffff;       /* White */
+  font-weight: bold;    /* Bold */
+  margin-bottom: 5px;
+}
+
+.sidebar .profile .role {
+  color: #ffc107 !important;   /* Yellow */
+  font-weight: 600;
+}
+
+
+.sidebar .profile small {
+  color: #ffc107;       /* Yellow */
+  font-weight: 600;
+}
+
+/* Sidebar Links */
+.sidebar .nav-link {
+  color: #ffffff; 
+  padding: 12px 15px;
+  border-radius: 8px;
+  transition: background 0.3s ease, color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar .nav-link i {
+  font-size: 18px;
+  min-width: 30px;
+}
+
+/* Hover Effect */
+.sidebar .nav-link:hover {
+  background-color: #d8af35;  /* Yellow background */
+  color: #103932;             /* Dark green text */
+  font-weight: bold;
+}
+
+.icon-btn {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%; /* gawin bilog yung hover area */
+  transition: 0.3s ease;
+  margin-right: 30px;
+}
+
+.icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* translucent circle */
+  color: rgb(251, 255, 0); /* palit kulay */
+}
+
+@media (max-width: 576px) {
+  .sidebar.popup {
+    left: 0 !important;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    background-color: #103932;
+    z-index: 9999;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+  }
+
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9998;
+  }
+
+  body.lock-scroll {
+    overflow: hidden;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------------------------------------------------*/
+/* card percent*/
+.card {
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
+  text-align: center;
+}
+
+.card h6 {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-weight: bold;
+}
+
+.attendance-feed {
+  min-height: 100%;
+  overflow-y: auto;
+  max-height: 430px;
+}
+
+.attendance-feed::-webkit-scrollbar {
+  width: 6px;
+}
+.attendance-feed::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+/*------------------------------------------------------------------------------------------------------------------------------------------*/
+/*attendancefeed*/
+.attendance-feed {
+  max-height: 550px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+  margin-top: 13px; /* ⬅ ibinaba ng konti */
+}
+
+/* Scrollbar */
+.attendance-feed::-webkit-scrollbar {
+  width: 6px;
+}
+.attendance-feed::-webkit-scrollbar-thumb {
+  background: #CBA135;
+  border-radius: 4px;
+}
+
+/* Feed item */
+.feed-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.feed-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.feed-info {
+  flex-grow: 1;
+  margin-left: 10px;
+}
+
+.feed-info h6 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #007bff;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.feed-info h6:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.feed-info small {
+  font-size: 12px;
+  color: gray;
+}
+
+.clickable-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clickable-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Existing CSS (omitted for brevity) */
+/* 🎯 993px to 1200px (Targeting the LG to XL gap) */
+@media (min-width: 993px) and (max-width: 1200px) {
+  .col-xl-9, .col-lg-8, 
+  .col-xl-3, .col-lg-4 {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 15px !important;
+    margin-top: 0 !important;
+  }
+
+  .col-xl-9 > .row > .col-3 {
+    width: 25% !important;
+    max-width: 25% !important;
+    padding: 0 5px !important;
+  }
+
+  .attendance-feed {
+    max-height: 400px;
+    height: 100% !important;
+    overflow-y: auto;
+    margin-top: 1rem;
+  }
+
+  .row.g-3.mb-4[style*="margin-top"] {
+    margin-top: 1rem !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .row.g-3.mb-4[style*="margin-top"] > .col-lg-6 {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 15px !important;
+  }
+
+  .time-card {
+    height: auto !important;
+    width: 100% !important;
+    margin: 0 auto;
+  }
+}
+
+/* 📱 992px and Below (Targeting MD and SM screens) */
+@media (max-width: 992px) {
+  .col-xl-9, .col-lg-8, .col-md-8, 
+  .col-xl-3, .col-lg-4, .col-md-4 {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 15px !important;
+    margin-top: 0 !important;
+  }
+
+  .col-xl-9 > .row > .col-3 {
+    width: 25% !important;
+    max-width: 25% !important;
+    padding: 0 5px !important;
+  }
+
+  .attendance-feed {
+    max-height: 380px;
+    height: 100% !important;
+    overflow-y: auto;
+    margin-top: 1rem;
+  }
+
+  .row.g-3.mb-4[style*="margin-top"] {
+    margin-top: 1rem !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .row.g-3.mb-4[style*="margin-top"] > .col-lg-6 {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 15px !important;
+    margin-top: 1rem !important;
+  }
+
+  .time-card {
+    height: auto !important;
+    width: 100% !important;
+    padding: 2rem;
+  }
+
+  #current-time {
+    font-size: 3rem !important;
+  }
+
+  #current-date {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* ⬅ FOCUS: Mobile Layout (576px and below) ⬅ */
+@media (max-width: 576px) {
+  .col-xl-9 > .row > div[class*="col-"] {
+    width: 25% !important;
+    max-width: 25% !important;
+  }
+
+  .col-xl-3, .col-lg-4, .col-md-4 {
+    width: 50% !important;
+    max-width: 50% !important;
+    margin-left: 52% !important;
+    margin-bottom: 10px !important;
+  }
+
+  .card p.display-6 {
+    font-size: 1.5rem !important;
+  }
+
+  .attendance-feed {
+    margin-top: 20px !important;
+    max-height: 40vh !important;
+    height: 100% !important;
+  }
+
+  .col-xl-9 {
+    order: 1;
+  }
+
+  .col-xl-3 {
+    order: 2;
+  }
+}
+
+/* 📏 Ultra-Mobile: 500px and below */
+@media (max-width: 500px) {
+  .attendance-feed {
+    max-height: 40vh !important;
+    height: 100% !important;
+    margin-top: 20px !important;
+  }
+}
+
+/* Card container  time n date*/
+.time-card {
+  height: 480px;
+  padding: 2.5rem 4rem;
+  width: 75%;
+  margin-left: 3px;
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+/* Time text */
+#current-time {
+  font-size: 5rem;
+  color: #222;
+  font-weight: 700;
+}
+
+/* Date text */
+#current-date {
+  font-size: 2rem;
+  color: #CBA135; /* green */
+  font-weight: 600;
+}
+/*------------------------------------------------------------------------------------------------------------------------------------------*/
+/* 🌿 Modern Calendar Design */
+#calendar-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 6px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Table Header */
+#calendar-table thead th {
+  color: #000000;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1px 0;
+  border: none;
+  border-radius: 6px;
+}
+
+/* Calendar Cell */
+#calendar-table td {
+  vertical-align: middle;
+  height: 48px;
+  padding: 4px;
+  border: none;
+  background-color: #fff;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+/* Hover effect */
+#calendar-table td:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+  cursor: pointer;
+  transform: scale(1.03);
+}
+
+/* Date number */
+.calendar-day {
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  line-height: 38px;
+  border-radius: 10px;
+  color: #222;
+  font-weight: 500;
+  background-color: transparent;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Remove legacy highlight */
+.calendar-day.today {
+  all: unset !important;
+}
+
+/* Other-month dates */
+.calendar-other {
+  color: #bdbdbd;
+}
+
+/* Small shadows for modern look */
+#calendar-table {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border-radius: 10px;
+  background-color: #fdfdfd;
+  padding: 8px;
+}
+.calendar-card {
+  /* ... Original styles ... */
+  /* Kinailangang i-override ito sa Media Query para mag-center */
+  width: 74% !important;
+  margin-left: -25% !important; 
+  padding: 0.5rem !important;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Calendar Button Styling */
+#calendar-btn {
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.calendar-date {
+  cursor: pointer;
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  border-radius: 6px;
+}
+
+.calendar-date:hover {
+  background-color: #727272ad;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+
+/* Show button only between 500px and 576px */
+@media (min-width: 500px) and (max-width: 576px) {
+  #calendar-btn {
+    display: inline-block !important;
+  }
+}
+
+/* Hide calendar on screens below 992px */
+@media (max-width: 991px) {
+  .calendar-card {
+    display: none !important;
+  }
+}
+
+/* Show calendar only on 992px and above */
+@media (min-width: 992px) {
+  .calendar-card {
+    display: block !important;
+  }
+}
+
+@media (min-width: 992px) {
+  #calendar-toggle-btn {
+    display: inline-block !important;
+  }
+}
+
+
+/* Calendar toggle button styling */
+#calendar-toggle-btn {
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Default: hide calendar button */
+#calendar-toggle-btn {
+  display: none;
+}
+
+/* Show calendar button ONLY between 500px and 576px */
+@media (min-width: 500px) and (max-width: 576px) {
+  #calendar-toggle-btn {
+    display: inline-block !important;
+  }
+
+  .calendar-card {
+    display: none !important;
+  }
+}
+
+/* Hide calendar button for 576px and above */
+@media (min-width: 577px) {
+  #calendar-toggle-btn {
+    display: none !important;
+  }
+}
+
+/* Show calendar card ONLY on 992px and above */
+@media (min-width: 992px) {
+  .calendar-card {
+    display: block !important;
+  }
+}
+
+/* Para sa lahat ng screens na <= 1200px (Karamihan ay magiging pareho sa 992px) */
+@media (max-width: 1200px) {
+
+    /* 1. Column Stacking Fix (Inaayos ang 105% width) */
+    .col-6, .col-md-6, .col-lg-6, .col-xl-6 {
+        /* CRITICAL FIX: I-set sa 100% para maging full width at walang overflow */
+        width: 100% !important; 
+        max-width: 100% !important;
+        
+        /* I-reset ang custom margin hacks at gumamit ng normal padding */
+        margin-right: auto !important;
+        margin-left: auto !important; 
+        /* Tiyakin na may padding para sa space sa gilid (default 15px ng Bootstrap) */
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    .attendance-feed {
+        /* Panatilihin ang 100% width para punuin ang column space (ibinukod na sa taas) */
+        width: 100% !important; 
+        
+        /* FIX: Inikli ang taas sa 200px at nagdagdag ng scrollbar */
+        max-height: 460px; 
+        overflow-y: auto; 
+        overflow-x: hidden;
+        
+        position: relative; 
+        z-index: 1; 
+        
+        /* Idagdag ang padding para hindi dumikit sa corner ang content */
+        padding: 15px; 
+        
+        /* Gawin ang margin na minimal dahil naka-100% width na */
+        margin-top: 1rem;
+        margin-left: 0; 
+        margin-right: 0; 
+        background: #fff;
+    }
+
+    /* 2. Time Card (.time-card): Aayusin ang width at centering */
+    .time-card {
+        /* CRITICAL FIX: Gawing 100% ng parent column (na 100% na ngayon) */
+        width: 103% !important;
+        
+        /* I-reset ang mga custom margin para mag-center */
+        margin-left: auto !important; 
+        margin-right: auto !important;
+        
+        /* Tiyakin na walang nakakagulong margin-top hack (ito ay depende sa inyong HTML structure) */
+        margin-top: 1rem !important; /* Gumamit ng standard spacing */
+        margin-bottom: 10px !important; 
+        
+        padding: 1.8rem 2rem;
+        height: auto !important; 
+        display: block !important; 
+    }
+
+    /* 3. Calendar Card (.calendar-card): Aayusin ang width at centering */
+    .calendar-card {
+        /* CRITICAL FIX: Gawing 100% ng parent column */
+        width: 103% !important;
+        
+        /* Tiyakin na may tamang spacing */
+        margin-top: 8px !important; 
+        margin-bottom: 10px !important; 
+        margin-left: auto !important; 
+        margin-right: auto !important;
+        
+        padding: 1rem !important; 
+        height: auto !important; /* Pinalitan mula 100% para hindi mag-overflow */
+        display: block !important; 
+    }
+}
+
+
+/* ✅ Medium devices (<= 992px) */
+@media (max-width: 992px) {
+    /* FIX: Ito ang pinaka-agresibong override para sa lahat ng columns na naghahati sa row. */
+    .col-6, .col-md-6, .col-lg-6, .col-xl-6 {
+        /* Piliting maging full-width ang lahat ng column na naghahati sa 2 o 3 */
+        width: 100% !important; 
+        max-width: 100% !important;
+        padding-right: 15px !important;
+        padding-left: 15px !important; 
+    }
+
+    /* 1. Time Card (.time-card): Ito ang mauuna sa stack at nagtutulak pababa. */
+    .time-card {
+        width: 102% !important;
+        padding: 1.8rem 2rem;
+        
+        /* FIX: Itinaas ang margin-top sa 380px para TIYAK na bababa sa ilalim ng 
+           Attendance Feed at Sidebar. Ito ang susi. */
+        margin-top: -5px; 
+        
+        margin-bottom: -10px; 
+        height: auto !important; 
+        margin-left: 5px;
+        margin-right: 10px;
+        display: block !important; 
+    }
+
+    /* 2. Calendar Card (.calendar-card): Ito ay dapat nasa ilalim lang ng Time Card. */
+    .calendar-card {
+        width: 102% !important;
+        padding: 1rem !important; 
+        
+        /* FIX: Maliit na gap lang (10px) mula sa Time Card */
+        margin-top: 8px !important; 
+        
+        height: auto !important; 
+        display: block !important; 
+        
+        margin-bottom: 10px !important; 
+        margin-left: auto !important; 
+        margin-right: auto !important;
+    }
+
+   /* 3. Late at On Leave Cards: Tiyakin na naka-stack din at 100% width. */
+   .late-card,
+    .on-leave-card {
+        width: 93% !important;
+        margin-left: 22px !important;
+        margin-right: 22px !important;
+        
+        /* Panatilihin ang 0px margin-top para walang extra space sa taas nila */
+        margin-top: 0px !important; 
+        
+        margin-bottom: 20px;
+        display: block !important;
+    }
+
+    /* 4. Font Size Adjustments */
+    #current-time {
+        font-size: 3rem; 
+    }
+
+    #current-date {
+        font-size: 2rem;
+    }
+}
+
+/* 📱 Mobile/Small Devices (<= 576px) */
+@media (max-width: 576px) {
+  .calendar-card {
+    /* FIX: Ito ang magpapapantay sa width ng Date/Time Card */
+    width: 92%;
+    
+    /* FIX: Ginawa nating sobrang taas na negative value (mula -85px) para mas umangat */
+    /* Gumamit ng !important para i-override ang anumang nagtutulak pababa */
+    margin-top: 10px !important; /* Ginamit ang 10px !important mula sa original code */
+    
+    /* Pinanatili ang margin-bottom */
+    margin-bottom: 30px;
+    
+    /* Para mag-center */
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+   .calendar-card {
+    display: none !important;
+  }
+  
+  .time-card {
+    /* Maaari mo ring ayusin pa ang margin-top dito */
+    width: 50% !important;
+    padding-top: 4rem;
+    margin-top: -70% !important; /* Bahagyang mas malaking value para siguradong bababa */
+    margin-bottom: -9px !important; 
+    margin-right: 55% !important; /* Mas generic na centering */
+    height: 320px !important;
+  }
+
+  /* Maaari mo ring ayusin ang font sizes dito para sa mas maliit na screen */
+  #current-time {
+    font-size: 2rem; /* Bahagyang mas maliit kaysa sa 992px */
+  }
+
+  #current-date {
+    font-size: 1rem; /* Bahagyang mas maliit kaysa sa 992px */
+  }
+}
+
+/* 📱 Extra Small/Custom Devices (<= 500px) */
+@media (max-width: 500px) {
+  .calendar-card {
+    /* Maaari mong ayusin pa ang margin-top dito kung may isyu sa pwesto */
+    width: 92%;
+    padding: 1rem;
+    margin-top: 10px !important; /* Panatilihin ang value mula sa 576px */
+    margin-bottom: 30px; 
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+   .calendar-card {
+    display: none !important;
+  }
+
+  .time-card {
+    /* Maaari mo ring ayusin pa ang margin-top dito */
+    width: 50% !important;
+    padding-top: 7rem;
+    margin-top: -83% !important; /* Bahagyang mas malaking value para siguradong bababa */
+    margin-bottom: 10px !important; 
+    margin-left: 59%; /* Mas generic na centering */
+    margin-right: 5%; /* Mas generic na centering */
+    height: 320px !important;
+  }
+
+  #current-time {
+    font-size: 2rem !important; /* Para mas kasya sa 500px */
+  }
+
+  #current-date {
+    font-size: 1rem !important; /* Para mas kasya sa 500px */
+  }
+}
+
+/*------------------------------------------------------------------------------------------------------------------------------------------*/
+/* Table Calendar */
+.table th,
+.table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Marked date cell */
+.table .marked-date {
+  background-color: #90EE90 !important; /* light green */
+  color: #000 !important;               /* black text */
+  font-weight: bold;
+}
+
+  .profile-img {
+  width: 40px;      /* maliit na size */
+  height: 40px;
+  border-radius: 50%; 
+  object-fit: cover; 
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+  .late-list {
+    max-height: 280px;       /* Adjust mo kung gaano kataas ang gusto mo */
+    overflow-y: auto;
+  }
+
+.calendar-card {
+  height: auto;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem 1.2rem;
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+  box-shadow: none;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 1200px) {
+  .calendar-card {
+    width: 75%;
+    margin-left: -27%;
+  }
+}
+@media (max-width: 992px) {
+  .calendar-card {
+    width: 90%;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 768px) {
+  .calendar-card {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0.8rem;
+  }
+}
+@media (max-width: 576px) {
+  .calendar-card {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0.6rem;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------------------------------------------------*/
+/*LATE*/
+.late-card {
+  width: 75%;            /* adjust width (50%–90% depending sa gusto mo) */     /* para hindi masyadong malapad */
+  margin-left: 5px;
+  border-radius: 1rem; 
+}
+
+.late-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.late-list::-webkit-scrollbar {
+  width: 5px;
+}
+.late-list::-webkit-scrollbar-thumb {
+  background: #CBA135;
+  border-radius: 4px;
+}
+
+/* ON LEAVE CARD */
+.on-leave-card {
+  width: 74%;             /* Adjust width as needed */
+  margin-left: -25%;
+  padding: 2rem;          /* Optional: same as your p-5 */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 1rem;  /* Smooth corners */
+  background-color: #fff;
+  height: 100%;           /* Fill parent column */
+}
+
+.on-leave-list {
+  max-height: 400px;      /* Scrollable height */
+  overflow-y: auto;
+  margin-top: 1rem;
+}
+
+.on-leave-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.on-leave-list::-webkit-scrollbar-thumb {
+  background: #CBA135;
+  border-radius: 4px;
+}
+
+/* Optional: styling for individual items */
+.on-leave-list .d-flex {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.on-leave-list .profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.on-leave-list h6 {
+  margin-bottom: 0;
+}
+
+.on-leave-list small {
+  color: #6c757d;
+}
+
+/* --------------------------- */
+/* RESPONSIVE MEDIA QUERIES */
+/* --------------------------- */
+
+/* For large tablets and small laptops (≤1200px) */
+/* Para sa lahat ng screens na <= 1200px */
+/* 🚨 FINAL FIX: Target LATE/ON LEAVE at 992px to 1200px ONLY 🚨 */
+@media (min-width: 992px) and (max-width: 1200px) {
+
+    /* 1. Tiyakin na ang ibang COLUMNS ay nag-i-stack nang 100% */
+    .col-lg-6, .col-xl-9, .col-xl-3 {
+        width: 100% !important; 
+        max-width: 100% !important;
+        float: none !important;
+    }
+    
+    /* 2. Targetin ang parent columns ng LATE at ON LEAVE at piliting maging 50/50 */
+    /* Kung ang Late/On Leave lang ang col-md-6 na magkasunod sa iisang row */
+    .col-md-6:has(.late-card),
+    .col-md-6:has(.on-leave-card) {
+        width: 50% !important; 
+        max-width: 50% !important;
+        float: left !important; /* CRITICAL: Pinipilit magkatabi */
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        margin: 0 !important;
+    }
+    
+    /* 3. Fix ang Cards para pantay ang taas at walang margin conflict. */
+    .late-card, .on-leave-card {
+        width: 100% !important; 
+        height: 400px !important; /* Fixed height para pantay ang taas */
+        margin: 0 0 20px 0 !important;
+        float: none !important;
+        overflow: hidden;
+    }
+    
+    /* Tiyakin na ang parent container ay nagli-liquidate ng float. */
+    .row {
+        overflow: hidden !important;
+    }
+}
+
+
+/* 💻 Tablet Devices (<= 992px) */
+@media (max-width: 992px) {
+  .late-card,
+  .on-leave-card {
+    /* Pagsakop sa buong available width para sa tablet layout */
+    width: 100% !important;
+    margin-top: 50px;
+    margin-left: 22px;
+    margin-right: 22px;
+  }
+
+  .on-leave-list,
+  .late-list {
+    /* Height restriction para sa listahan */
+    max-height: 300px;
+  }
+
+  /* Inilipat dito ang ilang styling na galing sa 768px para ma-apply sa tablets */
+  .on-leave-list .profile-img {
+    width: 35px;
+    height: 35px;
+    margin-right: 0.5rem;
+  }
+
+  .on-leave-list h6 {
+    font-size: 0.95rem;
+  }
+
+  .on-leave-list small {
+    font-size: 0.8rem;
+  }
+}
+
+/* 📱 Mobile Devices (<= 576px) */
+@media (max-width: 576px) {
+  .late-card,
+  .on-leave-card {
+    /* Full width at minimal padding para sa masikip na screens */
+    width: 92%;
+    margin-left: 25px; /* Alisin ang margins */
+    margin-top: 5px;
+  
+  }
+
+  .on-leave-list,
+  .late-list {
+    /* Binawasan pa ang height para sa mas maliit na screen */
+    max-height: 300px;
+  }
+
+  /* Panatilihin ang font adjustments para sa maliliit na screen */
+  .on-leave-list h6 {
+    font-size: 0.9rem;
+  }
+
+  .on-leave-list small {
+    font-size: 0.75rem;
+  }
+}
+
+/* 📱 Extra Small/Custom Devices (<= 500px) */
+@media (max-width: 500px) {
+  .late-card,
+  .on-leave-card {
+    /* Panatilihin ang styling ng 576px, pero maaaring bawasan pa ang padding */
+    width: 92%;
+    margin-left: 20px;
+    margin-top: 15px;
+  }
+
+  .on-leave-list,
+  .late-list {
+    /* Panatilihin ang max-height o bawasan pa */
+    max-height: 300px;
+  }
+}
+
+/*------------------------------------------------------------------------------------------------------------------------------------------*/
+/* 500-576 responsive*/
+@media (max-width: 576px) {
+  #sidebar {
+    left: -250px !important;
+    transition: left 0.3s ease;
+  }
+
+  #sidebar.mobile-nav {
+    left: 0 !important;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    background-color: #103932;
+    z-index: 9999;
+    overflow-y: auto;
+    display: flex !important;
+    flex-direction: column;
+    padding-top: 3rem;
+  }
+
+  .mobile-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9998;
+  }
+
+  body.lock-scroll {
+    overflow: hidden;
+  }
+
+  #sidebar.mobile-nav .profile h5,
+  #sidebar.mobile-nav .profile .role {
+    color: #fff;
+  }
+
+  #sidebar.mobile-nav .nav-link {
+    color: #fff !important;
+    font-size: 1rem;
+    padding: 12px 20px;
+    border-radius: 4px;
+  }
+
+  #sidebar.mobile-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  #sidebar.mobile-nav .nav-link i {
+    margin-right: 8px;
+  }
+}
+
+

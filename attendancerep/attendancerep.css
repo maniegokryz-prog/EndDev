@@ -1,0 +1,257 @@
+   body {
+  background-color: #eff3f4;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  height: 110vh;
+  background: #103932;
+  border-right: 1px solid #103932;
+  position: fixed;
+  top: 0;
+  left: -250px; /* hidden by default */
+  transition: all 0.3s;
+  z-index: 1050;
+
+  
+}
+.sidebar.active {
+  left: 0; /* show sidebar */
+}
+.sidebar .profile img {
+  border: 3px solid #dee2e6;
+}
+
+/* Content */
+.content {
+  transition: margin-left 0.3s;
+  margin-top: 60px; /* offset top nav */
+}
+.content.shift {
+  margin-left: 250px; /* shift content when sidebar open */
+}
+
+.top-navbar.shift {
+  margin-left: 250px;
+}
+
+/* Top Navbar */
+.top-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #103932;
+  border-bottom: 1px solid #103932;
+  z-index: 1100;
+  transition: margin-left 0.3s ease; /* para gumalaw kapag nag-toggle */
+
+}
+.top-navbar .notification i {
+  color: #ffc107; /* yellow notif bell */
+  cursor: pointer;
+}
+
+/* desktop: sidebar pushes content */
+@media (min-width: 992px) {
+  .sidebar {
+    left: 0; /* default open sa desktop */
+  }
+
+  .content {
+    margin-left: 250px; /* adjust content */
+    transition: margin-left 0.3s ease;
+  }
+
+  .sidebar.collapsed {
+    left: -250px; /* hide sa desktop kapag collapse */
+  }
+
+  .content.shift {
+    margin-left: 0; /* pag collapse, balik sa full */
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .sidebar {
+    margin-left: -250px;
+  }
+
+  .sidebar.show {
+    margin-left: 0;
+  }
+
+  .top-navbar {
+    margin-left: 0;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+}
+
+ /* Profile Section */
+.sidebar .profile h5 {
+  color: #ffffff;       /* White */
+  font-weight: bold;    /* Bold */
+  margin-bottom: 5px;
+}
+
+.sidebar .profile .role {
+  color: #ffc107 !important;   /* Yellow */
+  font-weight: 600;
+}
+
+
+.sidebar .profile small {
+  color: #ffc107;       /* Yellow */
+  font-weight: 600;
+}
+
+/* Sidebar Links */
+.sidebar .nav-link {
+  color: #ffffff; 
+  padding: 12px 15px;
+  border-radius: 8px;
+  transition: background 0.3s ease, color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar .nav-link i {
+  font-size: 18px;
+  min-width: 30px;
+}
+
+/* Hover Effect */
+.sidebar .nav-link:hover {
+  background-color: #d8af35;  /* Yellow background */
+  color: #103932;             /* Dark green text */
+  font-weight: bold;
+}
+
+.icon-btn {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%; /* gawin bilog yung hover area */
+  transition: 0.3s ease;
+  margin-right: 30px;
+}
+
+.icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* translucent circle */
+  color: rgb(251, 255, 0); /* palit kulay */
+}
+/*--------------------------------------------------------------------------------------------------*/
+
+.card {
+  border-radius: 12px;
+}
+
+.employee-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.status-ontime {
+  background-color: green;
+}
+
+.status-late {
+  background-color: orange;
+}
+
+.status-absent {
+  background-color: red;
+}
+
+.status-undertime {
+  background-color: #ffbf00;
+}
+ 
+.employee-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .employee-img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .employee-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .employee-text small {
+      font-size: 0.8rem;
+    }
+    tr.clickable-row {
+      cursor: pointer;
+    }
+    tr.clickable-row:hover {
+      background-color: #f8f9fa;
+    }
+
+/* Hover effect para sa buong row */
+  #attendanceTable tbody tr {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  #attendanceTable tbody tr:hover td {
+    background-color: #4b4d5093 !important; /* siguradong lalabas */
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .status-ontime { background-color: #28a745; }
+  .status-late { background-color: #dc3545; }
+  .status-absent { background-color: #6c757d; }
+  .status-undertime { background-color: #ffc107; }
+
+  /* Hover effect for dropdown buttons */
+  .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+  }
+
+  .btn-outline-success:hover {
+    background-color: #198754;
+    color: #fff;
+    border-color: #198754;
+  }
+
+  /* Optional: dropdown-item hover */
+  .dropdown-item:hover {
+    background-color: #f0f0f0;
+    color: #000;
+  }
+
+   body {
+      background-color: #f8f9fa;
+    }
+    .export-btn {
+      min-width: 150px;
+    }
