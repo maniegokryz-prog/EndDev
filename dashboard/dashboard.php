@@ -119,6 +119,7 @@
   </div>
 </div>
 
+
 <!--calendar  button -->
 <div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -291,62 +292,6 @@
       <div class="d-flex align-items-center border-bottom py-2">
         <img src="pic.png" class="profile-img me-3">
         <div>
-          <h6 class="mb-0">Tony Stark</h6>
-          <small>Faculty - 8:15 AM (Late 45m)</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-        <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Bruce Banner</h6>
-          <small>Professor - 8:35 AM (Late 1h 5m)</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-        <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Steve Rogers</h6>
-          <small>Coach - 9:00 AM (Late 2h)</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-        <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Natasha Romanoff</h6>
-          <small>Teacher - 8:50 AM (Late 1h 20m)</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-        <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Peter Parker</h6>
-          <small>Intern - 9:10 AM (Late 1h 30m)</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-        <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Wanda Maximoff</h6>
-          <small>Assistant - 8:40 AM (Late 1h 10m)</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-        <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Clint Barton</h6>
-          <small>Security - 9:05 AM (Late 1h 35m)</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-        <img src="pic.png" class="profile-img me-3">
-        <div>
           <h6 class="mb-0">Nick Fury</h6>
           <small>Director - 8:55 AM (Late 1h 25m)</small>
         </div>
@@ -363,54 +308,6 @@
 
     <!-- Scrollable Area -->
     <div class="late-list">
-
-      <div class="d-flex align-items-center border-bottom py-2">
-      <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Scott Lang</h6>
-          <small>Teacher - Sept 9 to Sept 16</small>
-        </div>
-      </div>
-      
-      <div class="d-flex align-items-center border-bottom py-2">
-      <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Natasha Romanoff</h6>
-          <small>Teacher - Sept 9 to Sept 16</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-      <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Natasha Romanoff</h6>
-          <small>Teacher - Sept 9 to Sept 16</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-      <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Natasha Romanoff</h6>
-          <small>Teacher - Sept 9 to Sept 16</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-      <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Natasha Romanoff</h6>
-          <small>Teacher - Sept 9 to Sept 16</small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center border-bottom py-2">
-      <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Natasha Romanoff</h6>
-          <small>Teacher - Sept 9 to Sept 16</small>
-        </div>
-      </div>
 
       <div class="d-flex align-items-center border-bottom py-2">
       <img src="pic.png" class="profile-img me-3">

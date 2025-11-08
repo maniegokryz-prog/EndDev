@@ -203,15 +203,6 @@
   border-radius: 10px;
 }
 /*------------------------------------------------------------------------------------------------------------------------------------------*/
-/*attendancefeed*/
-.attendance-feed {
-  max-height: 550px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 1rem;
-  margin-top: 13px; /* ⬅ ibinaba ng konti */
-}
-
 /* Scrollbar */
 .attendance-feed::-webkit-scrollbar {
   width: 6px;
@@ -272,6 +263,48 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* 🔒 Lock layout row for alignment */
+.row.g-3.align-items-start {
+  display: flex;
+  align-items: stretch; /* make all columns equal height */
+}
+
+/* 🔧 Attendance feed scroll only */
+.attendance-feed {
+  max-height: 550px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+  margin-top: 0 !important; /* remove lift */
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  justify-content: flex-start;
+}
+
+/* 🔧 Feed list scrolls inside */
+#attendanceList {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* ✅ Lock left column height only on large screens */
+@media (min-width: 1201px) {
+  .col-xl-9.col-lg-8.col-md-8 {
+    height: 550px;
+    overflow: hidden;
+    margin-top: 1px !important; /* ⬅ adjust until visually aligned */
+  }
+}
+
+/* 🧹 Remove forced height on smaller screens */
+@media (max-width: 1200px) {
+  .col-xl-9.col-lg-8.col-md-8 {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+
 /* Existing CSS (omitted for brevity) */
 /* 🎯 993px to 1200px (Targeting the LG to XL gap) */
 @media (min-width: 993px) and (max-width: 1200px) {
@@ -293,7 +326,7 @@
     max-height: 400px;
     height: 100% !important;
     overflow-y: auto;
-    margin-top: 1rem;
+    margin-top: 1.5rem !important;
   }
 
   .row.g-3.mb-4[style*="margin-top"] {
@@ -336,7 +369,7 @@
     max-height: 380px;
     height: 100% !important;
     overflow-y: auto;
-    margin-top: 1rem;
+    margin-top: 2rem !important;
   }
 
   .row.g-3.mb-4[style*="margin-top"] {
@@ -376,10 +409,9 @@
   }
 
   .col-xl-3, .col-lg-4, .col-md-4 {
-    width: 50% !important;
-    max-width: 50% !important;
-    margin-left: 52% !important;
-    margin-bottom: 10px !important;
+     width: 94% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
   }
 
   .card p.display-6 {
@@ -387,9 +419,12 @@
   }
 
   .attendance-feed {
-    margin-top: 20px !important;
-    max-height: 40vh !important;
-    height: 100% !important;
+       width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    box-sizing: border-box;
+    margin-left: 13px !important;
+    margin-right: 0 !important;
   }
 
   .col-xl-9 {
@@ -410,6 +445,7 @@
   }
 }
 
+/*------------------------------------------------------------------------------------------------------------------------------------------*/
 /* Card container  time n date*/
 .time-card {
   height: 480px;
@@ -532,10 +568,6 @@
   transform: scale(1.05);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
-
-
-
-
 
 /* Show button only between 500px and 576px */
 @media (min-width: 500px) and (max-width: 576px) {
@@ -768,24 +800,6 @@
     display: none !important;
   }
   
-  .time-card {
-    /* Maaari mo ring ayusin pa ang margin-top dito */
-    width: 50% !important;
-    padding-top: 4rem;
-    margin-top: -70% !important; /* Bahagyang mas malaking value para siguradong bababa */
-    margin-bottom: -9px !important; 
-    margin-right: 55% !important; /* Mas generic na centering */
-    height: 320px !important;
-  }
-
-  /* Maaari mo ring ayusin ang font sizes dito para sa mas maliit na screen */
-  #current-time {
-    font-size: 2rem; /* Bahagyang mas maliit kaysa sa 992px */
-  }
-
-  #current-date {
-    font-size: 1rem; /* Bahagyang mas maliit kaysa sa 992px */
-  }
 }
 
 /* 📱 Extra Small/Custom Devices (<= 500px) */
@@ -802,25 +816,6 @@
 
    .calendar-card {
     display: none !important;
-  }
-
-  .time-card {
-    /* Maaari mo ring ayusin pa ang margin-top dito */
-    width: 50% !important;
-    padding-top: 7rem;
-    margin-top: -83% !important; /* Bahagyang mas malaking value para siguradong bababa */
-    margin-bottom: 10px !important; 
-    margin-left: 59%; /* Mas generic na centering */
-    margin-right: 5%; /* Mas generic na centering */
-    height: 320px !important;
-  }
-
-  #current-time {
-    font-size: 2rem !important; /* Para mas kasya sa 500px */
-  }
-
-  #current-date {
-    font-size: 1rem !important; /* Para mas kasya sa 500px */
   }
 }
 
