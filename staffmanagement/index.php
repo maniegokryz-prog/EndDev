@@ -1,5 +1,5 @@
- <?php
-require '../db_connection.php';
+<?php
+require 'db_connection.php';
 
 // Get existing roles from database
 $existing_roles = [];
@@ -71,106 +71,27 @@ try {
     error_log("Error fetching room numbers: " . $e->getMessage());
 }
 ?>
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Attendance</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="staff.css">
-  <link rel="stylesheet" href="../assets/css/styles.css">
-  <script src="../assets/js/tf.min.js" 
-          onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4/dist/tf.min.js'"></script>
-  <script src="../assets/js/face-api.min.js" 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Attendance System</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    
+    <!-- FaceAPI.js - Try local first, fallback to CDN -->
+    <script src="assets/js/tf.min.js" 
+            onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4/dist/tf.min.js'"></script>
+    <script src="assets/js/face-api.min.js" 
             onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js'"></script>
 </head>
-
 <body>
-  <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
-    <div class="menu-toggle">
-      <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
-    </div>
-    <div class="notification">
-      <i class="bi bi-bell-fill fs-4 text-warning icon-btn"></i>
-    </div>
-  </div>
-
-  <!-- Sidebar -->
-  <div class="sidebar d-flex flex-column pt-5" id="sidebar">
-    <div class="profile text-center p-3 mt-4">
-      <img src="pic.png" alt="Placeholder" class="rounded-circle mb-2" width="70">
-      <h5 class="mb-0">Kryztian Maniego</h5>
-      <small class="role">Admin</small>
-    </div>
-    <nav class="nav flex-column px-2">
-      <a class="nav-link active" href="../dashboard/dashboard.php"><i class="bi bi-house-door me-2"></i> Dashboard</a>
-      <a class="nav-link" href="../attendancerep/attendancerep.php"><i class="bi bi-file-earmark-bar-graph me-2"></i> Attendance Reports</a>
-      <a class="nav-link" href="../staffmanagement/staff.php"><i class="bi bi-people me-2"></i> Staff Management</a>
-      <a class="nav-link" href="../settings/settings.php"><i class="bi bi-gear me-2"></i> Settings</a>
-      <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-left me-2"></i> Logout</a>
-    </nav>
-  </div>
-<!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <div class="content pt-3" id="content">
-  <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-    <button id="backBtn" class="btn btn-outline-secondary mb-3 mt-3">&larr; Back</button>
-    </div>
-  </div>
-
-  <!-- Discard Changes Modal -->
-<div class="modal fade" id="discardModal" tabindex="-1" aria-labelledby="discardLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-3 border-0 rounded-4 shadow-lg">
-
-      <div class="text-center border-bottom pb-2 mb-3">
-        <h5 class="fw-bold text-success" id="discardLabel">Discard Changes?</h5>
-      </div>
-
-      <div class="text-center">
-        <i class="bi bi-exclamation-triangle-fill text-warning fs-1 mb-2"></i>
-        <p class="text-muted px-3">
-          Are you sure to leave this page? Data entered will be lost and cannot be recovered.
-        </p>
-      </div>
-
-      <div class="d-flex justify-content-center gap-3 mt-3">
-        <button type="button" class="btn btn-outline-success px-4 fw-semibold" data-bs-dismiss="modal">No</button>
-        <button type="button" id="confirmLeave" class="btn btn-warning text-white px-4 fw-semibold">Yes</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<script>
-  document.getElementById("backBtn").addEventListener("click", function (e) {
-    e.preventDefault();
-    const discardModal = new bootstrap.Modal(document.getElementById('discardModal'));
-    discardModal.show();
-  });
-
-  document.getElementById("confirmLeave").addEventListener("click", function () {
-    window.location.href = "staff.php"; // redirect to staff page
-  });
-</script>
-
-  <div class="container py-4">
-    <a href="staffmanagement.php" class="text-dark fs-4"><i class="fas fa-arrow-left me-2"></i></a>
-    <div class="card shadow-sm border-0">
-
-      <div class="card-body">
-        <h4 class="fw-bold text-success">Add New Staff / Step 1 - Input Data</h4>
+    <div class="container">
+        <h1>Employee Registration</h1>
+        
         <form action="processes/add_employee.php" method="POST">
             <!-- Employee Information -->
             <div class="form-row">
@@ -363,16 +284,13 @@ try {
             <!-- Submit -->
             <input type="submit" value="Add Employee" id="submit-btn" disabled>
         </form>
-    <!-- JavaScript Modules with cache busting -->
-        <script src="../assets/js/face-detection.js?v=<?php echo time(); ?>"></script>
-        <script src="../assets/js/camera-controller.js?v=<?php echo time(); ?>"></script>
-        <script src="../assets/js/face-registration-app.js?v=<?php echo time(); ?>"></script>
-        <script src="../assets/js/add_employee.js?v=<?php echo time(); ?>"></script>        
-      </div>
+
+        <a href="showRecord.php">View Employee Records</a>
     </div>
-  </div>
-  <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="staff.js"></script>
+    <!-- JavaScript Modules with cache busting -->
+    <script src="assets/js/face-detection.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/js/camera-controller.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/js/face-registration-app.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/js/add_employee.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

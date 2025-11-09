@@ -14,3 +14,44 @@
 [2025-11-09 14:21:55] [ACTIVITY] Employee records retrieved - 1 records
 [2025-11-09 14:21:56] [ACTIVITY] Employee records retrieved - 1 records
 [2025-11-09 14:21:56] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-09 15:29:34] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-09 15:29:35] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-09 15:32:03] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-09 15:33:05] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-09 15:34:40] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-09 15:35:46] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-09 15:50:41] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-09 15:50:56] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-09 16:00:11] [ACTIVITY] [IP: ::1] Employee addition request started - POST request received
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_1.png, Angle: front, Employee: MA22013613
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Schedule Template Created - Employee: 2, Schedule ID: 2
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Starting Face Embedding Generation - Employee ID: MA22013613, DB ID: 2
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Face Embedding Generation Started - Employee ID: MA22013613, DB ID: 2
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Project Root: C:\inetpub\wwwroot\EndDev\staffmanagement
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking VENV: C:\inetpub\wwwroot\EndDev\staffmanagement\.venv\Scripts\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking VENV: C:\inetpub\wwwroot\EndDev\staffmanagement\.venv\bin\python | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking VENV: C:\inetpub\wwwroot\EndDev\staffmanagement\env\Scripts\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking VENV: C:\inetpub\wwwroot\EndDev\staffmanagement\env\bin\python | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - VENV Python not found. Checking system paths...
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - USERPROFILE=C:\WINDOWS\system32\config\systemprofile
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - LOCALAPPDATA=C:\WINDOWS\system32\config\systemprofile\AppData\Local
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\WINDOWS\system32\config\systemprofile\AppData\Local\Programs\Python\Python312\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\WINDOWS\system32\config\systemprofile\AppData\Local\Programs\Python\Python311\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\WINDOWS\system32\config\systemprofile\AppData\Local\Programs\Python\Python310\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\WINDOWS\system32\config\systemprofile\AppData\Local\Programs\Python\Python39\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\WINDOWS\system32\config\systemprofile\AppData\Local\Programs\Python\Python312\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\WINDOWS\system32\config\systemprofile\AppData\Local\Programs\Python\Python311\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\WINDOWS\system32\config\systemprofile\AppData\Local\Programs\Python\Python310\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\Python312\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\Python311\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\Python310\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\Python39\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: C:\Python38\python.exe | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: /usr/bin/python3 | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: /usr/local/bin/python3 | Exists: NO
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking: /usr/bin/python | Exists: NO
+[2025-11-09 16:00:12] [ERROR] [IP: ::1] [add_employee.php] Context: Python Not Found - Message: Could not find Python installation. Tried venv, environment paths, common locations, and system commands.
+[2025-11-09 16:00:12] [ERROR] [IP: ::1] [add_employee.php] Context: Face Embedding Generation - Message: Python executable not found
+[2025-11-09 16:00:12] [ERROR] [IP: ::1] [add_employee.php] Context: Face Embedding Generation Warning - Message: Failed to generate embeddings for employee 2. Employee record was created successfully. Embeddings can be regenerated manually.
+[2025-11-09 16:00:12] [ACTIVITY] [IP: ::1] Employee added successfully - Employee ID: MA22013613
+[2025-11-09 16:00:35] [ACTIVITY] Employee records retrieved - 2 records

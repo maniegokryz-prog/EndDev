@@ -1,5 +1,5 @@
 <?php
-require '../db_connection.php';
+require '../../db_connection.php';
 
 class EmployeeProcessor{
     private $db;
