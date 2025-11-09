@@ -1,0 +1,30 @@
+[2025-11-09 12:57:19] [ERROR] Context: log_attendance | Error: SQLite error: database is locked | Employee: MA22013612 | Exception: OperationalError: database is locked
+[2025-11-09 12:57:19] [ERROR] Stack trace:
+  File "c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\attendance_logger.py", line 111, in log_attendance
+    cursor.execute("""
+
+[2025-11-09 12:57:29] [ERROR] Context: log_attendance | Error: SQLite error: database is locked | Employee: MA22013612 | Exception: OperationalError: database is locked
+[2025-11-09 12:57:29] [ERROR] Stack trace:
+  File "c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\attendance_logger.py", line 111, in log_attendance
+    cursor.execute("""
+
+[2025-11-09 12:59:44] [ERROR] Context: log_attendance | Error: SQLite error: database is locked | Employee: MA22013612 | Exception: OperationalError: database is locked
+[2025-11-09 12:59:44] [ERROR] Stack trace:
+  File "c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\attendance_logger.py", line 111, in log_attendance
+    cursor.execute("""
+
+[2025-11-09 12:59:55] [ERROR] Context: log_attendance | Error: SQLite error: database is locked | Employee: MA22013612 | Exception: OperationalError: database is locked
+[2025-11-09 12:59:55] [ERROR] Stack trace:
+  File "c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\attendance_logger.py", line 111, in log_attendance
+    cursor.execute("""
+
+[2025-11-09 12:56:46] [ERROR] Context: log_attendance | Error: SQLite error: database is locked | Employee: MA22013612 | Exception: OperationalError: database is locked
+[2025-11-09 12:56:46] [ERROR] Stack trace:
+  File "c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\attendance_logger.py", line 111, in log_attendance
+    cursor.execute("""
+
+[2025-11-09 12:56:57] [ERROR] Context: log_attendance | Error: SQLite error: database is locked | Employee: MA22013612 | Exception: OperationalError: database is locked
+[2025-11-09 12:56:57] [ERROR] Stack trace:
+  File "c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\attendance_logger.py", line 111, in log_attendance
+    cursor.execute("""
+

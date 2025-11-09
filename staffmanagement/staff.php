@@ -1,4 +1,8 @@
-    <!DOCTYPE html>
+<?php
+require_once '../db_connection.php';
+
+?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -17,15 +21,14 @@
 </head>
 
 <body>
- <body>
   <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
-  <div class="menu-toggle">
-    <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
+    <div class="menu-toggle">
+      <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
+    </div>
+    <div class="notification">
+      <i class="bi bi-bell-fill fs-4 text-warning icon-btn"></i>
+    </div>
   </div>
-  <div class="notification">
-    <i class="bi bi-bell-fill fs-4 text-warning icon-btn"></i>
-  </div>
-</div>
 
   <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
@@ -108,8 +111,8 @@
   </div>
   
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
- <script src="staff.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="staff.js"></script>
 </body>
 </html>
 

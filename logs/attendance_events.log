@@ -1,0 +1,66 @@
+[2025-11-07 21:55:57] [INFO] Daily Attendance time_in updated | Employee: Justine Paul Alianza (MA22013612) | time_in=21:55:57 | late_minutes=0
+[2025-11-07 21:55:57] [INFO] Employee: Justine Paul Alianza (MA22013612) | Type: TIME_IN | Status: Time In: On-time
+[2025-11-07 22:00:27] [INFO] Daily Attendance time_out updated | Employee: Justine Paul Alianza (MA22013612) | time_out=22:00:27 | scheduled_hours=1.98h | actual_hours=0.02h | status=complete | early_departure=118min | overtime=0
+[2025-11-07 22:00:27] [INFO] Employee: Justine Paul Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 59 minutes
+[2025-11-07 22:24:16] [INFO] Daily Attendance time_in updated | Employee: Justine Paul Alianza (MA22013612) | time_in=22:24:16 | late_minutes=4
+[2025-11-07 22:24:16] [INFO] Employee: Justine Paul Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 4 minutes
+[2025-11-07 22:26:05] [INFO] Daily Attendance time_out updated | Employee: Justine Paul Alianza (MA22013612) | time_out=22:26:05 | scheduled_hours=0.67h | actual_hours=0.05h | status=complete | early_departure=33min | overtime=0
+[2025-11-07 22:26:05] [INFO] Employee: Justine Paul Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 3 minutes
+[2025-11-07 22:32:54] [INFO] Daily Attendance time_in updated | Employee: James Salonga (MA22013613) | time_in=22:32:54 | late_minutes=2
+[2025-11-07 22:32:54] [INFO] Employee: James Salonga (MA22013613) | Type: TIME_IN | Status: Time In: Late by 2 minutes
+[2025-11-07 22:34:28] [INFO] Daily Attendance time_out updated | Employee: James Salonga (MA22013613) | time_out=22:34:28 | scheduled_hours=0.50h | actual_hours=0.05h | status=complete | early_departure=25min | overtime=0
+[2025-11-07 22:34:28] [INFO] Employee: James Salonga (MA22013613) | Type: TIME_OUT | Status: Time Out: Undertime by 25 minutes
+[2025-11-07 22:36:48] [INFO] Daily Attendance time_in updated | Employee: James Salonga (MA22013613) | time_in=22:36:48 | late_minutes=6
+[2025-11-07 22:36:48] [INFO] Employee: James Salonga (MA22013613) | Type: TIME_IN | Status: Time In: Late by 6 minutes
+[2025-11-07 22:37:14] [INFO] Daily Attendance time_out updated | Employee: James Salonga (MA22013613) | time_out=22:37:14 | scheduled_hours=0.50h | actual_hours=0.03h | status=complete | early_departure=22min | overtime=0
+[2025-11-07 22:37:14] [INFO] Employee: James Salonga (MA22013613) | Type: TIME_OUT | Status: Time Out: Undertime by 22 minutes
+[2025-11-07 22:47:45] [INFO] Daily Attendance time_in updated | Employee: Justine Paul Alianza (MA22013612) | time_in=22:47:45 | late_minutes=27
+[2025-11-07 22:47:45] [INFO] Employee: Justine Paul Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 27 minutes
+[2025-11-07 22:48:46] [INFO] Daily Attendance time_out updated | Employee: Justine Paul Alianza (MA22013612) | time_out=22:48:45 | scheduled_hours=40min (0.67h) | actual_hours=2min (0.03h) | status=complete | early_departure=11min | overtime=0
+[2025-11-07 22:48:46] [INFO] Employee: Justine Paul Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Overtime by 18 minutes
+[2025-11-07 22:52:56] [INFO] Daily Attendance time_in updated | Employee: Justine Paul Alianza (MA22013612) | time_in=22:52:56 | late_minutes=0
+[2025-11-07 22:52:56] [INFO] Employee: Justine Paul Alianza (MA22013612) | Type: TIME_IN | Status: Time In: On-time
+[2025-11-07 22:55:13] [INFO] Daily Attendance time_out updated | Employee: Justine Paul Alianza (MA22013612) | time_out=22:55:13 | scheduled_hours=30min (0.50h) | actual_hours=0min (0.00h) | status=complete | early_departure=34min | overtime=0
+[2025-11-07 22:55:13] [INFO] Employee: Justine Paul Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 34 minutes
+[2025-11-07 23:12:09] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=23:12:09 | late_minutes=12
+[2025-11-07 23:12:09] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 12 minutes
+[2025-11-07 23:12:20] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=23:12:20 | scheduled_hours=30min (0.50h) | actual_hours=1min (0.02h) | status=complete | early_departure=17min | overtime=0
+[2025-11-07 23:12:20] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 17 minutes
+[2025-11-07 23:15:38] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=23:15:38 | late_minutes=15
+[2025-11-07 23:15:38] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 15 minutes
+[2025-11-07 23:15:44] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=23:15:44 | scheduled_hours=30min (0.50h) | actual_hours=1min (0.02h) | status=complete | early_departure=14min | overtime=0
+[2025-11-07 23:15:44] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 14 minutes
+[2025-11-07 23:17:49] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=23:17:49 | late_minutes=17
+[2025-11-07 23:17:49] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 17 minutes
+[2025-11-07 23:17:54] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=23:17:54 | scheduled_hours=30min (0.50h) | actual_hours=1min (0.02h) | status=complete | early_departure=12min | overtime=0
+[2025-11-07 23:17:54] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 12 minutes
+[2025-11-07 23:34:20] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=23:34:20 | late_minutes=34
+[2025-11-07 23:34:20] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 34 minutes
+[2025-11-07 23:56:53] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=23:56:53 | scheduled_hours=30min (0.50h) | actual_hours=0min (0.00h) | status=complete | early_departure=0 | overtime=26min
+[2025-11-07 23:56:53] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Overtime by 26 minutes
+[2025-11-07 23:59:55] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=23:59:55 | late_minutes=59
+[2025-11-07 23:59:55] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 59 minutes
+[2025-11-08 00:00:03] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=00:00:03 | late_minutes=0
+[2025-11-08 00:00:03] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: On-time
+[2025-11-08 00:00:08] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=00:00:08 | scheduled_hours=120min (2.00h) | actual_hours=0min (0.00h) | status=complete | early_departure=719min | overtime=0
+[2025-11-08 00:00:08] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 719 minutes
+[2025-11-08 00:12:01] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=00:12:01 | late_minutes=0
+[2025-11-08 00:12:01] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: On-time
+[2025-11-09 11:27:14] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=11:27:14 | late_minutes=0
+[2025-11-09 11:27:14] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: No schedule assigned
+[2025-11-09 11:50:53] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=11:50:53 | scheduled_hours=0min (0.00h) | actual_hours=0min (0.00h) | status=complete | early_departure=0 | overtime=0
+[2025-11-09 11:50:53] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: No schedule assigned
+[2025-11-09 12:54:46] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=12:54:46 | late_minutes=174
+[2025-11-09 12:54:46] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 174 minutes
+[2025-11-09 12:55:39] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=12:55:39 | scheduled_hours=180min (3.00h) | actual_hours=2min (0.03h) | status=complete | early_departure=4min | overtime=0
+[2025-11-09 12:55:39] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 4 minutes
+[2025-11-09 12:50:38] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=12:50:38 | late_minutes=170
+[2025-11-09 12:50:38] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 170 minutes
+[2025-11-09 12:51:00] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=12:51:00 | scheduled_hours=180min (3.00h) | actual_hours=2min (0.03h) | status=complete | early_departure=8min | overtime=0
+[2025-11-09 12:51:00] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 8 minutes
+[2025-11-09 12:59:08] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=12:59:08 | late_minutes=179
+[2025-11-09 12:59:08] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 179 minutes
+[2025-11-09 12:03:13] [INFO] Daily Attendance time_in updated | Employee: James Alianza (MA22013612) | time_in=12:03:13 | late_minutes=123
+[2025-11-09 12:03:13] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 123 minutes
+[2025-11-09 12:03:25] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=12:03:25 | scheduled_hours=180min (3.00h) | actual_hours=1min (0.02h) | status=complete | early_departure=56min | overtime=0
+[2025-11-09 12:03:25] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 56 minutes

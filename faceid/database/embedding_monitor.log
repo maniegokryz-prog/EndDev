@@ -1,0 +1,180 @@
+[2025-11-07 23:33:56] [INFO] ============================================================
+[2025-11-07 23:33:56] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-07 23:33:56] [INFO] ============================================================
+[2025-11-07 23:33:56] [INFO] Checking for database updates...
+[2025-11-07 23:33:56] [INFO] Successfully connected to database
+[2025-11-07 23:33:56] [INFO] Fetched 5 embeddings from database
+[2025-11-07 23:33:56] [INFO] Unique employees: 1
+[2025-11-07 23:33:56] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:33:56] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:33:56] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:33:56] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:33:56] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:33:56] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-07 23:33:56] [INFO] File size: 10.71 KB
+[2025-11-07 23:33:56] [INFO] Embeddings file updated successfully
+[2025-11-07 23:34:58] [INFO] ============================================================
+[2025-11-07 23:34:58] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-07 23:34:58] [INFO] ============================================================
+[2025-11-07 23:34:58] [INFO] Checking for database updates...
+[2025-11-07 23:34:58] [INFO] Successfully connected to database
+[2025-11-07 23:34:58] [INFO] Fetched 5 embeddings from database
+[2025-11-07 23:34:58] [INFO] Unique employees: 1
+[2025-11-07 23:34:58] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:34:58] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:34:58] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:34:58] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:34:58] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:34:58] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-07 23:34:58] [INFO] File size: 10.71 KB
+[2025-11-07 23:34:58] [INFO] Embeddings file updated successfully
+[2025-11-07 23:38:26] [INFO] ============================================================
+[2025-11-07 23:38:26] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-07 23:38:26] [INFO] ============================================================
+[2025-11-07 23:38:26] [INFO] Checking for database updates...
+[2025-11-07 23:38:26] [INFO] Successfully connected to database
+[2025-11-07 23:38:26] [INFO] Fetched 5 embeddings from database
+[2025-11-07 23:38:26] [INFO] Unique employees: 1
+[2025-11-07 23:38:26] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:38:26] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:38:26] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:38:26] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:38:26] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:38:26] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-07 23:38:26] [INFO] File size: 10.71 KB
+[2025-11-07 23:38:26] [INFO] Embeddings file updated successfully
+[2025-11-07 23:41:53] [INFO] ============================================================
+[2025-11-07 23:41:53] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-07 23:41:53] [INFO] ============================================================
+[2025-11-07 23:41:53] [INFO] Checking for database updates...
+[2025-11-07 23:41:53] [INFO] Successfully connected to database
+[2025-11-07 23:41:53] [INFO] Fetched 5 embeddings from database
+[2025-11-07 23:41:53] [INFO] Unique employees: 1
+[2025-11-07 23:41:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:41:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:41:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:41:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:41:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-07 23:41:53] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-07 23:41:53] [INFO] File size: 10.71 KB
+[2025-11-07 23:41:53] [INFO] Embeddings file updated successfully
+[2025-11-08 00:00:23] [INFO] ============================================================
+[2025-11-08 00:00:23] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-08 00:00:23] [INFO] ============================================================
+[2025-11-08 00:00:23] [INFO] Checking for database updates...
+[2025-11-08 00:00:23] [INFO] Successfully connected to database
+[2025-11-08 00:00:23] [INFO] Fetched 5 embeddings from database
+[2025-11-08 00:00:23] [INFO] Unique employees: 1
+[2025-11-08 00:00:23] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:00:23] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:00:23] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:00:23] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:00:23] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:00:23] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-08 00:00:23] [INFO] File size: 10.71 KB
+[2025-11-08 00:00:23] [INFO] Embeddings file updated successfully
+[2025-11-08 00:10:17] [INFO] ============================================================
+[2025-11-08 00:10:17] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-08 00:10:17] [INFO] ============================================================
+[2025-11-08 00:10:17] [INFO] Checking for database updates...
+[2025-11-08 00:10:17] [INFO] Successfully connected to database
+[2025-11-08 00:10:17] [INFO] Fetched 5 embeddings from database
+[2025-11-08 00:10:17] [INFO] Unique employees: 1
+[2025-11-08 00:10:17] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:17] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:17] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:17] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:17] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:17] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-08 00:10:17] [INFO] File size: 10.71 KB
+[2025-11-08 00:10:17] [INFO] Embeddings file updated successfully
+[2025-11-08 00:10:57] [INFO] ============================================================
+[2025-11-08 00:10:57] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-08 00:10:57] [INFO] ============================================================
+[2025-11-08 00:10:57] [INFO] Checking for database updates...
+[2025-11-08 00:10:57] [INFO] Successfully connected to database
+[2025-11-08 00:10:57] [INFO] Fetched 5 embeddings from database
+[2025-11-08 00:10:57] [INFO] Unique employees: 1
+[2025-11-08 00:10:57] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:57] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:57] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:57] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:57] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:10:57] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-08 00:10:57] [INFO] File size: 10.71 KB
+[2025-11-08 00:10:57] [INFO] Embeddings file updated successfully
+[2025-11-08 00:11:41] [INFO] ============================================================
+[2025-11-08 00:11:41] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-08 00:11:41] [INFO] ============================================================
+[2025-11-08 00:11:41] [INFO] Checking for database updates...
+[2025-11-08 00:11:41] [INFO] Successfully connected to database
+[2025-11-08 00:11:41] [INFO] Fetched 5 embeddings from database
+[2025-11-08 00:11:41] [INFO] Unique employees: 1
+[2025-11-08 00:11:41] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:11:41] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:11:41] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:11:41] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:11:41] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-08 00:11:41] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-08 00:11:41] [INFO] File size: 10.71 KB
+[2025-11-08 00:11:41] [INFO] Embeddings file updated successfully
+[2025-11-09 12:52:37] [INFO] ============================================================
+[2025-11-09 12:52:37] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-09 12:52:37] [INFO] ============================================================
+[2025-11-09 12:52:37] [INFO] Checking for database updates...
+[2025-11-09 12:52:37] [INFO] Successfully connected to database
+[2025-11-09 12:52:37] [INFO] Fetched 5 embeddings from database
+[2025-11-09 12:52:37] [INFO] Unique employees: 1
+[2025-11-09 12:52:37] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:52:37] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:52:37] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:52:37] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:52:37] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:52:37] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-09 12:52:37] [INFO] File size: 10.71 KB
+[2025-11-09 12:52:37] [INFO] Embeddings file updated successfully
+[2025-11-09 12:54:25] [INFO] ============================================================
+[2025-11-09 12:54:25] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-09 12:54:25] [INFO] ============================================================
+[2025-11-09 12:54:25] [INFO] Checking for database updates...
+[2025-11-09 12:54:25] [INFO] Successfully connected to database
+[2025-11-09 12:54:25] [INFO] Fetched 5 embeddings from database
+[2025-11-09 12:54:25] [INFO] Unique employees: 1
+[2025-11-09 12:54:25] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:54:25] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:54:25] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:54:25] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:54:25] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:54:25] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-09 12:54:25] [INFO] File size: 10.71 KB
+[2025-11-09 12:54:25] [INFO] Embeddings file updated successfully
+[2025-11-09 12:50:16] [INFO] ============================================================
+[2025-11-09 12:50:16] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-09 12:50:16] [INFO] ============================================================
+[2025-11-09 12:50:16] [INFO] Checking for database updates...
+[2025-11-09 12:50:16] [INFO] Successfully connected to database
+[2025-11-09 12:50:16] [INFO] Fetched 5 embeddings from database
+[2025-11-09 12:50:16] [INFO] Unique employees: 1
+[2025-11-09 12:50:16] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:50:16] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:50:16] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:50:16] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:50:16] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:50:16] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-09 12:50:16] [INFO] File size: 10.71 KB
+[2025-11-09 12:50:16] [INFO] Embeddings file updated successfully
+[2025-11-09 12:56:53] [INFO] ============================================================
+[2025-11-09 12:56:53] [INFO] Face Embeddings Database Sync - Single Run Mode
+[2025-11-09 12:56:53] [INFO] ============================================================
+[2025-11-09 12:56:53] [INFO] Checking for database updates...
+[2025-11-09 12:56:53] [INFO] Successfully connected to database
+[2025-11-09 12:56:53] [INFO] Fetched 5 embeddings from database
+[2025-11-09 12:56:53] [INFO] Unique employees: 1
+[2025-11-09 12:56:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:56:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:56:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:56:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:56:53] [INFO]   - James Alianza (MA22013612): DB ID 1
+[2025-11-09 12:56:53] [INFO] Successfully saved 5 embeddings to c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\database\authorized_embeddings.npy
+[2025-11-09 12:56:53] [INFO] File size: 10.71 KB
+[2025-11-09 12:56:53] [INFO] Embeddings file updated successfully

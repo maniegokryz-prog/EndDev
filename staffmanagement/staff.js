@@ -14,68 +14,63 @@ menuBtn.addEventListener('click', () => {
 });
 //----------------------------------------------------------------------------------------------//
 
-// Generate 100 sample staff data
-const staffData = [
-  { name: "Justine Alianza", id: "MA22000000", role: "Faculty Staff", department: "BSIS" },
-  { name: "Kryztian Maniego", id: "MA22000001", role: "Non-Teaching Staff", department: "Registrar’s Office" },
-  { name: "Lord Gabriel Castro", id: "MA22000002", role: "Admin Staff", department: "Administration" },
-  { name: "John Adrian Mateo", id: "MA22000003", role: "Faculty Staff", department: "BSOM" },
-  { name: "Marvin De Leon", id: "MA22000004", role: "Non-Teaching Staff", department: "Accounting / Finance" },
-  { name: "Jilmer Cruz", id: "MA22000005", role: "Faculty Staff", department: "BSAIS" },
-];
+// Store staff data globally
+let staffData = [];
 
-// Auto-fill more names to reach 100
-const firstNames = ["Aaron", "Bea", "Carl", "Dana", "Eli", "Faith", "Gio", "Hannah", "Ian", "Jasmine", "Kyle", "Liza", "Miguel", "Nina", "Oscar", "Paula", "Quinn", "Rico", "Sofia", "Tristan", "Uma", "Vince", "Wendy", "Xander", "Yna", "Zack"];
-const lastNames = ["Reyes", "Santos", "Cruz", "Garcia", "Torres", "Flores", "Mendoza", "Rivera", "Gomez", "Bautista"];
-const roles = ["Admin Staff", "Faculty Staff", "Non-Teaching Staff"];
-const departments = [
-  "Information Systems",
-  "Office Management",
-  "Accounting Information Systems",
-  "Technical-Vocational Teacher Education",
-  "Customs Administration",
-  "Hotel and Restaurant Services",
-  "Accounting Office",
-  "Registrar’s Office",
-  "Library Office",
-  "Administration",
-  "Management Information System Office",
-  "Student Government Office",
-  "SENTRY Office",
-  "NSTP Office",
-  "Guidance and Counseling Office",
-  "Admission Office"
-];
+// Fetch employee data from database
+async function fetchEmployees(filterRole = "All Roles", filterDept = "All Departments", searchTerm = "") {
+  try {
+    const params = new URLSearchParams({
+      role: filterRole,
+      department: filterDept,
+      search: searchTerm
+    });
 
-// Generate remaining entries up to 100
-for (let i = 6; i < 100; i++) {
-  const fName = firstNames[Math.floor(Math.random() * firstNames.length)];
-  const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
-  const role = roles[Math.floor(Math.random() * roles.length)];
-  const dept = departments[Math.floor(Math.random() * departments.length)];
-  const id = `MA22${String(i).padStart(5, "0")}`;
-  staffData.push({ name: `${fName} ${lName}`, id, role, department: dept });
+    const response = await fetch(`get_employees.php?${params.toString()}`);
+    const result = await response.json();
+
+    if (result.success) {
+      staffData = result.data;
+      renderStaffList();
+    } else {
+      console.error('Error fetching employees:', result.error);
+      showError('Failed to load employee data');
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    showError('Failed to connect to server');
+  }
 }
 
-function renderStaffList(filterRole = "All Roles", filterDept = "All Departments", searchTerm = "") {
+function renderStaffList() {
   const tbody = document.getElementById("staffTable");
   tbody.innerHTML = "";
 
-  staffData
-    .filter(staff => 
-      (filterRole === "All Roles" || staff.role === filterRole) &&
-      (filterDept === "All Departments" || staff.department === filterDept) &&
-      staff.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .forEach(staff => {
+  if (staffData.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" class="text-center py-4 text-muted">
+          <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+          No employees found
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  staffData.forEach(staff => {
       const row = `
         <tr>
           <td>
             <div class="d-flex align-items-center">
-              <img src="pic.png" class="rounded-circle me-3" width="40" height="40">
+              <img src="../${staff.profile_photo}" 
+                   onerror="this.src='../assets/profile_pic/user.png'" 
+                   class="rounded-circle me-3" 
+                   width="40" 
+                   height="40">
               <div>
                 <div class="fw-semibold">${staff.name}</div>
-                <small class="text-muted">${staff.id}</small>
+                <small class="text-muted">${staff.employee_id}</small>
               </div>
             </div>
           </td>
@@ -84,7 +79,7 @@ function renderStaffList(filterRole = "All Roles", filterDept = "All Departments
           <td>
             <button 
               class="btn btn-outline-dark btn-sm d-flex flex-column align-items-center py-2 px-3 view-btn" 
-              data-id="${staff.id}">
+              data-id="${staff.employee_id}">
               <i class="fas fa-user fa-lg mb-1"></i>
               <span class="small fw-semibold">View</span>
             </button>
@@ -93,6 +88,19 @@ function renderStaffList(filterRole = "All Roles", filterDept = "All Departments
       `;
       tbody.innerHTML += row;
     });
+}
+
+// Show error message
+function showError(message) {
+  const tbody = document.getElementById("staffTable");
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="4" class="text-center py-4 text-danger">
+        <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
+        ${message}
+      </td>
+    </tr>
+  `;
 }
 
 // ✅ Global event listener for "View" buttons (only needs to be declared ONCE)
@@ -116,11 +124,13 @@ function applyFilters() {
   const role = document.getElementById("roleFilter").value;
   const dept = document.getElementById("departmentFilter").value;
   const search = document.getElementById("searchInput").value;
-  renderStaffList(role, dept, search);
+  fetchEmployees(role, dept, search);
 }
 
-// Initial render
-renderStaffList();
+// Initial load - fetch employees when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  fetchEmployees();
+});
 
 
 const dayButtons = document.querySelectorAll(".day-btn");
