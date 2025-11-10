@@ -117,7 +117,7 @@ class EmployeeUpdater {
             chmod($newFilepath, 0644);
 
             // --- Database Update ---
-            $relativePath = '../../assets/profile_pic/' . $newFilename;
+            $relativePath = '../assets/profile_pic/' . $newFilename;
             $stmt = $this->db->prepare("UPDATE employees SET profile_photo = ? WHERE id = ?");
             $stmt->bind_param('si', $relativePath, $employee['id']);
             if (!$stmt->execute()) {

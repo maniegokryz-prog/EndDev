@@ -184,17 +184,95 @@
   margin-top: -20px !important; /* tinaas ang card wrapper */
 }
 
+/* Day buttons styling - consolidated */
+.helper-text {
+  font-size: 13px;
+  color: #6c757d;
+  font-style: italic;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.day-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  width: 100%;
+  max-width: 100%;
+}
+
 .day-btn {
-  min-width: 90px;
-  min-height: 90px;
+  flex: 0 0 auto; /* Don't grow or shrink, use natural width */
+  width: calc((100% - 60px) / 7); /* 7 buttons with 6 gaps */
+  min-width: 70px;
+  height: 60px;
   font-weight: 700;
-  transition: 0.2s ease;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* When modal is 700px or less, allow wrapping to 2 rows */
+@media (max-width: 750px) {
+  .day-buttons {
+    gap: 8px;
+    justify-content: space-around;
+  }
+  
+  .day-btn {
+    width: calc((100% - 24px) / 4); /* 4 buttons per row */
+    min-width: 65px;
+    height: 55px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  .day-buttons {
+    gap: 6px;
+  }
+  
+  .day-btn {
+    width: calc((100% - 18px) / 4);
+    min-width: 60px;
+    height: 50px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 450px) {
+  .day-btn {
+    width: calc((100% - 12px) / 3); /* 3 buttons per row on very small screens */
+    min-width: 70px;
+    height: 50px;
+  }
 }
 
 .day-btn:hover {
   background-color: #198754;
   color: #fff;
   transform: scale(1.05);
+  border-color: #198754;
+}
+
+.day-btn.active {
+  background-color: #0b3d2e;
+  color: #fff;
+  border-color: #0b3d2e;
+}
+
+.day-btn.active:hover {
+  background-color: #145c45;
+  border-color: #145c45;
 }
 
 
@@ -244,15 +322,8 @@
   --card-radius: 10px;
 }
 
-
-
-
+/* General responsive adjustments */
 @media (max-width: 576px) {
-  .day-btn {
-    flex: 1 1 30%;
-    margin-bottom: 0.5rem;
-  }
-
   .btn-success.w-50 {
     width: 100% !important;
   }
@@ -264,6 +335,11 @@
   .table th,
   .table td {
     padding: 0.4rem;
+    font-size: 0.8rem;
+  }
+  
+  .btn {
+    font-size: 0.9rem;
   }
 }
 
@@ -276,25 +352,7 @@
   .card {
     margin-top: -10px !important;
   }
-
-  .day-btn {
-    min-width: 70px;
-    min-height: 70px;
-    font-size: 0.9rem;
-  }
-
-  .btn {
-    font-size: 0.9rem;
-  }
-
-  .table th,
-  .table td {
-    font-size: 0.8rem;
-  }
 }
-
-
-
 
 /*STAFF INFO*/
 /* Base Styles */
@@ -788,26 +846,17 @@ body {
   }
 }
 
-/*edit sched*/
-.day-btn {
-  width: 50px;
-  height: 50px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f8f9fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  color: #333;
-  cursor: pointer;
-  transition: 0.3s;
+/*edit sched modal*/
+.edit-schedule-modal-dialog {
+  max-width: 800px;
+  width: 100%;
 }
 
-.day-btn.active {
-  background-color: #0b3d2e;
-  color: #fff;
-  border-color: #0b3d2e;
+/* Day buttons container - wraps at 700px modal width */
+@media (max-width: 750px) {
+  .edit-schedule-modal-dialog {
+    max-width: 90%;
+  }
 }
 
 .form-control:focus {

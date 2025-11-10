@@ -702,17 +702,62 @@ document.addEventListener('DOMContentLoaded', function() {
     setupRoleInput();
     setupDepartmentInput();
     
-    // Add form submission handler to serialize schedule data for update_employee
-    const updateForm = document.querySelector('form[action="processes/update_employee.php"]');
-    if (updateForm) {
-        updateForm.addEventListener('submit', function(e) {
-            // Serialize schedule data before submission
-            const scheduleData = JSON.stringify(editAddedSchedules);
-            document.getElementById('schedule_data').value = scheduleData;
-            console.log('Form submission - Schedule data:', scheduleData);
+    // Add form submission handler for edit schedule modal
+    const editScheduleForm = document.getElementById('editScheduleForm');
+    if (editScheduleForm) {
+        editScheduleForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            // Serialize schedule data
+            const scheduleDataInput = document.getElementById('schedule_data');
+            if (scheduleDataInput) {
+                scheduleDataInput.value = JSON.stringify(editAddedSchedules);
+            }
+            
+            console.log('Edit Schedule Form submission');
+            console.log('Schedule data:', JSON.stringify(editAddedSchedules, null, 2));
             console.log('Total schedules to save:', editAddedSchedules.length);
+            
+            // Create FormData object
+            const formData = new FormData(editScheduleForm);
+            
+            // Log form data for debugging
+            console.log('FormData entries:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`  ${key}: ${value}`);
+            }
+            
+            // Submit via AJAX
+            fetch('processes/update_employee_schedule.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Server response:', data);
+                
+                if (data.success) {
+                    alert('Schedule updated successfully!');
+                    // Close the modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    // Reload the page to show updated schedules
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    alert('Error updating schedule: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                alert('Error updating schedule. Please check the console for details.');
+            });
         });
     }
+    
     // --- Load existing schedules from PHP into the JS array ---
     if (window.existingSchedules && Array.isArray(window.existingSchedules) && window.existingSchedules.length > 0) {
         console.log('Loading existing schedules from PHP:', window.existingSchedules);
@@ -1042,30 +1087,58 @@ function renderScheduleBlock(schedule, scheduleIndex) {
                 `;
                 // --- Make block editable ---
                 scheduleBlock.addEventListener('click', function(e) {
+                    // Don't trigger if clicking the delete button
+                    if (e.target.classList.contains('schedule-delete-btn')) {
+                        return;
+                    }
+                    
                     e.stopPropagation();
+                    
+                    console.log('Schedule block clicked for editing. Schedule index:', scheduleIndex);
+                    console.log('Schedule data:', schedule);
+                    
+                    // Set editing index
+                    editCurrentlyEditingIndex = scheduleIndex;
+                    
                     // Fill form fields
-                    currentlyEditingIndex = scheduleIndex;
                     document.getElementById('shift_start').value = schedule.startTime;
                     document.getElementById('shift_end').value = schedule.endTime;
                     document.getElementById('designate_class').value = schedule.class || '';
                     document.getElementById('designate_subject').value = schedule.subject || '';
                     document.getElementById('room-number').value = schedule.room_num || '';
+                    
                     // Set day buttons
-                    selectedDays = [...schedule.days];
-                    window.selectedDays = selectedDays;
+                    editSelectedDays = [...schedule.days];
+                    window.editSelectedDays = editSelectedDays;
+                    
+                    console.log('Setting days to active:', editSelectedDays);
+                    
                     document.querySelectorAll('.day-btn').forEach(btn => {
                         const btnDay = btn.getAttribute('data-day');
-                        if (selectedDays.includes(btnDay)) {
+                        if (editSelectedDays.includes(btnDay)) {
                             btn.classList.add('active');
                         } else {
                             btn.classList.remove('active');
                         }
                     });
-                    document.getElementById('work_days').value = JSON.stringify(selectedDays);
-                    // Optionally scroll to form or highlight
+                    
+                    document.getElementById('work_days').value = JSON.stringify(editSelectedDays);
+                    
+                    // Enable edit button, disable add button temporarily
                     document.getElementById('edit-schedule-btn').disabled = false;
-                    document.querySelector('.schedule-section').scrollIntoView({ behavior: 'smooth' });
-                    document.getElementById('shift_start').focus();
+                    
+                    // Scroll to form
+                    const scheduleSection = document.querySelector('.schedule-section');
+                    if (scheduleSection) {
+                        scheduleSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                    
+                    // Focus on first input
+                    setTimeout(() => {
+                        document.getElementById('shift_start').focus();
+                    }, 300);
+                    
+                    console.log('Edit mode activated for schedule index:', editCurrentlyEditingIndex);
                 });
                 targetCell.appendChild(scheduleBlock);
             }
@@ -1144,20 +1217,17 @@ function addSchedule() {
         color: getRandomEditScheduleColor() // Assign random color to this schedule
     };
     
-    // Check for conflicts
-    if (checkScheduleConflict(scheduleData)) {
-        const proceed = confirm('This schedule conflicts with an existing schedule. Do you want to add it anyway?');
-        if (!proceed) {
-            return;
-        }
-    }
+    console.log('Adding new schedule:', scheduleData);
+    
+    // Resolve overlaps automatically (pass null as editingIndex since this is a new schedule)
+    const adjustments = resolveScheduleOverlaps(scheduleData, null);
     
     // Add to schedules array
     editAddedSchedules.push(scheduleData);
     window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
     
     console.log('Schedule created:', scheduleData);
-    console.log('All schedules:', editAddedSchedules);
+    console.log('All schedules after adding:', editAddedSchedules);
     console.log('Schedule data for backend:', {
         days: scheduleData.days,
         startTime: scheduleData.startTime,
@@ -1170,10 +1240,15 @@ function addSchedule() {
     // Re-render calendar
     renderSchedules();
     
-    // Show confirmation
+    // Show confirmation with adjustment info
     const daysList = editSelectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty Member' : 'Non-Faculty';
-    const message = `Schedule Added Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
+    let message = `Schedule Added Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
+    
+    if (adjustments.length > 0) {
+        message += '\n\n⚠️ Overlapping schedules were automatically adjusted:\n' + adjustments.map(adj => '• ' + adj).join('\n');
+    }
+    
     alert(message);
     
     // Clear the form for next schedule entry
@@ -1185,6 +1260,9 @@ function editSchedule() {
         alert('Please select a schedule block from the calendar to edit.');
         return;
     }
+
+    console.log('editSchedule() called for index:', editCurrentlyEditingIndex);
+    console.log('Current schedule being edited:', editAddedSchedules[editCurrentlyEditingIndex]);
 
     // Validate that at least one day is selected
     if (editSelectedDays.length === 0) {
@@ -1227,22 +1305,54 @@ function editSchedule() {
     const finalSubject = isFaculty ? designateSubject : 'General';
     const finalRoom = isFaculty ? roomNumber : 'TBD';
 
-    // Update the schedule object in the array
+    // Create the updated schedule object
     const originalColor = editAddedSchedules[editCurrentlyEditingIndex].color;
-    editAddedSchedules[editCurrentlyEditingIndex] = {
-        days: [...editSelectedDays], startTime: shiftStart, endTime: shiftEnd,
-        class: finalClass.toUpperCase(), subject: finalSubject.toUpperCase(), room_num: finalRoom.toUpperCase(),
+    
+    const updatedSchedule = {
+        days: [...editSelectedDays],
+        startTime: shiftStart,
+        endTime: shiftEnd,
+        class: finalClass.toUpperCase(),
+        subject: finalSubject.toUpperCase(),
+        room_num: finalRoom.toUpperCase(),
         color: originalColor
     };
+    
+    console.log('Updating schedule at index', editCurrentlyEditingIndex);
+    console.log('Updated schedule data:', updatedSchedule);
+    
+    // Resolve overlaps automatically (pass editCurrentlyEditingIndex so it skips itself)
+    const adjustments = resolveScheduleOverlaps(updatedSchedule, editCurrentlyEditingIndex);
+    
+    // Update the schedule in the array
+    editAddedSchedules[editCurrentlyEditingIndex] = updatedSchedule;
+    window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
 
+    console.log('Schedule updated in array. All schedules:', editAddedSchedules);
+    
+    // Re-render calendar
     renderSchedules();
-    alert('Schedule updated successfully!');
+    
+    // Show confirmation with adjustment info
+    const daysList = editSelectedDays.join(', ');
+    const roleDisplay = isFaculty ? 'Faculty Member' : 'Non-Faculty';
+    let message = `Schedule Updated Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
+    
+    if (adjustments.length > 0) {
+        message += '\n\n⚠️ Overlapping schedules were automatically adjusted:\n' + adjustments.map(adj => '• ' + adj).join('\n');
+    }
+    
+    alert(message);
+    
+    // Clear the form
     clearScheduleForm();
 }
 
 function clearScheduleForm() {
     // Clear selected days
     editSelectedDays = [];
+    window.editSelectedDays = editSelectedDays; // Keep global reference in sync
+    
     document.querySelectorAll('.day-btn.active').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -1300,7 +1410,7 @@ window.clearAllSchedulesQuietly = clearAllSchedulesQuietly;
 window.renderSchedules = renderSchedules;
 window.initializeCalendar = initializeCalendar;
 
-// Helper function to validate schedule conflicts
+// Helper function to validate schedule conflicts (DEPRECATED - now we auto-resolve)
 function checkScheduleConflict(newSchedule) {
     return editAddedSchedules.some(existingSchedule => {
         // Check if schedules overlap on any common day
@@ -1315,6 +1425,117 @@ function checkScheduleConflict(newSchedule) {
         // Check for time overlap
         return (newStart < existingEnd && newEnd > existingStart);
     });
+}
+
+/**
+ * Automatically resolve schedule overlaps by adjusting existing schedules
+ * @param {Object} newSchedule - The new or updated schedule being added
+ * @param {Number|null} editingIndex - If editing, the index to skip (null if adding new)
+ * @returns {Array} - Array of adjustment messages for user notification
+ */
+function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
+    const adjustments = [];
+    const newStart = parseTime(newSchedule.startTime);
+    const newEnd = parseTime(newSchedule.endTime);
+    
+    console.log('Resolving overlaps for new schedule:', newSchedule);
+    console.log('Editing index:', editingIndex);
+    
+    // Check each existing schedule for overlaps
+    editAddedSchedules.forEach((existingSchedule, index) => {
+        // Skip if this is the schedule we're editing
+        if (index === editingIndex) {
+            console.log(`Skipping index ${index} (currently being edited)`);
+            return;
+        }
+        
+        // Find common days between new and existing schedules
+        const commonDays = newSchedule.days.filter(day => existingSchedule.days.includes(day));
+        
+        if (commonDays.length === 0) {
+            return; // No overlap on days, skip
+        }
+        
+        const existingStart = parseTime(existingSchedule.startTime);
+        const existingEnd = parseTime(existingSchedule.endTime);
+        
+        // Check for time overlap
+        const hasTimeOverlap = (newStart < existingEnd && newEnd > existingStart);
+        
+        if (!hasTimeOverlap) {
+            return; // No time overlap, skip
+        }
+        
+        console.log(`Overlap detected with schedule ${index}:`, existingSchedule);
+        
+        // Determine how to adjust the existing schedule
+        
+        // Case 1: New schedule completely covers existing schedule
+        if (newStart <= existingStart && newEnd >= existingEnd) {
+            console.log(`Case 1: New schedule completely covers existing schedule ${index}`);
+            // Remove the common days from existing schedule
+            existingSchedule.days = existingSchedule.days.filter(day => !commonDays.includes(day));
+            
+            if (existingSchedule.days.length === 0) {
+                // Mark for deletion (will be removed after iteration)
+                existingSchedule._markedForDeletion = true;
+                adjustments.push(`Removed schedule "${existingSchedule.subject || 'Work'}" (${formatTime(existingSchedule.startTime)} - ${formatTime(existingSchedule.endTime)}) on ${commonDays.join(', ')} - completely overlapped`);
+            } else {
+                adjustments.push(`Removed ${commonDays.join(', ')} from schedule "${existingSchedule.subject || 'Work'}" (${formatTime(existingSchedule.startTime)} - ${formatTime(existingSchedule.endTime)})`);
+            }
+        }
+        // Case 2: New schedule overlaps the start of existing schedule
+        else if (newStart <= existingStart && newEnd > existingStart && newEnd < existingEnd) {
+            console.log(`Case 2: New schedule overlaps start of existing schedule ${index}`);
+            // Shorten existing schedule - move start time to new schedule's end time
+            const oldStart = existingSchedule.startTime;
+            existingSchedule.startTime = formatTimeSlot(newEnd);
+            adjustments.push(`Adjusted schedule "${existingSchedule.subject || 'Work'}" on ${commonDays.join(', ')}: ${formatTime(oldStart)} → ${formatTime(existingSchedule.startTime)} (start time moved)`);
+        }
+        // Case 3: New schedule overlaps the end of existing schedule
+        else if (newStart > existingStart && newStart < existingEnd && newEnd >= existingEnd) {
+            console.log(`Case 3: New schedule overlaps end of existing schedule ${index}`);
+            // Shorten existing schedule - move end time to new schedule's start time
+            const oldEnd = existingSchedule.endTime;
+            existingSchedule.endTime = formatTimeSlot(newStart);
+            adjustments.push(`Adjusted schedule "${existingSchedule.subject || 'Work'}" on ${commonDays.join(', ')}: ${formatTime(oldEnd)} → ${formatTime(existingSchedule.endTime)} (end time moved)`);
+        }
+        // Case 4: New schedule is in the middle of existing schedule (splits it)
+        else if (newStart > existingStart && newEnd < existingEnd) {
+            console.log(`Case 4: New schedule splits existing schedule ${index}`);
+            // This case is complex - keep the first part, create a second part
+            const originalEnd = existingSchedule.endTime;
+            
+            // Shorten existing schedule to end at new schedule's start
+            existingSchedule.endTime = formatTimeSlot(newStart);
+            
+            // Create a new schedule for the second part (after new schedule ends)
+            const secondPart = {
+                days: [...commonDays],
+                startTime: formatTimeSlot(newEnd),
+                endTime: originalEnd,
+                class: existingSchedule.class,
+                subject: existingSchedule.subject,
+                room_num: existingSchedule.room_num,
+                color: existingSchedule.color
+            };
+            
+            // Remove common days from existing schedule's second part
+            // (we already shortened the time, so we need to add back the days but with new time)
+            editAddedSchedules.push(secondPart);
+            
+            adjustments.push(`Split schedule "${existingSchedule.subject || 'Work'}" on ${commonDays.join(', ')}: ${formatTime(existingSchedule.startTime)} - ${formatTime(existingSchedule.endTime)} and ${formatTime(secondPart.startTime)} - ${formatTime(secondPart.endTime)}`);
+        }
+    });
+    
+    // Remove schedules marked for deletion
+    editAddedSchedules = editAddedSchedules.filter(schedule => !schedule._markedForDeletion);
+    window.editAddedSchedules = editAddedSchedules;
+    
+    console.log('Adjustments made:', adjustments);
+    console.log('Updated schedules:', editAddedSchedules);
+    
+    return adjustments;
 }
 
 // Delete individual schedule

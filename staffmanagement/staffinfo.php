@@ -499,7 +499,7 @@ $schedules = $viewer->getSchedules();
                 }
             }
           ?>
-          <img src="<?php echo $profilePhoto; ?>" class="profile-img" alt="Profile Picture" onerror="this.src='../assets/profile_pic/user.png'">
+          <img src="<?php echo $employee['profile_photo']; ?>" class="profile-img" alt="Profile Picture" onerror="this.src='../assets/profile_pic/user.png'">
         </div>
 
           <div class="text-center text-lg-start ms-lg-5">
@@ -596,21 +596,18 @@ $schedules = $viewer->getSchedules();
                     <input type="text" id="position" name="position" value="<?php echo htmlspecialchars($employee['position']); ?>">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" hidden  >
                     <label for="hire_date">Hire Date</label>
                     <input type="date" id="hire_date" name="hire_date" value="<?php echo htmlspecialchars($employee['hire_date']); ?>">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" hidden>
                     <label for="status">Status</label>
                     <select id="status" name="status">
                         <option value="Active" <?php echo ($employee['status'] == 'Active') ? 'selected' : ''; ?>>Active</option>
                         <option value="Inactive" <?php echo ($employee['status'] == 'Inactive') ? 'selected' : ''; ?>>Inactive</option>
                     </select>
                 </div>
-
-            <h2>Work Schedule</h2>
-    
 
              <div class="form-actions">
                     <a href="employee_detail.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="btn-cancel">Cancel</a>
@@ -1188,9 +1185,7 @@ $schedules = $viewer->getSchedules();
   </div>
   <!-- Visual Schedule section -->
        <div class="info-section">
-        <h2>Weekly Schedule</h2>
         <?php if (!empty($schedules)): ?>
-            <div class="schedule-calendar-section">
                 <div class="calendar-wrapper">
                     <div class="schedule-calendar" id="employee-schedule-calendar">
                         <!-- Time slots header -->
@@ -1208,8 +1203,6 @@ $schedules = $viewer->getSchedules();
                         <!-- Calendar grid will be populated by JavaScript -->
                     </div>
                 </div>
-            </div>
-            
             <script>
                 // Schedule data from PHP - convert to format matching index.php
                 const employeeSchedulesRaw = <?php echo json_encode($schedules); ?>;
@@ -1457,7 +1450,7 @@ $schedules = $viewer->getSchedules();
 
 <!-- Edit Schedule Modal -->
 <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered edit-schedule-modal-dialog">
     <div class="modal-content border-0 shadow-sm">
       <div class="modal-header">
         <h4 class="modal-title fw-semibold" id="editScheduleModalLabel">Edit Schedule</h4>
@@ -1465,6 +1458,11 @@ $schedules = $viewer->getSchedules();
       </div>
 
       <div class="modal-body">
+        <form id="editScheduleForm" action="processes/update_employee_schedule.php" method="POST">
+            <!-- Hidden fields for employee identification -->
+            <input type="hidden" name="employee_id" value="<?php echo htmlspecialchars($employee['employee_id']); ?>">
+            <input type="hidden" name="first_name" value="<?php echo htmlspecialchars($employee['first_name']); ?>">
+            <input type="hidden" name="last_name" value="<?php echo htmlspecialchars($employee['last_name']); ?>">
             <div class="schedule-section">
                 <div class="form-group">
                     <label>Select Working Days:</label>
@@ -1556,11 +1554,11 @@ $schedules = $viewer->getSchedules();
                 
             </div>
 
-             <div class="form-actions">
-                    <a href="employee_detail.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="btn-cancel">Cancel</a>
-                    <button type="submit" class="btn-save">Save Changes</button>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn-save">Save Changes</button>
             </div>
-            </form>
+        </form>
     </div>
 
     <?php
