@@ -1294,13 +1294,14 @@ $schedules = $viewer->getSchedules();
                     return scheduleColors[Math.floor(Math.random() * scheduleColors.length)];
                 }
                 
-                function initializeCalendar() {
+                function initializeDisplayCalendar() {
                     const calendar = document.getElementById('employee-schedule-calendar');
                     if (!calendar) {
-                        console.error('Calendar element not found!');
+                        console.error('Display calendar element not found!');
                         return;
                     }
                     
+                    console.log('Display calendar element found:', calendar);
                     const timeSlots = generateTimeSlots('07:00', '24:00', 30);
                     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                     
@@ -1337,22 +1338,29 @@ $schedules = $viewer->getSchedules();
                     console.log('Calendar grid created with', timeSlots.length, 'time slots');
                     
                     // Render schedules
-                    renderSchedules();
+                    renderDisplaySchedules();
                 }
                 
-                function renderSchedules() {
-                    // Clear existing schedule blocks
-                    document.querySelectorAll('.schedule-block').forEach(block => block.remove());
+                function renderDisplaySchedules() {
+                    // Get the display calendar
+                    const displayCalendar = document.getElementById('employee-schedule-calendar');
+                    if (!displayCalendar) {
+                        console.error('Display calendar not found!');
+                        return;
+                    }
                     
-                    console.log('Rendering', addedSchedules.length, 'schedule(s)');
+                    // Clear existing schedule blocks only from display calendar
+                    displayCalendar.querySelectorAll('.schedule-block').forEach(block => block.remove());
+                    
+                    console.log('Rendering', addedSchedules.length, 'schedule(s) for display calendar');
                     
                     // Re-render all schedules
                     addedSchedules.forEach((schedule, index) => {
-                        renderScheduleBlock(schedule, index);
+                        renderDisplayScheduleBlock(schedule, index);
                     });
                 }
                 
-                function renderScheduleBlock(schedule, scheduleIndex) {
+                function renderDisplayScheduleBlock(schedule, scheduleIndex) {
                     const startTimeMinutes = parseTime(schedule.startTime);
                     const endTimeMinutes = parseTime(schedule.endTime);
                     const baseTimeMinutes = 420; // 7:00 AM in minutes
@@ -1366,12 +1374,19 @@ $schedules = $viewer->getSchedules();
                     
                     console.log(`Schedule ${scheduleIndex}: ${schedule.startTime}-${schedule.endTime}, slots ${startSlotIndex}-${endSlotIndex}, span ${slotsSpanned}`);
                     
+                    // Get the visual schedule calendar specifically
+                    const displayCalendar = document.getElementById('employee-schedule-calendar');
+                    if (!displayCalendar) {
+                        console.error('Display calendar not found!');
+                        return;
+                    }
+                    
                     schedule.days.forEach(day => {
                         const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(day);
                         
                         if (startSlotIndex >= 0 && endSlotIndex <= 34) { // Within 7AM-12AM range
-                            // Find the target cell
-                            const targetCell = document.querySelector(`[data-day="${day}"][data-time-index="${startSlotIndex}"]`);
+                            // Find the target cell within the display calendar only
+                            const targetCell = displayCalendar.querySelector(`[data-day="${day}"][data-time-index="${startSlotIndex}"]`);
                             
                             if (targetCell) {
                                 const scheduleBlock = document.createElement('div');
@@ -1428,8 +1443,8 @@ $schedules = $viewer->getSchedules();
                 
                 // Initialize calendar when page loads
                 document.addEventListener('DOMContentLoaded', function() {
-                    console.log('DOM loaded, initializing calendar...');
-                    initializeCalendar();
+                    console.log('DOM loaded, initializing display calendar...');
+                    initializeDisplayCalendar();
                 });
             </script>
         <?php else: ?>
@@ -1517,7 +1532,7 @@ $schedules = $viewer->getSchedules();
                         </button>
                     </div>
                     <div class="calendar-wrapper">
-                        <div class="schedule-calendar">
+                        <div class="schedule-calendar" id="edit-schedule-calendar">
                             <!-- Time slots header -->
                             <div class="time-header"></div>
                             
@@ -1626,6 +1641,11 @@ $schedules = $viewer->getSchedules();
                 // The initializeCalendar function from edit_employee.js should be available
                 if (typeof initializeCalendar === 'function') {
                     initializeCalendar();
+                }
+                // Re-render schedules after calendar initialization
+                if (typeof renderSchedules === 'function') {
+                    console.log('Re-rendering schedules. Total schedules:', window.editAddedSchedules?.length || 0);
+                    renderSchedules();
                 }
             });
         }

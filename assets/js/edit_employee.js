@@ -698,7 +698,7 @@ window.editSelectedDays = editSelectedDays;
 
 // Initialize calendar on page load
 document.addEventListener('DOMContentLoaded', function() {
-    initializeCalendar();
+    // Don't initialize calendar here - it will be initialized when modal opens
     setupRoleInput();
     setupDepartmentInput();
     
@@ -722,8 +722,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return schedule;
         });
         window.editAddedSchedules = editAddedSchedules; // Update global reference
-        renderSchedules(); // Render the loaded schedules on the calendar
-        console.log('Schedules loaded and rendered.');
+        console.log('editAddedSchedules after loading:', editAddedSchedules);
+        console.log('Schedules loaded. Will be rendered when modal opens.');
+    } else {
+        console.log('No existing schedules found in window.existingSchedules');
+        console.log('window.existingSchedules:', window.existingSchedules);
     }
 });
 
@@ -877,16 +880,26 @@ function togglePassword(inputId) {
 
 // Calendar initialization
 function initializeCalendar() {
-    const calendar = document.querySelector('.schedule-calendar');
+    console.log('initializeCalendar() called');
+    const calendar = document.getElementById('edit-schedule-calendar');
+    
+    if (!calendar) {
+        console.error('Edit schedule calendar element not found!');
+        return;
+    }
+    
+    console.log('Edit schedule calendar element found:', calendar);
     const timeSlots = generateTimeSlots('07:00', '24:00', 30); // 7AM to 12AM (midnight), 30-minute intervals
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     
     // Clear existing grid content (keep headers)
     const existingCells = calendar.querySelectorAll('.time-slot, .calendar-cell');
+    console.log('Clearing existing cells:', existingCells.length);
     existingCells.forEach(cell => cell.remove());
     
     // Set up grid rows (header + time slots)
     calendar.style.gridTemplateRows = `40px repeat(${timeSlots.length}, 40px)`;
+    console.log('Created', timeSlots.length, 'time slots');
     
     // Create time slots and calendar cells
     timeSlots.forEach((timeSlot, timeIndex) => {
@@ -911,8 +924,11 @@ function initializeCalendar() {
         });
     });
     
+    console.log('Calendar grid created successfully');
+    
     // Render existing schedules
     renderSchedules();
+    console.log('initializeCalendar() completed');
 }
 
 function generateTimeSlots(startTime, endTime, intervalMinutes) {
@@ -948,13 +964,26 @@ function formatTime(timeSlot) {
 }
 
 function renderSchedules() {
-    // Clear existing schedule blocks
-    document.querySelectorAll('.schedule-block').forEach(block => block.remove());
+    console.log('renderSchedules() called. Total schedules:', editAddedSchedules.length);
+    console.log('Schedules to render:', editAddedSchedules);
+    
+    // Get the edit calendar specifically
+    const editCalendar = document.getElementById('edit-schedule-calendar');
+    if (!editCalendar) {
+        console.error('Edit calendar not found in renderSchedules!');
+        return;
+    }
+    
+    // Clear existing schedule blocks only from edit calendar
+    editCalendar.querySelectorAll('.schedule-block').forEach(block => block.remove());
     
     // Re-render all schedules with updated indices
     editAddedSchedules.forEach((schedule, index) => {
+        console.log(`Rendering schedule ${index}:`, schedule);
         renderScheduleBlock(schedule, index);
     });
+    
+    console.log('renderSchedules() completed');
 }
 
 function renderScheduleBlock(schedule, scheduleIndex) {
@@ -969,10 +998,18 @@ function renderScheduleBlock(schedule, scheduleIndex) {
     const endSlotIndex = Math.ceil((endTimeMinutes - baseTimeMinutes) / slotDuration);
     const slotsSpanned = endSlotIndex - startSlotIndex;
     
+    // Get the edit schedule calendar specifically
+    const editCalendar = document.getElementById('edit-schedule-calendar');
+    if (!editCalendar) {
+        console.error('Edit schedule calendar not found!');
+        return;
+    }
+    
     schedule.days.forEach(day => {
         const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(day);
         if (startSlotIndex >= 0 && endSlotIndex <= 34) {
-            const targetCell = document.querySelector(`[data-day="${day}"][data-time-index="${startSlotIndex}"]`);
+            // Search within the edit calendar only
+            const targetCell = editCalendar.querySelector(`[data-day="${day}"][data-time-index="${startSlotIndex}"]`);
             if (targetCell) {
                 const scheduleBlock = document.createElement('div');
                 const isFacultySchedule = schedule.class !== 'N/A' && schedule.subject !== 'GENERAL' && schedule.room_num !== 'TBD';
@@ -1261,6 +1298,7 @@ function clearAllSchedulesQuietly() {
 // Expose functions to global scope
 window.clearAllSchedulesQuietly = clearAllSchedulesQuietly;
 window.renderSchedules = renderSchedules;
+window.initializeCalendar = initializeCalendar;
 
 // Helper function to validate schedule conflicts
 function checkScheduleConflict(newSchedule) {
