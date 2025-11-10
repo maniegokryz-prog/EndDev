@@ -4,7 +4,7 @@
  * Production-level validation with rate limiting and security measures
  */
 
-require '../db_connection.php';
+require '../../db_connection.php';
 
 // Security Headers
 header('Content-Type: application/json');
