@@ -467,7 +467,7 @@ function initializeFacultyFieldToggle() {
 
     // Analyze existing schedules for faculty/non-faculty types
     function analyzeExistingSchedules() {
-        const schedules = window.addedSchedules || [];
+        const schedules = window.editAddedSchedules || [];
         if (schedules.length === 0) {
             return { hasSchedules: false, facultySchedules: 0, nonFacultySchedules: 0 };
         }
@@ -687,14 +687,14 @@ console.log('✓ FaceDetection class available:', typeof FaceDetection !== 'unde
 console.log('✓ CameraController class available:', typeof CameraController !== 'undefined');
 console.log('✓ FaceRegistrationApp class available:', typeof FaceRegistrationApp !== 'undefined');
 
-// Schedule Day Toggle Functionality
-let selectedDays = [];
-let addedSchedules = []; // Array to store all added schedules
-let currentlyEditingIndex = null; // To track which schedule is being edited
+// Schedule Day Toggle Functionality (Edit Modal)
+let editSelectedDays = [];
+let editAddedSchedules = []; // Array to store all added schedules in edit modal
+let editCurrentlyEditingIndex = null; // To track which schedule is being edited
 
 // Expose variables and functions to global scope for role change detection
-window.addedSchedules = addedSchedules;
-window.selectedDays = selectedDays;
+window.editAddedSchedules = editAddedSchedules;
+window.editSelectedDays = editSelectedDays;
 
 // Initialize calendar on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -707,21 +707,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (updateForm) {
         updateForm.addEventListener('submit', function(e) {
             // Serialize schedule data before submission
-            const scheduleData = JSON.stringify(addedSchedules);
+            const scheduleData = JSON.stringify(editAddedSchedules);
             document.getElementById('schedule_data').value = scheduleData;
             console.log('Form submission - Schedule data:', scheduleData);
-            console.log('Total schedules to save:', addedSchedules.length);
+            console.log('Total schedules to save:', editAddedSchedules.length);
         });
     }
     // --- Load existing schedules from PHP into the JS array ---
     if (window.existingSchedules && Array.isArray(window.existingSchedules) && window.existingSchedules.length > 0) {
         console.log('Loading existing schedules from PHP:', window.existingSchedules);
-        addedSchedules = window.existingSchedules.map(schedule => {
+        editAddedSchedules = window.existingSchedules.map(schedule => {
             // Assign a color to each schedule block
-            schedule.color = getRandomScheduleColor();
+            schedule.color = getRandomEditScheduleColor();
             return schedule;
         });
-        window.addedSchedules = addedSchedules; // Update global reference
+        window.editAddedSchedules = editAddedSchedules; // Update global reference
         renderSchedules(); // Render the loaded schedules on the calendar
         console.log('Schedules loaded and rendered.');
     }
@@ -804,8 +804,8 @@ function setupDepartmentInput() {
 
 
 
-// Predefined color palette for schedule blocks
-const scheduleColors = [
+// Predefined color palette for schedule blocks (Edit Modal)
+const editScheduleColors = [
     '#4a7c59', // Dark green
     '#8b4a6b', // Purple/magenta
     '#b85450', // Red
@@ -818,9 +818,9 @@ const scheduleColors = [
     '#ff6b6b', // Coral red
 ];
 
-// Function to get random color for schedule blocks
-function getRandomScheduleColor() {
-    return scheduleColors[Math.floor(Math.random() * scheduleColors.length)];
+// Function to get random color for schedule blocks (Edit Modal)
+function getRandomEditScheduleColor() {
+    return editScheduleColors[Math.floor(Math.random() * editScheduleColors.length)];
 }
 
 function toggleDay(button) {
@@ -834,18 +834,18 @@ function toggleDay(button) {
     
     // Update selected days array
     if (button.classList.contains('active')) {
-        if (!selectedDays.includes(day)) {
-            selectedDays.push(day);
+        if (!editSelectedDays.includes(day)) {
+            editSelectedDays.push(day);
         }
         console.log('Added day:', day);
     } else {
-        selectedDays = selectedDays.filter(d => d !== day);
+        editSelectedDays = editSelectedDays.filter(d => d !== day);
         console.log('Removed day:', day);
     }
     
     // Update hidden input
-    document.getElementById('work_days').value = JSON.stringify(selectedDays);
-    console.log('Selected work days:', selectedDays);
+    document.getElementById('work_days').value = JSON.stringify(editSelectedDays);
+    console.log('Selected work days:', editSelectedDays);
     console.log('Button background:', window.getComputedStyle(button).backgroundColor);
 }
 
@@ -952,7 +952,7 @@ function renderSchedules() {
     document.querySelectorAll('.schedule-block').forEach(block => block.remove());
     
     // Re-render all schedules with updated indices
-    addedSchedules.forEach((schedule, index) => {
+    editAddedSchedules.forEach((schedule, index) => {
         renderScheduleBlock(schedule, index);
     });
 }
@@ -1056,7 +1056,7 @@ function checkConsecutiveSchedule(day, timeMinutes, direction) {
 // Add Schedule functionality
 function addSchedule() {
     // Validate that at least one day is selected
-    if (selectedDays.length === 0) {
+    if (editSelectedDays.length === 0) {
         alert('Please select at least one working day first!');
         return;
     }
@@ -1098,13 +1098,13 @@ function addSchedule() {
     
     // Create schedule object
     const scheduleData = {
-        days: [...selectedDays], // Copy array
+        days: [...editSelectedDays], // Copy array
         startTime: shiftStart,
         endTime: shiftEnd,
         class: finalClass.toUpperCase(), // Ensure uppercase for consistency
         subject: finalSubject.toUpperCase(), // Ensure uppercase for consistency
         room_num: finalRoom.toUpperCase(), // Ensure uppercase for consistency
-        color: getRandomScheduleColor() // Assign random color to this schedule
+        color: getRandomEditScheduleColor() // Assign random color to this schedule
     };
     
     // Check for conflicts
@@ -1116,11 +1116,11 @@ function addSchedule() {
     }
     
     // Add to schedules array
-    addedSchedules.push(scheduleData);
-    window.addedSchedules = addedSchedules; // Keep global reference in sync
+    editAddedSchedules.push(scheduleData);
+    window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
     
     console.log('Schedule created:', scheduleData);
-    console.log('All schedules:', addedSchedules);
+    console.log('All schedules:', editAddedSchedules);
     console.log('Schedule data for backend:', {
         days: scheduleData.days,
         startTime: scheduleData.startTime,
@@ -1134,7 +1134,7 @@ function addSchedule() {
     renderSchedules();
     
     // Show confirmation
-    const daysList = selectedDays.join(', ');
+    const daysList = editSelectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty Member' : 'Non-Faculty';
     const message = `Schedule Added Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
     alert(message);
@@ -1144,13 +1144,13 @@ function addSchedule() {
 }
 
 function editSchedule() {
-    if (currentlyEditingIndex === null) {
+    if (editCurrentlyEditingIndex === null) {
         alert('Please select a schedule block from the calendar to edit.');
         return;
     }
 
     // Validate that at least one day is selected
-    if (selectedDays.length === 0) {
+    if (editSelectedDays.length === 0) {
         alert('Please select at least one working day first!');
         return;
     }
@@ -1191,9 +1191,9 @@ function editSchedule() {
     const finalRoom = isFaculty ? roomNumber : 'TBD';
 
     // Update the schedule object in the array
-    const originalColor = addedSchedules[currentlyEditingIndex].color;
-    addedSchedules[currentlyEditingIndex] = {
-        days: [...selectedDays], startTime: shiftStart, endTime: shiftEnd,
+    const originalColor = editAddedSchedules[editCurrentlyEditingIndex].color;
+    editAddedSchedules[editCurrentlyEditingIndex] = {
+        days: [...editSelectedDays], startTime: shiftStart, endTime: shiftEnd,
         class: finalClass.toUpperCase(), subject: finalSubject.toUpperCase(), room_num: finalRoom.toUpperCase(),
         color: originalColor
     };
@@ -1205,7 +1205,7 @@ function editSchedule() {
 
 function clearScheduleForm() {
     // Clear selected days
-    selectedDays = [];
+    editSelectedDays = [];
     document.querySelectorAll('.day-btn.active').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -1229,21 +1229,21 @@ function clearScheduleForm() {
     document.getElementById('work_days').value = '';
     
     // Reset editing state
-    currentlyEditingIndex = null;
+    editCurrentlyEditingIndex = null;
     document.getElementById('edit-schedule-btn').disabled = true;
 
     console.log('Schedule form cleared');
 }
 
 function clearAllSchedules() {
-    if (addedSchedules.length === 0) {
+    if (editAddedSchedules.length === 0) {
         alert('No schedules to clear!');
         return;
     }
     
-    if (confirm(`Are you sure you want to clear all ${addedSchedules.length} schedule(s)?`)) {
-        addedSchedules = [];
-        window.addedSchedules = addedSchedules; // Keep global reference in sync
+    if (confirm(`Are you sure you want to clear all ${editAddedSchedules.length} schedule(s)?`)) {
+        editAddedSchedules = [];
+        window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
         renderSchedules();
         console.log('All schedules cleared');
         alert('All schedules have been cleared!');
@@ -1252,8 +1252,8 @@ function clearAllSchedules() {
 
 // Quiet version for role change functionality (no confirmation dialogs)
 function clearAllSchedulesQuietly() {
-    addedSchedules = [];
-    window.addedSchedules = addedSchedules; // Keep global reference in sync
+    editAddedSchedules = [];
+    window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
     renderSchedules();
     console.log('All schedules cleared quietly due to role change');
 }
@@ -1264,7 +1264,7 @@ window.renderSchedules = renderSchedules;
 
 // Helper function to validate schedule conflicts
 function checkScheduleConflict(newSchedule) {
-    return addedSchedules.some(existingSchedule => {
+    return editAddedSchedules.some(existingSchedule => {
         // Check if schedules overlap on any common day
         const commonDays = newSchedule.days.filter(day => existingSchedule.days.includes(day));
         if (commonDays.length === 0) return false;
@@ -1282,17 +1282,17 @@ function checkScheduleConflict(newSchedule) {
 // Delete individual schedule
 function deleteSchedule(scheduleIndex, day) {
     if (confirm('Are you sure you want to delete this schedule?')) {
-        const schedule = addedSchedules[scheduleIndex];
+        const schedule = editAddedSchedules[scheduleIndex];
         
         // If schedule is only on this day, remove it completely
         if (schedule.days.length === 1) {
-            addedSchedules.splice(scheduleIndex, 1);
+            editAddedSchedules.splice(scheduleIndex, 1);
         } else {
             // Remove just this day from the schedule
             schedule.days = schedule.days.filter(d => d !== day);
         }
         
-        window.addedSchedules = addedSchedules; // Keep global reference in sync
+        window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
         renderSchedules();
         console.log('Schedule deleted');
     }
