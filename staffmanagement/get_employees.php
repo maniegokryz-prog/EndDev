@@ -85,7 +85,7 @@ try {
             'role' => $row['roles'] ?? 'N/A',
             'department' => $row['department'] ?? 'N/A',
             'position' => $row['position'] ?? 'N/A',
-            'profile_photo' => $row['profile_photo'] ?? 'pic.png'
+            'profile_photo' => $row['profile_photo'] ?? '../assets/profile_pic/user.png'
         ];
     }
 

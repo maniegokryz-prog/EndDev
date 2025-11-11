@@ -91,7 +91,8 @@ class EmployeeUpdater {
             }
 
             // --- File Processing ---
-            $uploadDir = dirname(__DIR__) . '/assets/profile_pic/';
+            // Upload to root/assets/profile_pic/ (go up 2 levels from processes folder)
+            $uploadDir = dirname(dirname(__DIR__)) . '/assets/profile_pic/';
             if (!file_exists($uploadDir)) {
                 // Create the directory recursively. The mode is ignored on Windows.
                 if (!mkdir($uploadDir, 0755, true)) {
@@ -128,9 +129,10 @@ class EmployeeUpdater {
 
             // --- Cleanup Old Photo ---
             $oldPhotoPath = $employee['profile_photo'] ?? '';
-            $defaultPhoto = '../../assets/profile_pic/user.png';
+            $defaultPhoto = '../assets/profile_pic/user.png';
             if (!empty($oldPhotoPath) && $oldPhotoPath !== $defaultPhoto) {
-                $fullOldPath = dirname(__DIR__) . '/' . $oldPhotoPath;
+                // Convert relative path to absolute path for deletion
+                $fullOldPath = dirname(dirname(__DIR__)) . '/' . str_replace('../', '', $oldPhotoPath);
                 if (file_exists($fullOldPath)) {
                     unlink($fullOldPath);
                 }

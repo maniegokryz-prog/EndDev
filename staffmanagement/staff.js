@@ -63,7 +63,7 @@ function renderStaffList() {
         <tr>
           <td>
             <div class="d-flex align-items-center">
-              <img src="../${staff.profile_photo}" 
+              <img src="${staff.profile_photo}" 
                    onerror="this.src='../assets/profile_pic/user.png';" 
                    class="rounded-circle me-3" 
                    width="40" 
@@ -81,7 +81,7 @@ function renderStaffList() {
             <button 
               class="btn btn-outline-dark btn-sm d-flex flex-column align-items-center py-2 px-3 view-btn" 
               data-id="${staff.employee_id}">
-              <i class="fas fa-user fa-lg mb-1"></i>
+              <i class="bi bi-person-circle fs-5 mb-1"></i>
               <span class="small fw-semibold">View</span>
             </button>
           </td>
