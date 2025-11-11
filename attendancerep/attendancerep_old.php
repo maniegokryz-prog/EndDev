@@ -1,4 +1,4 @@
-<?php
+    <?php
 require '../db_connection.php';
 
 class AttendanceReportViewer {
@@ -248,35 +248,33 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
   <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="fw-bold display-4 text-dark">Attendance Reports</h2>
-      <div class="d-flex align-items-center gap-3">
-        <span class="text-muted">Today: <strong><?php echo $currentDate; ?></strong></span>
-        <a href="exporep.php" class="btn btn-warning">Export</a>
-      </div>
+     <div class="d-flex justify-content-end mb-3">
+      <a href="exporep.php" class="btn btn-warning">Export</a>
+    </div>
   </div>
 
   <div class="row g-3 mb-4">
     <div class="col-md-3">
       <select class="form-select" id="roleFilter">
-        <option value="">All Roles</option>
-        <option value="Admin">Admin</option>
-        <option value="Faculty_Member">Faculty Member</option>
-        <option value="Non-Teaching_Personnel">Non-Teaching Personnel</option>
-      </select>
-    </div>
-    <div class="col-md-5">
-      <select class="form-select" id="deptFilter">
-        <option value="">All Departments</option>
-        <option value="Information Systems">Information Systems</option>
-        <option value="Office Management">Office Management</option>
-        <option value="Accounting Information Systems">Accounting Information Systems</option>
-        <option value="Hotel and Restaurant Services">Hotel and Restaurant Services</option>
-        <option value="Registrar's Office">Registrar's Office</option>
-        <option value="Guidance and Counseling Office">Guidance and Counseling Office</option>
-        <option value="Bsom">Bsom</option>
+        <option>All Roles</option>
+        <option>Admin</option>
+        <option>Faculty Staff</option>
+        <option>Non-Teaching Staff</option>
       </select>
     </div>
     <div class="col-md-4">
-      <input type="text" id="searchBox" class="form-control" placeholder="Search by name or ID">
+      <select class="form-select" id="deptFilter">
+        <option>All Departments</option>
+        <option>Information Systems</option>
+        <option>Office Management</option>
+        <option>Accounting Information Systems</option>
+        <option>Hotel and Restaurant Services</option>
+        <option>Registrar’s Office</option>
+        <option>Guidance and Counseling Office</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <input type="text" id="searchBox" class="form-control" placeholder="Search">
     </div>
   </div>
 
@@ -295,45 +293,40 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
         </tr>
       </thead>
       <tbody>
-        <?php if (empty($attendanceRecords)): ?>
-        <tr>
-          <td colspan="7" class="text-center py-4 text-muted">
-            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-            No attendance records found for today
-          </td>
-        </tr>
-        <?php else: ?>
-          <?php foreach ($attendanceRecords as $record): ?>
-        <tr data-id="<?php echo $record['employee_id']; ?>">
+        <tr data-id="MA20230001">
           <td>
             <div class="d-flex align-items-center">
-              <img src="<?php echo $record['profile_photo']; ?>" 
-                   onerror="this.src='../assets/profile_pic/user.png';" 
-                   class="employee-img rounded-circle me-2" 
-                   width="40" 
-                   height="40"
-                   alt="Profile">
+              <img src="pic.png" class="employee-img rounded-circle me-2" width="40" height="40">
               <div>
-                <span class="fw-semibold"><?php echo $record['full_name']; ?></span><br>
-                <small class="text-muted"><?php echo $record['role']; ?></small>
+                <span class="fw-semibold">Justine Alianza</span><br>
+                <small class="text-muted">Non-Teaching Staff</small>
               </div>
             </div>
           </td>
-          <td><?php echo date('Y-m-d', strtotime($record['attendance_date'])); ?></td>
-          <td><?php echo $record['time_in']; ?></td>
-          <td><?php echo $record['time_out']; ?></td>
-          <td><?php echo number_format($record['vacant_hours'], 1); ?> hr</td>
-          <td><?php echo number_format($record['actual_hours'], 1); ?> hrs</td>
-          <td><span class="status-dot <?php echo $record['status_class']; ?>"></span> <?php echo $record['status_display']; ?></td>
+          <td>2025-09-10</td>
+          <td>8:00 AM</td><td>4:00 PM</td><td>1.0 hr</td><td>6.0 hrs</td>
+          <td><span class="status-dot status-ontime"></span> On-Time</td>
         </tr>
-          <?php endforeach; ?>
-        <?php endif; ?>
+
+        <tr data-id="MA20230002">
+          <td>
+            <div class="d-flex align-items-center">
+              <img src="pic.png" class="employee-img rounded-circle me-2" width="40" height="40">
+              <div>
+                <span class="fw-semibold">Krystian Maniego</span><br>
+                <small class="text-muted">Admin</small>
+              </div>
+            </div>
+          </td>
+          <td>2025-09-10</td>
+          <td>9:00 AM</td><td>5:00 PM</td><td>1.0 hr</td><td>8.0 hrs</td>
+          <td><span class="status-dot status-late"></span> Late</td>
+        </tr>
+
       </tbody>
     </table>
   </div>
 </div>
-  </div>
-  </div>
 
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
