@@ -173,32 +173,141 @@ updateClock();
 })();
 //-----------------------------------------------------------------------------------------------------------------------------------------------------//
 //attendancefeed
- const attendanceData = [
-    {
-      name: "Ronnel Borlongan",
-      time: "7:00 AM",
-      ago: "10m Ago",
-      image: "pic.png"
-    },
-    
-    
-  ];
-
+async function loadAttendanceFeed() {
   const container = document.getElementById("attendanceList");
+  const countBadge = document.getElementById("feedCount");
+  
+  // Show loading state
+  container.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+  
+  try {
+    const response = await fetch('get_attendance_feed.php?limit=50');
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to load attendance feed');
+    }
+    
+    const attendanceData = result.data;
+    
+    // Update count badge
+    if (countBadge) {
+      countBadge.textContent = attendanceData.length;
+    }
+    
+    // Clear container
+    container.innerHTML = '';
+    
+    if (attendanceData.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted py-3"><small>No attendance records yet</small></div>';
+      return;
+    }
+    
+    // Populate feed items
+    attendanceData.forEach(record => {
+      const item = document.createElement("div");
+      item.classList.add("feed-item");
+      
+      // Determine badge color based on log type
+      const badgeClass = record.log_type === 'time_in' ? 'bg-success' : 'bg-info';
+      const badgeText = record.log_type_display;
+      
+      // Determine status color
+      let statusClass = 'text-muted';
+      if (record.status) {
+        if (record.status.toLowerCase().includes('late')) {
+          statusClass = 'text-danger';
+        } else if (record.status.toLowerCase().includes('on-time')) {
+          statusClass = 'text-success';
+        } else if (record.status.toLowerCase().includes('overtime')) {
+          statusClass = 'text-primary';
+        }
+      }
+      
+      // Create tooltip text
+      const tooltipText = `${record.formatted_date} at ${record.formatted_time}\n${record.detailed_time_ago}`;
+      
+      item.innerHTML = `
+        <img src="${record.profile_photo}" alt="${record.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
+        <div class="feed-info">
+          <h6>${record.full_name} <span class="badge ${badgeClass} ms-1" style="font-size: 0.65rem;">${badgeText}</span></h6>
+          <small class="${statusClass}">${record.formatted_time}</small>
+        </div>
+        <small class="text-muted time-ago-badge" 
+               data-bs-toggle="tooltip" 
+               data-bs-placement="left" 
+               data-bs-html="true"
+               title="${tooltipText.replace(/\n/g, '<br>')}">${record.time_ago}</small>
+      `;
+      
+      container.appendChild(item);
+    });
+    
+    // Initialize Bootstrap tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    
+  } catch (error) {
+    console.error('Error loading attendance feed:', error);
+    container.innerHTML = '<div class="text-center text-danger py-3"><small>Failed to load attendance feed</small></div>';
+  }
+}
 
-  attendanceData.forEach(person => {
-    const item = document.createElement("div");
-    item.classList.add("feed-item");
-    item.innerHTML = `
-      <img src="${person.image}" alt="${person.name}">
-      <div class="feed-info">
-        <h6>${person.name}</h6>
-        <small>Time in: ${person.time}</small>
-      </div>
-      <small class="text-muted">${person.ago}</small>
-    `;
-    container.appendChild(item);
-  });
+// Load attendance feed on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadAttendanceFeed();
+  loadLateToday();
+  
+  // Auto-refresh every 30 seconds
+  setInterval(loadAttendanceFeed, 30000);
+  setInterval(loadLateToday, 30000);
+});
+//-----------------------------------------------------------------------------------------------------------------------------------------------------//
+//late today
+async function loadLateToday() {
+  const container = document.querySelector(".late-list");
+  
+  if (!container) return;
+  
+  try {
+    const response = await fetch('get_late_today.php');
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to load late employees');
+    }
+    
+    const lateEmployees = result.data;
+    
+    // Clear container
+    container.innerHTML = '';
+    
+    if (lateEmployees.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted py-3"><small>No late employees today</small></div>';
+      return;
+    }
+    
+    // Populate late employees using the same template structure
+    lateEmployees.forEach(employee => {
+      const item = document.createElement("div");
+      item.classList.add("d-flex", "align-items-center", "border-bottom", "py-2");
+      
+      item.innerHTML = `
+        <img src="${employee.profile_photo}" class="profile-img me-3" alt="${employee.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
+        <div>
+          <h6 class="mb-0">${employee.full_name}</h6>
+          <small>${employee.position} - ${employee.time_in} (${employee.late_display})</small>
+        </div>
+      `;
+      
+      container.appendChild(item);
+    });
+    
+  } catch (error) {
+    console.error('Error loading late employees:', error);
+    container.innerHTML = '<div class="text-center text-danger py-3"><small>Failed to load late employees</small></div>';
+  }
+}
 //-----------------------------------------------------------------------------------------------------------------------------------------------------//
  
 

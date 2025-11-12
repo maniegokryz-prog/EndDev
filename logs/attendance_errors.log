@@ -28,3 +28,8 @@
   File "c:\inetpub\wwwroot\Face_Recognition_Attendance_System\faceid\attendance_logger.py", line 111, in log_attendance
     cursor.execute("""
 
+[2025-11-11 23:31:09] [ERROR] Context: log_attendance | Error: SQLite error: database is locked | Employee: MA22013612 | Exception: OperationalError: database is locked
+[2025-11-11 23:31:09] [ERROR] Stack trace:
+  File "c:\inetpub\wwwroot\EndDev\faceid\attendance_logger.py", line 111, in log_attendance
+    cursor.execute("""
+

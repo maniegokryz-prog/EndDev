@@ -248,7 +248,7 @@ class AttendanceLogger:
             # Get current day of week (0=Monday, 6=Sunday)
             day_of_week = log_datetime.weekday()
             
-            # Get employee's active schedule for today
+            # Get employee's active schedule for today (all periods for calculation purposes)
             cursor.execute("""
                 SELECT sp.start_time, sp.end_time, sp.period_name
                 FROM employee_schedules es
@@ -258,23 +258,27 @@ class AttendanceLogger:
                   AND sp.day_of_week = ?
                   AND sp.is_active = 1
                   AND (es.end_date IS NULL OR es.end_date >= ?)
-                ORDER BY es.effective_date DESC
-                LIMIT 1
+                ORDER BY CAST(sp.start_time AS TIME) ASC
             """, (employee_db_id, day_of_week, log_datetime.strftime('%Y-%m-%d')))
             
-            schedule = cursor.fetchone()
+            schedule_periods = cursor.fetchall()
             
             if close_conn:
                 conn.close()
             
             # If no schedule found, return generic message
-            if schedule is None:
+            if not schedule_periods:
                 if log_type == 'time_in':
                     return "Time In: No schedule assigned"
                 else:
                     return "Time Out: No schedule assigned"
             
-            start_time_str, end_time_str, period_name = schedule
+            # For time_in: use FIRST period start time (earliest start of the day)
+            # For time_out: use LAST period end time (latest end of the day)
+            if log_type == 'time_in':
+                start_time_str, end_time_str, period_name = schedule_periods[0]
+            else:
+                start_time_str, end_time_str, period_name = schedule_periods[-1]
             
             # Parse schedule times (format: HH:MM:SS)
             scheduled_time_str = start_time_str if log_type == 'time_in' else end_time_str
@@ -371,7 +375,7 @@ class AttendanceLogger:
                   AND sp.day_of_week = ?
                   AND sp.is_active = 1
                   AND (es.end_date IS NULL OR es.end_date >= ?)
-                ORDER BY sp.start_time ASC
+                ORDER BY CAST(sp.start_time AS TIME) ASC
             """, (employee_db_id, day_of_week, log_date))
             
             schedule_periods = cursor.fetchall()
@@ -381,7 +385,8 @@ class AttendanceLogger:
                 late_minutes = 0
                 
                 if schedule_periods:
-                    # Calculate late minutes based on first period start time
+                    # Calculate late minutes based on FIRST period start time
+                    # This is because lateness is measured from the start of the workday
                     first_period_start = schedule_periods[0][0]
                     scheduled_hour, scheduled_minute, scheduled_second = map(int, first_period_start.split(':'))
                     scheduled_datetime = log_datetime.replace(
@@ -394,6 +399,8 @@ class AttendanceLogger:
                     time_diff = (log_datetime - scheduled_datetime).total_seconds() / 60
                     if time_diff > 0:
                         late_minutes = int(time_diff)
+                    
+                    print(f"     🎯 First period start: {first_period_start}, Late: {late_minutes} min")
                 
                 if existing_record:
                     # Update existing record

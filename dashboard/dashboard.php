@@ -99,9 +99,19 @@
 
     <div class="col-xl-3 col-lg-4 col-md-4 mt-2 mt-md-0">
       <div class="attendance-feed shadow-sm p-3 bg-white rounded h-100">
-        <h6 class="fw-bold mb-3">Attendance Feed</h6>
+        <h6 class="fw-bold mb-3">
+          <i class="bi bi-clock-history me-2"></i>Attendance Feed
+          <span class="badge bg-secondary ms-2" id="feedCount" style="font-size: 0.65rem;">0</span>
+        </h6>
         <div id="attendanceList">
-
+          <!-- Loading state -->
+          <div class="text-center py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted small mt-2 mb-0">Loading attendance feed...</p>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -288,15 +298,7 @@
 
     <!-- Scrollable Area -->
     <div class="late-list">
-
-      <div class="d-flex align-items-center border-bottom py-2">
-        <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Nick Fury</h6>
-          <small>Director - 8:55 AM (Late 1h 25m)</small>
-        </div>
-      </div>
-
+      <!-- JavaScript will populate this dynamically -->
     </div>
   </div>
 </div>

@@ -64,3 +64,23 @@
 [2025-11-09 12:03:13] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 123 minutes
 [2025-11-09 12:03:25] [INFO] Daily Attendance time_out updated | Employee: James Alianza (MA22013612) | time_out=12:03:25 | scheduled_hours=180min (3.00h) | actual_hours=1min (0.02h) | status=complete | early_departure=56min | overtime=0
 [2025-11-09 12:03:25] [INFO] Employee: James Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 56 minutes
+[2025-11-11 23:14:46] [INFO] Daily Attendance time_in updated | Employee: Justine Alianza (MA22013612) | time_in=23:14:46 | late_minutes=14
+[2025-11-11 23:14:46] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 974 minutes
+[2025-11-11 23:17:10] [INFO] Daily Attendance time_out updated | Employee: Justine Alianza (MA22013612) | time_out=23:17:10 | scheduled_hours=-660min (-11.00h) | actual_hours=345min (5.75h) | status=complete | early_departure=0 | overtime=677min
+[2025-11-11 23:17:10] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Overtime by 677 minutes
+[2025-11-11 23:31:49] [INFO] Daily Attendance time_in updated | Employee: Justine Alianza (MA22013612) | time_in=23:31:49 | late_minutes=31
+[2025-11-11 23:31:49] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 991 minutes
+[2025-11-11 23:40:03] [INFO] Daily Attendance time_in updated | Employee: Justine Alianza (MA22013612) | time_in=23:40:03 | late_minutes=40
+[2025-11-11 23:40:03] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 40 minutes
+[2025-11-11 23:45:10] [INFO] Daily Attendance time_in updated | Employee: Justine Alianza (MA22013612) | time_in=23:45:10 | late_minutes=45
+[2025-11-11 23:45:10] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 45 minutes
+[2025-11-11 23:46:29] [INFO] Daily Attendance time_in updated | Employee: Justine Alianza (MA22013612) | time_in=23:46:29 | late_minutes=1006
+[2025-11-11 23:46:29] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 1006 minutes
+[2025-11-11 23:48:59] [INFO] Daily Attendance time_out only (no time_in) | Employee: Justine Alianza (MA22013612) | time_out=23:48:59 | status=incomplete
+[2025-11-11 23:48:59] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 10 minutes
+[2025-11-11 23:53:57] [INFO] Daily Attendance time_in updated | Employee: Justine Alianza (MA22013612) | time_in=23:53:57 | late_minutes=1013
+[2025-11-11 23:53:57] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_IN | Status: Time In: Late by 1013 minutes
+[2025-11-11 23:54:56] [INFO] Daily Attendance time_out updated | Employee: Justine Alianza (MA22013612) | time_out=23:54:56 | scheduled_hours=1019min (16.98h) | actual_hours=0min (0.00h) | status=complete | early_departure=4min | overtime=0
+[2025-11-11 23:54:56] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 4 minutes
+[2025-11-12 16:19:37] [INFO] Daily Attendance time_in updated | Employee: Mike Enriques (MA22013613) | time_in=16:19:37 | late_minutes=559
+[2025-11-12 16:19:37] [INFO] Employee: Mike Enriques (MA22013613) | Type: TIME_IN | Status: Time In: Late by 559 minutes
