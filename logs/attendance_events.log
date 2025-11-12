@@ -84,3 +84,5 @@
 [2025-11-11 23:54:56] [INFO] Employee: Justine Alianza (MA22013612) | Type: TIME_OUT | Status: Time Out: Undertime by 4 minutes
 [2025-11-12 16:19:37] [INFO] Daily Attendance time_in updated | Employee: Mike Enriques (MA22013613) | time_in=16:19:37 | late_minutes=559
 [2025-11-12 16:19:37] [INFO] Employee: Mike Enriques (MA22013613) | Type: TIME_IN | Status: Time In: Late by 559 minutes
+[2025-11-12 18:09:59] [INFO] Daily Attendance time_out updated | Employee: Mike Enriques (MA22013613) | time_out=18:09:59 | scheduled_hours=660min (11.00h) | actual_hours=0min (0.00h) | status=complete | early_departure=0 | overtime=9min
+[2025-11-12 18:09:59] [INFO] Employee: Mike Enriques (MA22013613) | Type: TIME_OUT | Status: Time Out: Overtime by 9 minutes

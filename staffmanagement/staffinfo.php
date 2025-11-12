@@ -548,10 +548,10 @@ $schedules = $viewer->getSchedules();
                 <div class="form-group">
                     <label>Profile Picture</label>
                     <img id="profile-preview" 
-                         src="<?php echo !empty($employee['profile_photo']) ? '../assets/profile_pic/' . htmlspecialchars($employee['profile_photo']) : '../assets/profile_pic/user.png'; ?>" 
+                         src="<?php echo $employee['profile_photo'] !== 'N/A' ? htmlspecialchars($employee['profile_photo']) : 'profile_pic/user.png'; ?>" 
                          alt="Profile Preview" 
                          style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block; margin-bottom: 10px;"
-                         onerror="this.src='../assets/profile_pic/user.png'">
+                         onerror="this.src='profile_pic/user.png'">
                     <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
                     <small>Select a new image to update the profile picture. Leave blank to keep the current one.</small>
                 </div>
@@ -610,7 +610,7 @@ $schedules = $viewer->getSchedules();
                 </div>
 
              <div class="form-actions">
-                    <a href="employee_detail.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="btn-cancel">Cancel</a>
+                    <a href="staffinfo.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="btn-cancel">Cancel</a>
                     <button type="submit" class="btn-save">Save Changes</button>
             </div>
             </form>
