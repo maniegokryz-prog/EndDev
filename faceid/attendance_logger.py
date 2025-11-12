@@ -403,21 +403,21 @@ class AttendanceLogger:
                     print(f"     🎯 First period start: {first_period_start}, Late: {late_minutes} min")
                 
                 if existing_record:
-                    # Update existing record
+                    # Update existing record (created at startup)
                     print(f"     📝 Updating time_in for existing record...")
                     cursor.execute("""
                         UPDATE daily_attendance
-                        SET time_in = ?, late_minutes = ?, calculated_at = ?
+                        SET time_in = ?, late_minutes = ?, status = 'incomplete', calculated_at = ?
                         WHERE id = ?
                     """, (log_time_only, late_minutes, log_time_str, existing_record[0]))
                     print(f"     ✓ Updated existing record")
                 else:
-                    # Create new record
-                    print(f"     📝 Creating new daily_attendance record...")
+                    # Fallback: Create new record if it doesn't exist (shouldn't happen after startup initialization)
+                    print(f"     ⚠️  No existing record found (unexpected), creating new...")
                     cursor.execute("""
                         INSERT INTO daily_attendance
-                        (employee_id, attendance_date, time_in, late_minutes, status, calculated_at)
-                        VALUES (?, ?, ?, ?, 'incomplete', ?)
+                        (employee_id, attendance_date, time_in, late_minutes, status, calculated_at, synced)
+                        VALUES (?, ?, ?, ?, 'incomplete', ?, 0)
                     """, (employee_db_id, log_date, log_time_only, late_minutes, log_time_str))
                     print(f"     ✓ Created new record")
                 
@@ -430,12 +430,12 @@ class AttendanceLogger:
                 print(f"     🕐 Processing TIME OUT...")
                 
                 if not existing_record:
-                    # Create record if doesn't exist (user timed out without timing in)
-                    print(f"     ⚠️  No time_in record found, creating time_out only record...")
+                    # Fallback: Create record if doesn't exist (shouldn't happen after startup initialization)
+                    print(f"     ⚠️  No existing record found (unexpected), creating time_out only record...")
                     cursor.execute("""
                         INSERT INTO daily_attendance
-                        (employee_id, attendance_date, time_out, status, calculated_at)
-                        VALUES (?, ?, ?, 'incomplete', ?)
+                        (employee_id, attendance_date, time_out, status, calculated_at, synced)
+                        VALUES (?, ?, ?, 'incomplete', ?, 0)
                     """, (employee_db_id, log_date, log_time_only, log_time_str))
                     print(f"     📊 Daily attendance created: time_out recorded (no time_in)")
                     log_daily_attendance_update(employee_code, employee_name, "time_out only (no time_in)", 
@@ -459,23 +459,9 @@ class AttendanceLogger:
                 print(f"     📅 Schedule periods found: {len(schedule_periods)}")
                 
                 if schedule_periods and time_in_str:
-                    # Calculate scheduled_hours: from first period start to last period end
+                    # Calculate scheduled_hours: sum of all period durations
                     # NOTE: Result is stored in MINUTES (field name is misleading)
-                    first_start = schedule_periods[0][0]
-                    last_end = schedule_periods[-1][1]
-                    
-                    # Parse times
-                    first_start_hour, first_start_minute, _ = map(int, first_start.split(':'))
-                    last_end_hour, last_end_minute, _ = map(int, last_end.split(':'))
-                    
-                    first_start_minutes = first_start_hour * 60 + first_start_minute
-                    last_end_minutes = last_end_hour * 60 + last_end_minute
-                    
-                    scheduled_hours = last_end_minutes - first_start_minutes  # Store as minutes
-                    print(f"     ⏰ Scheduled hours (first to last period): {scheduled_hours} min ({scheduled_hours/60.0:.2f}h)")
-                    
-                    # Calculate actual_hours from schedule periods (sum of all periods)
-                    total_period_minutes = 0
+                    scheduled_hours = 0
                     for period in schedule_periods:
                         start_time = period[0]
                         end_time = period[1]
@@ -484,11 +470,27 @@ class AttendanceLogger:
                         end_hour, end_minute, _ = map(int, end_time.split(':'))
                         
                         period_minutes = (end_hour * 60 + end_minute) - (start_hour * 60 + start_minute)
-                        total_period_minutes += period_minutes
+                        scheduled_hours += period_minutes
                     
-                    print(f"     ⏱️  Total period minutes (sum of all periods): {total_period_minutes}")
+                    print(f"     ⏰ Scheduled hours (sum of all periods): {scheduled_hours} min ({scheduled_hours/60.0:.2f}h)")
                     
-                    # Calculate early departure or overtime
+                    # Calculate actual_hours: time worked from time_in to time_out
+                    # NOTE: Result is stored in MINUTES (field name is misleading)
+                    # Parse time_in
+                    time_in_hour, time_in_minute, time_in_second = map(int, time_in_str.split(':'))
+                    time_in_datetime = log_datetime.replace(
+                        hour=time_in_hour,
+                        minute=time_in_minute,
+                        second=time_in_second,
+                        microsecond=0
+                    )
+                    
+                    # Calculate actual minutes worked
+                    actual_hours = int((log_datetime - time_in_datetime).total_seconds() / 60)
+                    print(f"     ⏱️  Actual hours (time_in to time_out): {actual_hours} min ({actual_hours/60.0:.2f}h)")
+                    
+                    # Calculate early departure or overtime based on last period end time
+                    last_end = schedule_periods[-1][1]
                     last_end_hour, last_end_minute, last_end_second = map(int, last_end.split(':'))
                     scheduled_end_datetime = log_datetime.replace(
                         hour=last_end_hour,
@@ -508,18 +510,7 @@ class AttendanceLogger:
                         overtime_minutes = int(time_diff)
                         print(f"     ⏰ Overtime detected: {overtime_minutes} minutes")
                     
-                    # Calculate actual_hours: total period minutes - late minutes - undertime minutes
-                    # NOTE: Result is stored in MINUTES (field name is misleading)
-                    # Formula: total_period_minutes - late_minutes - early_departure_minutes
-                    actual_minutes = total_period_minutes - late_minutes - early_departure_minutes
-                    
-                    # Ensure actual_hours is not negative
-                    if actual_minutes < 0:
-                        actual_minutes = 0
-                    
-                    actual_hours = actual_minutes  # Store as minutes (not hours)
-                    
-                    print(f"     📊 Calculation: {total_period_minutes} min - {late_minutes} min (late) - {early_departure_minutes} min (undertime) = {actual_minutes} min ({actual_minutes/60.0:.2f}h)")
+                    print(f"     📊 Scheduled: {scheduled_hours} min ({scheduled_hours/60.0:.2f}h), Actual: {actual_hours} min ({actual_hours/60.0:.2f}h)")
                 
                 # Determine status: complete if both time_in and time_out exist
                 status = 'complete' if time_in_str and log_time_str else 'incomplete'

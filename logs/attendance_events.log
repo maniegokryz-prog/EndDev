@@ -86,3 +86,7 @@
 [2025-11-12 16:19:37] [INFO] Employee: Mike Enriques (MA22013613) | Type: TIME_IN | Status: Time In: Late by 559 minutes
 [2025-11-12 18:09:59] [INFO] Daily Attendance time_out updated | Employee: Mike Enriques (MA22013613) | time_out=18:09:59 | scheduled_hours=660min (11.00h) | actual_hours=0min (0.00h) | status=complete | early_departure=0 | overtime=9min
 [2025-11-12 18:09:59] [INFO] Employee: Mike Enriques (MA22013613) | Type: TIME_OUT | Status: Time Out: Overtime by 9 minutes
+[2025-11-12 22:30:14] [INFO] Daily Attendance time_in updated | Employee: Mike Enriques (MA22013613) | time_in=22:30:14 | late_minutes=930
+[2025-11-12 22:30:14] [INFO] Employee: Mike Enriques (MA22013613) | Type: TIME_IN | Notes: Time In: Late by 930 minutes
+[2025-11-12 22:30:44] [INFO] Daily Attendance time_out updated | Employee: Mike Enriques (MA22013613) | time_out=22:30:44 | scheduled_hours=420min (7.00h) | actual_hours=0min (0.00h) | status=complete | early_departure=0 | overtime=270min
+[2025-11-12 22:30:44] [INFO] Employee: Mike Enriques (MA22013613) | Type: TIME_OUT | Notes: Time Out: Overtime by 270 minutes

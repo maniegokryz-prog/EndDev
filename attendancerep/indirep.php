@@ -149,7 +149,7 @@ $employee = $employees[$id] ?? null;
             <th>Date</th>
             <th>Time In</th>
             <th>Time Out</th>
-            <th>Vacant Hours</th>
+            <th>Scheduled Hours</th>
             <th>Total Hours</th>
             <th>Status</th>
           </tr>
@@ -161,7 +161,7 @@ $employee = $employees[$id] ?? null;
             <td>04:00 PM</td>
             <td>1.0 hr</td>
             <td>7.0 hrs</td>
-            <td><span class="badge bg-success">On-Time</span></td>
+            <td><span class="badge bg-success">Present</span></td>
           </tr>
           <tr>
             <td>January 11, 2025</td>
@@ -169,7 +169,7 @@ $employee = $employees[$id] ?? null;
             <td>05:00 PM</td>
             <td>1.0 hr</td>
             <td>7.0 hrs</td>
-            <td><span class="badge bg-danger">Late</span></td>
+            <td><span class="badge bg-danger">Absent</span></td>
           </tr>
         </tbody>
       </table>

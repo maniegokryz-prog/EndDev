@@ -87,6 +87,7 @@ def main():
     # Paths to scripts
     init_db_script = os.path.join(script_dir, "database", "init_local_db.py")
     embd_sync_script = os.path.join(script_dir, "embd_up.py")
+    daily_init_script = os.path.join(script_dir, "daily_attendance_initializer.py")
     kiosk_script = os.path.join(script_dir, "Kiosk_faceid.py")
     
     print("=" * 70, flush=True)
@@ -94,7 +95,7 @@ def main():
     print("=" * 70, flush=True)
     
     # Step 1: Initialize local database
-    print("\n[1/4] Initializing local SQLite database...")
+    print("\n[1/5] Initializing local SQLite database...")
     try:
         # Check if database exists
         db_path = os.path.join(script_dir, "database", "kiosk_local.db")
@@ -119,7 +120,7 @@ def main():
         print("  Continuing anyway...")
     
     # Step 2: Sync embeddings from database
-    print("\n[2/4] Syncing face embeddings from database...")
+    print("\n[2/5] Syncing face embeddings from database...")
     try:
         result = subprocess.run(
             [sys.executable, embd_sync_script, "once"],
@@ -146,8 +147,40 @@ def main():
         print(f"⚠️  Warning: Could not sync embeddings: {e}")
         print("  Continuing anyway...")
     
-    # Step 3: Start sync manager in background thread
-    print("\n[3/4] Starting background sync manager...")
+    # Step 3: Initialize daily attendance records
+    print("\n[3/5] Initializing daily attendance records...")
+    try:
+        result = subprocess.run(
+            [sys.executable, daily_init_script],
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            errors='replace',  # Replace invalid characters instead of failing
+            timeout=10  # 10 second timeout
+        )
+        
+        if result.returncode == 0:
+            print("✓ Daily attendance initialized")
+            # Show output
+            if result.stdout:
+                output_lines = result.stdout.strip().split('\n')
+                for line in output_lines:
+                    if line.strip() and not line.startswith('='):
+                        print(f"  {line}")
+        else:
+            print("⚠️  Warning: Daily attendance initialization failed")
+            if result.stderr:
+                print(f"  Error: {result.stderr}")
+            print("  Continuing anyway...")
+    except subprocess.TimeoutExpired:
+        print("⚠️  Warning: Daily attendance initialization timed out")
+        print("  Continuing anyway...")
+    except Exception as e:
+        print(f"⚠️  Warning: Could not initialize daily attendance: {e}")
+        print("  Continuing anyway...")
+    
+    # Step 4: Start sync manager in background thread
+    print("\n[4/5] Starting background sync manager...")
     print("  - Push: Attendance logs to MySQL (every 5 seconds)")
     print("  - Pull: Employee/schedule updates from MySQL (every 60 seconds)")
     
@@ -162,8 +195,8 @@ def main():
         print(f"⚠️  Warning: Could not start sync manager: {e}")
         print("  Attendance logs will be stored locally but not synced")
     
-    # Step 4: Launch Kiosk system
-    print("\n[4/4] Starting Kiosk Face Verification System...", flush=True)
+    # Step 5: Launch Kiosk system
+    print("\n[5/5] Starting Kiosk Face Verification System...", flush=True)
     print("=" * 70, flush=True)
     print("\n💡 TIP: Attendance is logged automatically when faces are verified", flush=True)
     print("💡 TIP: Sync runs in background - logs are sent to MySQL automatically", flush=True)
