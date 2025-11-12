@@ -212,8 +212,19 @@ function updateCalendarHighlight(dateStr) {
 }
 
 // Function to get current date (either selected or today)
+// Uses Philippine timezone (UTC+8) to match server
 function getCurrentDate() {
-  return selectedDate || new Date().toISOString().split('T')[0];
+  if (selectedDate) return selectedDate;
+  
+  // Get current date in Philippine timezone (UTC+8)
+  const now = new Date();
+  const phTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
+  
+  const year = phTime.getFullYear();
+  const month = String(phTime.getMonth() + 1).padStart(2, '0');
+  const day = String(phTime.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
 }
 
 // Function to load all dashboard data for a specific date

@@ -270,7 +270,7 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
       <h2 class="fw-bold display-4 text-dark">Attendance Reports</h2>
       <div class="d-flex align-items-center gap-3">
         <span class="text-muted">Today: <strong><?php echo $currentDate; ?></strong></span>
-        <a href="exporep.php" class="btn btn-warning">Batch Export</a>
+        <a href="exporep.php" class="btn btn-warning">Batch Export DTR</a>
       </div>
   </div>
 

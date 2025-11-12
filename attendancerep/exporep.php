@@ -77,7 +77,7 @@ $result = $conn->query($sql);
   <div class="container-fluid">
     <a href="attendancerep.php" class="btn btn-outline-secondary mb-3 mt-1">&larr; Back</a>
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold display-4 text-dark">Export Reports</h2>
+      <h2 class="fw-bold display-4 text-dark">Export DTR Reports</h2>
   </div>
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
  

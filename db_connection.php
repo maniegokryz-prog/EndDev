@@ -7,6 +7,9 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 
+// Set timezone to Philippine Time
+date_default_timezone_set('Asia/Manila');
+
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
@@ -33,6 +36,9 @@ if ($conn->connect_error) {
 
 // Set charset to UTF-8
 $conn->set_charset("utf8mb4");
+
+// Set MySQL timezone to match PHP timezone
+$conn->query("SET time_zone = '+08:00'");
 
 // Optional: You can uncomment this for debugging during development
 // echo "Connected successfully to database";
