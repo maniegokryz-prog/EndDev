@@ -69,28 +69,28 @@
         <div class="col-3"> 
           <div class="card text-center p-3 shadow-sm border-0 clickable-card">
             <h6 class="fw-semibold text-secondary mb-1">Present</h6>
-            <p class="display-6 fw-bold text-success mb-0">42%</p>
+            <p id="presentPercentage" class="display-6 fw-bold text-success mb-0">0%</p>
           </div>
         </div>
 
         <div class="col-3">
           <div class="card text-center p-3 shadow-sm border-0 clickable-card">
             <h6 class="fw-semibold text-secondary mb-1">Absent</h6>
-            <p class="display-6 fw-bold text-danger mb-0">5%</p>
+            <p id="absentPercentage" class="display-6 fw-bold text-danger mb-0">0%</p>
           </div>
         </div>
 
         <div class="col-3">
           <div class="card text-center p-3 shadow-sm border-0 clickable-card">
             <h6 class="fw-semibold text-secondary mb-1">On Time</h6>
-            <p class="display-6 fw-bold text-primary mb-0">30%</p>
+            <p id="onTimePercentage" class="display-6 fw-bold text-primary mb-0">0%</p>
           </div>
         </div>
 
         <div class="col-3">
           <div class="card text-center p-3 shadow-sm border-0 clickable-card">
             <h6 class="fw-semibold text-secondary mb-1">Late</h6>
-            <p class="display-6 fw-bold text-warning mb-0">12%</p>
+            <p id="latePercentage" class="display-6 fw-bold text-warning mb-0">0%</p>
           </div>
         </div>
         
@@ -99,10 +99,15 @@
 
     <div class="col-xl-3 col-lg-4 col-md-4 mt-2 mt-md-0">
       <div class="attendance-feed shadow-sm p-3 bg-white rounded h-100">
-        <h6 class="fw-bold mb-3">
-          <i class="bi bi-clock-history me-2"></i>Attendance Feed
-          <span class="badge bg-secondary ms-2" id="feedCount" style="font-size: 0.65rem;">0</span>
-        </h6>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold mb-0">
+            <i class="bi bi-clock-history me-2"></i>Attendance Feed
+            <span class="badge bg-secondary ms-2" id="feedCount" style="font-size: 0.65rem;">0</span>
+          </h6>
+          <button id="todayBtn" class="btn btn-sm btn-outline-primary" style="font-size: 0.75rem; padding: 2px 8px;">
+            <i class="bi bi-calendar-day me-1"></i>Today
+          </button>
+        </div>
         <div id="attendanceList">
           <!-- Loading state -->
           <div class="text-center py-3">
@@ -304,20 +309,12 @@
 </div>
 
 <div class="col-md-6 d-flex justify-content-left">
-  <div class="card on-leave-card">
+  <div class="card p-5 shadow-sm h-100 on-leave-card">
     <h6 class="fw-bold">On Leave</h6>
-    <div class="on-leave-list">
 
     <!-- Scrollable Area -->
-    <div class="late-list">
-
-      <div class="d-flex align-items-center border-bottom py-2">
-      <img src="pic.png" class="profile-img me-3">
-        <div>
-          <h6 class="mb-0">Natasha Romanoff</h6>
-          <small>Teacher - Sept 9 to Sept 16</small>
-        </div>
-      </div>
+    <div class="on-leave-list">
+      <!-- JavaScript will populate this dynamically -->
     </div>
   </div>
 </div>

@@ -555,6 +555,21 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
+/* Hover effect for calendar days */
+.calendar-day:hover {
+  background-color: #e0e0e0;
+  color: #103932;
+  text-decoration: none;
+}
+
+/* Selected date highlight */
+.calendar-day.selected {
+  background-color: #103932 !important;
+  color: #ffffff !important;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(16, 57, 50, 0.3);
+}
+
 /* Remove legacy highlight */
 .calendar-day.today {
   all: unset !important;

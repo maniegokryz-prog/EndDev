@@ -148,7 +148,9 @@ updateClock();
         link.addEventListener('click', function (e) {
           e.preventDefault();
           const dateStr = this.getAttribute('data-date');
-          window.location.href = `attendanceHistory.php?date=${encodeURIComponent(dateStr)}`;
+          // Set the selected date and reload dashboard data
+          setSelectedDate(dateStr);
+          loadDashboardData(dateStr);
         });
 
         td.appendChild(link);
@@ -172,8 +174,104 @@ updateClock();
   renderCalendar(viewDate);
 })();
 //-----------------------------------------------------------------------------------------------------------------------------------------------------//
+// Global variable to track selected date
+let selectedDate = null;
+
+// Function to set and display selected date
+function setSelectedDate(date) {
+  selectedDate = date;
+  
+  // Update visual indicator in calendar
+  updateCalendarHighlight(date);
+  
+  // Display selected date info
+  const dateObj = new Date(date);
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const formattedDate = dateObj.toLocaleDateString('en-US', options);
+  
+  console.log('Viewing attendance for:', formattedDate);
+  
+  // You can add a badge or notification here if needed
+  // For example, show a temporary toast or update a label
+}
+
+// Function to update calendar highlighting
+function updateCalendarHighlight(dateStr) {
+  // Remove previous highlights
+  document.querySelectorAll('.calendar-day.selected').forEach(el => {
+    el.classList.remove('selected');
+  });
+  
+  // Add highlight to selected date
+  const links = document.querySelectorAll('.calendar-day');
+  links.forEach(link => {
+    if (link.getAttribute('data-date') === dateStr) {
+      link.classList.add('selected');
+    }
+  });
+}
+
+// Function to get current date (either selected or today)
+function getCurrentDate() {
+  return selectedDate || new Date().toISOString().split('T')[0];
+}
+
+// Function to load all dashboard data for a specific date
+async function loadDashboardData(date = null) {
+  const targetDate = date || getCurrentDate();
+  await Promise.all([
+    loadSummary(targetDate),
+    loadAttendanceFeed(targetDate),
+    loadLateToday(targetDate),
+    loadOnLeave(targetDate)
+  ]);
+}
+
+// Function to load summary statistics (present, absent, on time, late percentages)
+async function loadSummary(date = null) {
+  const targetDate = date || getCurrentDate();
+  
+  try {
+    const response = await fetch(`get_attendance_records.php?type=summary&date=${targetDate}`);
+    const result = await response.json();
+    
+    if (result.success && result.summary) {
+      const summary = result.summary;
+      
+      // Update percentage cards
+      document.getElementById('presentPercentage').textContent = Math.round(summary.present.percentage) + '%';
+      document.getElementById('absentPercentage').textContent = Math.round(summary.absent.percentage) + '%';
+      document.getElementById('onTimePercentage').textContent = Math.round(summary.on_time.percentage) + '%';
+      document.getElementById('latePercentage').textContent = Math.round(summary.late.percentage) + '%';
+      
+      console.log('Summary loaded:', {
+        date: result.date,
+        total_scheduled: summary.total_scheduled,
+        present: `${summary.present.count} (${Math.round(summary.present.percentage)}%)`,
+        absent: `${summary.absent.count} (${Math.round(summary.absent.percentage)}%)`,
+        on_time: `${summary.on_time.count} (${Math.round(summary.on_time.percentage)}%)`,
+        late: `${summary.late.count} (${Math.round(summary.late.percentage)}%)`
+      });
+    } else {
+      console.error('Failed to load summary:', result.error || 'Unknown error');
+      // Set to 0% on error
+      document.getElementById('presentPercentage').textContent = '0%';
+      document.getElementById('absentPercentage').textContent = '0%';
+      document.getElementById('onTimePercentage').textContent = '0%';
+      document.getElementById('latePercentage').textContent = '0%';
+    }
+  } catch (error) {
+    console.error('Error loading summary:', error);
+    // Set to 0% on error
+    document.getElementById('presentPercentage').textContent = '0%';
+    document.getElementById('absentPercentage').textContent = '0%';
+    document.getElementById('onTimePercentage').textContent = '0%';
+    document.getElementById('latePercentage').textContent = '0%';
+  }
+}
+
 //attendancefeed
-async function loadAttendanceFeed() {
+async function loadAttendanceFeed(date = null) {
   const container = document.getElementById("attendanceList");
   const countBadge = document.getElementById("feedCount");
   
@@ -181,14 +279,16 @@ async function loadAttendanceFeed() {
   container.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
   
   try {
-    const response = await fetch('get_attendance_feed.php?limit=50');
+    const targetDate = date || getCurrentDate();
+    const url = `get_attendance_records.php?type=feed${targetDate ? '&date=' + targetDate : ''}`;
+    const response = await fetch(url);
     const result = await response.json();
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to load attendance feed');
     }
     
-    const attendanceData = result.data;
+    const attendanceData = result.feed.data;
     
     // Update count badge
     if (countBadge) {
@@ -255,29 +355,44 @@ async function loadAttendanceFeed() {
 
 // Load attendance feed on page load
 document.addEventListener('DOMContentLoaded', function() {
-  loadAttendanceFeed();
-  loadLateToday();
+  loadDashboardData();
   
-  // Auto-refresh every 30 seconds
-  setInterval(loadAttendanceFeed, 30000);
-  setInterval(loadLateToday, 30000);
+  // Today button functionality
+  const todayBtn = document.getElementById('todayBtn');
+  if (todayBtn) {
+    todayBtn.addEventListener('click', function() {
+      selectedDate = null; // Reset to today
+      updateCalendarHighlight(null); // Clear calendar selection
+      loadDashboardData();
+      console.log('Reset to today\'s data');
+    });
+  }
+  
+  // Auto-refresh every 30 seconds (only if viewing today's data)
+  setInterval(() => {
+    if (!selectedDate) {
+      loadDashboardData();
+    }
+  }, 30000);
 });
 //-----------------------------------------------------------------------------------------------------------------------------------------------------//
 //late today
-async function loadLateToday() {
+async function loadLateToday(date = null) {
   const container = document.querySelector(".late-list");
   
   if (!container) return;
   
   try {
-    const response = await fetch('get_late_today.php');
+    const targetDate = date || getCurrentDate();
+    const url = `get_attendance_records.php?type=late${targetDate ? '&date=' + targetDate : ''}`;
+    const response = await fetch(url);
     const result = await response.json();
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to load late employees');
     }
     
-    const lateEmployees = result.data;
+    const lateEmployees = result.late.data;
     
     // Clear container
     container.innerHTML = '';
@@ -309,8 +424,55 @@ async function loadLateToday() {
   }
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------//
+//on leave
+async function loadOnLeave(date = null) {
+  const container = document.querySelector(".on-leave-list");
+  
+  if (!container) return;
+  
+  try {
+    const targetDate = date || getCurrentDate();
+    const url = `get_attendance_records.php?type=on_leave${targetDate ? '&date=' + targetDate : ''}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to load employees on leave');
+    }
+    
+    const onLeaveEmployees = result.on_leave.data;
+    
+    // Clear container
+    container.innerHTML = '';
+    
+    if (onLeaveEmployees.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted py-3"><small>No employees on leave today</small></div>';
+      return;
+    }
+    
+    // Populate on leave employees using the same template structure
+    onLeaveEmployees.forEach(employee => {
+      const item = document.createElement("div");
+      item.classList.add("d-flex", "align-items-center", "border-bottom", "py-2");
+      
+      item.innerHTML = `
+        <img src="${employee.profile_photo}" class="profile-img me-3" alt="${employee.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
+        <div>
+          <h6 class="mb-0">${employee.full_name}</h6>
+          <small>${employee.position} - ${employee.date_range}</small>
+        </div>
+      `;
+      
+      container.appendChild(item);
+    });
+    
+  } catch (error) {
+    console.error('Error loading employees on leave:', error);
+    container.innerHTML = '<div class="text-center text-danger py-3"><small>Failed to load employees on leave</small></div>';
+  }
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------------//
  
-
 
 
 
