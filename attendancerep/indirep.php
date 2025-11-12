@@ -1,15 +1,227 @@
  <?php
-$employees = [
-  "MA20230001" => ["name" => "Justine Alianza", "role" => "Non-Teaching Staff", "image" => "pic.png"],
-  "MA20230002" => ["name" => "Krystian Maniego", "role" => "Admin", "image" => "pic.png"],
-  "MA20230003" => ["name" => "Lord Gabriel Castro", "role" => "Faculty Staff", "image" => "pic.png"],
-  "MA20230004" => ["name" => "John Adrian Mateo", "role" => "Non-Teaching Staff", "image" => "pic.png"],
-  "MA20230005" => ["name" => "Marvin De Leon", "role" => "Faculty Staff", "image" => "pic.png"],
-  "MA20230006" => ["name" => "Jilmer Cruz", "role" => "Admin Personnel", "image" => "pic.png"],
+require '../db_connection.php';
+
+class IndividualReportViewer {
+    private $db;
+    private $employee = null;
+    private $attendanceRecords = [];
+    private $errors = [];
+    
+    public function __construct($database) {
+        $this->db = $database;
+    }
+    
+    public function loadEmployee($employee_id) {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT id, employee_id, first_name, middle_name, last_name, 
+                       roles, department, profile_photo
+                FROM employees 
+                WHERE employee_id = ?
+            ");
+            
+            if (!$stmt) {
+                throw new Exception('Failed to prepare statement: ' . $this->db->error);
+            }
+            
+            $stmt->bind_param('s', $employee_id);
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to execute query: ' . $stmt->error);
+            }
+            
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            
+            if ($row) {
+                $nameParts = [];
+                if ($row['first_name']) $nameParts[] = $row['first_name'];
+                if ($row['middle_name']) $nameParts[] = $row['middle_name'];
+                if ($row['last_name']) $nameParts[] = $row['last_name'];
+                
+                $this->employee = [
+                    'db_id' => $row['id'],
+                    'employee_id' => $row['employee_id'],
+                    'name' => implode(' ', $nameParts),
+                    'role' => $row['roles'] ?? 'N/A',
+                    'department' => $row['department'] ?? 'N/A',
+                    'image' => $row['profile_photo'] ?? '../assets/profile_pic/user.png'
+                ];
+                return true;
+            }
+            
+            return false;
+            
+        } catch (Exception $e) {
+            $this->errors[] = "Error loading employee: " . $e->getMessage();
+            return false;
+        }
+    }
+    
+    public function loadAttendanceRecords($filters = []) {
+        if (!$this->employee) {
+            return false;
+        }
+        
+        try {
+            $query = "SELECT 
+                        da.id,
+                        da.employee_id,
+                        da.attendance_date,
+                        da.time_in,
+                        da.time_out,
+                        da.scheduled_hours,
+                        da.actual_hours,
+                        da.late_minutes,
+                        da.early_departure_minutes,
+                        da.overtime_minutes,
+                        da.status,
+                        da.notes
+                      FROM daily_attendance da
+                      WHERE da.employee_id = ?";
+            
+            $whereConditions = [];
+            $params = [$this->employee['db_id']];
+            $types = 'i';
+            
+            // Filter by month and year if provided
+            if (!empty($filters['month']) && !empty($filters['year'])) {
+                $whereConditions[] = "MONTH(da.attendance_date) = ? AND YEAR(da.attendance_date) = ?";
+                $params[] = $filters['month'];
+                $params[] = $filters['year'];
+                $types .= 'ii';
+            }
+            
+            if (!empty($whereConditions)) {
+                $query .= " AND " . implode(" AND ", $whereConditions);
+            }
+            
+            $query .= " ORDER BY da.attendance_date DESC";
+            
+            $stmt = $this->db->prepare($query);
+            if (!$stmt) {
+                throw new Exception('Failed to prepare statement: ' . $this->db->error);
+            }
+            
+            $stmt->bind_param($types, ...$params);
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to execute query: ' . $stmt->error);
+            }
+            
+            $result = $stmt->get_result();
+            
+            $this->attendanceRecords = [];
+            while ($row = $result->fetch_assoc()) {
+                $this->attendanceRecords[] = $this->processAttendanceRecord($row);
+            }
+            
+            $stmt->close();
+            return true;
+            
+        } catch (Exception $e) {
+            $this->errors[] = "Error loading attendance: " . $e->getMessage();
+            return false;
+        }
+    }
+    
+    private function processAttendanceRecord($record) {
+        // Convert minutes to hours (stored as minutes in database)
+        $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 2) : '---';
+        $actualHours = $record['actual_hours'] ? round($record['actual_hours'] / 60, 2) : '---';
+        
+        // Determine status badge
+        $statusInfo = $this->determineStatusBadge($record);
+        
+        return [
+            'id' => $record['id'],
+            'attendance_date' => $record['attendance_date'],
+            'time_in' => $record['time_in'] ? date('g:i A', strtotime($record['time_in'])) : '---',
+            'time_out' => $record['time_out'] ? date('g:i A', strtotime($record['time_out'])) : '---',
+            'scheduled_hours' => $scheduledHours,
+            'actual_hours' => $actualHours,
+            'late_minutes' => $record['late_minutes'] ?? 0,
+            'status' => $record['status'],
+            'status_display' => $statusInfo['display'],
+            'status_class' => $statusInfo['class'],
+            'notes' => $record['notes']
+        ];
+    }
+    
+    private function determineStatusBadge($record) {
+        $status = $record['status'];
+        
+        // Complete = Present (green)
+        if ($status === 'complete') {
+            return [
+                'display' => 'Present',
+                'class' => 'bg-success'
+            ];
+        }
+        
+        // Incomplete = Incomplete (orange/warning)
+        if ($status === 'incomplete') {
+            return [
+                'display' => 'Incomplete',
+                'class' => 'bg-warning text-dark'
+            ];
+        }
+        
+        // Absent = Absent (red)
+        if ($status === 'absent') {
+            return [
+                'display' => 'Absent',
+                'class' => 'bg-danger'
+            ];
+        }
+        
+        // Default fallback
+        return [
+            'display' => ucfirst($status),
+            'class' => 'bg-secondary'
+        ];
+    }
+    
+    public function getEmployee() {
+        return $this->employee;
+    }
+    
+    public function getAttendanceRecords() {
+        return $this->attendanceRecords;
+    }
+    
+    public function getErrors() {
+        return $this->errors;
+    }
+}
+
+// Initialize the viewer
+$viewer = new IndividualReportViewer($conn);
+
+// Get employee ID from URL
+$employee_id = $_GET['id'] ?? null;
+
+// Load employee data
+$employeeLoaded = false;
+if ($employee_id) {
+    $employeeLoaded = $viewer->loadEmployee($employee_id);
+}
+
+$employee = $viewer->getEmployee();
+
+// Process filters
+$filters = [
+    'month' => $_GET['month'] ?? null,
+    'year' => $_GET['year'] ?? null
 ];
 
-$id = $_GET['id'] ?? null;
-$employee = $employees[$id] ?? null;
+// Load attendance records if employee exists
+if ($employeeLoaded) {
+    $viewer->loadAttendanceRecords($filters);
+}
+
+$attendanceRecords = $viewer->getAttendanceRecords();
 ?>
 
 <!DOCTYPE html>
@@ -79,11 +291,11 @@ $employee = $employees[$id] ?? null;
       <img src="<?= $employee['image'] ?>" class="rounded-circle me-3" width="70" height="70" alt="Profile">
       <div>
         <h4 class="mb-1"><?= $employee['name'] ?></h4>
-        <small class="text-muted"><?= $id ?> | <?= $employee['role'] ?></small>
+        <small class="text-muted"><?= $employee['employee_id'] ?> | <?= $employee['role'] ?></small>
         
         <!-- ✅ SHOW PROFILE BUTTON -->
         <div class="mt-2">
-          <a a href="../staffmanagement/staffinfo.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm">
+          <a href="../staffmanagement/staffinfo.php?id=<?= $employee['employee_id'] ?>" class="btn btn-outline-primary btn-sm">
             Show Profile
           </a>
         </div>
@@ -150,27 +362,34 @@ $employee = $employees[$id] ?? null;
             <th>Time In</th>
             <th>Time Out</th>
             <th>Scheduled Hours</th>
-            <th>Total Hours</th>
+            <th>Actual Hours</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
+          <?php if (empty($attendanceRecords)): ?>
           <tr>
-            <td>January 10, 2025</td>
-            <td>08:00 AM</td>
-            <td>04:00 PM</td>
-            <td>1.0 hr</td>
-            <td>7.0 hrs</td>
-            <td><span class="badge bg-success">Present</span></td>
+            <td colspan="6" class="text-center py-4 text-muted">
+              <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+              <?php if (!$employee): ?>
+                No employee found with ID: <?php echo htmlspecialchars($employee_id ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?>
+              <?php else: ?>
+                No attendance records found for this employee
+              <?php endif; ?>
+            </td>
           </tr>
+          <?php else: ?>
+            <?php foreach ($attendanceRecords as $record): ?>
           <tr>
-            <td>January 11, 2025</td>
-            <td>09:00 AM</td>
-            <td>05:00 PM</td>
-            <td>1.0 hr</td>
-            <td>7.0 hrs</td>
-            <td><span class="badge bg-danger">Absent</span></td>
+            <td><?php echo date('F d, Y', strtotime($record['attendance_date'])); ?></td>
+            <td><?php echo $record['time_in']; ?></td>
+            <td><?php echo $record['time_out']; ?></td>
+            <td><?php echo $record['scheduled_hours'] === '---' ? '---' : number_format($record['scheduled_hours'], 2) . ' hrs'; ?></td>
+            <td><?php echo $record['actual_hours'] === '---' ? '---' : number_format($record['actual_hours'], 2) . ' hrs'; ?></td>
+            <td><span class="badge <?php echo $record['status_class']; ?>"><?php echo $record['status_display']; ?></span></td>
           </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
