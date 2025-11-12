@@ -530,7 +530,7 @@ class EmployeeProcessor{
         
         $this->logActivity('Face Embedding Generation Started', "Employee ID: $employeeId, DB ID: $dbEmployeeId");
         
-        // Path to Python script (now in root folder)
+        // Path to Python script in staffmanagement folder
         $scriptPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'generate_face_embeddings.py';
         
         if (!file_exists($scriptPath)) {
@@ -564,7 +564,7 @@ class EmployeeProcessor{
         $escapedDbPassword = escapeshellarg($dbPassword);
         $escapedDbName = escapeshellarg($dbName);
         
-        // Set working directory to project root
+        // Set working directory to staffmanagement folder (where script is located)
         $workingDir = dirname(__DIR__);
         $oldDir = getcwd();
         chdir($workingDir);
@@ -589,7 +589,9 @@ class EmployeeProcessor{
         } else {
             // Using System Python. We must set PYTHONPATH to find venv packages.
             $this->logActivity('Face Embedding Generation', "Using System Python. Setting PYTHONPATH.");
-            $venvPath = $workingDir . DIRECTORY_SEPARATOR . '.venv';
+            // Get project root (go up from staffmanagement to EndDev)
+            $projectRoot = dirname(dirname(__DIR__));
+            $venvPath = $projectRoot . DIRECTORY_SEPARATOR . '.venv';
             $venvSitePackages = $venvPath . DIRECTORY_SEPARATOR . 'Lib' . DIRECTORY_SEPARATOR . 'site-packages';
             
             // Your original command
@@ -630,11 +632,12 @@ class EmployeeProcessor{
          * * @return string|false - Path to Python executable or false if not found
          */
         
-        $projectRoot = dirname(__DIR__);
+        // Get the project root (EndDev folder) - go up from processes -> staffmanagement -> EndDev
+        $projectRoot = dirname(dirname(__DIR__));
         $this->logActivity('Python Detection Debug', "Project Root: $projectRoot");
 
         // --- START: ADDED VENV CHECK ---
-        // Prioritize the virtual environment's Python executable
+        // Prioritize the virtual environment's Python executable in project root
         $venvPaths = [
             // Windows venv (most likely)
             $projectRoot . DIRECTORY_SEPARATOR . '.venv' . DIRECTORY_SEPARATOR . 'Scripts' . DIRECTORY_SEPARATOR . 'python.exe',

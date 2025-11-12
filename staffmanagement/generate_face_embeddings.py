@@ -38,10 +38,10 @@ def initialize_auraface():
     """
     print("Initializing AuraFace model...")
     
-    # Get the directory where this script is located (now in root)
+    # Get the directory where this script is located (staffmanagement folder)
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    # Models are stored in faceid/models/auraface
-    auraface_local_dir = os.path.join(script_dir, "faceid", "models", "auraface")
+    # Models are stored in ../faceid/models/auraface (relative to staffmanagement)
+    auraface_local_dir = os.path.join(script_dir, "..", "faceid", "models", "auraface")
     
     try:
         # Download AuraFace model if not already present
@@ -51,11 +51,11 @@ def initialize_auraface():
         )
         
         # Initialize FaceAnalysis
-        # Root points to faceid folder where models are stored
+        # Root points to ../faceid folder where models are stored
         face_app = FaceAnalysis(
             name="auraface",
-            providers=['CUDAExecutionProvider', 'CPUExecutionProvider'],
-            root=os.path.join(script_dir, "faceid")
+            providers=['CPUExecutionProvider'],
+            root=os.path.join(script_dir, "..", "faceid")
         )
         face_app.prepare(ctx_id=0, det_size=(640, 640))
         print("AuraFace model ready (GPU mode).")
@@ -68,7 +68,7 @@ def initialize_auraface():
             face_app = FaceAnalysis(
                 name="auraface",
                 providers=['CPUExecutionProvider'],
-                root=os.path.join(script_dir, "faceid")
+                root=os.path.join(script_dir, "..", "faceid")
             )
             face_app.prepare(ctx_id=-1, det_size=(640, 640))
             print("AuraFace model ready (CPU mode).")
