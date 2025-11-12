@@ -187,6 +187,26 @@ class AttendanceReportViewer {
 // Initialize the viewer
 $viewer = new AttendanceReportViewer($conn);
 
+// Fetch all unique departments from employees table
+$departmentQuery = "SELECT DISTINCT department FROM employees WHERE department IS NOT NULL AND department != '' ORDER BY department ASC";
+$departmentResult = $conn->query($departmentQuery);
+$departments = [];
+if ($departmentResult) {
+    while ($row = $departmentResult->fetch_assoc()) {
+        $departments[] = $row['department'];
+    }
+}
+
+// Fetch all unique roles from employees table
+$roleQuery = "SELECT DISTINCT roles FROM employees WHERE roles IS NOT NULL AND roles != '' ORDER BY roles ASC";
+$roleResult = $conn->query($roleQuery);
+$roles = [];
+if ($roleResult) {
+    while ($row = $roleResult->fetch_assoc()) {
+        $roles[] = $row['roles'];
+    }
+}
+
 // Process filter parameters
 $filters = [
     'role' => $_GET['role'] ?? '',
@@ -250,7 +270,7 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
       <h2 class="fw-bold display-4 text-dark">Attendance Reports</h2>
       <div class="d-flex align-items-center gap-3">
         <span class="text-muted">Today: <strong><?php echo $currentDate; ?></strong></span>
-        <a href="exporep.php" class="btn btn-warning">Export</a>
+        <a href="exporep.php" class="btn btn-warning">Batch Export</a>
       </div>
   </div>
 
@@ -258,25 +278,28 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
     <div class="col-md-3">
       <select class="form-select" id="roleFilter">
         <option value="">All Roles</option>
-        <option value="Admin">Admin</option>
-        <option value="Faculty_Member">Faculty Member</option>
-        <option value="Non-Teaching_Personnel">Non-Teaching Personnel</option>
+        <?php foreach ($roles as $role): ?>
+          <option value="<?php echo htmlspecialchars($role, ENT_QUOTES, 'UTF-8'); ?>" 
+                  <?php echo (isset($filters['role']) && $filters['role'] === $role) ? 'selected' : ''; ?>>
+            <?php echo htmlspecialchars($role, ENT_QUOTES, 'UTF-8'); ?>
+          </option>
+        <?php endforeach; ?>
       </select>
     </div>
     <div class="col-md-5">
       <select class="form-select" id="deptFilter">
         <option value="">All Departments</option>
-        <option value="Information Systems">Information Systems</option>
-        <option value="Office Management">Office Management</option>
-        <option value="Accounting Information Systems">Accounting Information Systems</option>
-        <option value="Hotel and Restaurant Services">Hotel and Restaurant Services</option>
-        <option value="Registrar's Office">Registrar's Office</option>
-        <option value="Guidance and Counseling Office">Guidance and Counseling Office</option>
-        <option value="Bsom">Bsom</option>
+        <?php foreach ($departments as $department): ?>
+          <option value="<?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>" 
+                  <?php echo (isset($filters['department']) && $filters['department'] === $department) ? 'selected' : ''; ?>>
+            <?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>
+          </option>
+        <?php endforeach; ?>
       </select>
     </div>
     <div class="col-md-4">
-      <input type="text" id="searchBox" class="form-control" placeholder="Search by name or ID">
+      <input type="text" id="searchBox" class="form-control" placeholder="Search by name or ID" 
+             value="<?php echo htmlspecialchars($filters['search'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
     </div>
   </div>
 
