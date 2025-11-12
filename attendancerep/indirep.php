@@ -1,227 +1,108 @@
  <?php
-require '../db_connection.php';
+require_once '../db_connection.php';
 
-class IndividualReportViewer {
-    private $db;
-    private $employee = null;
-    private $attendanceRecords = [];
-    private $errors = [];
+$id = $_GET['id'] ?? null;
+$employee = null;
+$hireYear = date('Y'); // Default to current year
+
+if ($id) {
+    // Fetch employee data from database
+    $stmt = $conn->prepare("SELECT employee_id, first_name, middle_name, last_name, roles, hire_date, profile_photo FROM employees WHERE employee_id = ?");
+    $stmt->bind_param("s", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
     
-    public function __construct($database) {
-        $this->db = $database;
-    }
-    
-    public function loadEmployee($employee_id) {
-        try {
-            $stmt = $this->db->prepare("
-                SELECT id, employee_id, first_name, middle_name, last_name, 
-                       roles, department, profile_photo
-                FROM employees 
-                WHERE employee_id = ?
-            ");
-            
-            if (!$stmt) {
-                throw new Exception('Failed to prepare statement: ' . $this->db->error);
-            }
-            
-            $stmt->bind_param('s', $employee_id);
-            
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to execute query: ' . $stmt->error);
-            }
-            
-            $result = $stmt->get_result();
-            $row = $result->fetch_assoc();
-            $stmt->close();
-            
-            if ($row) {
-                $nameParts = [];
-                if ($row['first_name']) $nameParts[] = $row['first_name'];
-                if ($row['middle_name']) $nameParts[] = $row['middle_name'];
-                if ($row['last_name']) $nameParts[] = $row['last_name'];
-                
-                $this->employee = [
-                    'db_id' => $row['id'],
-                    'employee_id' => $row['employee_id'],
-                    'name' => implode(' ', $nameParts),
-                    'role' => $row['roles'] ?? 'N/A',
-                    'department' => $row['department'] ?? 'N/A',
-                    'image' => $row['profile_photo'] ?? '../assets/profile_pic/user.png'
-                ];
-                return true;
-            }
-            
-            return false;
-            
-        } catch (Exception $e) {
-            $this->errors[] = "Error loading employee: " . $e->getMessage();
-            return false;
-        }
-    }
-    
-    public function loadAttendanceRecords($filters = []) {
-        if (!$this->employee) {
-            return false;
-        }
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ?? '') . ' ' . $row['last_name']);
         
-        try {
-            $query = "SELECT 
-                        da.id,
-                        da.employee_id,
-                        da.attendance_date,
-                        da.time_in,
-                        da.time_out,
-                        da.scheduled_hours,
-                        da.actual_hours,
-                        da.late_minutes,
-                        da.early_departure_minutes,
-                        da.overtime_minutes,
-                        da.status,
-                        da.notes
-                      FROM daily_attendance da
-                      WHERE da.employee_id = ?";
-            
-            $whereConditions = [];
-            $params = [$this->employee['db_id']];
-            $types = 'i';
-            
-            // Filter by month and year if provided
-            if (!empty($filters['month']) && !empty($filters['year'])) {
-                $whereConditions[] = "MONTH(da.attendance_date) = ? AND YEAR(da.attendance_date) = ?";
-                $params[] = $filters['month'];
-                $params[] = $filters['year'];
-                $types .= 'ii';
-            }
-            
-            if (!empty($whereConditions)) {
-                $query .= " AND " . implode(" AND ", $whereConditions);
-            }
-            
-            $query .= " ORDER BY da.attendance_date DESC";
-            
-            $stmt = $this->db->prepare($query);
-            if (!$stmt) {
-                throw new Exception('Failed to prepare statement: ' . $this->db->error);
-            }
-            
-            $stmt->bind_param($types, ...$params);
-            
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to execute query: ' . $stmt->error);
-            }
-            
-            $result = $stmt->get_result();
-            
-            $this->attendanceRecords = [];
-            while ($row = $result->fetch_assoc()) {
-                $this->attendanceRecords[] = $this->processAttendanceRecord($row);
-            }
-            
-            $stmt->close();
-            return true;
-            
-        } catch (Exception $e) {
-            $this->errors[] = "Error loading attendance: " . $e->getMessage();
-            return false;
-        }
-    }
-    
-    private function processAttendanceRecord($record) {
-        // Convert minutes to hours (stored as minutes in database)
-        $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 2) : '---';
-        $actualHours = $record['actual_hours'] ? round($record['actual_hours'] / 60, 2) : '---';
-        
-        // Determine status badge
-        $statusInfo = $this->determineStatusBadge($record);
-        
-        return [
-            'id' => $record['id'],
-            'attendance_date' => $record['attendance_date'],
-            'time_in' => $record['time_in'] ? date('g:i A', strtotime($record['time_in'])) : '---',
-            'time_out' => $record['time_out'] ? date('g:i A', strtotime($record['time_out'])) : '---',
-            'scheduled_hours' => $scheduledHours,
-            'actual_hours' => $actualHours,
-            'late_minutes' => $record['late_minutes'] ?? 0,
-            'status' => $record['status'],
-            'status_display' => $statusInfo['display'],
-            'status_class' => $statusInfo['class'],
-            'notes' => $record['notes']
+        $employee = [
+            'name' => $fullName,
+            'role' => $row['roles'] ?? 'N/A',
+            'image' => $row['profile_photo'] ?? '../assets/profile_pic/user.png',
+            'hire_date' => $row['hire_date']
         ];
-    }
-    
-    private function determineStatusBadge($record) {
-        $status = $record['status'];
         
-        // Complete = Present (green)
-        if ($status === 'complete') {
-            return [
-                'display' => 'Present',
-                'class' => 'bg-success'
-            ];
+        // Get hire year for dynamic year dropdown
+        if (!empty($row['hire_date'])) {
+            $hireYear = date('Y', strtotime($row['hire_date']));
         }
-        
-        // Incomplete = Incomplete (orange/warning)
-        if ($status === 'incomplete') {
-            return [
-                'display' => 'Incomplete',
-                'class' => 'bg-warning text-dark'
-            ];
-        }
-        
-        // Absent = Absent (red)
-        if ($status === 'absent') {
-            return [
-                'display' => 'Absent',
-                'class' => 'bg-danger'
-            ];
-        }
-        
-        // Default fallback
-        return [
-            'display' => ucfirst($status),
-            'class' => 'bg-secondary'
-        ];
     }
-    
-    public function getEmployee() {
-        return $this->employee;
-    }
-    
-    public function getAttendanceRecords() {
-        return $this->attendanceRecords;
-    }
-    
-    public function getErrors() {
-        return $this->errors;
-    }
+    $stmt->close();
 }
 
-// Initialize the viewer
-$viewer = new IndividualReportViewer($conn);
-
-// Get employee ID from URL
-$employee_id = $_GET['id'] ?? null;
-
-// Load employee data
-$employeeLoaded = false;
-if ($employee_id) {
-    $employeeLoaded = $viewer->loadEmployee($employee_id);
+// Generate year options from hire year to current year
+$currentYear = date('Y');
+$yearOptions = [];
+for ($year = $hireYear; $year <= $currentYear; $year++) {
+    $yearOptions[] = $year;
 }
 
-$employee = $viewer->getEmployee();
-
-// Process filters
-$filters = [
-    'month' => $_GET['month'] ?? null,
-    'year' => $_GET['year'] ?? null
-];
-
-// Load attendance records if employee exists
-if ($employeeLoaded) {
-    $viewer->loadAttendanceRecords($filters);
+// Fetch attendance records
+$attendanceRecords = [];
+if ($id) {
+    // Get employee's internal ID
+    $stmt = $conn->prepare("SELECT id FROM employees WHERE employee_id = ?");
+    $stmt->bind_param("s", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $empRow = $result->fetch_assoc();
+        $employeeInternalId = $empRow['id'];
+        
+        // Build attendance query with filters
+        $query = "SELECT 
+                    attendance_date, 
+                    time_in, 
+                    time_out, 
+                    scheduled_hours, 
+                    actual_hours, 
+                    late_minutes,
+                    early_departure_minutes,
+                    overtime_minutes,
+                    status 
+                  FROM daily_attendance 
+                  WHERE employee_id = ?";
+        
+        $params = [$employeeInternalId];
+        $types = "i";
+        
+        // Apply filters from GET parameters
+        $filterMonth = $_GET['month'] ?? null;
+        $filterYear = $_GET['year'] ?? null;
+        $startDate = $_GET['start_date'] ?? null;
+        $endDate = $_GET['end_date'] ?? null;
+        
+        if ($startDate && $endDate) {
+            $query .= " AND attendance_date BETWEEN ? AND ?";
+            $params[] = $startDate;
+            $params[] = $endDate;
+            $types .= "ss";
+        } elseif ($filterMonth && $filterYear) {
+            $query .= " AND MONTH(attendance_date) = ? AND YEAR(attendance_date) = ?";
+            $params[] = $filterMonth;
+            $params[] = $filterYear;
+            $types .= "ii";
+        } elseif ($filterYear) {
+            $query .= " AND YEAR(attendance_date) = ?";
+            $params[] = $filterYear;
+            $types .= "i";
+        }
+        
+        $query .= " ORDER BY attendance_date DESC";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        while ($row = $result->fetch_assoc()) {
+            $attendanceRecords[] = $row;
+        }
+        $stmt->close();
+    }
 }
-
-$attendanceRecords = $viewer->getAttendanceRecords();
 ?>
 
 <!DOCTYPE html>
@@ -235,18 +116,18 @@ $attendanceRecords = $viewer->getAttendanceRecords();
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
- <!-- ✅ BOOTSTRAP 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
- <!-- Bootstrap Icons -->
+  
+  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- ✅ FONT AWESOME (official CDN – works on localhost) -->
+  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Daterangepicker CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
   <!-- Custom CSS -->
-<link rel="stylesheet" href="attendancerep.css">
+  <link rel="stylesheet" href="attendancerep.css">
 </head>
 
 <body>
@@ -291,11 +172,11 @@ $attendanceRecords = $viewer->getAttendanceRecords();
       <img src="<?= $employee['image'] ?>" class="rounded-circle me-3" width="70" height="70" alt="Profile">
       <div>
         <h4 class="mb-1"><?= $employee['name'] ?></h4>
-        <small class="text-muted"><?= $employee['employee_id'] ?> | <?= $employee['role'] ?></small>
+        <small class="text-muted"><?= $id ?> | <?= $employee['role'] ?></small>
         
         <!-- ✅ SHOW PROFILE BUTTON -->
         <div class="mt-2">
-          <a href="../staffmanagement/staffinfo.php?id=<?= $employee['employee_id'] ?>" class="btn btn-outline-primary btn-sm">
+          <a a href="../staffmanagement/staffinfo.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm">
             Show Profile
           </a>
         </div>
@@ -305,49 +186,67 @@ $attendanceRecords = $viewer->getAttendanceRecords();
 <?php endif; ?>
 
 
-    <div class="d-flex flex-wrap gap-2 mb-3">
+    <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
     <!-- Month -->
     <div class="dropdown">
-      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-        Select Month
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <span id="selectedMonth">Select Month</span>
       </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item month-option" href="#">January</a></li>
-        <li><a class="dropdown-item month-option" href="#">February</a></li>
-        <li><a class="dropdown-item month-option" href="#">March</a></li>
-        <li><a class="dropdown-item month-option" href="#">April</a></li>
-        <li><a class="dropdown-item month-option" href="#">May</a></li>
-        <li><a class="dropdown-item month-option" href="#">June</a></li>
-        <li><a class="dropdown-item month-option" href="#">July</a></li>
-        <li><a class="dropdown-item month-option" href="#">August</a></li>
-        <li><a class="dropdown-item month-option" href="#">September</a></li>
-        <li><a class="dropdown-item month-option" href="#">October</a></li>
-        <li><a class="dropdown-item month-option" href="#">November</a></li>
-        <li><a class="dropdown-item month-option" href="#">December</a></li>
+      <ul class="dropdown-menu" aria-labelledby="monthDropdown">
+        <li><a class="dropdown-item month-option" href="#" data-month="1">January</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="2">February</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="3">March</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="4">April</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="5">May</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="6">June</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="7">July</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="8">August</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="9">September</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="10">October</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="11">November</a></li>
+        <li><a class="dropdown-item month-option" href="#" data-month="12">December</a></li>
       </ul>
     </div>
 
     <!-- Year -->
     <div class="dropdown">
-      <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-        Select Year
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" id="yearDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <span id="selectedYear">Select Year</span>
       </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item year-option" href="#">2024</a></li>
-        <li><a class="dropdown-item year-option" href="#">2025</a></li>
-        <li><a class="dropdown-item year-option" href="#">2026</a></li>
+      <ul class="dropdown-menu" aria-labelledby="yearDropdown" id="yearDropdownMenu">
+        <?php foreach ($yearOptions as $year): ?>
+          <li><a class="dropdown-item year-option" href="#" data-year="<?= $year ?>"><?= $year ?></a></li>
+        <?php endforeach; ?>
       </ul>
     </div>
 
+    <!-- Date Range Picker -->
+    <div>
+      <input type="text" class="form-control" id="dateRangePicker" placeholder="Select Date Range" style="min-width: 250px;">
+    </div>
+
+    <!-- Filter Button -->
+    <button class="btn btn-primary" id="filterBtn">
+      <i class="bi bi-filter me-1"></i> Filter
+    </button>
+
+    <!-- Reset Button -->
+    <button class="btn btn-outline-secondary" id="resetBtn">
+      <i class="bi bi-arrow-clockwise me-1"></i> Reset
+    </button>
+
     <!-- Export -->
-    <div class="dropdown">
-      <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
-        Export
+    <div class="dropdown ms-auto">
+      <button class="btn btn-outline-success dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-download me-1"></i> Export
       </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item export-option" data-type="pdf" href="#">PDF</a></li>
-        <li><a class="dropdown-item export-option" data-type="excel" href="#">Excel</a></li>
-        <li><a class="dropdown-item export-option" data-type="csv" href="#">CSV</a></li>
+      <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+        <li><a class="dropdown-item export-option" href="#" data-type="excel">
+          <i class="bi bi-file-earmark-excel me-2"></i>Excel
+        </a></li>
+        <li><a class="dropdown-item export-option" href="#" data-type="pdf">
+          <i class="bi bi-file-earmark-pdf me-2"></i>PDF
+        </a></li>
       </ul>
     </div>
   </div>
@@ -362,33 +261,61 @@ $attendanceRecords = $viewer->getAttendanceRecords();
             <th>Time In</th>
             <th>Time Out</th>
             <th>Scheduled Hours</th>
-            <th>Actual Hours</th>
+            <th>Total Hours</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
-          <?php if (empty($attendanceRecords)): ?>
-          <tr>
-            <td colspan="6" class="text-center py-4 text-muted">
-              <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-              <?php if (!$employee): ?>
-                No employee found with ID: <?php echo htmlspecialchars($employee_id ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?>
-              <?php else: ?>
-                No attendance records found for this employee
-              <?php endif; ?>
-            </td>
-          </tr>
-          <?php else: ?>
+          <?php if (count($attendanceRecords) > 0): ?>
             <?php foreach ($attendanceRecords as $record): ?>
-          <tr>
-            <td><?php echo date('F d, Y', strtotime($record['attendance_date'])); ?></td>
-            <td><?php echo $record['time_in']; ?></td>
-            <td><?php echo $record['time_out']; ?></td>
-            <td><?php echo $record['scheduled_hours'] === '---' ? '---' : number_format($record['scheduled_hours'], 2) . ' hrs'; ?></td>
-            <td><?php echo $record['actual_hours'] === '---' ? '---' : number_format($record['actual_hours'], 2) . ' hrs'; ?></td>
-            <td><span class="badge <?php echo $record['status_class']; ?>"><?php echo $record['status_display']; ?></span></td>
-          </tr>
+              <?php
+                // Determine status and badge
+                $status = strtolower(trim($record['status']));
+                $badgeClass = 'bg-secondary';
+                $statusLabel = 'Unknown';
+                
+                if ($status === 'complete') {
+                    $badgeClass = 'bg-success';
+                    $statusLabel = 'Present';
+                } elseif ($status === 'incomplete') {
+                    $badgeClass = 'bg-warning text-dark';
+                    $statusLabel = 'Incomplete';
+                } elseif ($status === 'absent') {
+                    $badgeClass = 'bg-danger';
+                    $statusLabel = 'Absent';
+                }
+                
+                // Format date
+                $formattedDate = date('F d, Y', strtotime($record['attendance_date']));
+                
+                // Format time_in and time_out
+                $timeIn = $record['time_in'] ? date('h:i A', strtotime($record['time_in'])) : '-';
+                $timeOut = $record['time_out'] ? date('h:i A', strtotime($record['time_out'])) : '-';
+                
+                // Convert minutes to hours for display (scheduled_hours and actual_hours are stored in minutes)
+                $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 1) : '-';
+                $actualHours = $record['actual_hours'] ? round($record['actual_hours'] / 60, 1) : '-';
+                
+                // Add units
+                $scheduledHoursDisplay = is_numeric($scheduledHours) ? $scheduledHours . ' hrs' : $scheduledHours;
+                $actualHoursDisplay = is_numeric($actualHours) ? $actualHours . ' hrs' : $actualHours;
+              ?>
+              <tr>
+                <td><?= $formattedDate ?></td>
+                <td><?= $timeIn ?></td>
+                <td><?= $timeOut ?></td>
+                <td><?= $scheduledHoursDisplay ?></td>
+                <td><?= $actualHoursDisplay ?></td>
+                <td><span class="badge <?= $badgeClass ?>"><?= $statusLabel ?></span></td>
+              </tr>
             <?php endforeach; ?>
+          <?php else: ?>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                No attendance records found
+              </td>
+            </tr>
           <?php endif; ?>
         </tbody>
       </table>
@@ -407,7 +334,115 @@ $attendanceRecords = $viewer->getAttendanceRecords();
 
 
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+<!-- jQuery (required for daterangepicker) -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+
+<!-- Moment.js (required for daterangepicker) -->
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+
+<!-- Daterangepicker JS -->
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<!-- Bootstrap Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
- <script src="attendancerep.js"></script>
+
+<!-- Custom JS -->
+<script src="attendancerep.js"></script>
+
+<script>
+// Individual Report Page Specific Scripts
+$(document).ready(function() {
+  const employeeId = '<?= $id ?>';
+  let selectedMonth = null;
+  let selectedYear = null;
+  let selectedDateRange = null;
+
+  // Initialize Date Range Picker
+  $('#dateRangePicker').daterangepicker({
+    autoUpdateInput: false,
+    locale: {
+      cancelLabel: 'Clear',
+      format: 'YYYY-MM-DD'
+    }
+  });
+
+  // Update date range input when dates are selected
+  $('#dateRangePicker').on('apply.daterangepicker', function(ev, picker) {
+    $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+    selectedDateRange = {
+      start: picker.startDate.format('YYYY-MM-DD'),
+      end: picker.endDate.format('YYYY-MM-DD')
+    };
+  });
+
+  $('#dateRangePicker').on('cancel.daterangepicker', function(ev, picker) {
+    $(this).val('');
+    selectedDateRange = null;
+  });
+
+  // Month selection
+  $('.month-option').click(function(e) {
+    e.preventDefault();
+    selectedMonth = $(this).data('month');
+    $('#selectedMonth').text($(this).text());
+  });
+
+  // Year selection
+  $('.year-option').click(function(e) {
+    e.preventDefault();
+    selectedYear = $(this).data('year');
+    $('#selectedYear').text($(this).text());
+  });
+
+  // Filter button
+  $('#filterBtn').click(function() {
+    let params = new URLSearchParams();
+    params.append('id', employeeId);
+    
+    if (selectedMonth) {
+      params.append('month', selectedMonth);
+    }
+    if (selectedYear) {
+      params.append('year', selectedYear);
+    }
+    if (selectedDateRange) {
+      params.append('start_date', selectedDateRange.start);
+      params.append('end_date', selectedDateRange.end);
+    }
+    
+    // Reload page with filters
+    window.location.href = 'indirep.php?' + params.toString();
+  });
+
+  // Reset button
+  $('#resetBtn').click(function() {
+    window.location.href = 'indirep.php?id=' + employeeId;
+  });
+
+  // Export functionality
+  $('.export-option').click(function(e) {
+    e.preventDefault();
+    const exportType = $(this).data('type');
+    
+    let params = new URLSearchParams();
+    params.append('id', employeeId);
+    params.append('export', exportType);
+    
+    if (selectedMonth) {
+      params.append('month', selectedMonth);
+    }
+    if (selectedYear) {
+      params.append('year', selectedYear);
+    }
+    if (selectedDateRange) {
+      params.append('start_date', selectedDateRange.start);
+      params.append('end_date', selectedDateRange.end);
+    }
+    
+    // Redirect to export handler
+    window.location.href = 'export_individual.php?' + params.toString();
+  });
+});
+</script>
 </body>
 </html>

@@ -49,7 +49,7 @@ function renderStaffList() {
   if (staffData.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="4" class="text-center py-4 text-muted">
+        <td colspan="5" class="text-center py-4 text-muted">
           <i class="bi bi-inbox fs-1 d-block mb-2"></i>
           No employees found
         </td>
@@ -77,6 +77,7 @@ function renderStaffList() {
           </td>
           <td>${staff.role}</td>
           <td>${staff.department}</td>
+          <td>${staff.position || 'N/A'}</td>
           <td>
             <button 
               class="btn btn-outline-dark btn-sm d-flex flex-column align-items-center py-2 px-3 view-btn" 
@@ -96,7 +97,7 @@ function showError(message) {
   const tbody = document.getElementById("staffTable");
   tbody.innerHTML = `
     <tr>
-      <td colspan="4" class="text-center py-4 text-danger">
+      <td colspan="5" class="text-center py-4 text-danger">
         <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
         ${message}
       </td>

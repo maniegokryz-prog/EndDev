@@ -403,21 +403,21 @@ class AttendanceLogger:
                     print(f"     🎯 First period start: {first_period_start}, Late: {late_minutes} min")
                 
                 if existing_record:
-                    # Update existing record (created at startup)
+                    # Update existing record
                     print(f"     📝 Updating time_in for existing record...")
                     cursor.execute("""
                         UPDATE daily_attendance
-                        SET time_in = ?, late_minutes = ?, status = 'incomplete', calculated_at = ?
+                        SET time_in = ?, late_minutes = ?, calculated_at = ?
                         WHERE id = ?
                     """, (log_time_only, late_minutes, log_time_str, existing_record[0]))
                     print(f"     ✓ Updated existing record")
                 else:
-                    # Fallback: Create new record if it doesn't exist (shouldn't happen after startup initialization)
-                    print(f"     ⚠️  No existing record found (unexpected), creating new...")
+                    # Create new record
+                    print(f"     📝 Creating new daily_attendance record...")
                     cursor.execute("""
                         INSERT INTO daily_attendance
-                        (employee_id, attendance_date, time_in, late_minutes, status, calculated_at, synced)
-                        VALUES (?, ?, ?, ?, 'incomplete', ?, 0)
+                        (employee_id, attendance_date, time_in, late_minutes, status, calculated_at)
+                        VALUES (?, ?, ?, ?, 'incomplete', ?)
                     """, (employee_db_id, log_date, log_time_only, late_minutes, log_time_str))
                     print(f"     ✓ Created new record")
                 
@@ -430,12 +430,12 @@ class AttendanceLogger:
                 print(f"     🕐 Processing TIME OUT...")
                 
                 if not existing_record:
-                    # Fallback: Create record if doesn't exist (shouldn't happen after startup initialization)
-                    print(f"     ⚠️  No existing record found (unexpected), creating time_out only record...")
+                    # Create record if doesn't exist (user timed out without timing in)
+                    print(f"     ⚠️  No time_in record found, creating time_out only record...")
                     cursor.execute("""
                         INSERT INTO daily_attendance
-                        (employee_id, attendance_date, time_out, status, calculated_at, synced)
-                        VALUES (?, ?, ?, 'incomplete', ?, 0)
+                        (employee_id, attendance_date, time_out, status, calculated_at)
+                        VALUES (?, ?, ?, 'incomplete', ?)
                     """, (employee_db_id, log_date, log_time_only, log_time_str))
                     print(f"     📊 Daily attendance created: time_out recorded (no time_in)")
                     log_daily_attendance_update(employee_code, employee_name, "time_out only (no time_in)", 

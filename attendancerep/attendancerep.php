@@ -114,10 +114,8 @@ class AttendanceReportViewer {
         // Determine status display
         $statusInfo = $this->determineStatus($record);
         
-        // Convert minutes to hours (values stored as minutes in database)
-        // scheduled_hours and actual_hours are stored as MINUTES despite the field name
-        $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 2) : 0;
-        $actualHours = $record['actual_hours'] ? round($record['actual_hours'] / 60, 2) : 0;
+        // Calculate vacant hours (break time converted to hours)
+        $vacantHours = $record['break_time_minutes'] ? round($record['break_time_minutes'] / 60, 1) : 0;
         
         return [
             'id' => $record['id'],
@@ -129,8 +127,9 @@ class AttendanceReportViewer {
             'attendance_date' => $record['attendance_date'],
             'time_in' => $record['time_in'] ? date('g:i A', strtotime($record['time_in'])) : 'N/A',
             'time_out' => $record['time_out'] ? date('g:i A', strtotime($record['time_out'])) : 'N/A',
-            'scheduled_hours' => $scheduledHours,
-            'actual_hours' => $actualHours,
+            'vacant_hours' => $vacantHours,
+            'actual_hours' => $record['actual_hours'] ?? 0,
+            'scheduled_hours' => $record['scheduled_hours'] ?? 0,
             'late_minutes' => $record['late_minutes'] ?? 0,
             'status' => $record['status'],
             'status_display' => $statusInfo['display'],
@@ -323,8 +322,8 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
           <td><?php echo date('Y-m-d', strtotime($record['attendance_date'])); ?></td>
           <td><?php echo $record['time_in']; ?></td>
           <td><?php echo $record['time_out']; ?></td>
-          <td><?php echo number_format($record['scheduled_hours'], 2); ?> hrs</td>
-          <td><?php echo number_format($record['actual_hours'], 2); ?> hrs</td>
+          <td><?php echo number_format($record['vacant_hours'], 1); ?> hr</td>
+          <td><?php echo number_format($record['actual_hours'], 1); ?> hrs</td>
           <td><span class="status-dot <?php echo $record['status_class']; ?>"></span> <?php echo $record['status_display']; ?></td>
         </tr>
           <?php endforeach; ?>

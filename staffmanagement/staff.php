@@ -310,6 +310,7 @@ $roles = $viewer->getDistinctRoles();
                 <th>Name</th>
                 <th>Role</th>
                 <th>Department</th>
+                <th>Position</th>
                 <th>View Profile</th>
               </tr>
             </thead>
