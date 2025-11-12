@@ -323,14 +323,17 @@ $schedules = $viewer->getSchedules();
   <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Bootstrap CSS (Single version - 5.3.3) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap CSS (Local - Works Offline) -->
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Bootstrap Icons (Local - Works Offline) -->
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
   
-  <!-- FullCalendar CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+  <!-- FullCalendar CSS (included in JS bundle) -->
+  <!-- Note: FullCalendar's index.global.min.js includes all CSS -->
+
+  <!-- Chart.js for Performance Metrics (Local - Works Offline) -->
+  <script src="../assets/vendor/chartjs/chart.umd.min.js"></script>
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="staff.css">
@@ -430,8 +433,33 @@ $schedules = $viewer->getSchedules();
     .add-schedule-btn:hover {
         background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
         transform: translateY(-2px);
+    }
 
-    }       
+    /* Performance Metrics Styling */
+    .metric-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .metric-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .metric-box canvas {
+        max-width: 120px;
+        max-height: 120px;
+    }
+
+    .metrics-card .card-body {
+        min-height: 250px;
+    }
     </style>
 </head>
 
@@ -1128,52 +1156,201 @@ $schedules = $viewer->getSchedules();
     <strong>Performance Metrics</strong>
     <div class="d-flex gap-2 mt-2 mt-sm-0">
       <select class="form-select form-select-sm w-auto" id="selectMonth">
-        <option>September</option>
-        <option>October</option>
+        <option value="">All Months</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11" <?= date('n') == 11 ? 'selected' : '' ?>>November</option>
+        <option value="12">December</option>
       </select>
       <select class="form-select form-select-sm w-auto" id="selectYear">
-        <option>2024</option>
-        <option selected>2025</option>
+        <?php
+          $currentYear = date('Y');
+          $hireYear = !empty($employee['hire_date']) ? date('Y', strtotime($employee['hire_date'])) : $currentYear;
+          for ($y = $hireYear; $y <= $currentYear; $y++) {
+            $selected = $y == $currentYear ? 'selected' : '';
+            echo "<option value='$y' $selected>$y</option>";
+          }
+        ?>
       </select>
     </div>
   </div>
 
   <div class="card-body">
-    <div class="row text-center gx-3 gy-3">
+    <div id="metricsLoading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading performance metrics...</p>
+    </div>
+    
+    <div id="metricsContent" class="row text-center gx-3 gy-3" style="display: none;">
       <div class="col-6 col-md-3">
         <div class="metric-box p-3">
-          <canvas id="chartPresent"></canvas>
+          <canvas id="chartPresent" width="150" height="150"></canvas>
           <div class="mt-2 fw-semibold">Present</div>
-          <div class="text-muted small" id="presentValue"></div>
+          <div class="text-muted small" id="presentValue">0%</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="presentCount">0 days</div>
         </div>
       </div>
 
       <div class="col-6 col-md-3">
         <div class="metric-box p-3">
-          <canvas id="chartAbsent"></canvas>
+          <canvas id="chartAbsent" width="150" height="150"></canvas>
           <div class="mt-2 fw-semibold">Absent</div>
-          <div class="text-muted small" id="absentValue"></div>
+          <div class="text-muted small" id="absentValue">0%</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="absentCount">0 days</div>
         </div>
       </div>
 
       <div class="col-6 col-md-3">
         <div class="metric-box p-3">
-          <canvas id="chartOntime"></canvas>
+          <canvas id="chartOntime" width="150" height="150"></canvas>
           <div class="mt-2 fw-semibold">On Time</div>
-          <div class="text-muted small" id="ontimeValue"></div>
+          <div class="text-muted small" id="ontimeValue">0%</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="ontimeCount">0 days</div>
         </div>
       </div>
 
       <div class="col-6 col-md-3">
         <div class="metric-box p-3">
-          <canvas id="chartLate"></canvas>
+          <canvas id="chartLate" width="150" height="150"></canvas>
           <div class="mt-2 fw-semibold">Late</div>
-          <div class="text-muted small" id="lateValue"></div>
+          <div class="text-muted small" id="lateValue">0%</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="lateCount">0 days</div>
         </div>
       </div>
     </div>
+    
+    <div id="metricsError" class="text-center py-4 text-danger" style="display: none;">
+      <i class="bi bi-exclamation-triangle fs-1"></i>
+      <p class="mt-2">Error loading metrics. Please try again.</p>
+    </div>
   </div>
 </div>
+
+<script>
+// Performance Metrics Chart Implementation
+const employeeId = '<?= $employee_id ?>';
+let metricsCharts = {
+  present: null,
+  absent: null,
+  ontime: null,
+  late: null
+};
+
+// Create donut chart
+function createDonutChart(canvasId, percentage, color) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return null;
+  
+  // Destroy existing chart if it exists
+  if (metricsCharts[canvasId.replace('chart', '').toLowerCase()]) {
+    metricsCharts[canvasId.replace('chart', '').toLowerCase()].destroy();
+  }
+  
+  const chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [percentage, 100 - percentage],
+        backgroundColor: [color, '#e9ecef'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '75%',
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          enabled: false
+        }
+      }
+    }
+  });
+  
+  return chart;
+}
+
+// Fetch and display metrics
+async function loadPerformanceMetrics() {
+  const month = document.getElementById('selectMonth').value;
+  const year = document.getElementById('selectYear').value;
+  
+  // Show loading
+  document.getElementById('metricsLoading').style.display = 'block';
+  document.getElementById('metricsContent').style.display = 'none';
+  document.getElementById('metricsError').style.display = 'none';
+  
+  try {
+    const params = new URLSearchParams({
+      employee_id: employeeId,
+      year: year
+    });
+    
+    if (month) {
+      params.append('month', month);
+    }
+    
+    const response = await fetch(`get_performance_metrics.php?${params.toString()}`);
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load metrics');
+    }
+    
+    // Update charts and values
+    const metrics = data.metrics;
+    
+    // Present (Green)
+    metricsCharts.present = createDonutChart('chartPresent', metrics.present.percentage, '#28a745');
+    document.getElementById('presentValue').textContent = metrics.present.percentage + '%';
+    document.getElementById('presentCount').textContent = metrics.present.count + ' days';
+    
+    // Absent (Red)
+    metricsCharts.absent = createDonutChart('chartAbsent', metrics.absent.percentage, '#dc3545');
+    document.getElementById('absentValue').textContent = metrics.absent.percentage + '%';
+    document.getElementById('absentCount').textContent = metrics.absent.count + ' days';
+    
+    // On Time (Blue)
+    metricsCharts.ontime = createDonutChart('chartOntime', metrics.onTime.percentage, '#0d6efd');
+    document.getElementById('ontimeValue').textContent = metrics.onTime.percentage + '%';
+    document.getElementById('ontimeCount').textContent = metrics.onTime.count + ' days';
+    
+    // Late (Orange)
+    metricsCharts.late = createDonutChart('chartLate', metrics.late.percentage, '#fd7e14');
+    document.getElementById('lateValue').textContent = metrics.late.percentage + '%';
+    document.getElementById('lateCount').textContent = metrics.late.count + ' days';
+    
+    // Show content
+    document.getElementById('metricsLoading').style.display = 'none';
+    document.getElementById('metricsContent').style.display = 'flex';
+    
+  } catch (error) {
+    console.error('Error loading metrics:', error);
+    document.getElementById('metricsLoading').style.display = 'none';
+    document.getElementById('metricsError').style.display = 'block';
+  }
+}
+
+// Event listeners for month/year change
+document.getElementById('selectMonth').addEventListener('change', loadPerformanceMetrics);
+document.getElementById('selectYear').addEventListener('change', loadPerformanceMetrics);
+
+// Load metrics on page load
+document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
+</script>
 
 <!-- SCHEDULE SECTION -->
 <div class="card mb-3 schedule-card">
@@ -1607,8 +1784,8 @@ $schedules = $viewer->getSchedules();
 </div>
 
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-<!-- Bootstrap JS (Single Load) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JS (Local - Works Offline) -->
+<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <!-- Custom Scripts -->
 <script src="staff.js"></script>
