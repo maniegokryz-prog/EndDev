@@ -836,7 +836,7 @@ def run_verification():
 
     # Create fullscreen window
     window_name = 'Real-Time Face Verification'
-    cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
     cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     print("\n--- Verification System Active ---")

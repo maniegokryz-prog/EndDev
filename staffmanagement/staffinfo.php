@@ -1123,7 +1123,7 @@ $schedules = $viewer->getSchedules();
 
           <div class="d-flex justify-content-between align-items-center mb-2">
             <div><small class="text-muted">Daily Time Record</small></div>
-            <a href="../attendancerep/indirep.php?id=MA20230001" class="small">See more...</a>
+            <a href="../attendancerep/indirep.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="small">See more...</a>
           </div>
 
           <div class="dtr-list">
@@ -1812,6 +1812,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
         const editScheduleModal = document.getElementById('editScheduleModal');
         if (editScheduleModal) {
             editScheduleModal.addEventListener('shown.bs.modal', function () {
+
                 console.log('Edit schedule modal opened, initializing calendar...');
                 // The initializeCalendar function from edit_employee.js should be available
                 if (typeof initializeCalendar === 'function') {

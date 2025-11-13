@@ -357,13 +357,45 @@ $(document).ready(function() {
   let selectedYear = null;
   let selectedDateRange = null;
 
+  // Get URL parameters and restore filter state
+  const urlParams = new URLSearchParams(window.location.search);
+  const monthParam = urlParams.get('month');
+  const yearParam = urlParams.get('year');
+  const startDateParam = urlParams.get('start_date');
+  const endDateParam = urlParams.get('end_date');
+
+  // Restore month filter if present
+  if (monthParam) {
+    selectedMonth = monthParam;
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+    $('#selectedMonth').text(monthNames[parseInt(monthParam) - 1]);
+  }
+
+  // Restore year filter if present
+  if (yearParam) {
+    selectedYear = yearParam;
+    $('#selectedYear').text(yearParam);
+  }
+
+  // Restore date range filter if present
+  if (startDateParam && endDateParam) {
+    selectedDateRange = {
+      start: startDateParam,
+      end: endDateParam
+    };
+    $('#dateRangePicker').val(startDateParam + ' to ' + endDateParam);
+  }
+
   // Initialize Date Range Picker
   $('#dateRangePicker').daterangepicker({
     autoUpdateInput: false,
     locale: {
       cancelLabel: 'Clear',
       format: 'YYYY-MM-DD'
-    }
+    },
+    startDate: startDateParam || moment(),
+    endDate: endDateParam || moment()
   });
 
   // Update date range input when dates are selected
