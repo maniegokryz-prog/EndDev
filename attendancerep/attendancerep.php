@@ -330,7 +330,7 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
         <tr data-id="<?php echo $record['employee_id']; ?>">
           <td>
             <div class="d-flex align-items-center">
-              <img src="<?php echo $record['profile_photo']; ?>" 
+              <img src="<?php echo '../' . $record['profile_photo']; ?>" 
                    onerror="this.src='../assets/profile_pic/user.png';" 
                    class="employee-img rounded-circle me-2" 
                    width="40" 

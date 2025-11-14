@@ -63,7 +63,7 @@ function renderStaffList() {
         <tr>
           <td>
             <div class="d-flex align-items-center">
-              <img src="${staff.profile_photo}" 
+              <img src="../${staff.profile_photo}" 
                    onerror="this.src='../assets/profile_pic/user.png';" 
                    class="rounded-circle me-3" 
                    width="40" 

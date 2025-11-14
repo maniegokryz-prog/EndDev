@@ -527,7 +527,7 @@ $schedules = $viewer->getSchedules();
                 }
             }
           ?>
-          <img src="<?php echo $employee['profile_photo']; ?>" class="profile-img" alt="Profile Picture" onerror="this.src='../assets/profile_pic/user.png'">
+          <img src="<?php echo '../' . $employee['profile_photo']; ?>" class="profile-img" alt="Profile Picture" onerror="this.src='../assets/profile_pic/user.png'">
         </div>
 
           <div class="text-center text-lg-start ms-lg-5">
