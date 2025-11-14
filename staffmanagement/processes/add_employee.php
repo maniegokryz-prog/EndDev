@@ -457,15 +457,13 @@ class EmployeeProcessor{
 
     private function sendSuccessResponse($data) {
         // Log to console/system log instead of displaying JSON
-        header('Location: ../showRecord.php');
         error_log("Employee Addition Success: " . $data['message'] . " - Employee ID: " . ($data['employee_id'] ?? 'Unknown'));
-
-        // If AJAX, return HTML that forces redirect
-        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-            echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=../showRecord.php"><script>window.location.href = "../showRecord.php";</script></head><body></body></html>';
-            exit;
-        }
-        // Otherwise, redirect for normal form POST
+        
+        // Store success message in session
+        $_SESSION['success_message'] = $data['message'];
+        
+        // Redirect to staff management page
+        header('Location: ../staff.php');
         exit;
     }
 
