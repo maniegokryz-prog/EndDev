@@ -49,7 +49,11 @@ function renderStaffList() {
   if (staffData.length === 0) {
     tbody.innerHTML = `
       <tr>
+<<<<<<< HEAD
         <td colspan="4" class="text-center py-4 text-muted">
+=======
+        <td colspan="5" class="text-center py-4 text-muted">
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           <i class="bi bi-inbox fs-1 d-block mb-2"></i>
           No employees found
         </td>
@@ -77,11 +81,19 @@ function renderStaffList() {
           </td>
           <td>${staff.role}</td>
           <td>${staff.department}</td>
+<<<<<<< HEAD
+=======
+          <td>${staff.position || 'N/A'}</td>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           <td>
             <button 
               class="btn btn-outline-dark btn-sm d-flex flex-column align-items-center py-2 px-3 view-btn" 
               data-id="${staff.employee_id}">
+<<<<<<< HEAD
               <i class="fas fa-user fa-lg mb-1"></i>
+=======
+              <i class="bi bi-person-circle fs-5 mb-1"></i>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
               <span class="small fw-semibold">View</span>
             </button>
           </td>
@@ -96,7 +108,11 @@ function showError(message) {
   const tbody = document.getElementById("staffTable");
   tbody.innerHTML = `
     <tr>
+<<<<<<< HEAD
       <td colspan="4" class="text-center py-4 text-danger">
+=======
+      <td colspan="5" class="text-center py-4 text-danger">
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
         ${message}
       </td>

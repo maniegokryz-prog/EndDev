@@ -456,6 +456,7 @@ class EmployeeProcessor{
     }
 
     private function sendSuccessResponse($data) {
+<<<<<<< HEAD
         // Log to console/system log instead of displaying JSON
         header('Location: ../showRecord.php');
         error_log("Employee Addition Success: " . $data['message'] . " - Employee ID: " . ($data['employee_id'] ?? 'Unknown'));
@@ -466,6 +467,32 @@ class EmployeeProcessor{
             exit;
         }
         // Otherwise, redirect for normal form POST
+=======
+        // Store success message in session
+        $_SESSION['success_message'] = $data['message'];
+        
+        // Log to file (not to output)
+        $log_dir = dirname(__DIR__) . '/logs/';
+        if (!file_exists($log_dir)) {
+            mkdir($log_dir, 0755, true);
+        }
+        $log_entry = "[" . date('Y-m-d H:i:s') . "] Employee Addition Success: " . $data['message'] . " - Employee ID: " . ($data['employee_id'] ?? 'Unknown') . PHP_EOL;
+        file_put_contents($log_dir . 'system.log', $log_entry, FILE_APPEND | LOCK_EX);
+        
+        // Use JavaScript redirect to avoid header issues
+        echo '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script>
+        window.location.href = "../staff.php";
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
+</html>';
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         exit;
     }
 
@@ -530,7 +557,11 @@ class EmployeeProcessor{
         
         $this->logActivity('Face Embedding Generation Started', "Employee ID: $employeeId, DB ID: $dbEmployeeId");
         
+<<<<<<< HEAD
         // Path to Python script (now in root folder)
+=======
+        // Path to Python script in staffmanagement folder
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         $scriptPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'generate_face_embeddings.py';
         
         if (!file_exists($scriptPath)) {
@@ -564,7 +595,11 @@ class EmployeeProcessor{
         $escapedDbPassword = escapeshellarg($dbPassword);
         $escapedDbName = escapeshellarg($dbName);
         
+<<<<<<< HEAD
         // Set working directory to project root
+=======
+        // Set working directory to staffmanagement folder (where script is located)
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         $workingDir = dirname(__DIR__);
         $oldDir = getcwd();
         chdir($workingDir);
@@ -589,7 +624,13 @@ class EmployeeProcessor{
         } else {
             // Using System Python. We must set PYTHONPATH to find venv packages.
             $this->logActivity('Face Embedding Generation', "Using System Python. Setting PYTHONPATH.");
+<<<<<<< HEAD
             $venvPath = $workingDir . DIRECTORY_SEPARATOR . '.venv';
+=======
+            // Get project root (go up from staffmanagement to EndDev)
+            $projectRoot = dirname(dirname(__DIR__));
+            $venvPath = $projectRoot . DIRECTORY_SEPARATOR . '.venv';
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             $venvSitePackages = $venvPath . DIRECTORY_SEPARATOR . 'Lib' . DIRECTORY_SEPARATOR . 'site-packages';
             
             // Your original command
@@ -630,11 +671,20 @@ class EmployeeProcessor{
          * * @return string|false - Path to Python executable or false if not found
          */
         
+<<<<<<< HEAD
         $projectRoot = dirname(__DIR__);
         $this->logActivity('Python Detection Debug', "Project Root: $projectRoot");
 
         // --- START: ADDED VENV CHECK ---
         // Prioritize the virtual environment's Python executable
+=======
+        // Get the project root (EndDev folder) - go up from processes -> staffmanagement -> EndDev
+        $projectRoot = dirname(dirname(__DIR__));
+        $this->logActivity('Python Detection Debug', "Project Root: $projectRoot");
+
+        // --- START: ADDED VENV CHECK ---
+        // Prioritize the virtual environment's Python executable in project root
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         $venvPaths = [
             // Windows venv (most likely)
             $projectRoot . DIRECTORY_SEPARATOR . '.venv' . DIRECTORY_SEPARATOR . 'Scripts' . DIRECTORY_SEPARATOR . 'python.exe',

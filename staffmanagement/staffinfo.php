@@ -323,6 +323,7 @@ $schedules = $viewer->getSchedules();
   <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<<<<<<< HEAD
   <!-- Bootstrap CSS (Single version - 5.3.3) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   
@@ -331,6 +332,19 @@ $schedules = $viewer->getSchedules();
   
   <!-- FullCalendar CSS -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+=======
+  <!-- Bootstrap CSS (Local - Works Offline) -->
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons (Local - Works Offline) -->
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- FullCalendar CSS (included in JS bundle) -->
+  <!-- Note: FullCalendar's index.global.min.js includes all CSS -->
+
+  <!-- Chart.js for Performance Metrics (Local - Works Offline) -->
+  <script src="../assets/vendor/chartjs/chart.umd.min.js"></script>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="staff.css">
@@ -430,8 +444,38 @@ $schedules = $viewer->getSchedules();
     .add-schedule-btn:hover {
         background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
         transform: translateY(-2px);
+<<<<<<< HEAD
 
     }       
+=======
+    }
+
+    /* Performance Metrics Styling */
+    .metric-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .metric-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .metric-box canvas {
+        max-width: 120px;
+        max-height: 120px;
+    }
+
+    .metrics-card .card-body {
+        min-height: 250px;
+    }
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     </style>
 </head>
 
@@ -499,7 +543,11 @@ $schedules = $viewer->getSchedules();
                 }
             }
           ?>
+<<<<<<< HEAD
           <img src="<?php echo $employee['profile_photo']; ?>" class="profile-img" alt="Profile Picture" onerror="this.src='../assets/profile_pic/user.png'">
+=======
+          <img src="<?php echo '../' . $employee['profile_photo']; ?>" class="profile-img" alt="Profile Picture" onerror="this.src='../assets/profile_pic/user.png'">
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         </div>
 
           <div class="text-center text-lg-start ms-lg-5">
@@ -511,7 +559,11 @@ $schedules = $viewer->getSchedules();
 
           <div class="d-flex justify-content-center justify-content-lg-start gap-2">
             <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#editInfoModal">Edit Info</button>
+<<<<<<< HEAD
             <button class="btn btn-danger btn-sm" id="btnRemove">Remove Employee</button>
+=======
+            <button class="btn btn-danger btn-sm" id="btnRemove" data-bs-toggle="modal" data-bs-target="#passwordModal">Remove Employee</button>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           </div>
         </div>
       </div>
@@ -547,6 +599,7 @@ $schedules = $viewer->getSchedules();
                 
                 <div class="form-group">
                     <label>Profile Picture</label>
+<<<<<<< HEAD
                     <div class="d-flex align-items-center gap-3 mb-2">
                         <img id="profile-preview" 
                              src="<?php echo !empty($employee['profile_photo']) ? '../assets/profile_pic/' . htmlspecialchars($employee['profile_photo']) : '../assets/profile_pic/user.png'; ?>" 
@@ -564,6 +617,15 @@ $schedules = $viewer->getSchedules();
                             </div>
                         </div>
                     </div>
+=======
+                    <img id="profile-preview" 
+                         src="<?php echo $employee['profile_photo'] !== 'N/A' ? htmlspecialchars($employee['profile_photo']) : 'profile_pic/user.png'; ?>" 
+                         alt="Profile Preview" 
+                         style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block; margin-bottom: 10px;"
+                         onerror="this.src='profile_pic/user.png'">
+                    <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
+                    <small>Select a new image to update the profile picture. Leave blank to keep the current one.</small>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                 </div>
 
                 <div class="form-group">
@@ -620,7 +682,11 @@ $schedules = $viewer->getSchedules();
                 </div>
 
              <div class="form-actions">
+<<<<<<< HEAD
                     <a href="employee_detail.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="btn-cancel">Cancel</a>
+=======
+                    <a href="staffinfo.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="btn-cancel">Cancel</a>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                     <button type="submit" class="btn-save">Save Changes</button>
             </div>
             </form>
@@ -663,6 +729,7 @@ $schedules = $viewer->getSchedules();
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const removeBtn = document.getElementById("btnRemove");
+<<<<<<< HEAD
     const removeEmployeeModal = new bootstrap.Modal(document.getElementById("removeEmployeeModal"));
     const successModal = new bootstrap.Modal(document.getElementById("successModal"));
     const employeeId = '<?php echo htmlspecialchars($employee['employee_id']); ?>';
@@ -708,6 +775,20 @@ $schedules = $viewer->getSchedules();
         document.getElementById("confirmRemoveBtn").disabled = false;
         document.getElementById("confirmRemoveBtn").innerHTML = 'Yes';
       }
+=======
+    const confirmModal = new bootstrap.Modal(document.getElementById("confirmModal"));
+    const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+
+    // Step 1: Show confirm modal directly when Remove Employee is clicked
+    removeBtn.addEventListener("click", () => {
+      confirmModal.show();
+    });
+
+    // Step 2: When "Yes" clicked → show success modal
+    document.getElementById("confirmRemoveBtn").addEventListener("click", () => {
+      confirmModal.hide();
+      setTimeout(() => successModal.show(), 400);
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     });
 
     // Step 3: When "OK" clicked → redirect to staff.php
@@ -837,6 +918,7 @@ $schedules = $viewer->getSchedules();
             const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsModal'));
             if (detailsModal) detailsModal.hide();
 
+<<<<<<< HEAD
             // Get employee ID from URL
             const urlParams = new URLSearchParams(window.location.search);
             const employeeId = urlParams.get('id');
@@ -905,6 +987,46 @@ $schedules = $viewer->getSchedules();
               alert('❌ Network error: ' + error.message);
               detailsModal.show();
             });
+=======
+            const leaveList = document.getElementById("leaveList");
+            const entry = document.createElement("div");
+            entry.className = "leave-entry";
+
+            entry.innerHTML = `
+              <div>
+                <strong>${leaveType}</strong><br>
+                <small>${formatDate(leaveFrom)} to ${formatDate(leaveTo)}</small>
+              </div>
+              <button class="btn btn-outline-danger btn-sm btn-delete" onclick="deleteLeave(this)">
+                <i class="bi bi-trash"></i>
+              </button>
+            `;
+
+            leaveList.appendChild(entry);
+
+            // ✅ Save to localStorage
+            const leaveData = {
+              type: leaveType,
+              from: leaveFrom,
+              to: leaveTo
+            };
+
+            let savedLeaves = JSON.parse(localStorage.getItem("scheduledLeaves")) || [];
+            savedLeaves.push(leaveData);
+            localStorage.setItem("scheduledLeaves", JSON.stringify(savedLeaves));
+
+            // Show confirmation modal
+            const confirmModalEl = document.getElementById('confirmModal');
+            const confirmModal = new bootstrap.Modal(confirmModalEl, { backdrop: false });
+            confirmModal.show();
+
+            document.body.classList.remove("modal-open");
+            document.querySelector(".modal-backdrop")?.remove();
+
+            setTimeout(() => {
+              window.location.href = "staffinfo.php";
+            }, 1500);
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           }
 
 
@@ -930,6 +1052,7 @@ $schedules = $viewer->getSchedules();
           }
 
           window.addEventListener("DOMContentLoaded", () => {
+<<<<<<< HEAD
             // Get employee ID from URL
             const urlParams = new URLSearchParams(window.location.search);
             const employeeId = urlParams.get('id');
@@ -988,14 +1111,61 @@ $schedules = $viewer->getSchedules();
 
             // For now, just remove from display
             // TODO: Implement API call to cancel leave request
+=======
+            const savedLeaves = JSON.parse(localStorage.getItem("scheduledLeaves")) || [];
+            const leaveList = document.getElementById("leaveList");
+
+            savedLeaves.forEach(data => {
+              const entry = document.createElement("div");
+              entry.className = "leave-entry";
+              entry.innerHTML = `
+                <div>
+                  <strong>${data.type}</strong><br>
+                  <small>${formatDate(data.from)} to ${formatDate(data.to)}</small>
+                </div>
+                <button class="btn btn-outline-danger btn-sm btn-delete" onclick="deleteLeave(this)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              `;
+              leaveList.appendChild(entry);
+            });
+
+            // Optional: clear saved data after loading
+            // localStorage.removeItem("scheduledLeaves");
+          });
+
+          function deleteLeave(button) {
+            const entry = button.closest(".leave-entry");
+            if (!entry) return;
+
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             entry.remove();
 
             const leaveList = document.getElementById("leaveList");
             const entries = leaveList.querySelectorAll(".leave-entry");
 
             if (entries.length === 0) {
+<<<<<<< HEAD
               leaveList.innerHTML = '<small class="text-muted">No scheduled leaves</small>';
             }
+=======
+              localStorage.removeItem("scheduledLeaves");
+              return;
+            }
+
+            const updatedLeaves = Array.from(entries).map(entry => {
+              const type = entry.querySelector("strong").innerText;
+              const dateRange = entry.querySelector("small").innerText;
+              const [from, to] = dateRange.replace(" to ", "|").split("|").map(d => {
+                const date = new Date(d.trim());
+                return date.toISOString().split("T")[0];
+              });
+
+              return { type, from, to };
+            });
+
+            localStorage.setItem("scheduledLeaves", JSON.stringify(updatedLeaves));
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           }
           </script>
 
@@ -1018,6 +1188,7 @@ $schedules = $viewer->getSchedules();
           const nextBtn = document.getElementById("nextMonth");
 
           let currentDate = new Date();
+<<<<<<< HEAD
           let selectedStartDate = null;
           let selectedEndDate = null;
 
@@ -1025,6 +1196,8 @@ $schedules = $viewer->getSchedules();
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
           ];
+=======
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
           function generateCalendar(year, month) {
             calendar.innerHTML = "";
@@ -1033,6 +1206,14 @@ $schedules = $viewer->getSchedules();
             const monthEnd = new Date(year, month + 1, 0);
             const today = new Date();
 
+<<<<<<< HEAD
+=======
+            const months = [
+              "January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"
+            ];
+
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             calendarTitle.textContent = `${months[month]} ${year}`;
 
             const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -1043,7 +1224,11 @@ $schedules = $viewer->getSchedules();
               calendar.appendChild(weekdayDiv);
             });
 
+<<<<<<< HEAD
             let startDay = (monthStart.getDay() + 6) % 7;
+=======
+            let startDay = (monthStart.getDay() + 6) % 7; // shift to make Monday first
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             for (let i = 0; i < startDay; i++) {
               const emptyCell = document.createElement("div");
               calendar.appendChild(emptyCell);
@@ -1054,6 +1239,7 @@ $schedules = $viewer->getSchedules();
               dateDiv.textContent = day;
               dateDiv.classList.add("calendar-day");
 
+<<<<<<< HEAD
               const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
               dateDiv.dataset.date = dateStr;
 
@@ -1078,11 +1264,28 @@ $schedules = $viewer->getSchedules();
               }
 
               dateDiv.addEventListener("click", () => handleDateSelection(dateStr, year, month, day));
+=======
+              if (day <= 15) dateDiv.classList.add("first-half");
+              else dateDiv.classList.add("second-half");
+
+              if (
+                day === today.getDate() &&
+                month === today.getMonth() &&
+                year === today.getFullYear()
+              ) {
+                dateDiv.classList.add("today");
+              }
+
+              dateDiv.addEventListener("click", () => {
+                alert(`Selected: ${months[month]} ${day}, ${year}`);
+              });
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
               calendar.appendChild(dateDiv);
             }
           }
 
+<<<<<<< HEAD
           function handleDateSelection(dateStr, year, month, day) {
             if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
               // Start new selection
@@ -1138,6 +1341,8 @@ $schedules = $viewer->getSchedules();
             return null;
           };
 
+=======
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           prevBtn.addEventListener("click", () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
             generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
@@ -1148,6 +1353,10 @@ $schedules = $viewer->getSchedules();
             generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
           });
 
+<<<<<<< HEAD
+=======
+          // Initial load
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
         });
 
@@ -1195,8 +1404,11 @@ $schedules = $viewer->getSchedules();
         </div>
 
 <script>
+<<<<<<< HEAD
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+=======
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
   // Bootstrap modal setup
   const attendanceModal = new bootstrap.Modal(document.getElementById('attendanceModal'));
 
@@ -1205,6 +1417,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const attendanceContainer = document.getElementById('attendanceContainer');
   const saveBtn = document.getElementById('saveBtn');
 
+<<<<<<< HEAD
   // Check if elements exist
   if (!openAttendanceBtn || !addDayBtn || !attendanceContainer || !saveBtn) {
     console.error('Manual attendance elements not found!');
@@ -1214,6 +1427,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // 🔹 Step 1: Open Manual Attendance directly (no password)
   openAttendanceBtn.addEventListener('click', () => {
     console.log('Opening attendance modal...');
+=======
+  // 🔹 Step 1: Open Manual Attendance directly (no password)
+  openAttendanceBtn.addEventListener('click', () => {
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     attendanceModal.show();
   });
 
@@ -1247,6 +1464,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+<<<<<<< HEAD
   // 🔹 Step 4: Save attendance records via API
   saveBtn.addEventListener('click', async () => {
     // Get employee ID from URL
@@ -1384,6 +1602,38 @@ document.addEventListener('DOMContentLoaded', function() {
               <div class="col-6">
                 <div class="text-muted">Completion</div>
                 <div class="fw-semibold text-primary" id="statCompletion">0%</div>
+=======
+  // 🔹 Step 4: Save & redirect
+  saveBtn.addEventListener('click', () => {
+    alert("Manual attendance record successfully added!");
+    window.location.href = "staffinfo.php";
+  });
+</script>
+
+      <!-- Export DTR -->
+      <div class="card" style="margin-top: 0 !important;">
+        <div class="card-body">
+          <button class="btn btn-success w-100 mb-3">Export DTR</button>
+
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div><small class="text-muted">Daily Time Record</small></div>
+            <a href="../attendancerep/indirep.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="small">See more...</a>
+          </div>
+
+          <div class="dtr-list">
+            <div class="dtr-item d-flex align-items-start mb-3">
+              <div class="dtr-icon bg-success text-white rounded-circle me-3">
+                <i class="bi bi-check-lg"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="fw-semibold">
+                  Monday, September 16, 2025
+                  <span class="badge bg-success ms-2">On Time</span>
+                </div>
+                <div class="small text-muted">
+                  Time In: 8:00 AM — Time Out: 5:02 PM
+                </div>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
               </div>
             </div>
           </div>
@@ -1391,6 +1641,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
 
+<<<<<<< HEAD
 <script>
 let allDTRRecords = [];
 let showingAllRecords = false;
@@ -1594,6 +1845,8 @@ async function loadDTRStatsRange(employeeId, startDate, endDate) {
 }
 </script>
 
+=======
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     </div>
   </div>
 </div> 
@@ -1604,44 +1857,102 @@ async function loadDTRStatsRange(employeeId, startDate, endDate) {
     <strong>Performance Metrics</strong>
     <div class="d-flex gap-2 mt-2 mt-sm-0">
       <select class="form-select form-select-sm w-auto" id="selectMonth">
+<<<<<<< HEAD
         <option>September</option>
         <option>October</option>
       </select>
       <select class="form-select form-select-sm w-auto" id="selectYear">
         <option>2024</option>
         <option selected>2025</option>
+=======
+        <option value="">All Months</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11" <?= date('n') == 11 ? 'selected' : '' ?>>November</option>
+        <option value="12">December</option>
+      </select>
+      <select class="form-select form-select-sm w-auto" id="selectYear">
+        <?php
+          $currentYear = date('Y');
+          $hireYear = !empty($employee['hire_date']) ? date('Y', strtotime($employee['hire_date'])) : $currentYear;
+          for ($y = $hireYear; $y <= $currentYear; $y++) {
+            $selected = $y == $currentYear ? 'selected' : '';
+            echo "<option value='$y' $selected>$y</option>";
+          }
+        ?>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
       </select>
     </div>
   </div>
 
   <div class="card-body">
+<<<<<<< HEAD
     <div class="row text-center gx-3 gy-3">
       <div class="col-6 col-md-3">
         <div class="metric-box p-3">
           <canvas id="chartPresent"></canvas>
           <div class="mt-2 fw-semibold">Present</div>
           <div class="text-muted small" id="presentValue"></div>
+=======
+    <div id="metricsLoading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading performance metrics...</p>
+    </div>
+    
+    <div id="metricsContent" class="row text-center gx-3 gy-3" style="display: none;">
+      <div class="col-6 col-md-3">
+        <div class="metric-box p-3">
+          <canvas id="chartPresent" width="150" height="150"></canvas>
+          <div class="mt-2 fw-semibold">Present</div>
+          <div class="text-muted small" id="presentValue">0%</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="presentCount">0 days</div>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         </div>
       </div>
 
       <div class="col-6 col-md-3">
         <div class="metric-box p-3">
+<<<<<<< HEAD
           <canvas id="chartAbsent"></canvas>
           <div class="mt-2 fw-semibold">Absent</div>
           <div class="text-muted small" id="absentValue"></div>
+=======
+          <canvas id="chartAbsent" width="150" height="150"></canvas>
+          <div class="mt-2 fw-semibold">Absent</div>
+          <div class="text-muted small" id="absentValue">0%</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="absentCount">0 days</div>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         </div>
       </div>
 
       <div class="col-6 col-md-3">
         <div class="metric-box p-3">
+<<<<<<< HEAD
           <canvas id="chartOntime"></canvas>
           <div class="mt-2 fw-semibold">On Time</div>
           <div class="text-muted small" id="ontimeValue"></div>
+=======
+          <canvas id="chartOntime" width="150" height="150"></canvas>
+          <div class="mt-2 fw-semibold">On Time</div>
+          <div class="text-muted small" id="ontimeValue">0%</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="ontimeCount">0 days</div>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         </div>
       </div>
 
       <div class="col-6 col-md-3">
         <div class="metric-box p-3">
+<<<<<<< HEAD
           <canvas id="chartLate"></canvas>
           <div class="mt-2 fw-semibold">Late</div>
           <div class="text-muted small" id="lateValue"></div>
@@ -1651,6 +1962,139 @@ async function loadDTRStatsRange(employeeId, startDate, endDate) {
   </div>
 </div>
 
+=======
+          <canvas id="chartLate" width="150" height="150"></canvas>
+          <div class="mt-2 fw-semibold">Late</div>
+          <div class="text-muted small" id="lateValue">0%</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="lateCount">0 days</div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="metricsError" class="text-center py-4 text-danger" style="display: none;">
+      <i class="bi bi-exclamation-triangle fs-1"></i>
+      <p class="mt-2">Error loading metrics. Please try again.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Performance Metrics Chart Implementation
+const employeeId = '<?= $employee_id ?>';
+let metricsCharts = {
+  present: null,
+  absent: null,
+  ontime: null,
+  late: null
+};
+
+// Create donut chart
+function createDonutChart(canvasId, percentage, color) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return null;
+  
+  // Destroy existing chart if it exists
+  if (metricsCharts[canvasId.replace('chart', '').toLowerCase()]) {
+    metricsCharts[canvasId.replace('chart', '').toLowerCase()].destroy();
+  }
+  
+  const chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [percentage, 100 - percentage],
+        backgroundColor: [color, '#e9ecef'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '75%',
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          enabled: false
+        }
+      }
+    }
+  });
+  
+  return chart;
+}
+
+// Fetch and display metrics
+async function loadPerformanceMetrics() {
+  const month = document.getElementById('selectMonth').value;
+  const year = document.getElementById('selectYear').value;
+  
+  // Show loading
+  document.getElementById('metricsLoading').style.display = 'block';
+  document.getElementById('metricsContent').style.display = 'none';
+  document.getElementById('metricsError').style.display = 'none';
+  
+  try {
+    const params = new URLSearchParams({
+      employee_id: employeeId,
+      year: year
+    });
+    
+    if (month) {
+      params.append('month', month);
+    }
+    
+    const response = await fetch(`get_performance_metrics.php?${params.toString()}`);
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load metrics');
+    }
+    
+    // Update charts and values
+    const metrics = data.metrics;
+    
+    // Present (Green)
+    metricsCharts.present = createDonutChart('chartPresent', metrics.present.percentage, '#28a745');
+    document.getElementById('presentValue').textContent = metrics.present.percentage + '%';
+    document.getElementById('presentCount').textContent = metrics.present.count + ' days';
+    
+    // Absent (Red)
+    metricsCharts.absent = createDonutChart('chartAbsent', metrics.absent.percentage, '#dc3545');
+    document.getElementById('absentValue').textContent = metrics.absent.percentage + '%';
+    document.getElementById('absentCount').textContent = metrics.absent.count + ' days';
+    
+    // On Time (Blue)
+    metricsCharts.ontime = createDonutChart('chartOntime', metrics.onTime.percentage, '#0d6efd');
+    document.getElementById('ontimeValue').textContent = metrics.onTime.percentage + '%';
+    document.getElementById('ontimeCount').textContent = metrics.onTime.count + ' days';
+    
+    // Late (Orange)
+    metricsCharts.late = createDonutChart('chartLate', metrics.late.percentage, '#fd7e14');
+    document.getElementById('lateValue').textContent = metrics.late.percentage + '%';
+    document.getElementById('lateCount').textContent = metrics.late.count + ' days';
+    
+    // Show content
+    document.getElementById('metricsLoading').style.display = 'none';
+    document.getElementById('metricsContent').style.display = 'flex';
+    
+  } catch (error) {
+    console.error('Error loading metrics:', error);
+    document.getElementById('metricsLoading').style.display = 'none';
+    document.getElementById('metricsError').style.display = 'block';
+  }
+}
+
+// Event listeners for month/year change
+document.getElementById('selectMonth').addEventListener('change', loadPerformanceMetrics);
+document.getElementById('selectYear').addEventListener('change', loadPerformanceMetrics);
+
+// Load metrics on page load
+document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
+</script>
+
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 <!-- SCHEDULE SECTION -->
 <div class="card mb-3 schedule-card">
   <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
@@ -2083,8 +2527,13 @@ async function loadDTRStatsRange(employeeId, startDate, endDate) {
 </div>
 
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+<<<<<<< HEAD
 <!-- Bootstrap JS (Single Load) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+=======
+<!-- Bootstrap JS (Local - Works Offline) -->
+<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
 <!-- Custom Scripts -->
 <script src="staff.js"></script>
@@ -2094,6 +2543,7 @@ async function loadDTRStatsRange(employeeId, startDate, endDate) {
 </script>
 <script src="../assets/js/edit_employee.js"></script>
 <script>
+<<<<<<< HEAD
     // --- JS: Profile Picture Upload Integration with Secure API ---
     document.addEventListener('DOMContentLoaded', function() {
         const photoInput = document.getElementById('profile_photo');
@@ -2102,10 +2552,17 @@ async function loadDTRStatsRange(employeeId, startDate, endDate) {
         const saveButton = editForm?.querySelector('button[type="submit"]');
         
         // Live preview for profile picture
+=======
+    // --- JS: Live preview for profile picture ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const photoInput = document.getElementById('profile_photo');
+        const previewImg = document.getElementById('profile-preview');
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         if (photoInput && previewImg) {
             photoInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
+<<<<<<< HEAD
                     // Validate file before preview
                     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
                     const maxSize = 5 * 1024 * 1024; // 5MB
@@ -2122,11 +2579,14 @@ async function loadDTRStatsRange(employeeId, startDate, endDate) {
                         return;
                     }
                     
+=======
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                     previewImg.src = URL.createObjectURL(file);
                 }
             });
         }
         
+<<<<<<< HEAD
         // Handle form submission with profile picture upload via API
         if (editForm) {
             editForm.addEventListener('submit', async function(e) {
@@ -2208,10 +2668,16 @@ async function loadDTRStatsRange(employeeId, startDate, endDate) {
             });
         }
         
+=======
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         // Initialize the edit schedule modal calendar when modal is shown
         const editScheduleModal = document.getElementById('editScheduleModal');
         if (editScheduleModal) {
             editScheduleModal.addEventListener('shown.bs.modal', function () {
+<<<<<<< HEAD
+=======
+
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                 console.log('Edit schedule modal opened, initializing calendar...');
                 // The initializeCalendar function from edit_employee.js should be available
                 if (typeof initializeCalendar === 'function') {

@@ -743,6 +743,7 @@
   font-weight: bold;
 }
 
+<<<<<<< HEAD
 /* Date Range Selection Styles */
 .calendar-grid .range-start,
 .calendar-grid .range-end {
@@ -777,6 +778,8 @@
   margin-bottom: 4px;
 }
 
+=======
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 body {
   position: relative;
 }
@@ -1064,6 +1067,7 @@ body {
 .schedule-card {
   margin-top: 1% !important; /* dagdag spacing sa taas */
 }
+<<<<<<< HEAD
 
 /* ===================================
    Daily Time Record (DTR) Styling
@@ -1204,3 +1208,5 @@ body {
     font-size: 1rem;
   }
 }
+=======
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5

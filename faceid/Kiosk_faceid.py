@@ -718,6 +718,10 @@ def check_undertime_and_confirm(employee_db_id):
 def load_profile_pictures(employee_info, user_profile_dir):
     """
     Load all employee profile pictures into memory to avoid disk I/O in the loop.
+<<<<<<< HEAD
+=======
+    Supports both exact filename matches and filename patterns with timestamps.
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     """
     profile_pics = {}
     default_pic = None
@@ -737,18 +741,56 @@ def load_profile_pictures(employee_info, user_profile_dir):
             continue
         
         loaded_pic = None
+<<<<<<< HEAD
+=======
+        
+        # Try exact match first (e.g., MA22013613.jpg)
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         for ext in ['jpg', 'png', 'jpeg']:
             path = os.path.join(user_profile_dir, f"{emp_code}.{ext}")
             if os.path.exists(path):
                 pic = cv2.imread(path)
                 if pic is not None:
                     loaded_pic = pic
+<<<<<<< HEAD
                     break
         
+=======
+                    print(f"✓ Loaded profile picture for {emp_code}: {path}")
+                    break
+        
+        # If exact match not found, try pattern match (e.g., MA22013613_*.jpg)
+        if loaded_pic is None:
+            try:
+                # Get all files in the directory
+                all_files = os.listdir(user_profile_dir)
+                
+                # Look for files that start with employee code
+                for filename in all_files:
+                    # Check if filename starts with employee code
+                    if filename.startswith(emp_code):
+                        # Check if it has a valid image extension
+                        if filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+                            path = os.path.join(user_profile_dir, filename)
+                            pic = cv2.imread(path)
+                            if pic is not None:
+                                loaded_pic = pic
+                                print(f"✓ Loaded profile picture for {emp_code}: {path}")
+                                break
+            except Exception as e:
+                print(f"⚠️  Error searching for profile picture for {emp_code}: {e}")
+        
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         if loaded_pic is not None:
             profile_pics[emp_code] = loaded_pic
         elif default_pic is not None:
             profile_pics[emp_code] = default_pic
+<<<<<<< HEAD
+=======
+            print(f"⚠️  Using default picture for {emp_code}")
+        else:
+            print(f"⚠️  No profile picture found for {emp_code}")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             
     print(f"✓ Loaded {len(profile_pics)} profile pictures into memory.")
     return profile_pics
@@ -836,7 +878,11 @@ def run_verification():
 
     # Create fullscreen window
     window_name = 'Real-Time Face Verification'
+<<<<<<< HEAD
     cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+=======
+    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     print("\n--- Verification System Active ---")

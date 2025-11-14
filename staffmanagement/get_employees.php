@@ -85,7 +85,11 @@ try {
             'role' => $row['roles'] ?? 'N/A',
             'department' => $row['department'] ?? 'N/A',
             'position' => $row['position'] ?? 'N/A',
+<<<<<<< HEAD
             'profile_photo' => $row['profile_photo'] ?? 'pic.png'
+=======
+            'profile_photo' => $row['profile_photo'] ?? '../assets/profile_pic/user.png'
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         ];
     }
 

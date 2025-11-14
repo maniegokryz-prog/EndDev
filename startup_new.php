@@ -247,7 +247,11 @@ foreach ($indexes as $index) {
     }
 }
 
+<<<<<<< HEAD
 header('Location: index.php');
+=======
+header('Location: dashboard/dashboard.php');
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 // echo "All tables and indexes created successfully.<br>";
 
 // Do not close the connection here if you need to use it in other included files

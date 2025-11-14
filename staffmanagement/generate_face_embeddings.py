@@ -38,10 +38,17 @@ def initialize_auraface():
     """
     print("Initializing AuraFace model...")
     
+<<<<<<< HEAD
     # Get the directory where this script is located (now in root)
     script_dir = os.path.dirname(os.path.abspath(__file__))
     # Models are stored in faceid/models/auraface
     auraface_local_dir = os.path.join(script_dir, "faceid", "models", "auraface")
+=======
+    # Get the directory where this script is located (staffmanagement folder)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Models are stored in ../faceid/models/auraface (relative to staffmanagement)
+    auraface_local_dir = os.path.join(script_dir, "..", "faceid", "models", "auraface")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     
     try:
         # Download AuraFace model if not already present
@@ -51,11 +58,19 @@ def initialize_auraface():
         )
         
         # Initialize FaceAnalysis
+<<<<<<< HEAD
         # Root points to faceid folder where models are stored
         face_app = FaceAnalysis(
             name="auraface",
             providers=['CUDAExecutionProvider', 'CPUExecutionProvider'],
             root=os.path.join(script_dir, "faceid")
+=======
+        # Root points to ../faceid folder where models are stored
+        face_app = FaceAnalysis(
+            name="auraface",
+            providers=['CPUExecutionProvider'],
+            root=os.path.join(script_dir, "..", "faceid")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         )
         face_app.prepare(ctx_id=0, det_size=(640, 640))
         print("AuraFace model ready (GPU mode).")
@@ -68,7 +83,11 @@ def initialize_auraface():
             face_app = FaceAnalysis(
                 name="auraface",
                 providers=['CPUExecutionProvider'],
+<<<<<<< HEAD
                 root=os.path.join(script_dir, "faceid")
+=======
+                root=os.path.join(script_dir, "..", "faceid")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             )
             face_app.prepare(ctx_id=-1, det_size=(640, 640))
             print("AuraFace model ready (CPU mode).")

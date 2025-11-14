@@ -1,3 +1,4 @@
+<<<<<<< HEAD
     <?php
 require '../db_connection.php';
 
@@ -12,17 +13,36 @@ if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || $_SESSION['user
 <head>
   <meta charset="UTF-8">
   <title>Employee Archive - Attendance System</title>
+=======
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Attendance</title>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<<<<<<< HEAD
  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+=======
+
+ <!-- ✅ BOOTSTRAP 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+ <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- ✅ FONT AWESOME (official CDN – works on localhost) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
   <!-- Custom CSS -->
 <link rel="stylesheet" href="settings.css">
@@ -94,6 +114,7 @@ if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || $_SESSION['user
       </thead>
 
       <tbody id="tableBody">
+<<<<<<< HEAD
         <!-- Employee rows will be loaded dynamically via JavaScript -->
         <tr>
           <td colspan="6" class="text-center">
@@ -102,6 +123,158 @@ if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || $_SESSION['user
             </div>
             <p class="mt-2">Loading archived employees...</p>
           </td>
+=======
+        <tr>
+          <td><input type="checkbox" class="selectBox"></td>
+          <td>
+            <div class="employee-info">
+              <img src="pic.png" alt="">
+              <div>
+                <strong>Ronnel Borlongan</strong><br>
+                <small>MA22000000</small>
+              </div>
+            </div>
+          </td>
+          <td>ronnel.borlongan@example.com</td>
+          <td>0917-123-4567</td>
+          <td>09/23/2025</td>
+         <td class="text-center">
+            <div class="dropdown">
+                <button class="btn btn-link text-dark p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <button class="dropdown-item d-flex align-items-center view-details-btn"
+                            data-bs-toggle="modal" data-bs-target="#staffModal"
+                            data-name="Ronnel P. Borlongan"
+                            data-id="MA22010000"
+                            data-dept="Faculty | IS Department"
+                            data-email="sample@gmail.com"
+                            data-contact="0912-345-6789"
+                            data-img="pic.png">
+                    <i class="fa-solid fa-user me-2 text-primary"></i>
+                    See Details
+                    </button>
+                </li>
+                </ul>
+            </div>
+            </td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="selectBox"></td>
+          <td>
+            <div class="employee-info">
+              <img src="pic.png" alt="">
+              <div>
+                <strong>Justine Alianza</strong><br>
+                <small>MA22000000</small>
+              </div>
+            </div>
+          </td>
+          <td>justine.alianza@example.com</td>
+          <td>0917-123-4567</td>
+          <td>09/23/2025</td>
+         <td class="text-center">
+            <div class="dropdown">
+                <button class="btn btn-link text-dark p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <button class="dropdown-item d-flex align-items-center view-details-btn"
+                            data-bs-toggle="modal" data-bs-target="#staffModal"
+                            data-name="Ronnel P. Borlongan"
+                            data-id="MA22010000"
+                            data-dept="Faculty | IS Department"
+                            data-email="sample@gmail.com"
+                            data-contact="0912-345-6789"
+                            data-img="pic.png">
+                    <i class="fa-solid fa-user me-2 text-primary"></i>
+                    See Details
+                    </button>
+                </li>
+                </ul>
+            </div>
+            </td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="selectBox"></td>
+          <td>
+            <div class="employee-info">
+              <img src="pic.png" alt="">
+              <div>
+                <strong>Kryztian Maniego</strong><br>
+                <small>MA22000002</small>
+              </div>
+            </div>
+          </td>
+          <td>kryztian.maniego@example.com</td>
+          <td>0917-999-1234</td>
+          <td>09/23/2025</td>
+            <td class="text-center">
+            <div class="dropdown">
+                <button class="btn btn-link text-dark p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <button class="dropdown-item d-flex align-items-center view-details-btn"
+                            data-bs-toggle="modal" data-bs-target="#staffModal"
+                            data-name="Ronnel P. Borlongan"
+                            data-id="MA22010000"
+                            data-dept="Faculty | IS Department"
+                            data-email="sample@gmail.com"
+                            data-contact="0912-345-6789"
+                            data-img="pic.png">
+                    <i class="fa-solid fa-user me-2 text-primary"></i>
+                    See Details
+                    </button>
+                </li>
+                </ul>
+            </div>
+            </td>
+        </tr>
+        
+        <tr>
+          <td><input type="checkbox" class="selectBox"></td>
+          <td>
+            <div class="employee-info">
+              <img src="pic.png" alt="">
+              <div>
+                <strong>Lord Gabrial Castro</strong><br>
+                <small>MA22000003</small>
+              </div>
+            </div>
+          </td>
+          <td>lord.castro@example.com</td>
+          <td>0917-222-8877</td>
+          <td>09/23/2025</td>
+             <td class="text-center">
+            <div class="dropdown">
+                <button class="btn btn-link text-dark p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <button class="dropdown-item d-flex align-items-center view-details-btn"
+                            data-bs-toggle="modal" data-bs-target="#staffModal"
+                            data-name="Ronnel P. Borlongan"
+                            data-id="MA22010000"
+                            data-dept="Faculty | IS Department"
+                            data-email="sample@gmail.com"
+                            data-contact="0912-345-6789"
+                            data-img="https://via.placeholder.com/120">
+                    <i class="fa-solid fa-user me-2 text-primary"></i>
+                    See Details
+                    </button>
+                </li>
+                </ul>
+            </div>
+            </td>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
         </tr>
       </tbody>
     </table>
@@ -205,6 +378,7 @@ if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'] || $_SESSION['user
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+<<<<<<< HEAD
 // Employee Archive Management System
 let archivedEmployees = [];
 let allSelected = false;
@@ -349,10 +523,82 @@ function setupEventListeners() {
   // Delete Selected
   deleteBtn.addEventListener("click", () => {
     const selected = getSelectedEmployees();
+=======
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const detailButtons = document.querySelectorAll(".view-details-btn");
+  const staffModal = new bootstrap.Modal(document.getElementById("staffModal"));
+  
+  detailButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.getElementById("staffImg").src = btn.getAttribute("data-img");
+      document.getElementById("staffName").textContent = btn.getAttribute("data-name");
+      document.getElementById("staffId").textContent = btn.getAttribute("data-id");
+      document.getElementById("staffDept").textContent = btn.getAttribute("data-dept");
+      document.getElementById("staffEmail").textContent = btn.getAttribute("data-email");
+      document.getElementById("staffContact").textContent = btn.getAttribute("data-contact");
+    });
+  });
+});
+
+
+  const selectAllBtn = document.getElementById("selectAllBtn");
+  const deleteBtn = document.getElementById("deleteSelectedBtn");
+  const restoreBtn = document.getElementById("restoreSelectedBtn");
+  const checkboxes = document.querySelectorAll(".selectBox");
+  const tableBody = document.getElementById("tableBody");
+  const noDataMsg = document.getElementById("noDataMessage");
+  const searchInput = document.getElementById("searchInput");
+  const centerAlert = document.getElementById("centerAlert");
+
+  let allSelected = false;
+
+  // ✅ Function to show center alert
+  function showCenterAlert() {
+    centerAlert.style.display = "block";
+    centerAlert.style.opacity = "1";
+    setTimeout(() => {
+      centerAlert.style.transition = "opacity 0.5s";
+      centerAlert.style.opacity = "0";
+      setTimeout(() => centerAlert.style.display = "none", 500);
+    }, 2000); // disappears after 2 seconds
+  }
+
+  // ✅ Select All / Deselect All
+  selectAllBtn.addEventListener("click", () => {
+    allSelected = !allSelected;
+    checkboxes.forEach(cb => cb.checked = allSelected);
+    selectAllBtn.textContent = allSelected ? "Deselect All" : "Select All";
+  });
+
+  // ✅ Live Search (auto filter as you type)
+  searchInput.addEventListener("keyup", () => {
+    const searchVal = searchInput.value.toLowerCase();
+    let visibleRows = 0;
+
+    tableBody.querySelectorAll("tr").forEach(row => {
+      const name = row.querySelector("strong").textContent.toLowerCase();
+      if (name.includes(searchVal)) {
+        row.style.display = "";
+        visibleRows++;
+      } else {
+        row.style.display = "none";
+      }
+    });
+
+    noDataMsg.classList.toggle("d-none", visibleRows > 0);
+  });
+
+  // ✅ Delete Selected
+  deleteBtn.addEventListener("click", () => {
+    const selected = document.querySelectorAll(".selectBox:checked");
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     if (selected.length === 0) {
       showCenterAlert();
       return;
     }
+<<<<<<< HEAD
     
     const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
     modal.show();
@@ -361,10 +607,27 @@ function setupEventListeners() {
   // Restore Selected
   restoreBtn.addEventListener("click", () => {
     const selected = getSelectedEmployees();
+=======
+
+    const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+    modal.show();
+
+    document.getElementById("confirmDelete").onclick = () => {
+      selected.forEach(cb => cb.closest("tr").remove());
+      modal.hide();
+      checkIfEmpty();
+    };
+  });
+
+  // ✅ Restore Selected
+  restoreBtn.addEventListener("click", () => {
+    const selected = document.querySelectorAll(".selectBox:checked");
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     if (selected.length === 0) {
       showCenterAlert();
       return;
     }
+<<<<<<< HEAD
     
     const modal = new bootstrap.Modal(document.getElementById("restoreModal"));
     modal.show();
@@ -485,6 +748,25 @@ function showError(message) {
   alert('Error: ' + message);
   console.error('Error:', message);
 }
+=======
+
+    const modal = new bootstrap.Modal(document.getElementById("restoreModal"));
+    modal.show();
+
+    document.getElementById("confirmRestore").onclick = () => {
+      selected.forEach(cb => cb.closest("tr").remove());
+      modal.hide();
+      new bootstrap.Modal(document.getElementById("restoreSuccessModal")).show();
+      checkIfEmpty();
+    };
+  });
+
+  // ✅ Check if table empty
+  function checkIfEmpty() {
+    const visibleRows = tableBody.querySelectorAll("tr").length;
+    noDataMsg.classList.toggle("d-none", visibleRows > 0);
+  }
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 </script>
 
   

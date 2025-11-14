@@ -72,7 +72,11 @@ def setup_logger(name, log_file, level=logging.INFO):
 attendance_logger = setup_logger('attendance', ATTENDANCE_LOG_FILE, logging.INFO)
 error_logger = setup_logger('error', ERROR_LOG_FILE, logging.ERROR)
 
+<<<<<<< HEAD
 def log_attendance_event(employee_id, employee_name, log_type, status, notes=None):
+=======
+def log_attendance_event(employee_id, employee_name, log_type, notes=None):
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     """
     Log an attendance event.
     
@@ -80,10 +84,16 @@ def log_attendance_event(employee_id, employee_name, log_type, status, notes=Non
         employee_id: Employee ID (e.g., "MA22013612")
         employee_name: Employee name
         log_type: 'time_in' or 'time_out'
+<<<<<<< HEAD
         status: Status message (e.g., "On-time", "Late by 5 minutes")
         notes: Additional notes
     """
     message = f"Employee: {employee_name} ({employee_id}) | Type: {log_type.upper()} | Status: {status}"
+=======
+        notes: Additional notes or status message
+    """
+    message = f"Employee: {employee_name} ({employee_id}) | Type: {log_type.upper()}"
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     if notes:
         message += f" | Notes: {notes}"
     attendance_logger.info(message)

@@ -8,9 +8,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Bootstrap CSS -->
+<<<<<<< HEAD
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+=======
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="dashboard.css">
@@ -69,28 +75,44 @@
         <div class="col-3"> 
           <div class="card text-center p-3 shadow-sm border-0 clickable-card">
             <h6 class="fw-semibold text-secondary mb-1">Present</h6>
+<<<<<<< HEAD
             <p class="display-6 fw-bold text-success mb-0">42%</p>
+=======
+            <p id="presentPercentage" class="display-6 fw-bold text-success mb-0">0%</p>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           </div>
         </div>
 
         <div class="col-3">
           <div class="card text-center p-3 shadow-sm border-0 clickable-card">
             <h6 class="fw-semibold text-secondary mb-1">Absent</h6>
+<<<<<<< HEAD
             <p class="display-6 fw-bold text-danger mb-0">5%</p>
+=======
+            <p id="absentPercentage" class="display-6 fw-bold text-danger mb-0">0%</p>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           </div>
         </div>
 
         <div class="col-3">
           <div class="card text-center p-3 shadow-sm border-0 clickable-card">
             <h6 class="fw-semibold text-secondary mb-1">On Time</h6>
+<<<<<<< HEAD
             <p class="display-6 fw-bold text-primary mb-0">30%</p>
+=======
+            <p id="onTimePercentage" class="display-6 fw-bold text-primary mb-0">0%</p>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           </div>
         </div>
 
         <div class="col-3">
           <div class="card text-center p-3 shadow-sm border-0 clickable-card">
             <h6 class="fw-semibold text-secondary mb-1">Late</h6>
+<<<<<<< HEAD
             <p class="display-6 fw-bold text-warning mb-0">12%</p>
+=======
+            <p id="latePercentage" class="display-6 fw-bold text-warning mb-0">0%</p>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
           </div>
         </div>
         
@@ -99,9 +121,30 @@
 
     <div class="col-xl-3 col-lg-4 col-md-4 mt-2 mt-md-0">
       <div class="attendance-feed shadow-sm p-3 bg-white rounded h-100">
+<<<<<<< HEAD
         <h6 class="fw-bold mb-3">Attendance Feed</h6>
         <div id="attendanceList">
 
+=======
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold mb-0">
+            <i class="bi bi-clock-history me-2"></i>Attendance Feed
+            <span class="badge bg-secondary ms-2" id="feedCount" style="font-size: 0.65rem;">0</span>
+          </h6>
+          <button id="todayBtn" class="btn btn-sm btn-outline-primary" style="font-size: 0.75rem; padding: 2px 8px;">
+            <i class="bi bi-calendar-day me-1"></i>Today
+          </button>
+        </div>
+        <div id="attendanceList">
+          <!-- Loading state -->
+          <div class="text-center py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted small mt-2 mb-0">Loading attendance feed...</p>
+          </div>
+        </div>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
       </div>
     </div>
     
@@ -187,7 +230,11 @@
         </tbody>
     </table>
 
+<<<<<<< HEAD
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+=======
+<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
 <script>
   let currentMonth, currentYear;
@@ -288,6 +335,7 @@
 
     <!-- Scrollable Area -->
     <div class="late-list">
+<<<<<<< HEAD
 
       <div class="d-flex align-items-center border-bottom py-2">
         <img src="pic.png" class="profile-img me-3">
@@ -297,11 +345,15 @@
         </div>
       </div>
 
+=======
+      <!-- JavaScript will populate this dynamically -->
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     </div>
   </div>
 </div>
 
 <div class="col-md-6 d-flex justify-content-left">
+<<<<<<< HEAD
   <div class="card on-leave-card">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h6 class="fw-bold mb-0">On Leave</h6>
@@ -319,6 +371,14 @@
           </div>
         </div>
       </div>
+=======
+  <div class="card p-5 shadow-sm h-100 on-leave-card">
+    <h6 class="fw-bold">On Leave</h6>
+
+    <!-- Scrollable Area -->
+    <div class="on-leave-list">
+      <!-- JavaScript will populate this dynamically -->
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     </div>
   </div>
 </div>
@@ -331,6 +391,7 @@
   </div> <!-- container-fluid -->
   </div> <!-- content -->
 
+<<<<<<< HEAD
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="dashboard.js"></script>
 
@@ -394,6 +455,11 @@
     }
   </style>
 
+=======
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="dashboard.js"></script>
+
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
 
 

@@ -14,6 +14,7 @@ menuBtn.addEventListener('click', () => {
 });
 //----------------------------------------------------------------------------------------------//
 
+<<<<<<< HEAD
 // Placeholder for future features like search and filter
 document.getElementById("searchBox").addEventListener("keyup", function() {
   let filter = this.value.toLowerCase();
@@ -77,4 +78,40 @@ document.getElementById("searchBox").addEventListener("keyup", function() {
       // dito pwede mong idagdag yung actual export logic (e.g., PHP backend call)
     }
 
+=======
+// Filter handlers
+document.getElementById("roleFilter").addEventListener("change", applyFilters);
+document.getElementById("deptFilter").addEventListener("change", applyFilters);
+document.getElementById("searchBox").addEventListener("input", applyFilters);
+
+function applyFilters() {
+  const role = document.getElementById("roleFilter").value;
+  const dept = document.getElementById("deptFilter").value;
+  const search = document.getElementById("searchBox").value;
+  
+  // Build query string
+  const params = new URLSearchParams();
+  if (role) params.append('role', role);
+  if (dept) params.append('department', dept);
+  if (search) params.append('search', search);
+  
+  // Reload page with filters
+  window.location.href = 'attendancerep.php?' + params.toString();
+}
+
+// Click handler for table rows
+document.addEventListener("DOMContentLoaded", function() {
+  const rows = document.querySelectorAll("#attendanceTable tbody tr");
+  rows.forEach(row => {
+    const empId = row.getAttribute("data-id");
+    if (empId) {
+      row.style.cursor = "pointer";
+      row.addEventListener("click", () => {
+        window.location.href = "indirep.php?id=" + empId;
+      });
+    }
+  });
+});
+
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
  

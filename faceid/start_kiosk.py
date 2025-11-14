@@ -6,6 +6,7 @@ and runs background synchronization with the MySQL server.
 
 Workflow:
 1. Initialize local SQLite database (if needed)
+<<<<<<< HEAD
 2. Run embd_up.py to sync embeddings from database
 3. Start background sync manager (SQLite <-> MySQL)
 4. Launch Kiosk_faceid.py for face verification
@@ -13,12 +14,29 @@ Workflow:
 
 Usage:
     python start_kiosk.py
+=======
+2. Sync profile pictures from web server
+3. Run embd_up.py to sync embeddings from database
+4. Initialize daily attendance records
+5. Start background sync manager (SQLite <-> MySQL)
+6. Launch Kiosk_faceid.py for face verification
+7. If sync fails, show warning but still launch Kiosk
+
+Usage:
+    python start_kiosk.py
+    
+Note: Will automatically request Administrator privileges on Windows if needed
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 """
 
 import subprocess
 import sys
 import os
 import time
+<<<<<<< HEAD
+=======
+import ctypes
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 from threading import Thread, Event
 
 # Global shutdown event for coordinating graceful shutdown
@@ -33,6 +51,44 @@ if sys.platform == 'win32':
     except Exception:
         pass
 
+<<<<<<< HEAD
+=======
+
+def is_admin():
+    """Check if running with administrator privileges on Windows."""
+    try:
+        if sys.platform == 'win32':
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        else:
+            return os.geteuid() == 0
+    except:
+        return False
+
+
+def run_as_admin():
+    """Re-launch the script with administrator privileges on Windows."""
+    if sys.platform != 'win32':
+        print("Administrator elevation is only supported on Windows")
+        return False
+    
+    try:
+        script = os.path.abspath(sys.argv[0])
+        params = ' '.join([f'"{arg}"' if ' ' in arg else arg for arg in sys.argv[1:]])
+        
+        ret = ctypes.windll.shell32.ShellExecuteW(
+            None, "runas", sys.executable, f'"{script}" {params}', None, 1
+        )
+        
+        if ret > 32:
+            sys.exit(0)
+        else:
+            print("Failed to elevate privileges. Please run manually as Administrator.")
+            return False
+    except Exception as e:
+        print(f"Error requesting administrator privileges: {e}")
+        return False
+
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 def run_sync_manager():
     """
     Run the sync manager in a subprocess.
@@ -81,12 +137,36 @@ def run_sync_manager():
             process.terminate()
 
 def main():
+<<<<<<< HEAD
+=======
+    # Check for administrator privileges if running from inetpub on Windows
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    if sys.platform == 'win32' and 'inetpub' in script_dir.lower():
+        if not is_admin():
+            print("=" * 70)
+            print("Administrator Privileges Required")
+            print("=" * 70)
+            print("Kiosk system is located in inetpub directory.")
+            print("Administrator access is required for file operations.")
+            print("\nAttempting to elevate privileges...")
+            print("Please click 'Yes' on the UAC prompt.")
+            print("=" * 70)
+            time.sleep(2)
+            run_as_admin()
+            return
+    
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     # Get the directory where this script is located
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Paths to scripts
     init_db_script = os.path.join(script_dir, "database", "init_local_db.py")
     embd_sync_script = os.path.join(script_dir, "embd_up.py")
+<<<<<<< HEAD
+=======
+    daily_init_script = os.path.join(script_dir, "daily_attendance_initializer.py")
+    profile_sync_script = os.path.join(script_dir, "sync_profile_pictures.py")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     kiosk_script = os.path.join(script_dir, "Kiosk_faceid.py")
     
     print("=" * 70, flush=True)
@@ -94,7 +174,11 @@ def main():
     print("=" * 70, flush=True)
     
     # Step 1: Initialize local database
+<<<<<<< HEAD
     print("\n[1/4] Initializing local SQLite database...")
+=======
+    print("\n[1/6] Initializing local SQLite database...")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     try:
         # Check if database exists
         db_path = os.path.join(script_dir, "database", "kiosk_local.db")
@@ -118,13 +202,53 @@ def main():
         print(f"⚠️  Warning: Could not initialize database: {e}")
         print("  Continuing anyway...")
     
+<<<<<<< HEAD
     # Step 2: Sync embeddings from database
     print("\n[2/4] Syncing face embeddings from database...")
+=======
+    # Step 2: Sync profile pictures
+    print("\n[2/6] Syncing profile pictures...")
+    try:
+        result = subprocess.run(
+            [sys.executable, profile_sync_script, "once"],
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            timeout=30  # 30 second timeout
+        )
+        
+        if result.returncode == 0:
+            print("✓ Profile pictures synced successfully")
+            # Show last few lines of output
+            output_lines = result.stdout.strip().split('\n')
+            for line in output_lines[-3:]:
+                if line.strip():
+                    print(f"  {line}")
+        else:
+            print("⚠️  Warning: Profile picture sync failed")
+            print(f"  Error: {result.stderr}")
+            print("  Continuing anyway...")
+    except subprocess.TimeoutExpired:
+        print("⚠️  Warning: Profile picture sync timed out")
+        print("  Continuing anyway...")
+    except Exception as e:
+        print(f"⚠️  Warning: Could not sync profile pictures: {e}")
+        print("  Continuing anyway...")
+    
+    # Step 3: Sync embeddings from database
+    print("\n[3/6] Syncing face embeddings from database...")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     try:
         result = subprocess.run(
             [sys.executable, embd_sync_script, "once"],
             capture_output=True,
             text=True,
+<<<<<<< HEAD
+=======
+            encoding='utf-8',
+            errors='replace',
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             timeout=30  # 30 second timeout
         )
         
@@ -146,8 +270,45 @@ def main():
         print(f"⚠️  Warning: Could not sync embeddings: {e}")
         print("  Continuing anyway...")
     
+<<<<<<< HEAD
     # Step 3: Start sync manager in background thread
     print("\n[3/4] Starting background sync manager...")
+=======
+    # Step 4: Initialize daily attendance records
+    print("\n[4/6] Initializing daily attendance records...")
+    try:
+        result = subprocess.run(
+            [sys.executable, daily_init_script],
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            errors='replace',  # Replace invalid characters instead of failing
+            timeout=10  # 10 second timeout
+        )
+        
+        if result.returncode == 0:
+            print("✓ Daily attendance initialized")
+            # Show output
+            if result.stdout:
+                output_lines = result.stdout.strip().split('\n')
+                for line in output_lines:
+                    if line.strip() and not line.startswith('='):
+                        print(f"  {line}")
+        else:
+            print("⚠️  Warning: Daily attendance initialization failed")
+            if result.stderr:
+                print(f"  Error: {result.stderr}")
+            print("  Continuing anyway...")
+    except subprocess.TimeoutExpired:
+        print("⚠️  Warning: Daily attendance initialization timed out")
+        print("  Continuing anyway...")
+    except Exception as e:
+        print(f"⚠️  Warning: Could not initialize daily attendance: {e}")
+        print("  Continuing anyway...")
+    
+    # Step 5: Start sync manager in background thread
+    print("\n[5/6] Starting background sync manager...")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     print("  - Push: Attendance logs to MySQL (every 5 seconds)")
     print("  - Pull: Employee/schedule updates from MySQL (every 60 seconds)")
     
@@ -162,8 +323,13 @@ def main():
         print(f"⚠️  Warning: Could not start sync manager: {e}")
         print("  Attendance logs will be stored locally but not synced")
     
+<<<<<<< HEAD
     # Step 4: Launch Kiosk system
     print("\n[4/4] Starting Kiosk Face Verification System...", flush=True)
+=======
+    # Step 6: Launch Kiosk system
+    print("\n[6/6] Starting Kiosk Face Verification System...", flush=True)
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     print("=" * 70, flush=True)
     print("\n💡 TIP: Attendance is logged automatically when faces are verified", flush=True)
     print("💡 TIP: Sync runs in background - logs are sent to MySQL automatically", flush=True)

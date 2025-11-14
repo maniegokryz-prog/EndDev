@@ -45,12 +45,17 @@ class EmployeeUpdater {
             }
             $employeeId = $employee['id'];
 
+<<<<<<< HEAD
             // Handle profile picture upload (only if not already uploaded via API)
             // If profile picture was uploaded via API, it's already in the database
             // Only handle file upload here if file is present in $_FILES
             if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPLOAD_ERR_OK) {
                 $this->handleProfilePictureUpload($employee);
             }
+=======
+            // Handle profile picture upload
+            $this->handleProfilePictureUpload($employee);
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
             // 1. Update basic employee info
             $this->updateEmployeeDetails($employeeId);
@@ -95,7 +100,12 @@ class EmployeeUpdater {
             }
 
             // --- File Processing ---
+<<<<<<< HEAD
             $uploadDir = dirname(__DIR__) . '/assets/profile_pic/';
+=======
+            // Upload to root/assets/profile_pic/ (go up 2 levels from processes folder)
+            $uploadDir = dirname(dirname(__DIR__)) . '/assets/profile_pic/';
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             if (!file_exists($uploadDir)) {
                 // Create the directory recursively. The mode is ignored on Windows.
                 if (!mkdir($uploadDir, 0755, true)) {
@@ -106,12 +116,43 @@ class EmployeeUpdater {
                 throw new Exception("The profile picture directory is not writable. Please check permissions: {$uploadDir}");
             }
 
+<<<<<<< HEAD
             // Generate a unique filename: employee_id_timestamp.ext
             $fileExtension = pathinfo($photo['name'], PATHINFO_EXTENSION);
             $newFilename = $this->validatedData['employee_id_string'] . '_' . time() . '.' . $fileExtension;
             $newFilepath = $uploadDir . $newFilename;
 
             // Move the uploaded file
+=======
+            // --- Delete Old Photos with Same Employee ID ---
+            // Remove ALL files starting with this employee ID (to avoid duplicates)
+            $employeeId = $this->validatedData['employee_id_string'];
+            $files = glob($uploadDir . $employeeId . '_*.*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                    $this->logActivity('Old profile picture deleted', "File: " . basename($file));
+                }
+            }
+            
+            // Also delete exact match if exists (e.g., MA22013613.jpg)
+            $extensions = ['jpg', 'jpeg', 'png', 'gif'];
+            foreach ($extensions as $ext) {
+                $exactFile = $uploadDir . $employeeId . '.' . $ext;
+                if (file_exists($exactFile) && is_file($exactFile)) {
+                    unlink($exactFile);
+                    $this->logActivity('Old profile picture deleted', "File: " . basename($exactFile));
+                }
+            }
+
+            // --- Generate Consistent Filename ---
+            // Use employee_id + extension (no timestamp, so it overwrites)
+            $fileExtension = pathinfo($photo['name'], PATHINFO_EXTENSION);
+            $newFilename = $employeeId . '.' . $fileExtension;
+            $newFilepath = $uploadDir . $newFilename;
+
+            // Move the uploaded file (overwrites if exists)
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             if (!move_uploaded_file($photo['tmp_name'], $newFilepath)) {
                 throw new Exception("Failed to save the uploaded profile picture.");
             }
@@ -121,7 +162,11 @@ class EmployeeUpdater {
             chmod($newFilepath, 0644);
 
             // --- Database Update ---
+<<<<<<< HEAD
             $relativePath = '../assets/profile_pic/' . $newFilename;
+=======
+            $relativePath = 'assets/profile_pic/' . $newFilename;
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             $stmt = $this->db->prepare("UPDATE employees SET profile_photo = ? WHERE id = ?");
             $stmt->bind_param('si', $relativePath, $employee['id']);
             if (!$stmt->execute()) {
@@ -130,6 +175,7 @@ class EmployeeUpdater {
                 throw new Exception("Failed to update profile picture path in the database.");
             }
 
+<<<<<<< HEAD
             // --- Cleanup Old Photo ---
             $oldPhotoPath = $employee['profile_photo'] ?? '';
             $defaultPhoto = '../../assets/profile_pic/user.png';
@@ -140,6 +186,8 @@ class EmployeeUpdater {
                 }
             }
 
+=======
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             $this->logActivity('Profile picture updated', "Employee ID: {$employee['id']}, Path: {$relativePath}");
         }
     }

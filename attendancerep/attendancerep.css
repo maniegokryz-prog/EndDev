@@ -254,4 +254,69 @@
     }
     .export-btn {
       min-width: 150px;
+<<<<<<< HEAD
     }
+=======
+    }
+
+  /* Date Range Picker Styling */
+  #dateRangePicker {
+    cursor: pointer;
+    background-color: white;
+  }
+
+  #dateRangePicker:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+
+  /* Filter Button Styling */
+  #filterBtn {
+    background-color: #103932;
+    border-color: #103932;
+  }
+
+  #filterBtn:hover {
+    background-color: #0d2d27;
+    border-color: #0d2d27;
+  }
+
+  /* Reset Button Styling */
+  #resetBtn:hover {
+    background-color: #6c757d;
+    color: white;
+    border-color: #6c757d;
+  }
+
+  /* Responsive adjustments for filter row */
+  @media (max-width: 768px) {
+    .d-flex.flex-wrap.gap-2 {
+      flex-direction: column !important;
+    }
+    
+    .d-flex.flex-wrap.gap-2 > * {
+      width: 100%;
+    }
+
+    .ms-auto {
+      margin-left: 0 !important;
+    }
+  }
+
+  /* Dropdown menu improvements */
+  .dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .dropdown-item:active {
+    background-color: #103932;
+    color: white;
+  }
+
+  /* Selected state for dropdown buttons */
+  .btn-outline-primary.selected {
+    background-color: #0d6efd;
+    color: white;
+  }
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5

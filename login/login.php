@@ -43,7 +43,11 @@
                     </button>
 
 
+<<<<<<< HEAD
                     <button type="button" class="btn btn-success w-100 fw-semibold" id="loginButton">
+=======
+                    <button type="button" class="btn btn-success w-100 fw-semibold" onclick="window.location.href='../dashboard/dashboard.php'">
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                     Log in
                     </button>
                 </form>
@@ -121,8 +125,37 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
     <script src="login.js"></script>
     <script src="auth_handler.js"></script>
+=======
+<script>
+    // Show Step 2
+document.getElementById("toStep2").onclick = function() {
+  new bootstrap.Modal(document.getElementById("modalStep2")).show();
+  bootstrap.Modal.getInstance(document.getElementById("modalStep1")).hide();
+};
+
+// Show Step 3
+document.getElementById("toStep3").onclick = function() {
+  new bootstrap.Modal(document.getElementById("modalStep3")).show();
+  bootstrap.Modal.getInstance(document.getElementById("modalStep2")).hide();
+};
+
+// Show Success Popup
+document.getElementById("finalStep").onclick = function() {
+  new bootstrap.Modal(document.getElementById("modalSuccess")).show();
+  bootstrap.Modal.getInstance(document.getElementById("modalStep3")).hide();
+};
+
+// Redirect to login.php after popup
+document.getElementById("goLogin").onclick = function() {
+  window.location.href = "login.php";
+};
+</script>
+
+    <script src="login.js"></script>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.js"></script>
 </body>
 </html>

@@ -230,9 +230,15 @@ $roles = $viewer->getDistinctRoles();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Bootstrap CSS -->
+<<<<<<< HEAD
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+=======
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
   <!-- Custom CSS -->
 <link rel="stylesheet" href="staff.css">
@@ -310,6 +316,10 @@ $roles = $viewer->getDistinctRoles();
                 <th>Name</th>
                 <th>Role</th>
                 <th>Department</th>
+<<<<<<< HEAD
+=======
+                <th>Position</th>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                 <th>View Profile</th>
               </tr>
             </thead>
@@ -323,7 +333,11 @@ $roles = $viewer->getDistinctRoles();
   </div>
   
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+<<<<<<< HEAD
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+=======
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
   <script src="staff.js"></script>
 </body>
 </html>

@@ -220,6 +220,16 @@
   margin-bottom: 12px;
   padding-bottom: 8px;
   border-bottom: 1px solid #eee;
+<<<<<<< HEAD
+=======
+  transition: background-color 0.2s ease;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.feed-item:hover {
+  background-color: #f8f9fa;
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 }
 
 .feed-item img {
@@ -227,6 +237,10 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+<<<<<<< HEAD
+=======
+  border: 2px solid #e0e0e0;
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 }
 
 .feed-info {
@@ -238,19 +252,59 @@
   margin: 0;
   font-size: 14px;
   font-weight: 600;
+<<<<<<< HEAD
   color: #007bff;
   cursor: pointer;
   transition: color 0.2s ease;
+=======
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 }
 
 .feed-info h6:hover {
   color: #0056b3;
+<<<<<<< HEAD
   text-decoration: underline;
 }
 
 .feed-info small {
   font-size: 12px;
   color: gray;
+=======
+}
+
+.feed-info small {
+  font-size: 14px;
+  display: block;
+  margin-top: 2px;
+}
+
+.feed-item > small {
+  font-size: 11px;
+  color: #999;
+  white-space: nowrap;
+}
+
+.time-ago-badge {
+  cursor: help;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.time-ago-badge:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* Loading spinner for attendance feed */
+.spinner-border-sm {
+  width: 1.5rem;
+  height: 1.5rem;
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 }
 
 .clickable-card {
@@ -522,6 +576,24 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
+<<<<<<< HEAD
+=======
+/* Hover effect for calendar days */
+.calendar-day:hover {
+  background-color: #e0e0e0;
+  color: #103932;
+  text-decoration: none;
+}
+
+/* Selected date highlight */
+.calendar-day.selected {
+  background-color: #103932 !important;
+  color: #ffffff !important;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(16, 57, 50, 0.3);
+}
+
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 /* Remove legacy highlight */
 .calendar-day.today {
   all: unset !important;

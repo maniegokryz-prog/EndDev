@@ -1,4 +1,18 @@
+<<<<<<< HEAD
    <!DOCTYPE html>
+=======
+<?php
+require_once '../db_connection.php';
+
+// Fetch all employees from the database
+$sql = "SELECT id, employee_id, first_name, middle_name, last_name, email, phone, roles, department, position, profile_photo, status 
+        FROM employees 
+        WHERE status = 'active'
+        ORDER BY last_name, first_name";
+$result = $conn->query($sql);
+?>
+<!DOCTYPE html>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,12 +22,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Bootstrap CSS -->
+<<<<<<< HEAD
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
   <!-- Custom CSS -->
 <link rel="stylesheet" href="attendancerep.css">
+=======
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Daterangepicker CSS -->
+  <link rel="stylesheet" type="text/css" href="../assets/vendor/daterangepicker/daterangepicker.css" />
+
+  <!-- Custom CSS -->
+<link rel="stylesheet" href="attendancerep.css">
+<style>
+  .table-wrapper {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+  }
+  .table-wrapper table {
+    margin-bottom: 0;
+  }
+  .table-wrapper thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+  }
+</style>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 </head>
 
 <body>
@@ -47,7 +90,11 @@
   <div class="container-fluid">
     <a href="attendancerep.php" class="btn btn-outline-secondary mb-3 mt-1">&larr; Back</a>
     <div class="d-flex justify-content-between align-items-center mb-4">
+<<<<<<< HEAD
       <h2 class="fw-bold display-4 text-dark">Export Reports</h2>
+=======
+      <h2 class="fw-bold display-4 text-dark">Export DTR Reports</h2>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
   </div>
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
  
@@ -56,6 +103,7 @@
 <div class="row g-2 mb-3 align-items-end">
 
   <div class="col-md-2">
+<<<<<<< HEAD
     <label for="dateFrom" class="form-label">Date From</label>
     <input type="date" id="dateFrom" class="form-control form-control-sm">
   </div>
@@ -77,19 +125,47 @@
       <option>Name</option>
       <option>Role</option>
       <option>Department</option>
+=======
+    <label class="form-label d-block">&nbsp;</label>
+    <button class="btn btn-outline-dark w-100" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
+  </div>
+
+  <div class="col-md-3">
+    <label for="dateRangePicker" class="form-label">Date Range</label>
+    <input type="text" class="form-control form-control-sm" id="dateRangePicker" placeholder="Select Date Range">
+  </div>
+
+  <div class="col-md-2">
+    <label for="sortBy" class="form-label">Sort By</label>
+    <select class="form-select form-select-sm" id="sortBy" onchange="sortTable()">
+      <option value="">Sort By</option>
+      <option value="name">Name</option>
+      <option value="role">Role</option>
+      <option value="department">Department</option>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     </select>
   </div>
 
   <div class="col-md-3">
+<<<<<<< HEAD
     <label class="form-label d-block">&nbsp;</label>
     <input type="text" class="form-control form-control-sm" placeholder="Search">
+=======
+    <label for="searchInput" class="form-label">Search</label>
+    <input type="text" class="form-control form-control-sm" placeholder="Search by name, ID, email, etc." id="searchInput" onkeyup="searchTable()">
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
   </div>
 
 </div>
 <body class="p-4">
 <!-- Table -->
+<<<<<<< HEAD
 <div class="table-responsive mt-5">
   <table class="table table-bordered">
+=======
+<div class="table-wrapper mt-5">
+  <table class="table table-bordered" id="employeeTable">
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     <thead class="table-light">
       <tr>
         <th>Select</th>
@@ -102,6 +178,7 @@
     </thead>
 
     <tbody>
+<<<<<<< HEAD
       <tr>
         <td><input type="checkbox"></td>
         <td>
@@ -134,6 +211,39 @@
         <td>Non-Teaching Staff</td>
         <td>Registrar's Office</td>
       </tr>
+=======
+      <?php
+      if ($result && $result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+          $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ? $row['middle_name'] . ' ' : '') . $row['last_name']);
+          $profilePic = !empty($row['profile_photo']) ?'' . $row['profile_photo'] : 'pic.png';
+          $email = !empty($row['email']) ? htmlspecialchars($row['email']) : 'N/A';
+          $phone = !empty($row['phone']) ? htmlspecialchars($row['phone']) : 'N/A';
+          $roles = !empty($row['roles']) ? htmlspecialchars($row['roles']) : 'N/A';
+          $department = !empty($row['department']) ? htmlspecialchars($row['department']) : 'N/A';
+          
+          echo '<tr data-employee-id="' . $row['id'] . '">';
+          echo '<td><input type="checkbox" class="employee-checkbox" data-employee-id="' . $row['id'] . '"></td>';
+          echo '<td>';
+          echo '  <div class="d-flex align-items-center">';
+          echo '    <img src="' . $profilePic . '" class="rounded-circle me-3" width="40" height="40" onerror="this.src=\'pic.png\'">';
+          echo '    <div class="d-flex flex-column">';
+          echo '      <span class="fw-semibold employee-name">' . htmlspecialchars($fullName) . '</span>';
+          echo '      <small class="text-muted employee-id">' . htmlspecialchars($row['employee_id']) . '</small>';
+          echo '    </div>';
+          echo '  </div>';
+          echo '</td>';
+          echo '<td class="employee-email">' . $email . '</td>';
+          echo '<td class="employee-phone">' . $phone . '</td>';
+          echo '<td class="employee-role">' . $roles . '</td>';
+          echo '<td class="employee-department">' . $department . '</td>';
+          echo '</tr>';
+        }
+      } else {
+        echo '<tr><td colspan="6" class="text-center">No employees found</td></tr>';
+      }
+      ?>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
     </tbody>
     
   </table>
@@ -193,6 +303,7 @@
   </div>
 </div>
 
+<<<<<<< HEAD
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -202,6 +313,128 @@
   function openConfirmModal(type) {
     exportType = type;
     const selected = document.querySelectorAll("tbody input[type=checkbox]:checked").length;
+=======
+<!-- jQuery (required for daterangepicker) -->
+<script src="../assets/vendor/jquery/jquery.min.js"></script>
+
+<!-- Moment.js (required for daterangepicker) -->
+<script src="../assets/vendor/moment/moment.min.js"></script>
+
+<!-- Daterangepicker JS -->
+<script src="../assets/vendor/daterangepicker/daterangepicker.min.js"></script>
+
+<!-- Bootstrap Bundle -->
+<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  let exportType = '';
+  let allSelected = false;
+  let selectedDateRange = null;
+
+  // Initialize Date Range Picker
+  $(document).ready(function() {
+    $('#dateRangePicker').daterangepicker({
+      autoUpdateInput: false,
+      locale: {
+        cancelLabel: 'Clear',
+        format: 'YYYY-MM-DD'
+      }
+    });
+
+    // Update date range input when dates are selected
+    $('#dateRangePicker').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+      selectedDateRange = {
+        start: picker.startDate.format('YYYY-MM-DD'),
+        end: picker.endDate.format('YYYY-MM-DD')
+      };
+    });
+
+    $('#dateRangePicker').on('cancel.daterangepicker', function(ev, picker) {
+      $(this).val('');
+      selectedDateRange = null;
+    });
+  });
+
+  // Toggle Select All functionality
+  function toggleSelectAll() {
+    const checkboxes = document.querySelectorAll('.employee-checkbox');
+    const visibleCheckboxes = Array.from(checkboxes).filter(cb => {
+      const row = cb.closest('tr');
+      return row.style.display !== 'none';
+    });
+    
+    allSelected = !allSelected;
+    visibleCheckboxes.forEach(checkbox => {
+      checkbox.checked = allSelected;
+    });
+    
+    document.getElementById('selectAllBtn').textContent = allSelected ? 'Deselect All' : 'Select All';
+  }
+
+  // Search functionality
+  function searchTable() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('employeeTable');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      const name = row.querySelector('.employee-name')?.textContent.toLowerCase() || '';
+      const id = row.querySelector('.employee-id')?.textContent.toLowerCase() || '';
+      const email = row.querySelector('.employee-email')?.textContent.toLowerCase() || '';
+      const role = row.querySelector('.employee-role')?.textContent.toLowerCase() || '';
+      const department = row.querySelector('.employee-department')?.textContent.toLowerCase() || '';
+
+      if (name.includes(filter) || id.includes(filter) || email.includes(filter) || 
+          role.includes(filter) || department.includes(filter)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+  }
+
+  // Sort functionality
+  function sortTable() {
+    const sortBy = document.getElementById('sortBy').value;
+    const table = document.getElementById('employeeTable');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+
+    if (!sortBy) return;
+
+    rows.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch(sortBy) {
+        case 'name':
+          aValue = a.querySelector('.employee-name')?.textContent || '';
+          bValue = b.querySelector('.employee-name')?.textContent || '';
+          break;
+        case 'role':
+          aValue = a.querySelector('.employee-role')?.textContent || '';
+          bValue = b.querySelector('.employee-role')?.textContent || '';
+          break;
+        case 'department':
+          aValue = a.querySelector('.employee-department')?.textContent || '';
+          bValue = b.querySelector('.employee-department')?.textContent || '';
+          break;
+        default:
+          return 0;
+      }
+      
+      return aValue.localeCompare(bValue);
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+  }
+
+  function openConfirmModal(type) {
+    exportType = type;
+    const selected = document.querySelectorAll(".employee-checkbox:checked").length;
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 
     if (selected === 0) {
       new bootstrap.Modal(document.getElementById("warningModal")).show();
@@ -229,6 +462,7 @@
   }
 
   function performExport(type) {
+<<<<<<< HEAD
     // Put your actual export logic here (PDF/Excel generation)
     console.log(`Exporting as ${type}...`);
   }
@@ -238,5 +472,30 @@
   <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
  <script src="attendancerep.js"></script>
+=======
+    // Get selected employee IDs
+    const selectedCheckboxes = document.querySelectorAll('.employee-checkbox:checked');
+    const employeeIds = Array.from(selectedCheckboxes).map(cb => cb.dataset.employeeId);
+    
+    // Get date range
+    let dateFrom = '';
+    let dateTo = '';
+    if (selectedDateRange) {
+      dateFrom = selectedDateRange.start;
+      dateTo = selectedDateRange.end;
+    }
+    
+    console.log(`Exporting as ${type}...`);
+    console.log('Selected employee IDs:', employeeIds);
+    console.log('Date range:', dateFrom, 'to', dateTo);
+    
+    // TODO: Implement actual export logic here
+    // You can create a form and submit it to a PHP script that generates PDF/Excel
+  }
+</script>
+
+<!-- Custom JS -->
+<script src="attendancerep.js"></script>
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
 </body>
 </html>

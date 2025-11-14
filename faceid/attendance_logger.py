@@ -248,7 +248,11 @@ class AttendanceLogger:
             # Get current day of week (0=Monday, 6=Sunday)
             day_of_week = log_datetime.weekday()
             
+<<<<<<< HEAD
             # Get employee's active schedule for today
+=======
+            # Get employee's active schedule for today (all periods for calculation purposes)
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             cursor.execute("""
                 SELECT sp.start_time, sp.end_time, sp.period_name
                 FROM employee_schedules es
@@ -258,23 +262,43 @@ class AttendanceLogger:
                   AND sp.day_of_week = ?
                   AND sp.is_active = 1
                   AND (es.end_date IS NULL OR es.end_date >= ?)
+<<<<<<< HEAD
                 ORDER BY es.effective_date DESC
                 LIMIT 1
             """, (employee_db_id, day_of_week, log_datetime.strftime('%Y-%m-%d')))
             
             schedule = cursor.fetchone()
+=======
+                ORDER BY CAST(sp.start_time AS TIME) ASC
+            """, (employee_db_id, day_of_week, log_datetime.strftime('%Y-%m-%d')))
+            
+            schedule_periods = cursor.fetchall()
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             
             if close_conn:
                 conn.close()
             
             # If no schedule found, return generic message
+<<<<<<< HEAD
             if schedule is None:
+=======
+            if not schedule_periods:
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                 if log_type == 'time_in':
                     return "Time In: No schedule assigned"
                 else:
                     return "Time Out: No schedule assigned"
             
+<<<<<<< HEAD
             start_time_str, end_time_str, period_name = schedule
+=======
+            # For time_in: use FIRST period start time (earliest start of the day)
+            # For time_out: use LAST period end time (latest end of the day)
+            if log_type == 'time_in':
+                start_time_str, end_time_str, period_name = schedule_periods[0]
+            else:
+                start_time_str, end_time_str, period_name = schedule_periods[-1]
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             
             # Parse schedule times (format: HH:MM:SS)
             scheduled_time_str = start_time_str if log_type == 'time_in' else end_time_str
@@ -371,7 +395,11 @@ class AttendanceLogger:
                   AND sp.day_of_week = ?
                   AND sp.is_active = 1
                   AND (es.end_date IS NULL OR es.end_date >= ?)
+<<<<<<< HEAD
                 ORDER BY sp.start_time ASC
+=======
+                ORDER BY CAST(sp.start_time AS TIME) ASC
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
             """, (employee_db_id, day_of_week, log_date))
             
             schedule_periods = cursor.fetchall()
@@ -381,7 +409,12 @@ class AttendanceLogger:
                 late_minutes = 0
                 
                 if schedule_periods:
+<<<<<<< HEAD
                     # Calculate late minutes based on first period start time
+=======
+                    # Calculate late minutes based on FIRST period start time
+                    # This is because lateness is measured from the start of the workday
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                     first_period_start = schedule_periods[0][0]
                     scheduled_hour, scheduled_minute, scheduled_second = map(int, first_period_start.split(':'))
                     scheduled_datetime = log_datetime.replace(
@@ -394,6 +427,11 @@ class AttendanceLogger:
                     time_diff = (log_datetime - scheduled_datetime).total_seconds() / 60
                     if time_diff > 0:
                         late_minutes = int(time_diff)
+<<<<<<< HEAD
+=======
+                    
+                    print(f"     🎯 First period start: {first_period_start}, Late: {late_minutes} min")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                 
                 if existing_record:
                     # Update existing record
@@ -452,6 +490,7 @@ class AttendanceLogger:
                 print(f"     📅 Schedule periods found: {len(schedule_periods)}")
                 
                 if schedule_periods and time_in_str:
+<<<<<<< HEAD
                     # Calculate scheduled_hours: from first period start to last period end
                     # NOTE: Result is stored in MINUTES (field name is misleading)
                     first_start = schedule_periods[0][0]
@@ -469,6 +508,11 @@ class AttendanceLogger:
                     
                     # Calculate actual_hours from schedule periods (sum of all periods)
                     total_period_minutes = 0
+=======
+                    # Calculate scheduled_hours: sum of all period durations
+                    # NOTE: Result is stored in MINUTES (field name is misleading)
+                    scheduled_hours = 0
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                     for period in schedule_periods:
                         start_time = period[0]
                         end_time = period[1]
@@ -477,11 +521,35 @@ class AttendanceLogger:
                         end_hour, end_minute, _ = map(int, end_time.split(':'))
                         
                         period_minutes = (end_hour * 60 + end_minute) - (start_hour * 60 + start_minute)
+<<<<<<< HEAD
                         total_period_minutes += period_minutes
                     
                     print(f"     ⏱️  Total period minutes (sum of all periods): {total_period_minutes}")
                     
                     # Calculate early departure or overtime
+=======
+                        scheduled_hours += period_minutes
+                    
+                    print(f"     ⏰ Scheduled hours (sum of all periods): {scheduled_hours} min ({scheduled_hours/60.0:.2f}h)")
+                    
+                    # Calculate actual_hours: time worked from time_in to time_out
+                    # NOTE: Result is stored in MINUTES (field name is misleading)
+                    # Parse time_in
+                    time_in_hour, time_in_minute, time_in_second = map(int, time_in_str.split(':'))
+                    time_in_datetime = log_datetime.replace(
+                        hour=time_in_hour,
+                        minute=time_in_minute,
+                        second=time_in_second,
+                        microsecond=0
+                    )
+                    
+                    # Calculate actual minutes worked
+                    actual_hours = int((log_datetime - time_in_datetime).total_seconds() / 60)
+                    print(f"     ⏱️  Actual hours (time_in to time_out): {actual_hours} min ({actual_hours/60.0:.2f}h)")
+                    
+                    # Calculate early departure or overtime based on last period end time
+                    last_end = schedule_periods[-1][1]
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                     last_end_hour, last_end_minute, last_end_second = map(int, last_end.split(':'))
                     scheduled_end_datetime = log_datetime.replace(
                         hour=last_end_hour,
@@ -501,6 +569,7 @@ class AttendanceLogger:
                         overtime_minutes = int(time_diff)
                         print(f"     ⏰ Overtime detected: {overtime_minutes} minutes")
                     
+<<<<<<< HEAD
                     # Calculate actual_hours: total period minutes - late minutes - undertime minutes
                     # NOTE: Result is stored in MINUTES (field name is misleading)
                     # Formula: total_period_minutes - late_minutes - early_departure_minutes
@@ -513,6 +582,9 @@ class AttendanceLogger:
                     actual_hours = actual_minutes  # Store as minutes (not hours)
                     
                     print(f"     📊 Calculation: {total_period_minutes} min - {late_minutes} min (late) - {early_departure_minutes} min (undertime) = {actual_minutes} min ({actual_minutes/60.0:.2f}h)")
+=======
+                    print(f"     📊 Scheduled: {scheduled_hours} min ({scheduled_hours/60.0:.2f}h), Actual: {actual_hours} min ({actual_hours/60.0:.2f}h)")
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
                 
                 # Determine status: complete if both time_in and time_out exist
                 status = 'complete' if time_in_str and log_time_str else 'incomplete'

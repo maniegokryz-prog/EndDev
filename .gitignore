@@ -13,4 +13,10 @@ wheels/
 uploads/
 logs/
 faceid/database/
+<<<<<<< HEAD
 faceid/__pycache__ 
+=======
+faceid/__pycache__ 
+profile_pic/
+assets/profile_pic
+>>>>>>> de54bce0e298425ce30c77eb7e2cb27b74dc8ef5
