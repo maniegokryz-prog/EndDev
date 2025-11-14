@@ -16,3 +16,4 @@ faceid/database/
 faceid/__pycache__ 
 profile_pic/
 assets/profile_pic
+staffmanagement/logs/
