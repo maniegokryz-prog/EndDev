@@ -718,6 +718,7 @@ def check_undertime_and_confirm(employee_db_id):
 def load_profile_pictures(employee_info, user_profile_dir):
     """
     Load all employee profile pictures into memory to avoid disk I/O in the loop.
+    Supports both exact filename matches and filename patterns with timestamps.
     """
     profile_pics = {}
     default_pic = None
@@ -737,18 +738,45 @@ def load_profile_pictures(employee_info, user_profile_dir):
             continue
         
         loaded_pic = None
+        
+        # Try exact match first (e.g., MA22013613.jpg)
         for ext in ['jpg', 'png', 'jpeg']:
             path = os.path.join(user_profile_dir, f"{emp_code}.{ext}")
             if os.path.exists(path):
                 pic = cv2.imread(path)
                 if pic is not None:
                     loaded_pic = pic
+                    print(f"✓ Loaded profile picture for {emp_code}: {path}")
                     break
+        
+        # If exact match not found, try pattern match (e.g., MA22013613_*.jpg)
+        if loaded_pic is None:
+            try:
+                # Get all files in the directory
+                all_files = os.listdir(user_profile_dir)
+                
+                # Look for files that start with employee code
+                for filename in all_files:
+                    # Check if filename starts with employee code
+                    if filename.startswith(emp_code):
+                        # Check if it has a valid image extension
+                        if filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+                            path = os.path.join(user_profile_dir, filename)
+                            pic = cv2.imread(path)
+                            if pic is not None:
+                                loaded_pic = pic
+                                print(f"✓ Loaded profile picture for {emp_code}: {path}")
+                                break
+            except Exception as e:
+                print(f"⚠️  Error searching for profile picture for {emp_code}: {e}")
         
         if loaded_pic is not None:
             profile_pics[emp_code] = loaded_pic
         elif default_pic is not None:
             profile_pics[emp_code] = default_pic
+            print(f"⚠️  Using default picture for {emp_code}")
+        else:
+            print(f"⚠️  No profile picture found for {emp_code}")
             
     print(f"✓ Loaded {len(profile_pics)} profile pictures into memory.")
     return profile_pics

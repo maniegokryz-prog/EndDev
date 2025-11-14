@@ -456,14 +456,30 @@ class EmployeeProcessor{
     }
 
     private function sendSuccessResponse($data) {
-        // Log to console/system log instead of displaying JSON
-        error_log("Employee Addition Success: " . $data['message'] . " - Employee ID: " . ($data['employee_id'] ?? 'Unknown'));
-        
         // Store success message in session
         $_SESSION['success_message'] = $data['message'];
         
-        // Redirect to staff management page
-        header('Location: ../staff.php');
+        // Log to file (not to output)
+        $log_dir = dirname(__DIR__) . '/logs/';
+        if (!file_exists($log_dir)) {
+            mkdir($log_dir, 0755, true);
+        }
+        $log_entry = "[" . date('Y-m-d H:i:s') . "] Employee Addition Success: " . $data['message'] . " - Employee ID: " . ($data['employee_id'] ?? 'Unknown') . PHP_EOL;
+        file_put_contents($log_dir . 'system.log', $log_entry, FILE_APPEND | LOCK_EX);
+        
+        // Use JavaScript redirect to avoid header issues
+        echo '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script>
+        window.location.href = "../staff.php";
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
+</html>';
         exit;
     }
 

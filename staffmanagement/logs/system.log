@@ -464,3 +464,171 @@ Images deleted: 5
 [2025-11-14 18:24:12] [ACTIVITY] Employee records retrieved - 1 records
 [2025-11-14 18:26:16] [ACTIVITY] Employee records retrieved - 1 records
 [2025-11-14 18:30:46] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-14 18:36:28] [ACTIVITY] Employee records retrieved - 0 records
+[2025-11-14 18:40:35] [ACTIVITY] Employee records retrieved - 0 records
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Employee addition request started - POST request received
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_1.png, Angle: front, Employee: MA22013613
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_2.png, Angle: left, Employee: MA22013613
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_3.png, Angle: right, Employee: MA22013613
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_4.png, Angle: up, Employee: MA22013613
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_5.png, Angle: down, Employee: MA22013613
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Schedule Template Created - Employee: 1, Schedule ID: 1
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Starting Face Embedding Generation - Employee ID: MA22013613, DB ID: 1
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Face Embedding Generation Started - Employee ID: MA22013613, DB ID: 1
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Python Detection Debug - Project Root: C:\inetpub\wwwroot\Test\EndDev
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking VENV: C:\inetpub\wwwroot\Test\EndDev\.venv\Scripts\python.exe | Exists: YES
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Python Executable Found - Path: C:\inetpub\wwwroot\Test\EndDev\.venv\Scripts\python.exe (VENV)
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Python Executable Command - C:\inetpub\wwwroot\Test\EndDev\.venv\Scripts\python.exe
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Script Path - C:\inetpub\wwwroot\Test\EndDev\staffmanagement\generate_face_embeddings.py
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Face Embedding Generation - Using VENV Python. Skipping SET PYTHONPATH.
+[2025-11-14 18:41:30] [ACTIVITY] [IP: ::1] Executing Python Script - Command: cmd /c ""C:\inetpub\wwwroot\Test\EndDev\.venv\Scripts\python.exe" "C:\inetpub\wwwroot\Test\EndDev\staffmanagement\generate_face_embeddings.py" "MA22013613" "1" "localhost" "root" "Confirmp@ssword123" "database_records" 2>&1"
+[2025-11-14 18:41:46] [ACTIVITY] [IP: ::1] Python Script Output - === Face Embedding Generation ===
+Employee ID: MA22013613
+Database Employee ID: 1
+Database: database_records @ localhost
+========================================
+Initializing AuraFace model...
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files: 100%|##########| 8/8 [00:00<00:00, 245.35it/s]
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\1k3d68.onnx landmark_3d_68 ['None', 3, 192, 192] 0.0 1.0
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\2d106det.onnx landmark_2d_106 ['None', 3, 192, 192] 0.0 1.0
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\genderage.onnx genderage ['None', 3, 96, 96] 0.0 1.0
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\glintr100.onnx recognition ['None', 3, 112, 112] 127.5 127.5
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\scrfd_10g_bnkps.onnx detection [1, 3, '?', '?'] 127.5 128.0
+set det-size: (640, 640)
+AuraFace model ready (GPU mode).
+Found 5 face photo(s) for employee MA22013613
+
+Processing: MA22013613_Mike_Enriques_1.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_1.png
+Saved embedding to database (ID: 1)
+[OK] Deleted image file: MA22013613_Mike_Enriques_1.png
+
+Processing: MA22013613_Mike_Enriques_2.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_2.png
+Saved embedding to database (ID: 2)
+[OK] Deleted image file: MA22013613_Mike_Enriques_2.png
+
+Processing: MA22013613_Mike_Enriques_3.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_3.png
+Saved embedding to database (ID: 3)
+[OK] Deleted image file: MA22013613_Mike_Enriques_3.png
+
+Processing: MA22013613_Mike_Enriques_4.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_4.png
+Saved embedding to database (ID: 4)
+[OK] Deleted image file: MA22013613_Mike_Enriques_4.png
+
+Processing: MA22013613_Mike_Enriques_5.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_5.png
+Saved embedding to database (ID: 5)
+[OK] Deleted image file: MA22013613_Mike_Enriques_5.png
+
+=== Summary ===
+Total photos processed: 5
+Embeddings successfully saved: 5
+Images deleted: 5
+
+[SUCCESS] Successfully generated and saved 5 face embedding(s)
+[2025-11-14 18:41:46] [ACTIVITY] [IP: ::1] Face Embedding Generation Successful - Employee ID: MA22013613
+[2025-11-14 18:41:46] [ACTIVITY] [IP: ::1] Face Embeddings Generated Successfully - Employee DB ID: 1
+[2025-11-14 18:41:46] [ACTIVITY] [IP: ::1] Employee added successfully - Employee ID: MA22013613
+[2025-11-14 18:50:01] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-14 18:50:03] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 18:52:25] [ACTIVITY] Employee records retrieved - 0 records
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Employee addition request started - POST request received
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_1.png, Angle: front, Employee: MA22013613
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_2.png, Angle: left, Employee: MA22013613
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_3.png, Angle: right, Employee: MA22013613
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_4.png, Angle: up, Employee: MA22013613
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA22013613_Mike_Enriques_5.png, Angle: down, Employee: MA22013613
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Schedule Template Created - Employee: 1, Schedule ID: 1
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Starting Face Embedding Generation - Employee ID: MA22013613, DB ID: 1
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Face Embedding Generation Started - Employee ID: MA22013613, DB ID: 1
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Project Root: C:\inetpub\wwwroot\Test\EndDev
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking VENV: C:\inetpub\wwwroot\Test\EndDev\.venv\Scripts\python.exe | Exists: YES
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Python Executable Found - Path: C:\inetpub\wwwroot\Test\EndDev\.venv\Scripts\python.exe (VENV)
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Python Executable Command - C:\inetpub\wwwroot\Test\EndDev\.venv\Scripts\python.exe
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Script Path - C:\inetpub\wwwroot\Test\EndDev\staffmanagement\generate_face_embeddings.py
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Face Embedding Generation - Using VENV Python. Skipping SET PYTHONPATH.
+[2025-11-14 18:53:12] [ACTIVITY] [IP: ::1] Executing Python Script - Command: cmd /c ""C:\inetpub\wwwroot\Test\EndDev\.venv\Scripts\python.exe" "C:\inetpub\wwwroot\Test\EndDev\staffmanagement\generate_face_embeddings.py" "MA22013613" "1" "localhost" "root" "Confirmp@ssword123" "database_records" 2>&1"
+[2025-11-14 18:53:20] [ACTIVITY] [IP: ::1] Python Script Output - === Face Embedding Generation ===
+Employee ID: MA22013613
+Database Employee ID: 1
+Database: database_records @ localhost
+========================================
+Initializing AuraFace model...
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files: 100%|##########| 8/8 [00:00<00:00, 643.71it/s]
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\1k3d68.onnx landmark_3d_68 ['None', 3, 192, 192] 0.0 1.0
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\2d106det.onnx landmark_2d_106 ['None', 3, 192, 192] 0.0 1.0
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\genderage.onnx genderage ['None', 3, 96, 96] 0.0 1.0
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\glintr100.onnx recognition ['None', 3, 112, 112] 127.5 127.5
+Applied providers: ['CPUExecutionProvider'], with options: {'CPUExecutionProvider': {}}
+find model: C:\inetpub\wwwroot\Test\EndDev\staffmanagement\..\faceid\models\auraface\scrfd_10g_bnkps.onnx detection [1, 3, '?', '?'] 127.5 128.0
+set det-size: (640, 640)
+AuraFace model ready (GPU mode).
+Found 5 face photo(s) for employee MA22013613
+
+Processing: MA22013613_Mike_Enriques_1.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_1.png
+Saved embedding to database (ID: 1)
+[OK] Deleted image file: MA22013613_Mike_Enriques_1.png
+
+Processing: MA22013613_Mike_Enriques_2.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_2.png
+Saved embedding to database (ID: 2)
+[OK] Deleted image file: MA22013613_Mike_Enriques_2.png
+
+Processing: MA22013613_Mike_Enriques_3.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_3.png
+Saved embedding to database (ID: 3)
+[OK] Deleted image file: MA22013613_Mike_Enriques_3.png
+
+Processing: MA22013613_Mike_Enriques_4.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_4.png
+Saved embedding to database (ID: 4)
+[OK] Deleted image file: MA22013613_Mike_Enriques_4.png
+
+Processing: MA22013613_Mike_Enriques_5.png
+Successfully extracted embedding from MA22013613_Mike_Enriques_5.png
+Saved embedding to database (ID: 5)
+[OK] Deleted image file: MA22013613_Mike_Enriques_5.png
+
+=== Summary ===
+Total photos processed: 5
+Embeddings successfully saved: 5
+Images deleted: 5
+
+[SUCCESS] Successfully generated and saved 5 face embedding(s)
+[2025-11-14 18:53:20] [ACTIVITY] [IP: ::1] Face Embedding Generation Successful - Employee ID: MA22013613
+[2025-11-14 18:53:20] [ACTIVITY] [IP: ::1] Face Embeddings Generated Successfully - Employee DB ID: 1
+[2025-11-14 18:53:20] [ACTIVITY] [IP: ::1] Employee added successfully - Employee ID: MA22013613
+[2025-11-14 18:53:20] Employee Addition Success: Employee added successfully. - Employee ID: 1
+[2025-11-14 18:53:20] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-14 18:53:24] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 18:59:39] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:18:12] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:20:15] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-14 19:20:43] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:21:15] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:22:04] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-14 19:22:06] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-14 19:25:35] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-14 19:25:36] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:25:43] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:25:45] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:25:58] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:26:27] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:26:32] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-14 19:26:34] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:27:01] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-14 19:27:03] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
+[2025-11-14 19:38:27] [ACTIVITY] Employee details viewed - Employee ID: MA22013613
