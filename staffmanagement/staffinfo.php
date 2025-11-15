@@ -2806,6 +2806,111 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
+<!-- Edit Schedule Notification Modals -->
+<!-- 1. No Working Day Selected Modal -->
+<div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
+      <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Schedule Missing Time Modal -->
+<div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
+      <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Invalid Time Order Modal -->
+<div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
+      <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Faculty Missing Fields Modal -->
+<div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-warning">Required Fields</h5>
+      <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for schedules!</p>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Schedule Added Success Modal -->
+<div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
+      <p id="scheduleAddedSuccessMsg">Your schedule has been added.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Schedule Updated Success Modal -->
+<div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
+      <p id="scheduleUpdatedSuccessMsg">Your schedule has been updated.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 7. Clear All Schedules Confirm Modal -->
+<div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-warning">Confirm Clear All</h5>
+      <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <button type="button" class="btn btn-danger" id="scheduleClearConfirmBtn">Yes, Clear All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. Clear All Schedules Success Modal (No OK button, auto-close) -->
+<div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
+      <p id="scheduleClearedSuccessMsg">All schedules have been cleared!</p>
+    </div>
+  </div>
+</div>
+
+<!-- 9. Schedule Saved Success Modal -->
+<div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
+      <p id="scheduleSavedSuccessMsg">Schedule updated successfully!</p>
+    </div>
+  </div>
+</div>
+
+<!-- 10. Schedule No Data Modal -->
+<div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
+      <p id="scheduleNoDataMsg">No schedules to clear!</p>
+    </div>
+  </div>
+</div>
+
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 <!-- Bootstrap JS (Local - Works Offline) -->
 <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

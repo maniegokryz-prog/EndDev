@@ -54,3 +54,11 @@
 [2025-11-16 01:56:37] [ACTIVITY] Old schedule periods and assignments deleted - Schedule ID: 1
 [2025-11-16 01:56:37] [ACTIVITY] New schedule periods and assignments created - Schedule ID: 1, Blocks: 2
 [2025-11-16 01:56:37] [ACTIVITY] Employee schedule updated successfully - Employee ID: MA1234567890
+[2025-11-16 02:31:58] [ACTIVITY] Employee schedule update request started
+[2025-11-16 02:31:58] [ACTIVITY] Old schedule periods and assignments deleted - Schedule ID: 1
+[2025-11-16 02:31:58] [ACTIVITY] No schedule data provided for update - Employee ID: 1
+[2025-11-16 02:31:58] [ACTIVITY] Employee schedule updated successfully - Employee ID: MA1234567890
+[2025-11-16 02:41:15] [ACTIVITY] Employee schedule update request started
+[2025-11-16 02:41:15] [ACTIVITY] Old schedule periods and assignments deleted - Schedule ID: 1
+[2025-11-16 02:41:15] [ACTIVITY] No schedule data provided for update - Employee ID: 1
+[2025-11-16 02:41:15] [ACTIVITY] Employee schedule updated successfully - Employee ID: MA1234567890
