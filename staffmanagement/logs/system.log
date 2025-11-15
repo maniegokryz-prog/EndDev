@@ -1028,3 +1028,61 @@ Images deleted: 3
 [2025-11-15 23:40:45] [ACTIVITY] [IP: ::1] Employee added successfully - Employee ID: MA229123123432
 [2025-11-15 23:40:45] Employee Addition Success: Employee added successfully. - Employee ID: 3
 [2025-11-15 23:40:45] [ACTIVITY] Employee records retrieved - 3 records
+[2025-11-16 00:16:20] [ACTIVITY] Employee records retrieved - 0 records
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Employee addition request started - POST request received
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA1234567890_kryzs_maniego_1.png, Angle: front, Employee: MA1234567890
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA1234567890_kryzs_maniego_2.png, Angle: left, Employee: MA1234567890
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA1234567890_kryzs_maniego_3.png, Angle: right, Employee: MA1234567890
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA1234567890_kryzs_maniego_4.png, Angle: up, Employee: MA1234567890
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Face Photo Saved - File: MA1234567890_kryzs_maniego_5.png, Angle: down, Employee: MA1234567890
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Schedule Template Created - Employee: 1, Schedule ID: 1
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Starting Face Embedding Generation - Employee ID: MA1234567890, DB ID: 1
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Face Embedding Generation Started - Employee ID: MA1234567890, DB ID: 1
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Python Detection Debug - Project Root: C:\inetpub\wwwroot\EndDev
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Python Detection Debug - Checking VENV: C:\inetpub\wwwroot\EndDev\.venv\Scripts\python.exe | Exists: YES
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Python Executable Found - Path: C:\inetpub\wwwroot\EndDev\.venv\Scripts\python.exe (VENV)
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Python Executable Command - C:\inetpub\wwwroot\EndDev\.venv\Scripts\python.exe
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Script Path - C:\inetpub\wwwroot\EndDev\staffmanagement\generate_face_embeddings.py
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Face Embedding Generation - Using VENV Python. Skipping SET PYTHONPATH.
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Executing Python Script - Command: "C:\inetpub\wwwroot\EndDev\.venv\Scripts\python.exe" "C:\inetpub\wwwroot\EndDev\staffmanagement\generate_face_embeddings.py" "MA1234567890" "1" "localhost" "root" "Confirmp@ssword123" "database_records" 2>&1
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Python Script Output - No Python at '"C:\Users\justi\AppData\Roaming\uv\python\cpython-3.10.11-windows-x86_64-none\python.exe'
+[2025-11-16 00:17:37] [ERROR] [IP: ::1] [add_employee.php] Context: Face Embedding Generation Failed - Message: Return code: 103, Output: No Python at '"C:\Users\justi\AppData\Roaming\uv\python\cpython-3.10.11-windows-x86_64-none\python.exe'
+[2025-11-16 00:17:37] [ERROR] [IP: ::1] [add_employee.php] Context: Face Embedding Generation Warning - Message: Failed to generate embeddings for employee 1. Employee record was created successfully. Embeddings can be regenerated manually.
+[2025-11-16 00:17:37] [ACTIVITY] [IP: ::1] Employee added successfully - Employee ID: MA1234567890
+[2025-11-16 00:17:37] Employee Addition Success: Employee added successfully. - Employee ID: 1
+[2025-11-16 00:17:38] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-16 00:17:41] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:17:51] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:17:51] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:18:00] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:18:04] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:18:04] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:18:11] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:18:26] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:18:26] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:19:00] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:19:03] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:19:03] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:19:16] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:19:19] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:19:50] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:19:58] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:19:58] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:20:57] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:21:04] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:21:04] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:23:52] [ACTIVITY] Employee records retrieved - 1 records
+[2025-11-16 00:23:54] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:23:59] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:24:10] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:24:18] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:24:18] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:26:37] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:26:42] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:26:44] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:28:02] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:28:09] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:28:14] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:28:32] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:28:37] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890
+[2025-11-16 00:28:39] [ACTIVITY] Employee details viewed - Employee ID: MA1234567890

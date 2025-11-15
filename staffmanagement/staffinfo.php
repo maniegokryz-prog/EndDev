@@ -683,7 +683,17 @@ $schedules = $viewer->getSchedules();
   </div>
 </div>
 
- <!-- 🔹 Confirm Removal Modal -->
+   <!-- Save Success Modal (shown after editing and saving employee info) -->
+   <div class="modal fade" id="saveSuccessModal" tabindex="-1" aria-hidden="true">
+     <div class="modal-dialog modal-dialog-centered">
+       <div class="modal-content p-4 text-center">
+         <h5 class="fw-bold mb-3 text-success">Save Successful</h5>
+         <p>Your changes have been saved successfully.</p>
+       </div>
+     </div>
+   </div>
+
+   <!-- 🔹 Confirm Removal Modal -->
 <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -705,6 +715,24 @@ $schedules = $viewer->getSchedules();
       <p>The employee has been moved to the archive.</p>
       <div class="mt-3">
         <button class="btn btn-success" id="successOkBtn">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="successModalLabel">✅ Save Successful</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Your changes have been saved successfully.</p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn btn-primary" id="goToProfile">Go to Profile</button>
       </div>
     </div>
   </div>
@@ -736,6 +764,59 @@ $schedules = $viewer->getSchedules();
       setTimeout(() => window.location.href = "staff.php", 400);
     });
   });
+
+ document.addEventListener("DOMContentLoaded", function() {
+  const modal = document.getElementById("editInfoModal");
+  const form = modal.querySelector("form");
+  form.addEventListener("submit", function(e) {
+    e.preventDefault(); // stop default reload
+
+    const formData = new FormData(form);
+
+    // Disable submit buttons to prevent double submit
+    const submitButtons = form.querySelectorAll("button[type=submit], input[type=submit]");
+    submitButtons.forEach(b => b.disabled = true);
+
+    fetch(form.action, {
+      method: "POST",
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) throw new Error("Server error");
+      return response.text(); // or .json() if your PHP returns JSON
+    })
+    .then(data => {
+      // Show centered save-success modal and auto-close after short delay
+      const saveModalEl = document.getElementById('saveSuccessModal');
+      const saveModal = new bootstrap.Modal(saveModalEl, { backdrop: true });
+
+      const employeeId = form.querySelector("[name='employee_id']") ? form.querySelector("[name='employee_id']").value : '';
+
+      saveModal.show();
+
+      // Auto-close after 1.2 seconds, then redirect
+      setTimeout(() => {
+        try {
+          saveModal.hide();
+        } catch (e) {}
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        if (employeeId) {
+          window.location.href = "staffinfo.php?id=" + encodeURIComponent(employeeId);
+        } else {
+          window.location.reload();
+        }
+      }, 1200);
+    })
+    .catch(error => {
+      console.error("Save failed:", error);
+      alert("Something went wrong while saving. Please try again.");
+      // Re-enable submit buttons on failure
+      submitButtons.forEach(b => b.disabled = false);
+    });
+  });
+});
 </script>
 
    <!-- RIGHT COLUMN (Calendar, Add Manual, Export DTR) -->
