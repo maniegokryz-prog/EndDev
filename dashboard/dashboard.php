@@ -1,3 +1,10 @@
+<?php
+// Protect this page - require authentication
+require_once '../auth_guard.php';
+
+// Get current user info
+$currentUser = getCurrentUser();
+?>
  <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -699,7 +699,7 @@
   margin-left: 70px !important; /* depende sa sidebar width mo */
 }
 
-/*calendar*/
+/*calendar - Date Range Picker*/
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -730,17 +730,75 @@
   background-color: #e9ecef;
 }
 
-.calendar-grid .first-half {
-  background-color: #d4edda;
-}
-
-.calendar-grid .second-half {
-  background-color: #f8d7da;
-}
-
 .calendar-grid .today {
   border: 2px solid #198754;
   font-weight: bold;
+  background-color: #d1f2eb;
+}
+
+/* Date Range Picker Styles */
+.calendar-grid .selected-date {
+  background-color: #0d6efd !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+.calendar-grid .selected-date:hover {
+  background-color: #0b5ed7 !important;
+}
+
+.calendar-grid .range-start {
+  background-color: #0d6efd !important;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  color: white !important;
+  font-weight: bold;
+}
+
+.calendar-grid .range-end {
+  background-color: #0d6efd !important;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  color: white !important;
+  font-weight: bold;
+}
+
+.calendar-grid .in-range {
+  background-color: rgba(13, 110, 253, 0.3) !important;
+  color: #0d6efd;
+  border-radius: 0;
+}
+
+.calendar-grid .disabled-date {
+  background-color: #f8f9fa;
+  color: #dee2e6;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.calendar-grid .disabled-date:hover {
+  background-color: #f8f9fa;
+}
+
+/* DTR List Item Styles */
+.dtr-item {
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  transition: background-color 0.2s;
+}
+
+.dtr-item:hover {
+  background-color: #e9ecef;
+}
+
+.dtr-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 body {
@@ -970,6 +1028,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
+}
+
+.leave-entry .btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
 }
 
 .leave-entry .btn-delete {

@@ -1,8 +1,16 @@
+<?php
+// Protect this page - require authentication and admin role
+require_once '../auth_guard.php';
+requireAdmin(); // Only admins can access settings
+
+// Get current user info
+$currentUser = getCurrentUser();
+?>
     <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Attendance</title>
+  <title>Settings - Attendance System</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

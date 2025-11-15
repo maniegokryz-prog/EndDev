@@ -1,5 +1,11 @@
 <?php
+// Protect this page - require authentication
+require_once '../auth_guard.php';
+
 require '../db_connection.php';
+
+// Get current user info
+$currentUser = getCurrentUser();
 
 class AttendanceReportViewer {
     private $db;

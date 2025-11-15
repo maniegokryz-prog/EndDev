@@ -24,15 +24,17 @@
             <div class="login-box text-center">
                 <h4 class="fw-bold text-success mb-4">Log in to your account</h4>
 
-                <form>
+                <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+                
+                <form id="loginForm">
                     <div class="mb-3 text-start">
                         <label for="idNumber" class="form-label fw-semibold">ID Number</label>
-                        <input type="text" id="idNumber" class="form-control" placeholder="Enter ID Number">
+                        <input type="text" id="idNumber" name="employee_id" class="form-control" placeholder="Enter ID Number" required>
                     </div>
 
                     <div class="mb-3 text-start position-relative">
                         <label for="password" class="form-label fw-semibold">Password</label>
-                        <input type="password" id="password" class="form-control" placeholder="Enter your Password">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your Password" required>
                         <span class="toggle-password" onclick="togglePassword()">
                             <i class="bi bi-eye"></i>
                         </span>
@@ -42,8 +44,7 @@
                     Forgot Password?
                     </button>
 
-
-                    <button type="button" class="btn btn-success w-100 fw-semibold" onclick="window.location.href='../dashboard/dashboard.php'">
+                    <button type="submit" class="btn btn-success w-100 fw-semibold" id="loginBtn">
                     Log in
                     </button>
                 </form>
@@ -60,8 +61,10 @@
       <h4 class="text-center mt-2">Forgot Password?</h4>
       <p class="text-center">Enter your details so we can verify your account</p>
       
-      <input type="text" class="form-control mb-2" placeholder="ID Number">
-      <input type="text" class="form-control mb-3" placeholder="Email or Contact Number">
+      <div id="step1Error" class="alert alert-danger" style="display: none;"></div>
+      
+      <input type="text" id="resetEmployeeId" class="form-control mb-2" placeholder="ID Number" required>
+      <input type="text" id="resetContact" class="form-control mb-3" placeholder="Email or Contact Number" required>
 
       <div class="d-flex justify-content-between">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -76,13 +79,16 @@
   <div class="modal-dialog">
     <div class="modal-content p-3">
       <h4 class="text-center mt-2">Confirmation</h4>
-      <p class="text-center">You may receive OTP sent to your mobile phone number or email</p>
+      <p class="text-center" id="otpMessage">You may receive OTP sent to your mobile phone number or email</p>
       
-      <input type="text" class="form-control mb-3" placeholder="12345">
+      <div id="step2Error" class="alert alert-danger" style="display: none;"></div>
+      <div id="otpDisplay" class="alert alert-info" style="display: none;"></div>
+      
+      <input type="text" id="otpCode" class="form-control mb-3" placeholder="Enter 6-digit OTP" maxlength="6" required>
 
       <div class="d-flex justify-content-between">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-success" id="toStep3">Continue</button>
+        <button class="btn btn-success" id="toStep3">Verify OTP</button>
       </div>
     </div>
   </div>
@@ -95,12 +101,14 @@
       <h4 class="text-center mt-2">Reset Your Password</h4>
       <p class="text-center">Enter your new password</p>
       
-      <input type="password" class="form-control mb-2" placeholder="New Password">
-      <input type="password" class="form-control mb-3" placeholder="Confirm Password">
+      <div id="step3Error" class="alert alert-danger" style="display: none;"></div>
+      
+      <input type="password" id="newPassword" class="form-control mb-2" placeholder="New Password (min 6 characters)" required>
+      <input type="password" id="confirmPassword" class="form-control mb-3" placeholder="Confirm Password" required>
 
       <div class="d-flex justify-content-between">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-success" id="finalStep">Continue</button>
+        <button class="btn btn-success" id="finalStep">Reset Password</button>
       </div>
     </div>
   </div>
@@ -121,31 +129,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Show Step 2
-document.getElementById("toStep2").onclick = function() {
-  new bootstrap.Modal(document.getElementById("modalStep2")).show();
-  bootstrap.Modal.getInstance(document.getElementById("modalStep1")).hide();
-};
-
-// Show Step 3
-document.getElementById("toStep3").onclick = function() {
-  new bootstrap.Modal(document.getElementById("modalStep3")).show();
-  bootstrap.Modal.getInstance(document.getElementById("modalStep2")).hide();
-};
-
-// Show Success Popup
-document.getElementById("finalStep").onclick = function() {
-  new bootstrap.Modal(document.getElementById("modalSuccess")).show();
-  bootstrap.Modal.getInstance(document.getElementById("modalStep3")).hide();
-};
-
-// Redirect to login.php after popup
-document.getElementById("goLogin").onclick = function() {
-  window.location.href = "login.php";
-};
-</script>
-
     <script src="login.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.js"></script>
 </body>

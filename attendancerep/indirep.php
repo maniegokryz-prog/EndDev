@@ -128,6 +128,34 @@ if ($id) {
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="attendancerep.css">
+  
+  <style>
+    /* Status badge colors */
+    .badge-present {
+      background-color: #4caf50 !important;
+      color: white !important;
+      font-weight: 500;
+    }
+    
+    .badge-absent {
+      background-color: #f44336 !important;
+      color: white !important;
+      font-weight: 500;
+    }
+    
+    .badge-incomplete {
+      background-color: #ffc107 !important;
+      color: #333 !important;
+      font-weight: 500;
+    }
+    
+    /* Manual status badge - lowly saturated green */
+    .badge-manual {
+      background-color: #a8d5ba !important;
+      color: #2d5f3f !important;
+      font-weight: 500;
+    }
+  </style>
 </head>
 
 <body>
@@ -275,14 +303,17 @@ if ($id) {
                 $statusLabel = 'Unknown';
                 
                 if ($status === 'complete') {
-                    $badgeClass = 'bg-success';
+                    $badgeClass = 'badge-present';
                     $statusLabel = 'Present';
                 } elseif ($status === 'incomplete') {
-                    $badgeClass = 'bg-warning text-dark';
+                    $badgeClass = 'badge-incomplete';
                     $statusLabel = 'Incomplete';
                 } elseif ($status === 'absent') {
-                    $badgeClass = 'bg-danger';
+                    $badgeClass = 'badge-absent';
                     $statusLabel = 'Absent';
+                } elseif ($status === 'manual') {
+                    $badgeClass = 'badge-manual';
+                    $statusLabel = 'Manual';
                 }
                 
                 // Format date

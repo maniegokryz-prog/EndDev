@@ -1,5 +1,12 @@
 <?php
+// Protect this page - require authentication
+require_once '../auth_guard.php';
+
 require '../db_connection.php';
+
+// Get current user info
+$currentUser = getCurrentUser();
+
 class EmployeeEditor {
     private $db;
     private $employee = null;
@@ -322,6 +329,11 @@ $schedules = $viewer->getSchedules();
   <title>Staff Information - Attendance System</title>
   <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Prevent caching -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 
   <!-- Bootstrap CSS (Local - Works Offline) -->
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -439,6 +451,7 @@ $schedules = $viewer->getSchedules();
     .metric-box {
         background: #f8f9fa;
         border-radius: 8px;
+    }
         transition: all 0.3s ease;
         min-height: 200px;
         display: flex;
@@ -741,17 +754,37 @@ $schedules = $viewer->getSchedules();
               </div>
               <div class="modal-body">
                 <label class="form-label">Type:</label>
-                <input type="text" class="form-control mb-3" placeholder="Maternity, Sick, Vacation etc." id="leaveType">
+                <select class="form-control mb-3" id="leaveType">
+                  <option value="">Select leave type...</option>
+                  <option value="Sick">Sick Leave</option>
+                  <option value="Vacation">Vacation Leave</option>
+                  <option value="Maternity">Maternity Leave</option>
+                  <option value="Paternity">Paternity Leave</option>
+                  <option value="Emergency">Emergency Leave</option>
+                  <option value="Other">Other</option>
+                </select>
 
                 <label class="form-label">FROM:</label>
                 <input type="date" class="form-control mb-3" id="leaveFrom">
 
                 <label class="form-label">TO:</label>
                 <input type="date" class="form-control mb-3" id="leaveTo">
+                
+                <label class="form-label">Reason:</label>
+                <textarea class="form-control mb-3" id="leaveReason" rows="3" placeholder="Briefly explain your reason for leave"></textarea>
+                
+                <!-- Admin-only options -->
+                <div class="form-check mb-2" id="adminOptionsDiv" style="display: none;">
+                  <input class="form-check-input" type="checkbox" id="autoApprove">
+                  <label class="form-check-label" for="autoApprove">
+                    <strong>Auto-approve this request</strong> (Admin only)
+                  </label>
+                  <small class="d-block text-muted">If unchecked, request will be pending for approval</small>
+                </div>
               </div>
               <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="redirectToStaffInfo()">Cancel</button>
-                <button class="btn btn-success" onclick="confirmLeave()">Confirm</button>
+                <button class="btn btn-success" onclick="confirmLeave()">Submit Request</button>
               </div>
             </div>
           </div>
@@ -790,18 +823,25 @@ $schedules = $viewer->getSchedules();
           </div>
         </div>
         <script>
-          //add button
-          let leaveType = "";
-          let leaveFrom = "";
-          let leaveTo = "";
+          // Leave Management System with API
+          const employeeIdForLeave = <?php echo json_encode($employee['id']); ?>;
+          const isAdmin = true; // Set based on actual session role
+          
+          // Show/hide admin options on page load
+          document.addEventListener('DOMContentLoaded', function() {
+            if (isAdmin) {
+              document.getElementById('adminOptionsDiv').style.display = 'block';
+            }
+          });
 
           function confirmLeave() {
-            leaveType = document.getElementById("leaveType").value;
-            leaveFrom = document.getElementById("leaveFrom").value;
-            leaveTo = document.getElementById("leaveTo").value;
+            const leaveType = document.getElementById("leaveType").value;
+            const leaveFrom = document.getElementById("leaveFrom").value;
+            const leaveTo = document.getElementById("leaveTo").value;
+            const leaveReason = document.getElementById("leaveReason").value;
 
             if (!leaveType || !leaveFrom || !leaveTo) {
-              alert("Please fill out all fields.");
+              alert("Please fill out all required fields.");
               return;
             }
 
@@ -811,7 +851,7 @@ $schedules = $viewer->getSchedules();
             if (addModal) addModal.hide();
 
             // Show confirmation modal with leave details
-            const detailsText = `${leaveType} Leave, from ${formatDate(leaveFrom)} - ${formatDate(leaveTo)}`;
+            const detailsText = `${leaveType} Leave, from ${formatDate(leaveFrom)} to ${formatDate(leaveTo)}`;
             document.getElementById("leaveDetailsText").innerText = detailsText;
 
             const detailsModal = new bootstrap.Modal(document.getElementById('leaveDetailsModal'));
@@ -819,49 +859,56 @@ $schedules = $viewer->getSchedules();
           }
 
           function finalizeLeave() {
+            const leaveType = document.getElementById("leaveType").value;
+            const leaveFrom = document.getElementById("leaveFrom").value;
+            const leaveTo = document.getElementById("leaveTo").value;
+            const leaveReason = document.getElementById("leaveReason").value;
+            const autoApprove = isAdmin && document.getElementById("autoApprove").checked;
+
             const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsModal'));
             if (detailsModal) detailsModal.hide();
 
-            const leaveList = document.getElementById("leaveList");
-            const entry = document.createElement("div");
-            entry.className = "leave-entry";
+            // Submit leave request to API
+            const formData = new FormData();
+            formData.append('action', 'submit_request');
+            formData.append('employee_id', employeeIdForLeave);
+            formData.append('leave_type', leaveType);
+            formData.append('start_date', leaveFrom);
+            formData.append('end_date', leaveTo);
+            formData.append('reason', leaveReason);
+            formData.append('is_admin', isAdmin ? '1' : '0');
+            formData.append('auto_approve', autoApprove ? '1' : '0');
 
-            entry.innerHTML = `
-              <div>
-                <strong>${leaveType}</strong><br>
-                <small>${formatDate(leaveFrom)} to ${formatDate(leaveTo)}</small>
-              </div>
-              <button class="btn btn-outline-danger btn-sm btn-delete" onclick="deleteLeave(this)">
-                <i class="bi bi-trash"></i>
-              </button>
-            `;
+            fetch('api/leave_request.php', {
+              method: 'POST',
+              body: formData
+            })
+            .then(res => res.json())
+            .then(response => {
+              if (response.success) {
+                // Show confirmation modal
+                const confirmModalEl = document.getElementById('confirmModal');
+                const confirmModal = new bootstrap.Modal(confirmModalEl, { backdrop: false });
+                confirmModal.show();
 
-            leaveList.appendChild(entry);
+                document.body.classList.remove("modal-open");
+                document.querySelector(".modal-backdrop")?.remove();
 
-            // ✅ Save to localStorage
-            const leaveData = {
-              type: leaveType,
-              from: leaveFrom,
-              to: leaveTo
-            };
+                // Reload leave list
+                loadEmployeeLeaves();
 
-            let savedLeaves = JSON.parse(localStorage.getItem("scheduledLeaves")) || [];
-            savedLeaves.push(leaveData);
-            localStorage.setItem("scheduledLeaves", JSON.stringify(savedLeaves));
-
-            // Show confirmation modal
-            const confirmModalEl = document.getElementById('confirmModal');
-            const confirmModal = new bootstrap.Modal(confirmModalEl, { backdrop: false });
-            confirmModal.show();
-
-            document.body.classList.remove("modal-open");
-            document.querySelector(".modal-backdrop")?.remove();
-
-            setTimeout(() => {
-              window.location.href = "staffinfo.php";
-            }, 1500);
+                setTimeout(() => {
+                  confirmModal.hide();
+                }, 2000);
+              } else {
+                alert('Error: ' + response.error);
+              }
+            })
+            .catch(error => {
+              console.error('Error submitting leave request:', error);
+              alert('Failed to submit leave request. Please try again.');
+            });
           }
-
 
           function goBackToForm() {
             const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsModal'));
@@ -877,66 +924,117 @@ $schedules = $viewer->getSchedules();
 
           function formatDate(dateStr) {
             const date = new Date(dateStr);
-            return date.toLocaleDateString('en-PH', {
-              month: 'long',
+            return date.toLocaleDateString('en-US', {
+              month: 'short',
               day: 'numeric',
               year: 'numeric'
             });
           }
 
+          function loadEmployeeLeaves() {
+            fetch(`api/leave_request.php?action=get_employee_requests&employee_id=${employeeIdForLeave}`)
+              .then(res => res.json())
+              .then(response => {
+                if (response.success) {
+                  const leaveList = document.getElementById("leaveList");
+                  leaveList.innerHTML = '';
+
+                  if (response.count === 0) {
+                    leaveList.innerHTML = '<p class="text-muted small text-center">No scheduled leaves</p>';
+                    return;
+                  }
+
+                  response.data.forEach(leave => {
+                    const entry = document.createElement("div");
+                    entry.className = "leave-entry d-flex justify-content-between align-items-start";
+                    
+                    let statusBadge = '';
+                    let actionButton = '';
+                    
+                    if (leave.status === 'pending') {
+                      statusBadge = '<span class="badge bg-warning text-dark ms-2">Pending</span>';
+                      actionButton = `<button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'pending')" title="Cancel Request"><i class="bi bi-x-circle"></i></button>`;
+                    } else if (leave.status === 'approved') {
+                      statusBadge = '<span class="badge bg-success ms-2">Approved</span>';
+                      actionButton = `<button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'approved')" title="Cancel Leave"><i class="bi bi-trash"></i></button>`;
+                    } else if (leave.status === 'rejected') {
+                      statusBadge = '<span class="badge bg-danger ms-2">Rejected</span>';
+                      actionButton = `<button class="btn btn-sm btn-outline-secondary" onclick="cancelLeave(${leave.id}, 'rejected')" title="Delete"><i class="bi bi-trash"></i></button>`;
+                    }
+
+                    entry.innerHTML = `
+                      <div>
+                        <strong>${leave.leave_type}</strong> ${statusBadge}<br>
+                        <small>${leave.formatted_dates}</small>
+                      </div>
+                      <div>${actionButton}</div>
+                    `;
+
+                    leaveList.appendChild(entry);
+                  });
+                }
+              })
+              .catch(error => {
+                console.error('Error loading leaves:', error);
+              });
+          }
+
+          async function cancelLeave(leaveId, status) {
+            let confirmMessage = '';
+            
+            if (status === 'pending') {
+              confirmMessage = 'Are you sure you want to cancel this pending leave request?';
+            } else if (status === 'approved') {
+              confirmMessage = 'This leave has been approved. Cancelling will remove it from the attendance records. Continue?';
+            } else {
+              confirmMessage = 'Are you sure you want to delete this rejected leave request?';
+            }
+            
+            if (!confirm(confirmMessage)) {
+              return;
+            }
+            
+            try {
+              const formData = new FormData();
+              formData.append('leave_id', leaveId);
+              formData.append('cancelled_by', 'admin'); // or 'employee' based on user role
+              
+              const response = await fetch('api/leave_request.php?action=cancel_request', {
+                method: 'POST',
+                body: formData
+              });
+              
+              const result = await response.json();
+              
+              if (result.success) {
+                alert(result.message);
+                loadEmployeeLeaves(); // Reload the list
+              } else {
+                alert('Error: ' + result.error);
+              }
+            } catch (error) {
+              console.error('Error cancelling leave:', error);
+              alert('Failed to cancel leave request. Please try again.');
+            }
+          }
+
+          // Load leaves on page load
           window.addEventListener("DOMContentLoaded", () => {
-            const savedLeaves = JSON.parse(localStorage.getItem("scheduledLeaves")) || [];
-            const leaveList = document.getElementById("leaveList");
-
-            savedLeaves.forEach(data => {
-              const entry = document.createElement("div");
-              entry.className = "leave-entry";
-              entry.innerHTML = `
-                <div>
-                  <strong>${data.type}</strong><br>
-                  <small>${formatDate(data.from)} to ${formatDate(data.to)}</small>
-                </div>
-                <button class="btn btn-outline-danger btn-sm btn-delete" onclick="deleteLeave(this)">
-                  <i class="bi bi-trash"></i>
-                </button>
-              `;
-              leaveList.appendChild(entry);
-            });
-
-            // Optional: clear saved data after loading
-            // localStorage.removeItem("scheduledLeaves");
+            loadEmployeeLeaves();
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('leaveFrom').setAttribute('min', today);
+            document.getElementById('leaveTo').setAttribute('min', today);
           });
 
           function deleteLeave(button) {
-            const entry = button.closest(".leave-entry");
-            if (!entry) return;
-
-            entry.remove();
-
-            const leaveList = document.getElementById("leaveList");
-            const entries = leaveList.querySelectorAll(".leave-entry");
-
-            if (entries.length === 0) {
-              localStorage.removeItem("scheduledLeaves");
-              return;
-            }
-
-            const updatedLeaves = Array.from(entries).map(entry => {
-              const type = entry.querySelector("strong").innerText;
-              const dateRange = entry.querySelector("small").innerText;
-              const [from, to] = dateRange.replace(" to ", "|").split("|").map(d => {
-                const date = new Date(d.trim());
-                return date.toISOString().split("T")[0];
-              });
-
-              return { type, from, to };
-            });
-
-            localStorage.setItem("scheduledLeaves", JSON.stringify(updatedLeaves));
+            // Delete functionality can be implemented if needed
+            alert('Leave cancellation requires admin approval');
           }
           </script>
 
-      <!-- Calendar -->
+      <!-- Calendar with Date Range Picker -->
       <div class="card shadow-sm mb-3">
       <div class="card-header d-flex justify-content-between align-items-center">
         <button class="btn btn-sm btn-outline-secondary" id="prevMonth"><i class="bi bi-chevron-left"></i></button>
@@ -948,6 +1046,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
     <script>
+          // Date Range Picker Calendar for DTR Export
           document.addEventListener("DOMContentLoaded", function () {
           const calendar = document.getElementById("calendar");
           const calendarTitle = document.getElementById("calendarTitle");
@@ -955,6 +1054,24 @@ $schedules = $viewer->getSchedules();
           const nextBtn = document.getElementById("nextMonth");
 
           let currentDate = new Date();
+          let selectedDates = [];
+          let startDate = null;
+          let endDate = null;
+          const MAX_DAYS = 16;
+
+          function formatDate(year, month, day) {
+            return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          }
+
+          function parseDate(dateString) {
+            const parts = dateString.split('-');
+            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          }
+
+          function getDaysBetween(date1, date2) {
+            const oneDay = 24 * 60 * 60 * 1000;
+            return Math.round(Math.abs((date1 - date2) / oneDay)) + 1;
+          }
 
           function generateCalendar(year, month) {
             calendar.innerHTML = "";
@@ -962,6 +1079,7 @@ $schedules = $viewer->getSchedules();
             const monthStart = new Date(year, month, 1);
             const monthEnd = new Date(year, month + 1, 0);
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
             const months = [
               "January", "February", "March", "April", "May", "June",
@@ -978,7 +1096,7 @@ $schedules = $viewer->getSchedules();
               calendar.appendChild(weekdayDiv);
             });
 
-            let startDay = (monthStart.getDay() + 6) % 7; // shift to make Monday first
+            let startDay = (monthStart.getDay() + 6) % 7;
             for (let i = 0; i < startDay; i++) {
               const emptyCell = document.createElement("div");
               calendar.appendChild(emptyCell);
@@ -988,24 +1106,88 @@ $schedules = $viewer->getSchedules();
               const dateDiv = document.createElement("div");
               dateDiv.textContent = day;
               dateDiv.classList.add("calendar-day");
+              
+              const currentDateStr = formatDate(year, month, day);
+              const dateObj = new Date(year, month, day);
+              dateObj.setHours(0, 0, 0, 0);
 
-              if (day <= 15) dateDiv.classList.add("first-half");
-              else dateDiv.classList.add("second-half");
-
-              if (
-                day === today.getDate() &&
-                month === today.getMonth() &&
-                year === today.getFullYear()
-              ) {
+              // Mark today
+              if (dateObj.getTime() === today.getTime()) {
                 dateDiv.classList.add("today");
               }
 
-              dateDiv.addEventListener("click", () => {
-                alert(`Selected: ${months[month]} ${day}, ${year}`);
-              });
+              // Mark selected dates
+              if (selectedDates.includes(currentDateStr)) {
+                dateDiv.classList.add("selected-date");
+                if (selectedDates.length > 1) {
+                  if (currentDateStr === selectedDates[0]) {
+                    dateDiv.classList.add("range-start");
+                  } else if (currentDateStr === selectedDates[selectedDates.length - 1]) {
+                    dateDiv.classList.add("range-end");
+                  } else {
+                    dateDiv.classList.add("in-range");
+                  }
+                }
+              }
+
+              // Disable future dates
+              if (dateObj > today) {
+                dateDiv.classList.add("disabled-date");
+              } else {
+                dateDiv.addEventListener("click", () => handleDateClick(year, month, day));
+              }
 
               calendar.appendChild(dateDiv);
             }
+          }
+
+          function handleDateClick(year, month, day) {
+            const clickedDate = formatDate(year, month, day);
+            const clickedDateObj = parseDate(clickedDate);
+
+            if (selectedDates.length === 0) {
+              // First date selection
+              selectedDates = [clickedDate];
+              startDate = clickedDateObj;
+              endDate = null;
+            } else if (selectedDates.length === 1) {
+              // Second date selection - create range
+              const firstDate = parseDate(selectedDates[0]);
+              
+              if (clickedDateObj < firstDate) {
+                startDate = clickedDateObj;
+                endDate = firstDate;
+              } else {
+                startDate = firstDate;
+                endDate = clickedDateObj;
+              }
+
+              const daysDiff = getDaysBetween(startDate, endDate);
+              
+              if (daysDiff > MAX_DAYS) {
+                alert(`You can only select up to ${MAX_DAYS} days. Please select a shorter range.`);
+                selectedDates = [];
+                startDate = null;
+                endDate = null;
+              } else {
+                // Fill in all dates between start and end
+                selectedDates = [];
+                let currentDate = new Date(startDate);
+                while (currentDate <= endDate) {
+                  const dateStr = formatDate(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+                  selectedDates.push(dateStr);
+                  currentDate.setDate(currentDate.getDate() + 1);
+                }
+                selectedDates.sort();
+              }
+            } else {
+              // Reset and start new selection
+              selectedDates = [clickedDate];
+              startDate = clickedDateObj;
+              endDate = null;
+            }
+
+            generateCalendar(year, month);
           }
 
           prevBtn.addEventListener("click", () => {
@@ -1017,6 +1199,16 @@ $schedules = $viewer->getSchedules();
             currentDate.setMonth(currentDate.getMonth() + 1);
             generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
           });
+
+          // Make selected dates available globally for export
+          window.getSelectedDateRange = function() {
+            return {
+              dates: selectedDates,
+              startDate: startDate,
+              endDate: endDate,
+              count: selectedDates.length
+            };
+          };
 
           // Initial load
           generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
@@ -1066,85 +1258,393 @@ $schedules = $viewer->getSchedules();
         </div>
 
 <script>
-  // Bootstrap modal setup
-  const attendanceModal = new bootstrap.Modal(document.getElementById('attendanceModal'));
+  // Wait for DOM to be fully loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Bootstrap modal setup
+    const attendanceModalEl = document.getElementById('attendanceModal');
+    const openAttendanceBtn = document.getElementById('openAttendance');
+    const addDayBtn = document.getElementById('addDayBtn');
+    const attendanceContainer = document.getElementById('attendanceContainer');
+    const saveBtn = document.getElementById('saveBtn');
 
-  const openAttendanceBtn = document.getElementById('openAttendance');
-  const addDayBtn = document.getElementById('addDayBtn');
-  const attendanceContainer = document.getElementById('attendanceContainer');
-  const saveBtn = document.getElementById('saveBtn');
+    // Check if all elements exist
+    if (!attendanceModalEl || !openAttendanceBtn || !addDayBtn || !attendanceContainer || !saveBtn) {
+      console.error('Manual attendance elements not found!');
+      return;
+    }
 
-  // 🔹 Step 1: Open Manual Attendance directly (no password)
-  openAttendanceBtn.addEventListener('click', () => {
-    attendanceModal.show();
-  });
+    const attendanceModal = new bootstrap.Modal(attendanceModalEl);
 
-  // 🔹 Step 2: Add another day
-  addDayBtn.addEventListener('click', () => {
-    const newRow = document.createElement('div');
-    newRow.classList.add('attendance-row', 'row', 'mb-2');
-    newRow.innerHTML = `
-      <div class="col-md-3">
-        <label>Date:</label>
-        <input type="date" class="form-control">
-      </div>
-      <div class="col-md-3">
-        <label>Time In:</label>
-        <input type="time" class="form-control">
-      </div>
-      <div class="col-md-3">
-        <label>Time Out:</label>
-        <input type="time" class="form-control">
-      </div>
-      <div class="col-md-3 d-flex align-items-end">
-        <button class="btn btn-danger removeRow">−</button>
-      </div>`;
-    attendanceContainer.appendChild(newRow);
-  });
+    // 🔹 Step 1: Open Manual Attendance directly (no password)
+    openAttendanceBtn.addEventListener('click', () => {
+      attendanceModal.show();
+    });
 
-  // 🔹 Step 3: Remove a day row
-  attendanceContainer.addEventListener('click', (e) => {
-    if (e.target.classList.contains('removeRow')) {
-      e.target.closest('.attendance-row').remove();
+    // 🔹 Step 2: Add another day
+    addDayBtn.addEventListener('click', () => {
+      const newRow = document.createElement('div');
+      newRow.classList.add('attendance-row', 'row', 'mb-2');
+      newRow.innerHTML = `
+        <div class="col-md-3">
+          <label>Date:</label>
+          <input type="date" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label>Time In:</label>
+          <input type="time" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label>Time Out:</label>
+          <input type="time" class="form-control">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <button class="btn btn-danger removeRow">−</button>
+        </div>`;
+      attendanceContainer.appendChild(newRow);
+    });
+
+    // 🔹 Step 3: Remove a day row
+    attendanceContainer.addEventListener('click', (e) => {
+      if (e.target.classList.contains('removeRow')) {
+        e.target.closest('.attendance-row').remove();
+      }
+    });
+
+    // 🔹 Step 4: Save attendance records
+    saveBtn.addEventListener('click', async () => {
+      const rows = attendanceContainer.querySelectorAll('.attendance-row');
+      const records = [];
+      let hasError = false;
+
+      // Collect all records
+      rows.forEach((row, index) => {
+        const inputs = row.querySelectorAll('input');
+        const date = inputs[0].value;  // First input is date
+        const timeIn = inputs[1].value;  // Second input is time in
+        const timeOut = inputs[2].value;  // Third input is time out
+
+        if (!date || !timeIn || !timeOut) {
+          alert(`Please fill all fields in row ${index + 1}`);
+          hasError = true;
+          return;
+        }
+
+        records.push({
+          date: date,
+          time_in: timeIn,
+          time_out: timeOut
+        });
+      });
+
+      if (hasError || records.length === 0) {
+        return;
+      }
+
+      // Disable save button to prevent double submission
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+      const response = await fetch('api/add_manual_attendance.php?action=add_manual', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          employee_id: <?php echo $employee['id']; ?>,
+          records: records
+        })
+      });
+
+      // Check if response is ok
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Server response:', text);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Server result:', result);
+
+      if (result.success) {
+        // Show success message with warnings if any
+        let message = result.message;
+        if (result.warnings && result.warnings.length > 0) {
+          message += '\n\nWarnings:\n' + result.warnings.join('\n');
+        }
+        alert(message);
+        attendanceModal.hide();
+        
+        // Reload the page to show updated attendance
+        window.location.reload();
+      } else {
+        alert('Error: ' + (result.error || 'Unknown error occurred'));
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Records';
+      }
+    } catch (error) {
+      console.error('Error saving attendance:', error);
+      alert('Failed to save attendance records. Error: ' + error.message);
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Records';
     }
   });
-
-  // 🔹 Step 4: Save & redirect
-  saveBtn.addEventListener('click', () => {
-    alert("Manual attendance record successfully added!");
-    window.location.href = "staffinfo.php";
-  });
+  
+  }); // End DOMContentLoaded
 </script>
 
       <!-- Export DTR -->
       <div class="card" style="margin-top: 0 !important;">
         <div class="card-body">
-          <button class="btn btn-success w-100 mb-3">Export DTR</button>
+          <button class="btn btn-success w-100 mb-3" id="exportDtrBtn" onclick="exportDTR()">Export DTR</button>
 
           <div class="d-flex justify-content-between align-items-center mb-2">
             <div><small class="text-muted">Daily Time Record</small></div>
             <a href="../attendancerep/indirep.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="small">See more...</a>
           </div>
 
-          <div class="dtr-list">
-            <div class="dtr-item d-flex align-items-start mb-3">
-              <div class="dtr-icon bg-success text-white rounded-circle me-3">
-                <i class="bi bi-check-lg"></i>
-              </div>
-              <div class="flex-grow-1">
-                <div class="fw-semibold">
-                  Monday, September 16, 2025
-                  <span class="badge bg-success ms-2">On Time</span>
-                </div>
-                <div class="small text-muted">
-                  Time In: 8:00 AM — Time Out: 5:02 PM
-                </div>
-              </div>
+          <div id="dtrLoading" class="text-center py-3" style="display: block;">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
             </div>
+            <div class="small text-muted mt-2">Loading attendance records...</div>
+          </div>
+
+          <div class="dtr-list" id="dtrList" style="display: none;">
           </div>
 
         </div>
       </div>
+
+      <script>
+        const employeeInternalId = <?php echo json_encode($employee['id']); ?>;
+        const employeeCode = <?php echo json_encode($employee['employee_id']); ?>;
+        let lastSelectedDatesCount = 0;
+        let isInitialLoad = true;
+
+        // Load recent DTR data (last 7 days by default)
+        function loadRecentDTR() {
+          const dtrList = document.getElementById('dtrList');
+          const dtrLoading = document.getElementById('dtrLoading');
+          
+          dtrList.style.display = 'none';
+          dtrLoading.style.display = 'block';
+
+          // Get last 7 days
+          const endDate = new Date();
+          const startDate = new Date();
+          startDate.setDate(startDate.getDate() - 6); // 7 days including today
+
+          const startDateStr = startDate.toISOString().split('T')[0];
+          const endDateStr = endDate.toISOString().split('T')[0];
+          const cacheBuster = Date.now(); // Force fresh data
+          
+          fetch(`get_employee_attendance.php?employee_id=${employeeInternalId}&start_date=${startDateStr}&end_date=${endDateStr}&_=${cacheBuster}`)
+            .then(res => res.json())
+            .then(response => {
+              dtrLoading.style.display = 'none';
+              dtrList.style.display = 'block';
+
+              if (!response.success) {
+                throw new Error(response.error || 'Failed to load attendance');
+              }
+
+              if (response.count === 0) {
+                dtrList.innerHTML = `
+                  <div class="text-center text-muted py-3">
+                    <i class="bi bi-calendar-range fs-4"></i>
+                    <p class="small mt-2">No recent attendance records found</p>
+                    <p class="small text-muted">Select dates from calendar to view specific records</p>
+                  </div>
+                `;
+                return;
+              }
+
+              displayDTRRecords(response.data);
+            })
+            .catch(error => {
+              console.error('Error loading recent DTR:', error);
+              dtrLoading.style.display = 'none';
+              dtrList.style.display = 'block';
+              dtrList.innerHTML = `
+                <div class="text-center text-danger py-3">
+                  <i class="bi bi-exclamation-triangle fs-4"></i>
+                  <p class="small mt-2">Error loading attendance records</p>
+                  <p class="small text-muted">${error.message}</p>
+                </div>
+              `;
+            });
+        }
+
+        // Display DTR records
+        function displayDTRRecords(records) {
+          const dtrList = document.getElementById('dtrList');
+          
+          // Define color mappings
+          const colorMap = {
+            'success': { bg: '#4caf50', text: 'white' },
+            'danger': { bg: '#f44336', text: 'white' },
+            'warning text-dark': { bg: '#ffc107', text: '#333' },
+            'warning': { bg: '#ffc107', text: '#333' },
+            'manual': { bg: '#a8d5ba', text: '#2d5f3f' }
+          };
+          
+          const iconColorMap = {
+            'bg-success': '#4caf50',
+            'bg-danger': '#f44336',
+            'bg-warning': '#ffc107',
+            'bg-manual': '#a8d5ba',
+            'bg-secondary': '#6c757d'
+          };
+          
+          console.log('=== DTR RECORDS DEBUG ===');
+          console.log('Total records:', records.length);
+          
+          let html = '';
+          records.forEach(record => {
+            const statusInfo = record.status_info;
+            const timeIn = record.time_in_formatted || 'N/A';
+            const timeOut = record.time_out_formatted || 'N/A';
+            const hoursWorked = record.hours_worked || 'N/A';
+            
+            // Get colors for badge
+            const colors = colorMap[statusInfo.badge_class] || { bg: '#6c757d', text: 'white' };
+            const badgeStyle = `background-color: ${colors.bg} !important; color: ${colors.text} !important; padding: 0.25em 0.6em; border-radius: 0.25rem; font-weight: 500;`;
+            
+            // Get colors for icon
+            const iconBg = iconColorMap[statusInfo.icon_class] || '#6c757d';
+            const iconStyle = `background-color: ${iconBg} !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;`;
+
+            // Debug logging
+            console.log(`Date: ${record.formatted_date}`);
+            console.log(`  Status: ${record.status}`);
+            console.log(`  Badge Class: ${statusInfo.badge_class}`);
+            console.log(`  Badge Text: ${statusInfo.badge_text}`);
+            console.log(`  Badge BG Color: ${colors.bg}`);
+            console.log(`  Badge Text Color: ${colors.text}`);
+            console.log(`  Icon Class: ${statusInfo.icon_class}`);
+            console.log(`  Icon BG Color: ${iconBg}`);
+
+            html += `
+              <div class="dtr-item d-flex align-items-start mb-3">
+                <div class="text-white rounded-circle me-3" style="${iconStyle}">
+                  <i class="bi ${statusInfo.icon}"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold">
+                    ${record.formatted_date}
+                    <span class="ms-2" style="${badgeStyle}">${statusInfo.badge_text}</span>
+                  </div>
+                  <div class="small text-muted">
+                    Time In: ${timeIn} — Time Out: ${timeOut}
+                  </div>
+                  ${hoursWorked !== 'N/A' ? `<div class="small text-muted">Hours: ${hoursWorked}</div>` : ''}
+                </div>
+              </div>
+            `;
+          });
+
+          dtrList.innerHTML = html;
+          console.log('=== END DEBUG ===');
+        }
+
+        // Load DTR data when date range is selected
+        function loadDTRForSelectedRange() {
+          const rangeData = window.getSelectedDateRange();
+          
+          // Only reload if selection changed
+          if (!rangeData || rangeData.count === lastSelectedDatesCount) {
+            return;
+          }
+          
+          lastSelectedDatesCount = rangeData.count;
+          
+          if (rangeData.count === 0) {
+            // When selection is cleared, reload recent DTR
+            if (!isInitialLoad) {
+              loadRecentDTR();
+            }
+            return;
+          }
+
+          isInitialLoad = false;
+
+          const dtrList = document.getElementById('dtrList');
+          const dtrLoading = document.getElementById('dtrLoading');
+          
+          dtrList.style.display = 'none';
+          dtrLoading.style.display = 'block';
+
+          // Use new API endpoint with cache busting
+          const startDate = rangeData.dates[0];
+          const endDate = rangeData.dates[rangeData.dates.length - 1];
+          const cacheBuster = Date.now(); // Force fresh data
+          
+          fetch(`get_employee_attendance.php?employee_id=${employeeInternalId}&start_date=${startDate}&end_date=${endDate}&_=${cacheBuster}`)
+            .then(res => res.json())
+            .then(response => {
+              dtrLoading.style.display = 'none';
+              dtrList.style.display = 'block';
+
+              if (!response.success) {
+                throw new Error(response.error || 'Failed to load attendance');
+              }
+
+              if (response.count === 0) {
+                dtrList.innerHTML = `
+                  <div class="text-center text-muted py-3">
+                    <i class="bi bi-exclamation-circle fs-4"></i>
+                    <p class="small mt-2">No attendance records found for selected dates</p>
+                    <p class="small text-muted">${response.start_date} to ${response.end_date}</p>
+                  </div>
+                `;
+                return;
+              }
+
+              displayDTRRecords(response.data);
+            })
+            .catch(error => {
+              console.error('Error loading DTR:', error);
+              dtrLoading.style.display = 'none';
+              dtrList.style.display = 'block';
+              dtrList.innerHTML = `
+                <div class="text-center text-danger py-3">
+                  <i class="bi bi-exclamation-triangle fs-4"></i>
+                  <p class="small mt-2">Error loading attendance records</p>
+                  <p class="small text-muted">${error.message}</p>
+                </div>
+              `;
+            });
+        }
+
+        // Export DTR function
+        function exportDTR() {
+          const rangeData = window.getSelectedDateRange();
+          
+          if (!rangeData || rangeData.count === 0) {
+            alert('Please select a date range from the calendar first (maximum 16 days)');
+            return;
+          }
+
+          const startDateStr = rangeData.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          const endDateStr = rangeData.endDate ? rangeData.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : startDateStr;
+          
+          // Redirect to export page with date range parameters
+          const startParam = rangeData.dates[0];
+          const endParam = rangeData.dates[rangeData.dates.length - 1];
+          
+          window.location.href = `../attendancerep/export_individual.php?id=${employeeCode}&start_date=${startParam}&end_date=${endParam}`;
+        }
+
+        // Listen for calendar updates using event delegation
+        document.addEventListener('DOMContentLoaded', function() {
+          // Load recent DTR on page load
+          loadRecentDTR();
+          
+          // Check for calendar updates every 500ms
+          setInterval(loadDTRForSelectedRange, 500);
+        });
+      </script>
 
     </div>
   </div>
