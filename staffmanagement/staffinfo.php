@@ -755,7 +755,7 @@ $schedules = $viewer->getSchedules();
       setTimeout(() => successModal.show(), 400);
     });
 
-    // Step 3: Auto-close success modal after 1.2 seconds, then redirect to staff.php
+    // Step 3: Auto-close success modal after 5 seconds, then redirect to staff.php
     successModal._element.addEventListener('shown.bs.modal', () => {
       setTimeout(() => {
         try {
@@ -765,7 +765,7 @@ $schedules = $viewer->getSchedules();
         document.body.classList.remove('modal-open');
         document.body.style.overflow = '';
         window.location.href = "staff.php";
-      }, 1200);
+      }, 5000);
     });
   });
 
@@ -798,7 +798,7 @@ $schedules = $viewer->getSchedules();
 
       saveModal.show();
 
-      // Auto-close after 1.2 seconds, then redirect
+      // Auto-close after 5 seconds, then redirect
       setTimeout(() => {
         try {
           saveModal.hide();
@@ -811,7 +811,7 @@ $schedules = $viewer->getSchedules();
         } else {
           window.location.reload();
         }
-      }, 1200);
+      }, 5000);
     })
     .catch(error => {
       console.error("Save failed:", error);
@@ -1043,10 +1043,10 @@ $schedules = $viewer->getSchedules();
                 // Reload leave list
                 loadEmployeeLeaves();
 
-                // Auto-close after 1.5 seconds
+                // Auto-close after 5 seconds
                 setTimeout(() => {
                   successModal.hide();
-                }, 1500);
+                }, 5000);
               } else {
                 document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + response.error;
                 const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
@@ -1181,7 +1181,7 @@ $schedules = $viewer->getSchedules();
                 setTimeout(() => {
                   successModal.hide();
                   loadEmployeeLeaves();
-                }, 1500);
+                }, 5000);
               } else {
                 bootstrap.Modal.getInstance(document.getElementById("leaveDeleteConfirmModal")).hide();
                 document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + result.error;
@@ -1530,14 +1530,14 @@ $schedules = $viewer->getSchedules();
             em.show();
             document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
           }, 40);
-          // Auto-hide after 1s
+          // Auto-hide after 5s
           setTimeout(() => {
             try { const em = bootstrap.Modal.getInstance(errModalEl); if (em) em.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
             saveBtn.disabled = false;
             saveBtn.textContent = 'Save Records';
-          }, 1000);
+          }, 5000);
         }
         return;
       }
@@ -1602,7 +1602,7 @@ $schedules = $viewer->getSchedules();
             document.body.classList.remove('modal-open');
             document.body.style.overflow = '';
             window.location.reload();
-          }, 1200);
+          }, 5000);
 
         } else {
           const errMsg = 'Error: ' + (result.error || 'Unknown error occurred');
@@ -1618,12 +1618,12 @@ $schedules = $viewer->getSchedules();
               const em = new bootstrap.Modal(errModalEl);
               em.show();
               document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-              // Auto-hide after 1s
+              // Auto-hide after 5s
               setTimeout(() => {
                 try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) {}
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-              }, 1000);
+              }, 5000);
             }, 40);
           }
           saveBtn.disabled = false;
@@ -1643,12 +1643,12 @@ $schedules = $viewer->getSchedules();
             const em = new bootstrap.Modal(errModalEl);
             em.show();
             document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-            // Auto-hide after 1s
+            // Auto-hide after 5s
             setTimeout(() => {
               try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) {}
               document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
               document.body.classList.remove('modal-open');
-            }, 1000);
+            }, 5000);
           }, 40);
         }
         saveBtn.disabled = false;
@@ -1988,12 +1988,48 @@ $schedules = $viewer->getSchedules();
             });
         }
 
+        // Ensure Export DTR error modal exists (create on DOMContentLoaded)
+        document.addEventListener('DOMContentLoaded', function() {
+          if (!document.getElementById('exportDtrErrorModal')) {
+            const modalHtml = `
+              <div class="modal fade" id="exportDtrErrorModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content p-4 text-center">
+                    <h5 class="fw-bold mb-3 text-danger">Select Date Range</h5>
+                    <p id="exportDtrErrorMessage">Please select a date range from the calendar first (maximum 16 days).</p>
+                  </div>
+                </div>
+              </div>`;
+            const temp = document.createElement('div');
+            temp.innerHTML = modalHtml.trim();
+            document.body.appendChild(temp.firstElementChild);
+          }
+        });
+
         // Export DTR function
         function exportDTR() {
           const rangeData = window.getSelectedDateRange();
           
           if (!rangeData || rangeData.count === 0) {
-            alert('Please select a date range from the calendar first (maximum 16 days)');
+            // Show Bootstrap modal (auto-close) instead of alert
+            const msgEl = document.getElementById('exportDtrErrorMessage');
+            if (msgEl) msgEl.textContent = 'Please select a date range from the calendar first (maximum 16 days)';
+            const modalEl = document.getElementById('exportDtrErrorModal');
+            if (modalEl) {
+              document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+              document.body.classList.remove('modal-open');
+              modalEl.style.zIndex = 20000;
+              setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+              }, 40);
+              setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+              }, 5000);
+            }
             return;
           }
 
@@ -2108,7 +2144,7 @@ $schedules = $viewer->getSchedules();
                 } else {
                   loadRecentDTR();
                 }
-              }, 1500);
+              }, 5000);
 
             } else {
               throw new Error(result.error || 'Failed to update time out');
