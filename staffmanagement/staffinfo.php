@@ -715,7 +715,27 @@ $schedules = $viewer->getSchedules();
       <p>The employee has been moved to the archive.</p>
     </div>
   </div>
-</div>
+        </div>
+
+        <!-- Attendance Success Modal -->
+        <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+              <h5 class="fw-bold mb-3 text-success">Attendance Saved</h5>
+              <p id="attendanceSuccessMessage">Records saved successfully.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance Error Modal -->
+        <div class="modal fade" id="attendanceErrorModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+              <h5 class="fw-bold mb-3 text-danger">Save Failed</h5>
+              <p id="attendanceErrorMessage">An error occurred while saving records.</p>
+            </div>
+          </div>
+        </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -1474,6 +1494,7 @@ $schedules = $viewer->getSchedules();
       const rows = attendanceContainer.querySelectorAll('.attendance-row');
       const records = [];
       let hasError = false;
+      let validationMessage = '';
 
       // Collect all records
       rows.forEach((row, index) => {
@@ -1483,7 +1504,7 @@ $schedules = $viewer->getSchedules();
         const timeOut = inputs[2].value;  // Third input is time out
 
         if (!date || !timeIn || !timeOut) {
-          alert(`Please fill all fields in row ${index + 1}`);
+          if (!hasError) validationMessage = `Please fill all fields in row ${index + 1}`;
           hasError = true;
           return;
         }
@@ -1496,6 +1517,28 @@ $schedules = $viewer->getSchedules();
       });
 
       if (hasError || records.length === 0) {
+        // Show validation modal (auto-close)
+        const errEl = document.getElementById('attendanceErrorMessage');
+        if (errEl) errEl.textContent = validationMessage || 'Please fill out all records before saving.';
+        const errModalEl = document.getElementById('attendanceErrorModal');
+        if (errModalEl) {
+          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+          document.body.classList.remove('modal-open');
+          errModalEl.style.zIndex = 20000;
+          setTimeout(() => {
+            const em = new bootstrap.Modal(errModalEl);
+            em.show();
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+          }, 40);
+          // Auto-hide after 1s
+          setTimeout(() => {
+            try { const em = bootstrap.Modal.getInstance(errModalEl); if (em) em.hide(); } catch (e) {}
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Records';
+          }, 1000);
+        }
         return;
       }
 
@@ -1504,51 +1547,115 @@ $schedules = $viewer->getSchedules();
       saveBtn.textContent = 'Saving...';
 
       try {
-      const response = await fetch('api/add_manual_attendance.php?action=add_manual', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          employee_id: <?php echo $employee['id']; ?>,
-          records: records
-        })
-      });
+        const response = await fetch('api/add_manual_attendance.php?action=add_manual', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            employee_id: <?php echo $employee['id']; ?>,
+            records: records
+          })
+        });
 
-      // Check if response is ok
-      if (!response.ok) {
-        const text = await response.text();
-        console.error('Server response:', text);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('Server result:', result);
-
-      if (result.success) {
-        // Show success message with warnings if any
-        let message = result.message;
-        if (result.warnings && result.warnings.length > 0) {
-          message += '\n\nWarnings:\n' + result.warnings.join('\n');
+        // Check if response is ok
+        if (!response.ok) {
+          const text = await response.text();
+          console.error('Server response:', text);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        alert(message);
-        attendanceModal.hide();
-        
-        // Reload the page to show updated attendance
-        window.location.reload();
-      } else {
-        alert('Error: ' + (result.error || 'Unknown error occurred'));
+
+        const result = await response.json();
+        console.log('Server result:', result);
+
+        if (result.success) {
+          // Show success message with warnings if any
+          let message = result.message || 'Records saved successfully.';
+          if (result.warnings && result.warnings.length > 0) {
+            message += ' Warnings: ' + result.warnings.join('; ');
+          }
+          const successEl = document.getElementById('attendanceSuccessMessage');
+          if (successEl) successEl.textContent = message;
+
+          // Hide the attendance modal and remove any lingering backdrops first
+          try { attendanceModal.hide(); } catch (e) {}
+          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+          document.body.classList.remove('modal-open');
+          document.body.style.overflow = '';
+
+          // Show success modal slightly after to ensure it's on top
+          const successModalEl = document.getElementById('attendanceSuccessModal');
+          if (successModalEl) {
+            successModalEl.style.zIndex = 20000;
+            setTimeout(() => {
+              const sm = new bootstrap.Modal(successModalEl);
+              sm.show();
+              // ensure backdrop z-index is behind modal
+              document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 60);
+          }
+
+          // Auto-close after short delay and reload
+          setTimeout(() => {
+            try { const sm = bootstrap.Modal.getInstance(document.getElementById('attendanceSuccessModal')); if (sm) sm.hide(); } catch (e) {}
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            window.location.reload();
+          }, 1200);
+
+        } else {
+          const errMsg = 'Error: ' + (result.error || 'Unknown error occurred');
+          const errEl = document.getElementById('attendanceErrorMessage');
+          if (errEl) errEl.textContent = errMsg;
+          const errModalEl = document.getElementById('attendanceErrorModal');
+          if (errModalEl) {
+            // remove existing backdrops and ensure error modal appears on top
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+            errModalEl.style.zIndex = 20000;
+            setTimeout(() => {
+              const em = new bootstrap.Modal(errModalEl);
+              em.show();
+              document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+              // Auto-hide after 1s
+              setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) {}
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+              }, 1000);
+            }, 40);
+          }
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Records';
+        }
+      } catch (error) {
+        console.error('Error saving attendance:', error);
+        const errMsg = 'Failed to save attendance records. Error: ' + (error.message || error);
+        const errEl = document.getElementById('attendanceErrorMessage');
+        if (errEl) errEl.textContent = errMsg;
+        const errModalEl = document.getElementById('attendanceErrorModal');
+        if (errModalEl) {
+          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+          document.body.classList.remove('modal-open');
+          errModalEl.style.zIndex = 20000;
+          setTimeout(() => {
+            const em = new bootstrap.Modal(errModalEl);
+            em.show();
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            // Auto-hide after 1s
+            setTimeout(() => {
+              try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) {}
+              document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+              document.body.classList.remove('modal-open');
+            }, 1000);
+          }, 40);
+        }
         saveBtn.disabled = false;
         saveBtn.textContent = 'Save Records';
       }
-    } catch (error) {
-      console.error('Error saving attendance:', error);
-      alert('Failed to save attendance records. Error: ' + error.message);
-      saveBtn.disabled = false;
-      saveBtn.textContent = 'Save Records';
-    }
-  });
-  
+    });
+
   }); // End DOMContentLoaded
 </script>
 
