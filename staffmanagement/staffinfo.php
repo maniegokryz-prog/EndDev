@@ -936,9 +936,6 @@ $schedules = $viewer->getSchedules();
               </div>
               <h5 class="fw-bold mb-3 text-danger">Validation Error</h5>
               <p id="leaveValidationErrorMsg"></p>
-              <div class="mt-3">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
-              </div>
             </div>
           </div>
         </div>
@@ -989,8 +986,33 @@ $schedules = $viewer->getSchedules();
 
             if (!leaveType || !leaveFrom || !leaveTo) {
               document.getElementById("leaveValidationErrorMsg").textContent = "Please fill out all required fields.";
+              
+              // Get current backdrop count before showing error modal
+              const existingBackdrops = document.querySelectorAll('.modal-backdrop').length;
+              
+              // Show error modal
               const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
               errorModal.show();
+              
+              // Auto-close after 5 seconds
+              setTimeout(() => {
+                // Hide the error modal
+                errorModal.hide();
+                
+                // Give Bootstrap time to remove backdrop, then manually clean up
+                setTimeout(() => {
+                  // Remove all modal backdrops
+                  document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                  // Reset body styles
+                  document.body.classList.remove('modal-open');
+                  document.body.style.overflow = '';
+                  
+                  // Re-open the Add Leave modal so user can fix the form
+                  const addModalEl = document.getElementById('addLeaveModal');
+                  const addModal = new bootstrap.Modal(addModalEl, { backdrop: 'static', keyboard: false });
+                  addModal.show();
+                }, 150);
+              }, 5000);
               return;
             }
 
@@ -999,12 +1021,21 @@ $schedules = $viewer->getSchedules();
             const addModal = bootstrap.Modal.getInstance(addModalEl);
             if (addModal) addModal.hide();
 
+            // Remove any lingering backdrops
+            setTimeout(() => {
+              document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+              document.body.classList.remove('modal-open');
+              document.body.style.overflow = '';
+            }, 100);
+
             // Show confirmation modal with leave details
             const detailsText = `${leaveType} Leave, from ${formatDate(leaveFrom)} to ${formatDate(leaveTo)}`;
             document.getElementById("leaveDetailsText").innerText = detailsText;
 
-            const detailsModal = new bootstrap.Modal(document.getElementById('leaveDetailsModal'));
-            detailsModal.show();
+            setTimeout(() => {
+              const detailsModal = new bootstrap.Modal(document.getElementById('leaveDetailsModal'));
+              detailsModal.show();
+            }, 150);
           }
 
           function finalizeLeave() {
@@ -1014,8 +1045,16 @@ $schedules = $viewer->getSchedules();
             const leaveReason = document.getElementById("leaveReason").value;
             const autoApprove = isAdmin && document.getElementById("autoApprove").checked;
 
+            // Hide the confirmation modal
             const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsModal'));
             if (detailsModal) detailsModal.hide();
+
+            // Clean up backdrops before sending request
+            setTimeout(() => {
+              document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+              document.body.classList.remove('modal-open');
+              document.body.style.overflow = '';
+            }, 100);
 
             // Submit leave request to API
             const formData = new FormData();
@@ -1028,45 +1067,88 @@ $schedules = $viewer->getSchedules();
             formData.append('is_admin', isAdmin ? '1' : '0');
             formData.append('auto_approve', autoApprove ? '1' : '0');
 
-            fetch('api/leave_request.php', {
-              method: 'POST',
-              body: formData
-            })
-            .then(res => res.json())
-            .then(response => {
-              if (response.success) {
-                // Show success modal
-                document.getElementById("leaveSuccessMsg").textContent = response.message || "Leave request submitted successfully!";
-                const successModal = new bootstrap.Modal(document.getElementById('leaveSuccessModal'));
-                successModal.show();
+            setTimeout(() => {
+              fetch('api/leave_request.php', {
+                method: 'POST',
+                body: formData
+              })
+              .then(res => res.json())
+              .then(response => {
+                if (response.success) {
+                  // Show success modal
+                  document.getElementById("leaveSuccessMsg").textContent = response.message || "Leave request submitted successfully!";
+                  const successModal = new bootstrap.Modal(document.getElementById('leaveSuccessModal'));
+                  successModal.show();
 
-                // Reload leave list
-                loadEmployeeLeaves();
+                  // Reload leave list
+                  loadEmployeeLeaves();
 
-                // Auto-close after 5 seconds
-                setTimeout(() => {
-                  successModal.hide();
-                }, 5000);
-              } else {
-                document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + response.error;
+                  // Auto-close after 5 seconds
+                  setTimeout(() => {
+                    successModal.hide();
+                    
+                    // Clean up after success modal closes
+                    setTimeout(() => {
+                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                      document.body.classList.remove('modal-open');
+                      document.body.style.overflow = '';
+                    }, 150);
+                  }, 5000);
+                } else {
+                  document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + response.error;
+                  const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+                  errorModal.show();
+                  
+                  // Auto-close after 5 seconds
+                  setTimeout(() => {
+                    errorModal.hide();
+                    
+                    // Clean up after error modal closes
+                    setTimeout(() => {
+                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                      document.body.classList.remove('modal-open');
+                      document.body.style.overflow = '';
+                    }, 150);
+                  }, 5000);
+                }
+              })
+              .catch(error => {
+                console.error('Error submitting leave request:', error);
+                document.getElementById("leaveValidationErrorMsg").textContent = 'Failed to submit leave request. Please try again.';
                 const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
                 errorModal.show();
-              }
-            })
-            .catch(error => {
-              console.error('Error submitting leave request:', error);
-              document.getElementById("leaveValidationErrorMsg").textContent = 'Failed to submit leave request. Please try again.';
-              const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
-              errorModal.show();
-            });
+                
+                // Auto-close after 5 seconds
+                setTimeout(() => {
+                  errorModal.hide();
+                  
+                  // Clean up after error modal closes
+                  setTimeout(() => {
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                  }, 150);
+                }, 5000);
+              });
+            }, 150);
           }
 
           function goBackToForm() {
             const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsModal'));
             if (detailsModal) detailsModal.hide();
 
-            const addModal = new bootstrap.Modal(document.getElementById('addLeaveModal'));
-            addModal.show();
+            // Clean up backdrops
+            setTimeout(() => {
+              document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+              document.body.classList.remove('modal-open');
+              document.body.style.overflow = '';
+            }, 100);
+
+            // Re-open add leave modal
+            setTimeout(() => {
+              const addModal = new bootstrap.Modal(document.getElementById('addLeaveModal'));
+              addModal.show();
+            }, 150);
           }
 
           function redirectToStaffInfo() {
@@ -1187,6 +1269,14 @@ $schedules = $viewer->getSchedules();
                 document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + result.error;
                 const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
                 errorModal.show();
+                // Auto-close after 5 seconds
+                setTimeout(() => {
+                  errorModal.hide();
+                  // Clear all modal backdrops and reset body
+                  document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                  document.body.classList.remove('modal-open');
+                  document.body.style.overflow = '';
+                }, 5000);
               }
             } catch (error) {
               console.error('Error cancelling leave:', error);
@@ -1194,6 +1284,14 @@ $schedules = $viewer->getSchedules();
               document.getElementById("leaveValidationErrorMsg").textContent = 'Failed to delete leave. Please try again.';
               const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
               errorModal.show();
+              // Auto-close after 5 seconds
+              setTimeout(() => {
+                errorModal.hide();
+                // Clear all modal backdrops and reset body
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+              }, 5000);
             }
           });
 
