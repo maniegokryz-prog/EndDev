@@ -360,28 +360,18 @@ try {
     
     // Fetch summary statistics
     if ($type === 'all' || $type === 'summary') {
-        // Get day of week (0=Sunday, 1=Monday, etc.)
-        $date_obj = new DateTime($date);
-        $day_of_week = $date_obj->format('w'); // 0-6
-        
-        // Get total employees scheduled for this day
-        // Employees are scheduled if they have a schedule with schedule_periods for this day
-        $sql = "SELECT COUNT(DISTINCT e.id) as total 
-                FROM employees e
-                INNER JOIN employee_schedules es ON e.id = es.employee_id
-                INNER JOIN schedules s ON es.schedule_id = s.id
-                INNER JOIN schedule_periods sp ON s.id = sp.schedule_id
-                WHERE e.status = 'active'
-                AND es.is_active = 1
-                AND sp.day_of_week = ?
-                AND (es.effective_date <= ? AND (es.end_date IS NULL OR es.end_date >= ?))";
+        // Get total daily_attendance records for this day (base for all calculations)
+        $sql = "SELECT COUNT(*) as total 
+                FROM daily_attendance 
+                WHERE attendance_date = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iss", $day_of_week, $date, $date);
+        $stmt->bind_param("s", $date);
         $stmt->execute();
-        $total_scheduled = $stmt->get_result()->fetch_assoc()['total'];
+        $total_records = $stmt->get_result()->fetch_assoc()['total'];
         
-        // Get present count (employees with time_in on this date)
-        $sql = "SELECT COUNT(DISTINCT employee_id) as present 
+        // Get present count (employees with time_in)
+        // Present = Total users who timed in (regardless of late or on-time)
+        $sql = "SELECT COUNT(*) as present 
                 FROM daily_attendance 
                 WHERE attendance_date = ? AND time_in IS NOT NULL";
         $stmt = $conn->prepare($sql);
@@ -389,36 +379,41 @@ try {
         $stmt->execute();
         $present_count = $stmt->get_result()->fetch_assoc()['present'];
         
-        // Get absent count (scheduled but didn't time in)
-        $absent_count = $total_scheduled - $present_count;
-        
-        // Get on-time count (late_minutes = 0)
-        $sql = "SELECT COUNT(DISTINCT employee_id) as on_time 
+        // Get absent count (employees with NO time_in)
+        $sql = "SELECT COUNT(*) as absent 
                 FROM daily_attendance 
-                WHERE attendance_date = ? AND late_minutes = 0 AND time_in IS NOT NULL";
+                WHERE attendance_date = ? AND time_in IS NULL";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $date);
+        $stmt->execute();
+        $absent_count = $stmt->get_result()->fetch_assoc()['absent'];
+        
+        // Get on-time count (has time_in AND late_minutes = 0)
+        $sql = "SELECT COUNT(*) as on_time 
+                FROM daily_attendance 
+                WHERE attendance_date = ? AND time_in IS NOT NULL AND late_minutes = 0";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $on_time_count = $stmt->get_result()->fetch_assoc()['on_time'];
         
-        // Get late count (late_minutes > 0)
-        $sql = "SELECT COUNT(DISTINCT employee_id) as late 
+        // Get late count (has time_in AND late_minutes > 0)
+        $sql = "SELECT COUNT(*) as late 
                 FROM daily_attendance 
-                WHERE attendance_date = ? AND late_minutes > 0";
+                WHERE attendance_date = ? AND time_in IS NOT NULL AND late_minutes > 0";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $late_count = $stmt->get_result()->fetch_assoc()['late'];
         
-        // Calculate percentages based on total scheduled employees
-        $present_percentage = $total_scheduled > 0 ? round(($present_count / $total_scheduled) * 100, 1) : 0;
-        $absent_percentage = $total_scheduled > 0 ? round(($absent_count / $total_scheduled) * 100, 1) : 0;
-        $on_time_percentage = $total_scheduled > 0 ? round(($on_time_count / $total_scheduled) * 100, 1) : 0;
-        $late_percentage = $total_scheduled > 0 ? round(($late_count / $total_scheduled) * 100, 1) : 0;
+        // Calculate percentages based on total daily_attendance records
+        $present_percentage = $total_records > 0 ? round(($present_count / $total_records) * 100, 1) : 0;
+        $absent_percentage = $total_records > 0 ? round(($absent_count / $total_records) * 100, 1) : 0;
+        $on_time_percentage = $total_records > 0 ? round(($on_time_count / $total_records) * 100, 1) : 0;
+        $late_percentage = $total_records > 0 ? round(($late_count / $total_records) * 100, 1) : 0;
         
         $response['summary'] = [
-            'total_scheduled' => $total_scheduled,
-            'day_of_week' => $day_of_week,
+            'total_records' => $total_records,
             'present' => [
                 'count' => $present_count,
                 'percentage' => $present_percentage
