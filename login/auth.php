@@ -83,7 +83,7 @@ function handleLogin($conn) {
     // Determine user role (admin or user)
     $role = 'user';
     if (!empty($user['roles'])) {
-        $roles_lower = strtolower($user['roles']);
+        $roles_lower = strtolower(trim($user['roles']));
         if (strpos($roles_lower, 'admin') !== false || 
             strpos($roles_lower, 'administrator') !== false) {
             $role = 'admin';
@@ -108,7 +108,12 @@ function handleLogin($conn) {
     logLoginAttempt($conn, $employee_id, true, 'Login successful');
     
     // Determine redirect URL based on role
-    $redirect_url = ($role === 'admin') ? '../dashboard/dashboard.php' : '../dashboard/dashboard.php';
+    if ($role === 'admin') {
+        $redirect_url = '../dashboard/dashboard.php';
+    } else {
+        // Normal users go to their individual staff info page
+        $redirect_url = '../staffmanagement/staffinfo.php?id=' . $user['employee_id'];
+    }
     
     echo json_encode([
         'success' => true,

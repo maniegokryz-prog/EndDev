@@ -141,22 +141,25 @@ try {
             'icon' => 'bi-dash'
         ];
         
-        if ($row['status'] === 'complete') {
+        // Trim and lowercase for comparison
+        $status_lower = strtolower(trim($row['status']));
+        
+        if ($status_lower === 'complete' || $status_lower === 'present') {
             $status_info['badge_class'] = 'success';
             $status_info['badge_text'] = 'Present';
             $status_info['icon_class'] = 'bg-success';
             $status_info['icon'] = 'bi-check-lg';
-        } elseif ($row['status'] === 'incomplete') {
+        } elseif ($status_lower === 'incomplete') {
             $status_info['badge_class'] = 'warning text-dark';
             $status_info['badge_text'] = 'Incomplete';
             $status_info['icon_class'] = 'bg-warning';
-            $status_info['icon'] = 'bi-clock';
-        } elseif ($row['status'] === 'absent') {
+            $status_info['icon'] = 'bi-exclamation-circle-fill';
+        } elseif ($status_lower === 'absent') {
             $status_info['badge_class'] = 'danger';
             $status_info['badge_text'] = 'Absent';
             $status_info['icon_class'] = 'bg-danger';
-            $status_info['icon'] = 'bi-x-lg';
-        } elseif ($row['status'] === 'manual') {
+            $status_info['icon'] = 'bi-x-circle-fill';
+        } elseif ($status_lower === 'manual') {
             $status_info['badge_class'] = 'manual';
             $status_info['badge_text'] = 'Manual';
             $status_info['icon_class'] = 'bg-manual';

@@ -326,7 +326,7 @@ $schedules = $viewer->getSchedules();
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Staff Information - Attendance System</title>
+  <title>Staff Information - Attendance System [v<?php echo time(); ?>]</title>
   <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -347,9 +347,9 @@ $schedules = $viewer->getSchedules();
   <!-- Chart.js for Performance Metrics (Local - Works Offline) -->
   <script src="../assets/vendor/chartjs/chart.umd.min.js"></script>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="staff.css">
-  <link rel="stylesheet" href="../assets/css/styles.css">
+  <!-- Custom CSS with cache busting -->
+  <link rel="stylesheet" href="staff.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="../assets/css/styles.css?v=<?php echo time(); ?>">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -472,6 +472,20 @@ $schedules = $viewer->getSchedules();
 
     .metrics-card .card-body {
         min-height: 250px;
+    }
+    
+    /* Force DTR badge and icon colors - Override all other styles */
+    .dtr-item span[style*="background-color"] {
+        background-color: inherit !important;
+        color: inherit !important;
+    }
+    
+    .dtr-item div[style*="background-color"] {
+        background-color: inherit !important;
+    }
+    
+    .dtr-item i[style*="color"] {
+        color: inherit !important;
     }
     </style>
 </head>
@@ -1480,25 +1494,18 @@ $schedules = $viewer->getSchedules();
         function displayDTRRecords(records) {
           const dtrList = document.getElementById('dtrList');
           
-          // Define color mappings
-          const colorMap = {
-            'success': { bg: '#4caf50', text: 'white' },
-            'danger': { bg: '#f44336', text: 'white' },
-            'warning text-dark': { bg: '#ffc107', text: '#333' },
-            'warning': { bg: '#ffc107', text: '#333' },
-            'manual': { bg: '#a8d5ba', text: '#2d5f3f' }
+          // Define exact color values for each status
+          const statusColors = {
+            'success': { iconBg: '#4caf50', badgeBg: '#4caf50', badgeText: '#ffffff' },      // Green for Present
+            'danger': { iconBg: '#f44336', badgeBg: '#f44336', badgeText: '#ffffff' },       // Red for Absent
+            'warning text-dark': { iconBg: '#ffc107', badgeBg: '#ffc107', badgeText: '#333333' }, // Yellow for Incomplete
+            'warning': { iconBg: '#ffc107', badgeBg: '#ffc107', badgeText: '#333333' },      // Yellow variant
+            'manual': { iconBg: '#a8d5ba', badgeBg: '#a8d5ba', badgeText: '#2d5f3f' }       // Muted green for Manual
           };
           
-          const iconColorMap = {
-            'bg-success': '#4caf50',
-            'bg-danger': '#f44336',
-            'bg-warning': '#ffc107',
-            'bg-manual': '#a8d5ba',
-            'bg-secondary': '#6c757d'
-          };
-          
-          console.log('=== DTR RECORDS DEBUG ===');
+          console.log('=== DTR RECORDS DEBUG v' + Date.now() + ' ===');
           console.log('Total records:', records.length);
+          console.log('Status colors config:', statusColors);
           
           let html = '';
           records.forEach(record => {
@@ -1507,38 +1514,39 @@ $schedules = $viewer->getSchedules();
             const timeOut = record.time_out_formatted || 'N/A';
             const hoursWorked = record.hours_worked || 'N/A';
             
-            // Get colors for badge
-            const colors = colorMap[statusInfo.badge_class] || { bg: '#6c757d', text: 'white' };
-            const badgeStyle = `background-color: ${colors.bg} !important; color: ${colors.text} !important; padding: 0.25em 0.6em; border-radius: 0.25rem; font-weight: 500;`;
-            
-            // Get colors for icon
-            const iconBg = iconColorMap[statusInfo.icon_class] || '#6c757d';
-            const iconStyle = `background-color: ${iconBg} !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;`;
+            // Get colors for this status
+            const colors = statusColors[statusInfo.badge_class] || { 
+              iconBg: '#6c757d', 
+              badgeBg: '#6c757d', 
+              badgeText: '#ffffff' 
+            };
 
             // Debug logging
-            console.log(`Date: ${record.formatted_date}`);
+            console.log(`\nDate: ${record.formatted_date}`);
             console.log(`  Status: ${record.status}`);
-            console.log(`  Badge Class: ${statusInfo.badge_class}`);
-            console.log(`  Badge Text: ${statusInfo.badge_text}`);
-            console.log(`  Badge BG Color: ${colors.bg}`);
-            console.log(`  Badge Text Color: ${colors.text}`);
-            console.log(`  Icon Class: ${statusInfo.icon_class}`);
-            console.log(`  Icon BG Color: ${iconBg}`);
+            console.log(`  Badge Class: "${statusInfo.badge_class}"`);
+            console.log(`  Badge Text: "${statusInfo.badge_text}"`);
+            console.log(`  Colors matched:`, colors);
+            console.log(`  Icon BG: ${colors.iconBg}`);
+            console.log(`  Badge BG: ${colors.badgeBg}`);
+            console.log(`  Badge Text Color: ${colors.badgeText}`);
+            console.log(`  Icon: ${statusInfo.icon}`);
+            console.log(`  Full Icon Class: bi ${statusInfo.icon}`);
 
             html += `
-              <div class="dtr-item d-flex align-items-start mb-3">
-                <div class="text-white rounded-circle me-3" style="${iconStyle}">
-                  <i class="bi ${statusInfo.icon}"></i>
+              <div class="dtr-item d-flex align-items-start mb-3" style="background-color: #f8f9fa; padding: 10px; border-radius: 8px;">
+                <div style="background: ${colors.iconBg}; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; margin-right: 1rem;">
+                  <i class="bi ${statusInfo.icon}" style="color: #ffffff; font-size: 20px;"></i>
                 </div>
-                <div class="flex-grow-1">
-                  <div class="fw-semibold">
+                <div style="flex-grow: 1;">
+                  <div style="font-weight: 600;">
                     ${record.formatted_date}
-                    <span class="ms-2" style="${badgeStyle}">${statusInfo.badge_text}</span>
+                    <span style="background: ${colors.badgeBg}; color: ${colors.badgeText}; padding: 0.35em 0.8em; border-radius: 0.3rem; font-weight: 600; display: inline-block; margin-left: 0.5rem; font-size: 0.9rem;">${statusInfo.badge_text}</span>
                   </div>
-                  <div class="small text-muted">
+                  <div style="font-size: 0.875rem; color: #6c757d; margin-top: 0.25rem;">
                     Time In: ${timeIn} — Time Out: ${timeOut}
                   </div>
-                  ${hoursWorked !== 'N/A' ? `<div class="small text-muted">Hours: ${hoursWorked}</div>` : ''}
+                  ${hoursWorked !== 'N/A' ? `<div style="font-size: 0.875rem; color: #6c757d;">Hours: ${hoursWorked}</div>` : ''}
                 </div>
               </div>
             `;
