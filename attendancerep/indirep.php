@@ -172,9 +172,21 @@ if ($id) {
   <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
-      <img src="pic.png" alt="Placeholder" class="rounded-circle mb-2" width="70">
-      <h5 class="mb-0">Kryztian Maniego</h5>
-      <small class="role">Admin</small>
+      <?php
+      // Include auth guard if not already included
+      if (!function_exists('getCurrentUser')) {
+          require_once '../auth_guard.php';
+          $currentUser = getCurrentUser();
+      }
+      ?>
+      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
+           alt="Profile" 
+           class="rounded-circle mb-2" 
+           width="70" 
+           height="70"
+           onerror="this.src='../assets/profile_pic/user.png';">
+      <h5 class="mb-0"><?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?></h5>
+      <small class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
     </div>
     <nav class="nav flex-column px-2">
       <a class="nav-link active" href="../dashboard/dashboard.php"><i class="bi bi-house-door me-2"></i> Dashboard</a>
