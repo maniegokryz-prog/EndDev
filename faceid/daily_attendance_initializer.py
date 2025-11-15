@@ -155,15 +155,45 @@ def initialize_daily_attendance_records():
                 skipped_count += 1
                 continue
             
-            # Create new daily_attendance record
+            # Calculate scheduled_hours for this employee
+            # Get all schedule periods for today
+            cursor.execute("""
+                SELECT sp.start_time, sp.end_time
+                FROM employee_schedules es
+                JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                WHERE es.employee_id = ?
+                  AND es.is_active = 1
+                  AND sp.day_of_week = ?
+                  AND sp.is_active = 1
+                  AND (es.end_date IS NULL OR es.end_date >= ?)
+                ORDER BY CAST(sp.start_time AS TIME) ASC
+            """, (emp_id, day_of_week, today))
+            
+            schedule_periods = cursor.fetchall()
+            
+            # Calculate scheduled_hours: sum of all period durations
+            # NOTE: Result is stored in MINUTES (field name is misleading)
+            scheduled_hours = 0
+            if schedule_periods:
+                for period in schedule_periods:
+                    start_time = period[0]
+                    end_time = period[1]
+                    
+                    start_hour, start_minute, _ = map(int, start_time.split(':'))
+                    end_hour, end_minute, _ = map(int, end_time.split(':'))
+                    
+                    period_minutes = (end_hour * 60 + end_minute) - (start_hour * 60 + start_minute)
+                    scheduled_hours += period_minutes
+            
+            # Create new daily_attendance record with scheduled_hours
             cursor.execute("""
                 INSERT INTO daily_attendance 
-                (employee_id, attendance_date, status, time_in, time_out, 
+                (employee_id, attendance_date, status, scheduled_hours, time_in, time_out, 
                  late_minutes, early_departure_minutes, overtime_minutes)
-                VALUES (?, ?, 'incomplete', NULL, NULL, NULL, NULL, NULL)
-            """, (emp_id, today))
+                VALUES (?, ?, 'incomplete', ?, NULL, NULL, NULL, NULL, NULL)
+            """, (emp_id, today, scheduled_hours))
             
-            print(f"    ✓ {emp_name} ({emp_code}) - Record created")
+            print(f"    ✓ {emp_name} ({emp_code}) - Record created (scheduled: {scheduled_hours} min / {scheduled_hours/60.0:.2f}h)")
             created_count += 1
         
         conn.commit()

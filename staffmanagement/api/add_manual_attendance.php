@@ -23,6 +23,10 @@ try {
             addManualAttendance($conn);
             break;
             
+        case 'update_timeout':
+            updateTimeOut($conn);
+            break;
+            
         default:
             throw new Exception('Invalid action');
     }
@@ -273,6 +277,186 @@ function addManualAttendance($conn) {
         
     } catch (Exception $e) {
         $conn->rollback();
+        throw $e;
+    }
+}
+
+/**
+ * Update time out for an incomplete attendance record
+ */
+function updateTimeOut($conn) {
+    try {
+        // Get JSON data from request
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (!$data) {
+            throw new Exception('Invalid JSON data received');
+        }
+        
+        // Validate required fields
+        $record_id = $data['record_id'] ?? null;
+        $employee_id = $data['employee_id'] ?? null;
+        $date = $data['date'] ?? null;
+        $time_out = $data['time_out'] ?? null;
+        
+        if (!$record_id || !$employee_id || !$date || !$time_out) {
+            throw new Exception('Missing required fields: record_id, employee_id, date, time_out');
+        }
+        
+        $conn->begin_transaction();
+        
+        // First, verify the record exists and is incomplete
+        $check_sql = "SELECT id, time_in, status FROM daily_attendance 
+                     WHERE id = ? AND employee_id = ? AND attendance_date = ? AND status = 'incomplete'";
+        $check_stmt = $conn->prepare($check_sql);
+        
+        if (!$check_stmt) {
+            throw new Exception('Failed to prepare verification query: ' . $conn->error);
+        }
+        
+        $check_stmt->bind_param('iis', $record_id, $employee_id, $date);
+        $check_stmt->execute();
+        $result = $check_stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            throw new Exception('Record not found or not eligible for update');
+        }
+        
+        $record = $result->fetch_assoc();
+        $time_in = $record['time_in'];
+        
+        if (!$time_in) {
+            throw new Exception('Cannot add time out without time in');
+        }
+        
+        // Get employee's schedule for this date to calculate hours
+        $schedule_sql = "SELECT 
+                            SUM(TIMESTAMPDIFF(MINUTE, sp.start_time, sp.end_time)) as scheduled_minutes
+                         FROM schedule_assignments sa
+                         JOIN schedule_periods sp ON sa.id = sp.schedule_assignment_id
+                         WHERE sa.employee_id = ? 
+                         AND sa.effective_from <= ? 
+                         AND (sa.effective_to IS NULL OR sa.effective_to >= ?)
+                         AND sp.day_of_week = WEEKDAY(?)";
+        
+        $schedule_stmt = $conn->prepare($schedule_sql);
+        $schedule_stmt->bind_param('isss', $employee_id, $date, $date, $date);
+        $schedule_stmt->execute();
+        $schedule_result = $schedule_stmt->get_result();
+        $schedule_data = $schedule_result->fetch_assoc();
+        $scheduled_minutes = $schedule_data['scheduled_minutes'] ?? 480; // Default 8 hours
+        
+        // Calculate actual hours worked (in minutes)
+        $time_in_dt = new DateTime($date . ' ' . $time_in);
+        $time_out_dt = new DateTime($date . ' ' . $time_out);
+        
+        // Handle overnight shifts
+        if ($time_out_dt < $time_in_dt) {
+            $time_out_dt->modify('+1 day');
+        }
+        
+        $actual_minutes = ($time_out_dt->getTimestamp() - $time_in_dt->getTimestamp()) / 60;
+        
+        // Calculate late minutes (compare time_in with first schedule start_time)
+        $late_sql = "SELECT MIN(sp.start_time) as schedule_start
+                    FROM schedule_assignments sa
+                    JOIN schedule_periods sp ON sa.id = sp.schedule_assignment_id
+                    WHERE sa.employee_id = ? 
+                    AND sa.effective_from <= ? 
+                    AND (sa.effective_to IS NULL OR sa.effective_to >= ?)
+                    AND sp.day_of_week = WEEKDAY(?)";
+        
+        $late_stmt = $conn->prepare($late_sql);
+        $late_stmt->bind_param('isss', $employee_id, $date, $date, $date);
+        $late_stmt->execute();
+        $late_result = $late_stmt->get_result();
+        $late_data = $late_result->fetch_assoc();
+        
+        $late_minutes = 0;
+        if ($late_data['schedule_start']) {
+            $schedule_start_dt = new DateTime($date . ' ' . $late_data['schedule_start']);
+            if ($time_in_dt > $schedule_start_dt) {
+                $late_minutes = ($time_in_dt->getTimestamp() - $schedule_start_dt->getTimestamp()) / 60;
+            }
+        }
+        
+        // Calculate early departure (compare time_out with last schedule end_time)
+        $early_sql = "SELECT MAX(sp.end_time) as schedule_end
+                     FROM schedule_assignments sa
+                     JOIN schedule_periods sp ON sa.id = sp.schedule_assignment_id
+                     WHERE sa.employee_id = ? 
+                     AND sa.effective_from <= ? 
+                     AND (sa.effective_to IS NULL OR sa.effective_to >= ?)
+                     AND sp.day_of_week = WEEKDAY(?)";
+        
+        $early_stmt = $conn->prepare($early_sql);
+        $early_stmt->bind_param('isss', $employee_id, $date, $date, $date);
+        $early_stmt->execute();
+        $early_result = $early_stmt->get_result();
+        $early_data = $early_result->fetch_assoc();
+        
+        $early_departure_minutes = 0;
+        if ($early_data['schedule_end']) {
+            $schedule_end_dt = new DateTime($date . ' ' . $early_data['schedule_end']);
+            if ($time_out_dt < $schedule_end_dt) {
+                $early_departure_minutes = ($schedule_end_dt->getTimestamp() - $time_out_dt->getTimestamp()) / 60;
+            }
+        }
+        
+        // Calculate overtime
+        $overtime_minutes = max(0, $actual_minutes - $scheduled_minutes);
+        
+        // Update the record
+        $update_sql = "UPDATE daily_attendance 
+                      SET time_out = ?, 
+                          actual_hours = ?, 
+                          late_minutes = ?, 
+                          early_departure_minutes = ?, 
+                          overtime_minutes = ?,
+                          status = 'complete'
+                      WHERE id = ?";
+        
+        $update_stmt = $conn->prepare($update_sql);
+        
+        if (!$update_stmt) {
+            throw new Exception('Failed to prepare update query: ' . $conn->error);
+        }
+        
+        $update_stmt->bind_param('sdiiii', 
+            $time_out, 
+            $actual_minutes, 
+            $late_minutes, 
+            $early_departure_minutes, 
+            $overtime_minutes, 
+            $record_id
+        );
+        
+        if (!$update_stmt->execute()) {
+            throw new Exception('Failed to update record: ' . $update_stmt->error);
+        }
+        
+        $conn->commit();
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Time out updated successfully',
+            'data' => [
+                'record_id' => $record_id,
+                'time_out' => $time_out,
+                'actual_hours' => round($actual_minutes / 60, 1),
+                'late_minutes' => $late_minutes,
+                'early_departure_minutes' => $early_departure_minutes,
+                'overtime_minutes' => $overtime_minutes,
+                'status' => 'complete'
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        if (isset($conn)) {
+            $conn->rollback();
+        }
+        error_log("Update TimeOut Error: " . $e->getMessage());
         throw $e;
     }
 }

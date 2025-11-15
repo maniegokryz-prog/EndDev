@@ -120,10 +120,12 @@ try {
         }
         
         // Format hours worked
+        // NOTE: actual_hours in database is stored in MINUTES, not hours
         $hours_worked = null;
         if (!empty($row['actual_hours'])) {
-            $hours = floor($row['actual_hours']);
-            $minutes = round(($row['actual_hours'] - $hours) * 60);
+            $total_minutes = $row['actual_hours'];
+            $hours = floor($total_minutes / 60);
+            $minutes = $total_minutes % 60;
             $hours_worked = "{$hours}h {$minutes}m";
         }
         
@@ -195,7 +197,7 @@ try {
         'incomplete_days' => 0,
         'manual_days' => 0,
         'total_late_minutes' => 0,
-        'total_hours_worked' => 0
+        'total_hours_worked' => 0 // This will be in minutes
     ];
     
     foreach ($attendance_records as $record) {
@@ -215,14 +217,15 @@ try {
             }
         }
         
+        // actual_hours is stored in MINUTES in database
         if (!empty($record['actual_hours'])) {
             $summary['total_hours_worked'] += $record['actual_hours'];
         }
     }
     
-    // Format total hours worked
-    $total_hours = floor($summary['total_hours_worked']);
-    $total_minutes = round(($summary['total_hours_worked'] - $total_hours) * 60);
+    // Format total hours worked (convert minutes to hours and minutes)
+    $total_hours = floor($summary['total_hours_worked'] / 60);
+    $total_minutes = $summary['total_hours_worked'] % 60;
     $summary['total_hours_worked_formatted'] = "{$total_hours}h {$total_minutes}m";
     
     // Build response

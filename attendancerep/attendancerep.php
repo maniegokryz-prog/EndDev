@@ -123,6 +123,11 @@ class AttendanceReportViewer {
         // Calculate vacant hours (break time converted to hours)
         $vacantHours = $record['break_time_minutes'] ? round($record['break_time_minutes'] / 60, 1) : 0;
         
+        // Convert scheduled_hours and actual_hours from MINUTES to HOURS
+        // NOTE: Database stores these values in minutes despite the field names
+        $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 1) : 0;
+        $actualHours = $record['actual_hours'] ? round($record['actual_hours'] / 60, 1) : 0;
+        
         return [
             'id' => $record['id'],
             'employee_id' => htmlspecialchars($record['employee_id_string'], ENT_QUOTES, 'UTF-8'),
@@ -134,8 +139,8 @@ class AttendanceReportViewer {
             'time_in' => $record['time_in'] ? date('g:i A', strtotime($record['time_in'])) : 'N/A',
             'time_out' => $record['time_out'] ? date('g:i A', strtotime($record['time_out'])) : 'N/A',
             'vacant_hours' => $vacantHours,
-            'actual_hours' => $record['actual_hours'] ?? 0,
-            'scheduled_hours' => $record['scheduled_hours'] ?? 0,
+            'actual_hours' => $actualHours,
+            'scheduled_hours' => $scheduledHours,
             'late_minutes' => $record['late_minutes'] ?? 0,
             'status' => $record['status'],
             'status_display' => $statusInfo['display'],
@@ -147,33 +152,60 @@ class AttendanceReportViewer {
     private function determineStatus($record) {
         $status = $record['status'];
         
-        // If status is complete
+        // Complete status - has both time_in and time_out
         if ($status === 'complete') {
             return [
                 'display' => 'Complete',
-                'class' => 'status-ontime' // green dot
+                'class' => 'status-complete-dot'
             ];
         }
         
-        // If incomplete, check if late
+        // Absent status
+        if ($status === 'absent') {
+            return [
+                'display' => 'Absent',
+                'class' => 'status-absent-dot'
+            ];
+        }
+        
+        // Manual status
+        if ($status === 'manual') {
+            return [
+                'display' => 'Manual',
+                'class' => 'status-manual-dot'
+            ];
+        }
+        
+        // Incomplete status - check different scenarios
         if ($status === 'incomplete') {
-            if ($record['late_minutes'] > 0) {
+            // No time_in yet - Not Arrived
+            if (empty($record['time_in'])) {
                 return [
-                    'display' => 'Late',
-                    'class' => 'status-late' // red dot
+                    'display' => 'Not Arrived',
+                    'class' => 'status-not-arrived-dot'
                 ];
-            } else {
-                return [
-                    'display' => 'On-Time',
-                    'class' => 'status-ontime' // green dot
-                ];
+            }
+            
+            // Has time_in but no time_out - check if late or on-time
+            if (!empty($record['time_in']) && empty($record['time_out'])) {
+                if ($record['late_minutes'] > 0) {
+                    return [
+                        'display' => 'Late',
+                        'class' => 'status-late-dot'
+                    ];
+                } else {
+                    return [
+                        'display' => 'On-Time',
+                        'class' => 'status-ontime-dot'
+                    ];
+                }
             }
         }
         
-        // Default fallback
+        // Default fallback for incomplete
         return [
-            'display' => ucfirst($status),
-            'class' => 'status-ontime'
+            'display' => 'Incomplete',
+            'class' => 'status-incomplete-dot'
         ];
     }
     
@@ -356,8 +388,8 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
           <td><?php echo date('Y-m-d', strtotime($record['attendance_date'])); ?></td>
           <td><?php echo $record['time_in']; ?></td>
           <td><?php echo $record['time_out']; ?></td>
-          <td><?php echo number_format($record['vacant_hours'], 1); ?> hr</td>
-          <td><?php echo number_format($record['actual_hours'], 1); ?> hrs</td>
+          <td><?php echo number_format($record['scheduled_hours'], 1); ?> hr</td>
+          <td><?php echo number_format($record['actual_hours'], 1); ?> hr</td>
           <td><span class="status-dot <?php echo $record['status_class']; ?>"></span> <?php echo $record['status_display']; ?></td>
         </tr>
           <?php endforeach; ?>

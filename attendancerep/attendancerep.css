@@ -182,6 +182,49 @@
 .status-undertime {
   background-color: #ffbf00;
 }
+
+/* Status Display with Dots */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.status-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.status-complete-dot {
+  background-color: #28a745;
+}
+
+.status-ontime-dot {
+  background-color: #28a745;
+}
+
+.status-late-dot {
+  background-color: #ffc107;
+}
+
+.status-incomplete-dot {
+  background-color: #ffc107;
+}
+
+.status-not-arrived-dot {
+  background-color: #6c757d;
+}
+
+.status-absent-dot {
+  background-color: #dc3545;
+}
+
+.status-manual-dot {
+  background-color: #6c757d;
+}
  
 .employee-info {
       display: flex;

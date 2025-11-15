@@ -179,7 +179,7 @@ if ($id) {
           $currentUser = getCurrentUser();
       }
       ?>
-      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
+      <img src="<?php echo '../' . (!empty($currentUser['profile_photo']) ? htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : 'assets/profile_pic/user.png'); ?>" 
            alt="Profile" 
            class="rounded-circle mb-2" 
            width="70" 
@@ -209,7 +209,7 @@ if ($id) {
 <?php if ($employee): ?>
   <div class="card p-4 shadow-sm mb-4">
     <div class="d-flex align-items-center">
-      <img src="<?= $employee['image'] ?>" class="rounded-circle me-3" width="70" height="70" alt="Profile">
+      <img src="<?= '../' . $employee['image'] ?>" class="rounded-circle me-3" width="70" height="70" alt="Profile">
       <div>
         <h4 class="mb-1"><?= $employee['name'] ?></h4>
         <small class="text-muted"><?= $id ?> | <?= $employee['role'] ?></small>

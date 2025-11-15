@@ -1435,6 +1435,86 @@ $schedules = $viewer->getSchedules();
         </div>
       </div>
 
+      <!-- Edit Time Out Modal -->
+      <div class="modal fade" id="editTimeOutModal" tabindex="-1" aria-labelledby="editTimeOutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editTimeOutModalLabel">Add Time Out</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label fw-bold">Date:</label>
+                <p id="editDate" class="mb-0"></p>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-bold">Time In:</label>
+                <p id="editTimeIn" class="mb-0"></p>
+              </div>
+              <div class="mb-3">
+                <label for="editTimeOut" class="form-label fw-bold">Time Out: <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="editTimeOut" required>
+                <small class="text-muted">Select the time the employee left</small>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="confirmEditTimeOut">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirm Edit Modal -->
+      <div class="modal fade" id="confirmEditModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header border-0">
+              <h5 class="modal-title text-warning">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Time Out Edit
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to add this time out for the employee?</p>
+              <div class="bg-light p-3 rounded">
+                <p class="mb-1"><strong>Date:</strong> <span id="confirmDate"></span></p>
+                <p class="mb-1"><strong>Time In:</strong> <span id="confirmTimeIn"></span></p>
+                <p class="mb-0"><strong>Time Out:</strong> <span id="confirmTimeOut"></span></p>
+              </div>
+              <p class="text-muted small mt-2 mb-0">
+                <i class="bi bi-info-circle me-1"></i>This action will update the attendance record.
+              </p>
+            </div>
+            <div class="modal-footer border-0">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-warning" id="finalConfirmEdit">
+                <i class="bi bi-check-circle me-1"></i>Yes, Update Time Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Edit Modal -->
+      <div class="modal fade" id="successEditModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-body text-center py-4">
+              <div class="mb-3">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+              </div>
+              <h5 class="mb-2">Time Out Updated Successfully</h5>
+              <p class="text-muted mb-0">The attendance record has been updated.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+              <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <script>
         const employeeInternalId = <?php echo json_encode($employee['id']); ?>;
         const employeeCode = <?php echo json_encode($employee['employee_id']); ?>;
@@ -1526,6 +1606,11 @@ $schedules = $viewer->getSchedules();
               badgeText: '#ffffff' 
             };
 
+            // Check if record is incomplete with time_in but no time_out
+            const showEditButton = record.status === 'incomplete' && 
+                                   record.time_in && 
+                                   !record.time_out;
+
             // Debug logging
             console.log(`\nDate: ${record.formatted_date}`);
             console.log(`  Status: ${record.status}`);
@@ -1537,6 +1622,7 @@ $schedules = $viewer->getSchedules();
             console.log(`  Badge Text Color: ${colors.badgeText}`);
             console.log(`  Icon: ${statusInfo.icon}`);
             console.log(`  Full Icon Class: bi ${statusInfo.icon}`);
+            console.log(`  Show Edit: ${showEditButton}`);
 
             html += `
               <div class="dtr-item d-flex align-items-start mb-3" style="background-color: #f8f9fa; padding: 10px; border-radius: 8px;">
@@ -1552,6 +1638,17 @@ $schedules = $viewer->getSchedules();
                     Time In: ${timeIn} — Time Out: ${timeOut}
                   </div>
                   ${hoursWorked !== 'N/A' ? `<div style="font-size: 0.875rem; color: #6c757d;">Hours: ${hoursWorked}</div>` : ''}
+                  ${showEditButton ? `
+                    <button class="btn btn-sm btn-outline-primary mt-2 edit-timeout-btn" 
+                            data-record-id="${record.id}" 
+                            data-date="${record.attendance_date}"
+                            data-formatted-date="${record.formatted_date}"
+                            data-time-in="${record.time_in}"
+                            data-time-in-formatted="${timeIn}"
+                            style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                      <i class="bi bi-pencil-square"></i> Add Time Out
+                    </button>
+                  ` : ''}
                 </div>
               </div>
             `;
@@ -1559,6 +1656,20 @@ $schedules = $viewer->getSchedules();
 
           dtrList.innerHTML = html;
           console.log('=== END DEBUG ===');
+          
+          // Attach event listeners to edit buttons
+          document.querySelectorAll('.edit-timeout-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              const recordId = this.dataset.recordId;
+              const date = this.dataset.date;
+              const formattedDate = this.dataset.formattedDate;
+              const timeIn = this.dataset.timeIn;
+              const timeInFormatted = this.dataset.timeInFormatted;
+              
+              openEditTimeOutModal(recordId, date, formattedDate, timeIn, timeInFormatted);
+            });
+          });
         }
 
         // Load DTR data when date range is selected
@@ -1657,6 +1768,122 @@ $schedules = $viewer->getSchedules();
           // Check for calendar updates every 500ms
           setInterval(loadDTRForSelectedRange, 500);
         });
+
+        // Edit Time Out Modal Functions
+        let currentEditRecord = null;
+
+        function openEditTimeOutModal(recordId, date, formattedDate, timeIn, timeInFormatted) {
+          currentEditRecord = {
+            id: recordId,
+            date: date,
+            formattedDate: formattedDate,
+            timeIn: timeIn,
+            timeInFormatted: timeInFormatted
+          };
+
+          // Set the modal content
+          document.getElementById('editDate').textContent = formattedDate;
+          document.getElementById('editTimeIn').textContent = timeInFormatted;
+          document.getElementById('editTimeOut').value = '';
+
+          // Show the modal
+          const editModal = new bootstrap.Modal(document.getElementById('editTimeOutModal'));
+          editModal.show();
+        }
+
+        // Handle confirm button in edit modal
+        document.getElementById('confirmEditTimeOut').addEventListener('click', function() {
+          const timeOut = document.getElementById('editTimeOut').value;
+          
+          if (!timeOut) {
+            alert('Please select a time out.');
+            return;
+          }
+
+          // Format time out for display
+          const timeOutFormatted = formatTime12Hour(timeOut);
+
+          // Set confirmation modal content
+          document.getElementById('confirmDate').textContent = currentEditRecord.formattedDate;
+          document.getElementById('confirmTimeIn').textContent = currentEditRecord.timeInFormatted;
+          document.getElementById('confirmTimeOut').textContent = timeOutFormatted;
+
+          // Store time out in current record
+          currentEditRecord.timeOut = timeOut;
+          currentEditRecord.timeOutFormatted = timeOutFormatted;
+
+          // Hide edit modal and show confirmation modal
+          const editModal = bootstrap.Modal.getInstance(document.getElementById('editTimeOutModal'));
+          editModal.hide();
+
+          const confirmModal = new bootstrap.Modal(document.getElementById('confirmEditModal'));
+          confirmModal.show();
+        });
+
+        // Handle final confirmation
+        document.getElementById('finalConfirmEdit').addEventListener('click', async function() {
+          const btn = this;
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+
+          try {
+            const response = await fetch('api/add_manual_attendance.php?action=update_timeout', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                record_id: currentEditRecord.id,
+                employee_id: employeeInternalId,
+                date: currentEditRecord.date,
+                time_out: currentEditRecord.timeOut
+              })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              // Hide confirmation modal
+              const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmEditModal'));
+              confirmModal.hide();
+
+              // Show success modal
+              const successModal = new bootstrap.Modal(document.getElementById('successEditModal'));
+              successModal.show();
+
+              // Reload DTR records after a short delay
+              setTimeout(() => {
+                successModal.hide();
+                // Reload the appropriate DTR view
+                const rangeData = window.getSelectedDateRange();
+                if (rangeData && rangeData.count > 0) {
+                  loadDTRForSelectedRange();
+                } else {
+                  loadRecentDTR();
+                }
+              }, 1500);
+
+            } else {
+              throw new Error(result.error || 'Failed to update time out');
+            }
+
+          } catch (error) {
+            console.error('Error updating time out:', error);
+            alert('Failed to update time out: ' + error.message);
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Yes, Update Time Out';
+          }
+        });
+
+        // Helper function to format time to 12-hour format
+        function formatTime12Hour(time24) {
+          const [hours, minutes] = time24.split(':');
+          const hour = parseInt(hours);
+          const ampm = hour >= 12 ? 'PM' : 'AM';
+          const hour12 = hour % 12 || 12;
+          return `${hour12}:${minutes} ${ampm}`;
+        }
       </script>
 
     </div>
