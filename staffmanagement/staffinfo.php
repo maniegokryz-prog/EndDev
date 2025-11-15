@@ -571,7 +571,7 @@ $schedules = $viewer->getSchedules();
 
           <div class="d-flex justify-content-center justify-content-lg-start gap-2">
             <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#editInfoModal">Edit Info</button>
-            <button class="btn btn-danger btn-sm" id="btnRemove" data-bs-toggle="modal" data-bs-target="#passwordModal">Remove Employee</button>
+            <button class="btn btn-danger btn-sm" id="btnRemove" data-bs-toggle="modal" data-bs-target="#removeEmployeeModal">Remove Employee</button>
           </div>
         </div>
       </div>
@@ -707,33 +707,12 @@ $schedules = $viewer->getSchedules();
   </div>
 </div>
 
-<!-- 🔹 Success Modal -->
+<!-- 🔹 Success Remove Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
       <h5 class="fw-bold mb-3 text-success">Removed Successfully</h5>
       <p>The employee has been moved to the archive.</p>
-      <div class="mt-3">
-        <button class="btn btn-success" id="successOkBtn">OK</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SUCCESS MODAL -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="successModalLabel">✅ Save Successful</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Your changes have been saved successfully.</p>
-      </div>
-      <div class="modal-footer border-0 justify-content-center">
-        <button type="button" class="btn btn-primary" id="goToProfile">Go to Profile</button>
-      </div>
     </div>
   </div>
 </div>
@@ -741,27 +720,32 @@ $schedules = $viewer->getSchedules();
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const removeBtn = document.getElementById("btnRemove");
-    const confirmModal = new bootstrap.Modal(document.getElementById("confirmModal"));
+    const removeEmployeeModal = new bootstrap.Modal(document.getElementById("removeEmployeeModal"));
     const successModal = new bootstrap.Modal(document.getElementById("successModal"));
 
-    // Step 1: Show confirm modal directly when Remove Employee is clicked
-    removeBtn.addEventListener("click", () => {
-      confirmModal.show();
+    // Step 1: When Remove Employee button is clicked, show the remove employee modal
+    removeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      removeEmployeeModal.show();
     });
 
-    // Step 2: When "Yes" clicked → show success modal
+    // Step 2: When "Yes" clicked in confirmation → show success modal
     document.getElementById("confirmRemoveBtn").addEventListener("click", () => {
-      confirmModal.hide();
+      removeEmployeeModal.hide();
       setTimeout(() => successModal.show(), 400);
     });
 
-    // Step 3: When "OK" clicked → redirect to staff.php
-    document.getElementById("successOkBtn").addEventListener("click", () => {
-      successModal.hide();
-      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-      document.body.classList.remove('modal-open');
-      document.body.style.overflow = '';
-      setTimeout(() => window.location.href = "staff.php", 400);
+    // Step 3: Auto-close success modal after 1.2 seconds, then redirect to staff.php
+    successModal._element.addEventListener('shown.bs.modal', () => {
+      setTimeout(() => {
+        try {
+          successModal.hide();
+        } catch (e) {}
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        window.location.href = "staff.php";
+      }, 1200);
     });
   });
 
@@ -922,6 +906,52 @@ $schedules = $viewer->getSchedules();
             </div>
           </div>
         </div>
+
+        <!-- Leave Validation Error Modal -->
+        <div class="modal fade" id="leaveValidationErrorModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+              <div class="mb-3">
+                <i class="bi bi-exclamation-circle text-danger" style="font-size: 3rem;"></i>
+              </div>
+              <h5 class="fw-bold mb-3 text-danger">Validation Error</h5>
+              <p id="leaveValidationErrorMsg"></p>
+              <div class="mt-3">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leave Success Modal -->
+        <div class="modal fade" id="leaveSuccessModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+              <div class="mb-3">
+                <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+              </div>
+              <h5 class="fw-bold mb-3 text-success">Success</h5>
+              <p id="leaveSuccessMsg"></p>
+              <div class="mt-3">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leave Delete Confirmation Modal -->
+        <div class="modal fade" id="leaveDeleteConfirmModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+              <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
+              <p id="leaveDeleteConfirmMsg"></p>
+              <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="leaveDeleteConfirmBtn">Yes, Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <script>
           // Leave Management System with API
           const employeeIdForLeave = <?php echo json_encode($employee['id']); ?>;
@@ -941,7 +971,9 @@ $schedules = $viewer->getSchedules();
             const leaveReason = document.getElementById("leaveReason").value;
 
             if (!leaveType || !leaveFrom || !leaveTo) {
-              alert("Please fill out all required fields.");
+              document.getElementById("leaveValidationErrorMsg").textContent = "Please fill out all required fields.";
+              const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+              errorModal.show();
               return;
             }
 
@@ -986,27 +1018,29 @@ $schedules = $viewer->getSchedules();
             .then(res => res.json())
             .then(response => {
               if (response.success) {
-                // Show confirmation modal
-                const confirmModalEl = document.getElementById('confirmModal');
-                const confirmModal = new bootstrap.Modal(confirmModalEl, { backdrop: false });
-                confirmModal.show();
-
-                document.body.classList.remove("modal-open");
-                document.querySelector(".modal-backdrop")?.remove();
+                // Show success modal
+                document.getElementById("leaveSuccessMsg").textContent = response.message || "Leave request submitted successfully!";
+                const successModal = new bootstrap.Modal(document.getElementById('leaveSuccessModal'));
+                successModal.show();
 
                 // Reload leave list
                 loadEmployeeLeaves();
 
+                // Auto-close after 1.5 seconds
                 setTimeout(() => {
-                  confirmModal.hide();
-                }, 2000);
+                  successModal.hide();
+                }, 1500);
               } else {
-                alert('Error: ' + response.error);
+                document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + response.error;
+                const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+                errorModal.show();
               }
             })
             .catch(error => {
               console.error('Error submitting leave request:', error);
-              alert('Failed to submit leave request. Please try again.');
+              document.getElementById("leaveValidationErrorMsg").textContent = 'Failed to submit leave request. Please try again.';
+              const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+              errorModal.show();
             });
           }
 
@@ -1079,6 +1113,8 @@ $schedules = $viewer->getSchedules();
               });
           }
 
+          let pendingLeaveDelete = { leaveId: null, status: null };
+
           async function cancelLeave(leaveId, status) {
             let confirmMessage = '';
             
@@ -1090,9 +1126,18 @@ $schedules = $viewer->getSchedules();
               confirmMessage = 'Are you sure you want to delete this rejected leave request?';
             }
             
-            if (!confirm(confirmMessage)) {
-              return;
-            }
+            // Store the pending delete info
+            pendingLeaveDelete = { leaveId, status };
+            
+            // Show confirmation modal
+            document.getElementById("leaveDeleteConfirmMsg").textContent = confirmMessage;
+            const confirmModal = new bootstrap.Modal(document.getElementById("leaveDeleteConfirmModal"));
+            confirmModal.show();
+          }
+
+          // Handle the confirmed delete
+          document.getElementById("leaveDeleteConfirmBtn").addEventListener("click", async function() {
+            const { leaveId, status } = pendingLeaveDelete;
             
             try {
               const formData = new FormData();
@@ -1107,16 +1152,33 @@ $schedules = $viewer->getSchedules();
               const result = await response.json();
               
               if (result.success) {
-                alert(result.message);
-                loadEmployeeLeaves(); // Reload the list
+                // Hide the delete confirmation modal
+                bootstrap.Modal.getInstance(document.getElementById("leaveDeleteConfirmModal")).hide();
+                
+                // Show success message
+                document.getElementById("leaveSuccessMsg").textContent = result.message || "Leave deleted successfully!";
+                const successModal = new bootstrap.Modal(document.getElementById('leaveSuccessModal'));
+                successModal.show();
+                
+                // Auto-close success modal and reload list
+                setTimeout(() => {
+                  successModal.hide();
+                  loadEmployeeLeaves();
+                }, 1500);
               } else {
-                alert('Error: ' + result.error);
+                bootstrap.Modal.getInstance(document.getElementById("leaveDeleteConfirmModal")).hide();
+                document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + result.error;
+                const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+                errorModal.show();
               }
             } catch (error) {
               console.error('Error cancelling leave:', error);
-              alert('Failed to cancel leave request. Please try again.');
+              bootstrap.Modal.getInstance(document.getElementById("leaveDeleteConfirmModal")).hide();
+              document.getElementById("leaveValidationErrorMsg").textContent = 'Failed to delete leave. Please try again.';
+              const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+              errorModal.show();
             }
-          }
+          });
 
           // Load leaves on page load
           window.addEventListener("DOMContentLoaded", () => {
