@@ -454,7 +454,7 @@ def enroll_person():
     
     # Create fullscreen window for enrollment
     enrollment_window = "Enrollment"
-    cv2.namedWindow(enrollment_window, cv2.WND_PROP_FULLSCREEN)
+    cv2.namedWindow(enrollment_window, cv2.WINDOW_NORMAL)
     cv2.setWindowProperty(enrollment_window, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     is_fullscreen = True
     

@@ -11,6 +11,6 @@ dependencies = [
     "mysql-connector-python==9.5.0",
     "numpy>=2.2.6",
     "onnxruntime>=1.23.2",
-    "opencv-python>=4.12.0.88",
+    "opencv-python>=4.12.0.88",  # NOT opencv-python-headless - GUI support required
     "pymysql>=1.1.2",
 ]
