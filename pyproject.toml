@@ -14,3 +14,14 @@ dependencies = [
     "opencv-python>=4.12.0.88",  # NOT opencv-python-headless - GUI support required
     "pymysql>=1.1.2",
 ]
+
+[tool.uv]
+# Prevent opencv-python-headless from being installed (insightface tries to install it)
+# We need the full opencv-python with GUI support for the Kiosk system
+override-dependencies = [
+    "opencv-python>=4.12.0.88",
+]
+
+[[tool.uv.dependency-metadata]]
+name = "insightface"
+exclude = ["opencv-python-headless"]

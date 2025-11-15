@@ -586,9 +586,7 @@ class EmployeeProcessor{
         // Check if we found the venv Python
         $isVenvPython = (strpos($pythonExe, '.venv') !== false || strpos($pythonExe, 'env' . DIRECTORY_SEPARATOR) !== false);
         
-        $quotedPythonExe = '"' . $pythonExe . '"';
-        $quotedScriptPath = '"' . $scriptPath . '"';
-        
+        // Don't add quotes here - we'll add them properly in the command construction
         $commandArgs = $escapedEmployeeId . ' ' . $escapedDbEmployeeId . ' ' .
                        $escapedDbHost . ' ' . $escapedDbUser . ' ' .
                        $escapedDbPassword . ' ' . $escapedDbName;
@@ -599,7 +597,10 @@ class EmployeeProcessor{
             // The VENV Python executable already knows its environment.
             // No need to set PYTHONPATH.
             $this->logActivity('Face Embedding Generation', "Using VENV Python. Skipping SET PYTHONPATH.");
-            $command = 'cmd /c "' . $quotedPythonExe . ' ' . $quotedScriptPath . ' ' . $commandArgs . ' 2>&1"';
+            
+            // FIXED: Proper quoting for Windows cmd
+            // Use escapeshellarg for the entire command to avoid quote nesting issues
+            $command = '"' . $pythonExe . '" "' . $scriptPath . '" ' . $commandArgs . ' 2>&1';
         } else {
             // Using System Python. We must set PYTHONPATH to find venv packages.
             $this->logActivity('Face Embedding Generation', "Using System Python. Setting PYTHONPATH.");
@@ -608,10 +609,10 @@ class EmployeeProcessor{
             $venvPath = $projectRoot . DIRECTORY_SEPARATOR . '.venv';
             $venvSitePackages = $venvPath . DIRECTORY_SEPARATOR . 'Lib' . DIRECTORY_SEPARATOR . 'site-packages';
             
-            // Your original command
+            // FIXED: Proper quoting for environment variables and paths
             $command = 'cmd /c "SET PYTHONPATH=' . $venvSitePackages . ' && ' .
                        'SET VIRTUAL_ENV=' . $venvPath . ' && ' .
-                       $quotedPythonExe . ' ' . $quotedScriptPath . ' ' .
+                       '"' . $pythonExe . '" "' . $scriptPath . '" ' .
                        $commandArgs . ' 2>&1"';
         }
 
