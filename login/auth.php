@@ -4,14 +4,20 @@
  * Handles login, logout, and session management
  */
 
+// Start session first (required for login/logout operations)
+session_start();
+
 date_default_timezone_set('Asia/Manila');
+
+// Disable error display to prevent breaking JSON output
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
+// Set JSON header
 header('Content-Type: application/json');
 
 require '../db_connection.php';
-
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
 
 try {
     $action = $_GET['action'] ?? $_POST['action'] ?? '';
@@ -54,7 +60,72 @@ function handleLogin($conn) {
         throw new Exception('Employee ID and password are required');
     }
     
-    // Query user from database
+    // First, try to find user in admin_users table
+    $sql_admin = "SELECT id, username as employee_id, email, role, is_active 
+                  FROM admin_users 
+                  WHERE username = ? AND is_active = 1";
+    
+    $stmt = $conn->prepare($sql_admin);
+    $stmt->bind_param("s", $employee_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $admin = $result->fetch_assoc();
+        
+        // Verify admin password
+        $sql_pass = "SELECT password_hash FROM admin_users WHERE username = ?";
+        $stmt_pass = $conn->prepare($sql_pass);
+        $stmt_pass->bind_param("s", $employee_id);
+        $stmt_pass->execute();
+        $pass_result = $stmt_pass->get_result();
+        $pass_data = $pass_result->fetch_assoc();
+        
+        if (!password_verify($password, $pass_data['password_hash'])) {
+            logLoginAttempt($conn, $employee_id, false, 'Invalid password (admin)');
+            throw new Exception('Invalid credentials');
+        }
+        
+        // Create admin session
+        session_regenerate_id(true);
+        
+        $_SESSION['user_id'] = $admin['id'];
+        $_SESSION['employee_id'] = $admin['employee_id'];
+        $_SESSION['user_role'] = 'admin';
+        $_SESSION['user_name'] = ucfirst($admin['employee_id']);
+        $_SESSION['user_email'] = $admin['email'];
+        $_SESSION['department'] = 'Administration';
+        $_SESSION['position'] = 'System Administrator';
+        $_SESSION['profile_photo'] = null;
+        $_SESSION['logged_in'] = true;
+        $_SESSION['login_time'] = time();
+        $_SESSION['is_system_admin'] = true;
+        
+        // Update last login
+        $update_sql = "UPDATE admin_users SET last_login = NOW() WHERE id = ?";
+        $update_stmt = $conn->prepare($update_sql);
+        $update_stmt->bind_param("i", $admin['id']);
+        $update_stmt->execute();
+        
+        logLoginAttempt($conn, $employee_id, true, 'Admin login successful');
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Login successful',
+            'user' => [
+                'id' => $admin['id'],
+                'employee_id' => $admin['employee_id'],
+                'name' => $_SESSION['user_name'],
+                'role' => 'admin',
+                'department' => 'Administration',
+                'position' => 'System Administrator'
+            ],
+            'redirect_url' => '../dashboard/dashboard.php'
+        ]);
+        return;
+    }
+    
+    // If not found in admin_users, check employees table
     $sql = "SELECT id, employee_id, employee_password, first_name, last_name, email, 
                    roles, department, position, status, profile_photo 
             FROM employees 

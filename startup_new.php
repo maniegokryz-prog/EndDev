@@ -247,6 +247,23 @@ foreach ($indexes as $index) {
     }
 }
 
+// Create default admin account if it doesn't exist
+$check_admin = "SELECT id FROM admin_users WHERE username = 'admin'";
+$admin_exists = $conn->query($check_admin);
+
+if ($admin_exists->num_rows == 0) {
+    // Default credentials: username: admin, password: admin123
+    $default_password = password_hash('admin123', PASSWORD_DEFAULT);
+    $insert_admin = "INSERT INTO admin_users (username, email, password_hash, role, is_active) 
+                     VALUES ('admin', 'admin@system.local', '$default_password', 'admin', 1)";
+    
+    if ($conn->query($insert_admin) === TRUE) {
+        // echo "Default admin account created successfully (username: admin, password: admin123)<br>";
+    } else {
+        // echo "Error creating default admin: " . $conn->error . "<br>";
+    }
+}
+
 header('Location: dashboard/dashboard.php');
 // echo "All tables and indexes created successfully.<br>";
 
