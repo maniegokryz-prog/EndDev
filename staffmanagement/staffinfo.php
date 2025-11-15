@@ -932,9 +932,6 @@ $schedules = $viewer->getSchedules();
               </div>
               <h5 class="fw-bold mb-3 text-success">Success</h5>
               <p id="leaveSuccessMsg"></p>
-              <div class="mt-3">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
-              </div>
             </div>
           </div>
         </div>
