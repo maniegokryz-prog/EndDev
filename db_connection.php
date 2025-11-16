@@ -3,18 +3,25 @@
  * Database Connection File
  * Include this file whenever you need database access
  */
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('log_errors', 1);
+
+// Only set error reporting if not already configured (API files may override)
+if (!ini_get('error_log')) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ini_set('log_errors', 1);
+}
 
 // Set timezone to Philippine Time
 date_default_timezone_set('Asia/Manila');
 
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: DENY');
-header('X-XSS-Protection: 1; mode=block');
-header('Referrer-Policy: strict-origin-when-cross-origin');
-header('Content-Security-Policy: default-src \'self\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://cdn.jsdelivr.net https://unpkg.com; style-src \'self\' \'unsafe-inline\' https://cdn.jsdelivr.net https://unpkg.com; connect-src \'self\' https://cdn.jsdelivr.net https://unpkg.com; img-src \'self\' data: blob:; font-src \'self\' https://cdn.jsdelivr.net;');
+// Only set headers if not already sent (API files may need different headers)
+if (!headers_sent()) {
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('X-XSS-Protection: 1; mode=block');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Content-Security-Policy: default-src \'self\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://cdn.jsdelivr.net https://unpkg.com; style-src \'self\' \'unsafe-inline\' https://cdn.jsdelivr.net https://unpkg.com; connect-src \'self\' https://cdn.jsdelivr.net https://unpkg.com; img-src \'self\' data: blob:; font-src \'self\' https://cdn.jsdelivr.net;');
+}
 
 // Start session only if not already active
 if (session_status() === PHP_SESSION_NONE) {

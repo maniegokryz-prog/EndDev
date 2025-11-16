@@ -101,157 +101,7 @@
       </thead>
 
       <tbody id="tableBody">
-        <tr>
-          <td><input type="checkbox" class="selectBox"></td>
-          <td>
-            <div class="employee-info">
-              <img src="pic.png" alt="">
-              <div>
-                <strong>Ronnel Borlongan</strong><br>
-                <small>MA22000000</small>
-              </div>
-            </div>
-          </td>
-          <td>ronnel.borlongan@example.com</td>
-          <td>0917-123-4567</td>
-          <td>09/23/2025</td>
-         <td class="text-center">
-            <div class="dropdown">
-                <button class="btn btn-link text-dark p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                <li>
-                    <button class="dropdown-item d-flex align-items-center view-details-btn"
-                            data-bs-toggle="modal" data-bs-target="#staffModal"
-                            data-name="Ronnel P. Borlongan"
-                            data-id="MA22010000"
-                            data-dept="Faculty | IS Department"
-                            data-email="sample@gmail.com"
-                            data-contact="0912-345-6789"
-                            data-img="pic.png">
-                    <i class="fa-solid fa-user me-2 text-primary"></i>
-                    See Details
-                    </button>
-                </li>
-                </ul>
-            </div>
-            </td>
-        </tr>
-
-        <tr>
-          <td><input type="checkbox" class="selectBox"></td>
-          <td>
-            <div class="employee-info">
-              <img src="pic.png" alt="">
-              <div>
-                <strong>Justine Alianza</strong><br>
-                <small>MA22000000</small>
-              </div>
-            </div>
-          </td>
-          <td>justine.alianza@example.com</td>
-          <td>0917-123-4567</td>
-          <td>09/23/2025</td>
-         <td class="text-center">
-            <div class="dropdown">
-                <button class="btn btn-link text-dark p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                <li>
-                    <button class="dropdown-item d-flex align-items-center view-details-btn"
-                            data-bs-toggle="modal" data-bs-target="#staffModal"
-                            data-name="Ronnel P. Borlongan"
-                            data-id="MA22010000"
-                            data-dept="Faculty | IS Department"
-                            data-email="sample@gmail.com"
-                            data-contact="0912-345-6789"
-                            data-img="pic.png">
-                    <i class="fa-solid fa-user me-2 text-primary"></i>
-                    See Details
-                    </button>
-                </li>
-                </ul>
-            </div>
-            </td>
-        </tr>
-
-        <tr>
-          <td><input type="checkbox" class="selectBox"></td>
-          <td>
-            <div class="employee-info">
-              <img src="pic.png" alt="">
-              <div>
-                <strong>Kryztian Maniego</strong><br>
-                <small>MA22000002</small>
-              </div>
-            </div>
-          </td>
-          <td>kryztian.maniego@example.com</td>
-          <td>0917-999-1234</td>
-          <td>09/23/2025</td>
-            <td class="text-center">
-            <div class="dropdown">
-                <button class="btn btn-link text-dark p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                <li>
-                    <button class="dropdown-item d-flex align-items-center view-details-btn"
-                            data-bs-toggle="modal" data-bs-target="#staffModal"
-                            data-name="Ronnel P. Borlongan"
-                            data-id="MA22010000"
-                            data-dept="Faculty | IS Department"
-                            data-email="sample@gmail.com"
-                            data-contact="0912-345-6789"
-                            data-img="pic.png">
-                    <i class="fa-solid fa-user me-2 text-primary"></i>
-                    See Details
-                    </button>
-                </li>
-                </ul>
-            </div>
-            </td>
-        </tr>
-        
-        <tr>
-          <td><input type="checkbox" class="selectBox"></td>
-          <td>
-            <div class="employee-info">
-              <img src="pic.png" alt="">
-              <div>
-                <strong>Lord Gabrial Castro</strong><br>
-                <small>MA22000003</small>
-              </div>
-            </div>
-          </td>
-          <td>lord.castro@example.com</td>
-          <td>0917-222-8877</td>
-          <td>09/23/2025</td>
-             <td class="text-center">
-            <div class="dropdown">
-                <button class="btn btn-link text-dark p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                <li>
-                    <button class="dropdown-item d-flex align-items-center view-details-btn"
-                            data-bs-toggle="modal" data-bs-target="#staffModal"
-                            data-name="Ronnel P. Borlongan"
-                            data-id="MA22010000"
-                            data-dept="Faculty | IS Department"
-                            data-email="sample@gmail.com"
-                            data-contact="0912-345-6789"
-                            data-img="https://via.placeholder.com/120">
-                    <i class="fa-solid fa-user me-2 text-primary"></i>
-                    See Details
-                    </button>
-                </li>
-                </ul>
-            </div>
-            </td>
-        </tr>
+        <!-- Dynamically loaded archived employees will appear here -->
       </tbody>
     </table>
 
@@ -280,67 +130,89 @@
 </div>
 
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+<!-- Delete Confirmation Modal with Password -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content p-4">
       <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="deleteConfirmLabel">Confirm Deletion</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title">Confirm Permanent Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        Are you sure you want to permanently delete the designated employee(s)? This action cannot be undone.
+        <p class="text-danger fw-bold"><i class="fa-solid fa-exclamation-triangle me-2"></i>Warning: This action cannot be undone!</p>
+        <p>You are about to permanently delete <span id="deleteCount">0</span> employee(s) from the database. All related data including attendance records, schedules, and assignments will be permanently removed.</p>
+        <form id="deleteForm">
+          <div class="mb-3">
+            <label for="deletePasswordInput" class="form-label">Admin Password <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" id="deletePasswordInput" required placeholder="Enter your password">
+            <div id="deletePasswordError" class="text-danger small mt-1" style="display: none;"></div>
+          </div>
+        </form>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-danger" id="confirmDelete">Yes, Delete</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- DELETE MODAL -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">Are you sure you want to delete the selected employees?</div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+          <span id="deleteBtnText">Delete Permanently</span>
+          <span id="deleteBtnSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- RESTORE MODAL -->
-<div class="modal fade" id="restoreModal" tabindex="-1" aria-labelledby="restoreModalLabel" aria-hidden="true">
+<!-- Restore Confirmation Modal with Password -->
+<div class="modal fade" id="restoreModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content p-4">
       <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="restoreModalLabel">Confirm Restore</h5>
+        <h5 class="modal-title">Confirm Employee Restore</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">Are you sure you want to restore the selected employees?</div>
+      <div class="modal-body">
+        <p>You are about to restore <span id="restoreCount">0</span> employee(s) to active status. Their schedules and assignments will be reactivated.</p>
+        <form id="restoreForm">
+          <div class="mb-3">
+            <label for="restorePasswordInput" class="form-label">Admin Password <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" id="restorePasswordInput" required placeholder="Enter your password">
+            <div id="restorePasswordError" class="text-danger small mt-1" style="display: none;"></div>
+          </div>
+        </form>
+      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" id="confirmRestore" class="btn btn-success">Restore</button>
+        <button type="button" class="btn btn-success" id="confirmRestoreBtn">
+          <span id="restoreBtnText">Restore Employees</span>
+          <span id="restoreBtnSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 
-<!-- Restore Success Modal -->
-<div class="modal fade" id="restoreSuccessModal" tabindex="-1" aria-hidden="true">
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center">
+    <div class="modal-content text-center p-4">
       <div class="modal-body">
         <i class="fa-solid fa-check-circle text-success fs-1 mb-3"></i>
-        <p>Selected employee(s) successfully restored.</p>
+        <h5 class="fw-bold mb-3 text-success">Success!</h5>
+        <p id="successMessage">Operation completed successfully.</p>
+        <p class="small text-muted">Page will reload automatically...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4">
+      <div class="modal-body">
+        <i class="fa-solid fa-exclamation-circle text-danger fs-1 mb-3"></i>
+        <h5 class="fw-bold mb-3 text-danger">Error</h5>
+        <p id="errorMessage">An error occurred.</p>
+        <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -354,114 +226,364 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+// Store archived employees data
+let archivedEmployees = [];
+let selectedEmployeeIds = [];
 
-
-document.addEventListener("DOMContentLoaded", function () {
-  const detailButtons = document.querySelectorAll(".view-details-btn");
-  const staffModal = new bootstrap.Modal(document.getElementById("staffModal"));
-  
-  detailButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.getElementById("staffImg").src = btn.getAttribute("data-img");
-      document.getElementById("staffName").textContent = btn.getAttribute("data-name");
-      document.getElementById("staffId").textContent = btn.getAttribute("data-id");
-      document.getElementById("staffDept").textContent = btn.getAttribute("data-dept");
-      document.getElementById("staffEmail").textContent = btn.getAttribute("data-email");
-      document.getElementById("staffContact").textContent = btn.getAttribute("data-contact");
-    });
-  });
+// Load archived employees on page load
+document.addEventListener("DOMContentLoaded", async function () {
+  await loadArchivedEmployees();
+  initializeEventListeners();
 });
 
-
-  const selectAllBtn = document.getElementById("selectAllBtn");
-  const deleteBtn = document.getElementById("deleteSelectedBtn");
-  const restoreBtn = document.getElementById("restoreSelectedBtn");
-  const checkboxes = document.querySelectorAll(".selectBox");
-  const tableBody = document.getElementById("tableBody");
-  const noDataMsg = document.getElementById("noDataMessage");
-  const searchInput = document.getElementById("searchInput");
-  const centerAlert = document.getElementById("centerAlert");
-
-  let allSelected = false;
-
-  // ✅ Function to show center alert
-  function showCenterAlert() {
-    centerAlert.style.display = "block";
-    centerAlert.style.opacity = "1";
-    setTimeout(() => {
-      centerAlert.style.transition = "opacity 0.5s";
-      centerAlert.style.opacity = "0";
-      setTimeout(() => centerAlert.style.display = "none", 500);
-    }, 2000); // disappears after 2 seconds
+// Fetch archived employees from database
+async function loadArchivedEmployees() {
+  try {
+    const response = await fetch('processes/get_archived_employees.php');
+    const result = await response.json();
+    
+    if (result.success) {
+      archivedEmployees = result.data;
+      renderEmployeeTable();
+    } else {
+      console.error('Error loading archived employees:', result.error);
+      showError('Failed to load archived employees');
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    showError('Failed to connect to server');
   }
+}
 
-  // ✅ Select All / Deselect All
-  selectAllBtn.addEventListener("click", () => {
-    allSelected = !allSelected;
-    checkboxes.forEach(cb => cb.checked = allSelected);
-    selectAllBtn.textContent = allSelected ? "Deselect All" : "Select All";
+// Render employee table
+function renderEmployeeTable() {
+  const tbody = document.getElementById('tableBody');
+  const noDataMsg = document.getElementById('noDataMessage');
+  
+  tbody.innerHTML = '';
+  
+  if (archivedEmployees.length === 0) {
+    noDataMsg.classList.remove('d-none');
+    return;
+  }
+  
+  noDataMsg.classList.add('d-none');
+  
+  archivedEmployees.forEach(emp => {
+    const row = `
+      <tr data-employee-id="${emp.employee_id}">
+        <td><input type="checkbox" class="selectBox" data-id="${emp.employee_id}"></td>
+        <td>
+          <div class="employee-info">
+            <img src="../${emp.profile_photo}" alt="Profile" onerror="this.src='../assets/profile_pic/user.png';">
+            <div>
+              <strong>${emp.name}</strong><br>
+              <small>${emp.employee_id}</small>
+            </div>
+          </div>
+        </td>
+        <td>${emp.email}</td>
+        <td>${emp.phone}</td>
+        <td>${emp.date_removed}</td>
+        <td class="text-center">
+          <div class="dropdown">
+            <button class="btn btn-link text-dark p-0 border-0" type="button" data-bs-toggle="dropdown">
+              <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+              <li>
+                <button class="dropdown-item d-flex align-items-center view-details-btn"
+                        data-name="${emp.name}"
+                        data-id="${emp.employee_id}"
+                        data-dept="${emp.department}"
+                        data-role="${emp.role}"
+                        data-position="${emp.position}"
+                        data-email="${emp.email}"
+                        data-contact="${emp.phone}"
+                        data-img="../${emp.profile_photo}">
+                  <i class="fa-solid fa-user me-2 text-primary"></i>
+                  See Details
+                </button>
+              </li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+    `;
+    tbody.innerHTML += row;
   });
+}
 
-  // ✅ Live Search (auto filter as you type)
-  searchInput.addEventListener("keyup", () => {
+// Initialize event listeners
+function initializeEventListeners() {
+  const selectAllBtn = document.getElementById('selectAllBtn');
+  const deleteBtn = document.getElementById('deleteSelectedBtn');
+  const restoreBtn = document.getElementById('restoreSelectedBtn');
+  const searchInput = document.getElementById('searchInput');
+  const centerAlert = document.getElementById('centerAlert');
+  
+  let allSelected = false;
+  
+  // Select All / Deselect All
+  selectAllBtn.addEventListener('click', () => {
+    allSelected = !allSelected;
+    const checkboxes = document.querySelectorAll('.selectBox');
+    checkboxes.forEach(cb => cb.checked = allSelected);
+    selectAllBtn.textContent = allSelected ? 'Deselect All' : 'Select All';
+  });
+  
+  // Live Search
+  searchInput.addEventListener('input', () => {
     const searchVal = searchInput.value.toLowerCase();
+    const tbody = document.getElementById('tableBody');
+    const noDataMsg = document.getElementById('noDataMessage');
     let visibleRows = 0;
-
-    tableBody.querySelectorAll("tr").forEach(row => {
-      const name = row.querySelector("strong").textContent.toLowerCase();
-      if (name.includes(searchVal)) {
-        row.style.display = "";
+    
+    tbody.querySelectorAll('tr').forEach(row => {
+      const name = row.querySelector('strong')?.textContent.toLowerCase() || '';
+      const id = row.querySelector('small')?.textContent.toLowerCase() || '';
+      
+      if (name.includes(searchVal) || id.includes(searchVal)) {
+        row.style.display = '';
         visibleRows++;
       } else {
-        row.style.display = "none";
+        row.style.display = 'none';
       }
     });
-
-    noDataMsg.classList.toggle("d-none", visibleRows > 0);
+    
+    noDataMsg.classList.toggle('d-none', visibleRows > 0);
   });
-
-  // ✅ Delete Selected
-  deleteBtn.addEventListener("click", () => {
-    const selected = document.querySelectorAll(".selectBox:checked");
+  
+  // Delete Selected
+  deleteBtn.addEventListener('click', () => {
+    const selected = document.querySelectorAll('.selectBox:checked');
     if (selected.length === 0) {
       showCenterAlert();
       return;
     }
-
-    const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+    
+    selectedEmployeeIds = Array.from(selected).map(cb => cb.getAttribute('data-id'));
+    document.getElementById('deleteCount').textContent = selectedEmployeeIds.length;
+    document.getElementById('deletePasswordInput').value = '';
+    document.getElementById('deletePasswordError').style.display = 'none';
+    
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
     modal.show();
-
-    document.getElementById("confirmDelete").onclick = () => {
-      selected.forEach(cb => cb.closest("tr").remove());
-      modal.hide();
-      checkIfEmpty();
-    };
   });
-
-  // ✅ Restore Selected
-  restoreBtn.addEventListener("click", () => {
-    const selected = document.querySelectorAll(".selectBox:checked");
+  
+  // Restore Selected
+  restoreBtn.addEventListener('click', () => {
+    const selected = document.querySelectorAll('.selectBox:checked');
     if (selected.length === 0) {
       showCenterAlert();
       return;
     }
-
-    const modal = new bootstrap.Modal(document.getElementById("restoreModal"));
+    
+    selectedEmployeeIds = Array.from(selected).map(cb => cb.getAttribute('data-id'));
+    document.getElementById('restoreCount').textContent = selectedEmployeeIds.length;
+    document.getElementById('restorePasswordInput').value = '';
+    document.getElementById('restorePasswordError').style.display = 'none';
+    
+    const modal = new bootstrap.Modal(document.getElementById('restoreModal'));
     modal.show();
-
-    document.getElementById("confirmRestore").onclick = () => {
-      selected.forEach(cb => cb.closest("tr").remove());
-      modal.hide();
-      new bootstrap.Modal(document.getElementById("restoreSuccessModal")).show();
-      checkIfEmpty();
-    };
   });
+  
+  // Confirm Delete
+  document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+    await handleDelete();
+  });
+  
+  // Confirm Restore
+  document.getElementById('confirmRestoreBtn').addEventListener('click', async () => {
+    await handleRestore();
+  });
+  
+  // View Details (Event delegation)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.view-details-btn');
+    if (!btn) return;
+    
+    document.getElementById('staffImg').src = btn.getAttribute('data-img');
+    document.getElementById('staffName').textContent = btn.getAttribute('data-name');
+    document.getElementById('staffId').textContent = btn.getAttribute('data-id');
+    document.getElementById('staffDept').textContent = btn.getAttribute('data-dept') + ' | ' + btn.getAttribute('data-role');
+    document.getElementById('staffEmail').textContent = btn.getAttribute('data-email');
+    document.getElementById('staffContact').textContent = btn.getAttribute('data-contact');
+    
+    const modal = new bootstrap.Modal(document.getElementById('staffModal'));
+    modal.show();
+  });
+  
+  // Clear password errors on input
+  document.getElementById('deletePasswordInput').addEventListener('input', () => {
+    document.getElementById('deletePasswordError').style.display = 'none';
+  });
+  
+  document.getElementById('restorePasswordInput').addEventListener('input', () => {
+    document.getElementById('restorePasswordError').style.display = 'none';
+  });
+}
 
-  // ✅ Check if table empty
-  function checkIfEmpty() {
-    const visibleRows = tableBody.querySelectorAll("tr").length;
-    noDataMsg.classList.toggle("d-none", visibleRows > 0);
+// Handle Delete
+async function handleDelete() {
+  const password = document.getElementById('deletePasswordInput').value.trim();
+  const errorDiv = document.getElementById('deletePasswordError');
+  const btn = document.getElementById('confirmDeleteBtn');
+  const btnText = document.getElementById('deleteBtnText');
+  const btnSpinner = document.getElementById('deleteBtnSpinner');
+  
+  if (!password) {
+    errorDiv.textContent = 'Password is required';
+    errorDiv.style.display = 'block';
+    return;
   }
+  
+  // Disable button and show spinner
+  btn.disabled = true;
+  btnText.textContent = 'Processing...';
+  btnSpinner.style.display = 'inline-block';
+  errorDiv.style.display = 'none';
+  
+  try {
+    const formData = new FormData();
+    formData.append('employee_ids', selectedEmployeeIds.join(','));
+    formData.append('admin_password', password);
+    formData.append('csrf_token', '<?= $_SESSION["csrf_token"] ?? "" ?>');
+    
+    const response = await fetch('processes/delete_employee.php', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Close delete modal
+      bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+      
+      // Show success modal
+      document.getElementById('successMessage').textContent = result.message;
+      const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+      successModal.show();
+      
+      // Reload page after 2 seconds
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } else {
+      if (result.message.toLowerCase().includes('password')) {
+        errorDiv.textContent = result.message;
+        errorDiv.style.display = 'block';
+      } else {
+        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+        document.getElementById('errorMessage').textContent = result.message;
+        new bootstrap.Modal(document.getElementById('errorModal')).show();
+      }
+    }
+  } catch (error) {
+    console.error('Error deleting employees:', error);
+    bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+    document.getElementById('errorMessage').textContent = 'Failed to connect to server';
+    new bootstrap.Modal(document.getElementById('errorModal')).show();
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'Delete Permanently';
+    btnSpinner.style.display = 'none';
+  }
+}
+
+// Handle Restore
+async function handleRestore() {
+  const password = document.getElementById('restorePasswordInput').value.trim();
+  const errorDiv = document.getElementById('restorePasswordError');
+  const btn = document.getElementById('confirmRestoreBtn');
+  const btnText = document.getElementById('restoreBtnText');
+  const btnSpinner = document.getElementById('restoreBtnSpinner');
+  
+  if (!password) {
+    errorDiv.textContent = 'Password is required';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  // Disable button and show spinner
+  btn.disabled = true;
+  btnText.textContent = 'Processing...';
+  btnSpinner.style.display = 'inline-block';
+  errorDiv.style.display = 'none';
+  
+  try {
+    const formData = new FormData();
+    formData.append('employee_ids', selectedEmployeeIds.join(','));
+    formData.append('admin_password', password);
+    formData.append('csrf_token', '<?= $_SESSION["csrf_token"] ?? "" ?>');
+    
+    const response = await fetch('processes/restore_employee.php', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Close restore modal
+      bootstrap.Modal.getInstance(document.getElementById('restoreModal')).hide();
+      
+      // Show success modal
+      document.getElementById('successMessage').textContent = result.message;
+      const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+      successModal.show();
+      
+      // Reload page after 2 seconds
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } else {
+      if (result.message.toLowerCase().includes('password')) {
+        errorDiv.textContent = result.message;
+        errorDiv.style.display = 'block';
+      } else {
+        bootstrap.Modal.getInstance(document.getElementById('restoreModal')).hide();
+        document.getElementById('errorMessage').textContent = result.message;
+        new bootstrap.Modal(document.getElementById('errorModal')).show();
+      }
+    }
+  } catch (error) {
+    console.error('Error restoring employees:', error);
+    bootstrap.Modal.getInstance(document.getElementById('restoreModal')).hide();
+    document.getElementById('errorMessage').textContent = 'Failed to connect to server';
+    new bootstrap.Modal(document.getElementById('errorModal')).show();
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'Restore Employees';
+    btnSpinner.style.display = 'none';
+  }
+}
+
+// Show center alert
+function showCenterAlert() {
+  const centerAlert = document.getElementById('centerAlert');
+  centerAlert.style.display = 'block';
+  centerAlert.style.opacity = '1';
+  setTimeout(() => {
+    centerAlert.style.transition = 'opacity 0.5s';
+    centerAlert.style.opacity = '0';
+    setTimeout(() => centerAlert.style.display = 'none', 500);
+  }, 2000);
+}
+
+// Show error
+function showError(message) {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="6" class="text-center py-4 text-danger">
+        <i class="fa-solid fa-exclamation-triangle fs-1 d-block mb-2"></i>
+        ${message}
+      </td>
+    </tr>
+  `;
+}
 </script>
 
   

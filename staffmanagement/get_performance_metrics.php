@@ -8,9 +8,9 @@
  * CALCULATION METHODOLOGY:
  * 
  * 1. PRESENT (Complete Status):
- *    - Count records where status = 'complete'
+ *    - Count records where status = 'complete' OR status = 'manual'
  *    - Formula: (complete_count / total_scheduled_days) * 100
- *    - Represents days where employee clocked in AND out properly
+ *    - Represents days where employee clocked in AND out properly (auto or manual)
  * 
  * 2. ABSENT:
  *    - Count records where status = 'absent'
@@ -89,7 +89,7 @@ try {
     
     // Initialize counters
     $totalScheduledDays = 0;
-    $completeCount = 0;      // Present days (status = complete)
+    $completeCount = 0;      // Present days (status = complete or manual)
     $absentCount = 0;        // Absent days (status = absent)
     $onTimeCount = 0;        // Days arrived on time (late_minutes = 0 or NULL)
     $lateCount = 0;          // Days arrived late (late_minutes > 0)
@@ -102,7 +102,7 @@ try {
         $totalScheduledDays++;
         
         // Count by status
-        if ($status === 'complete') {
+        if ($status === 'complete' || $status === 'manual') {
             $completeCount++;
             
             // Check if on time or late
@@ -140,7 +140,7 @@ try {
             'present' => [
                 'count' => $completeCount,
                 'percentage' => $presentPercentage,
-                'description' => 'Days with complete time in and time out'
+                'description' => 'Days with complete time in and time out (including manual)'
             ],
             'absent' => [
                 'count' => $absentCount,

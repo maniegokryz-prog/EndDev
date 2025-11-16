@@ -696,13 +696,23 @@ $schedules = $viewer->getSchedules();
    <!-- 🔹 Confirm Removal Modal -->
 <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-danger">Confirm Employee Removal</h5>
-      <p>Are you sure you want to remove this employee?</p>
-      <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-        <button class="btn btn-danger" id="confirmRemoveBtn">Yes</button>
-      </div>
+    <div class="modal-content p-4">
+      <h5 class="fw-bold mb-3 text-danger text-center">Confirm Employee Removal</h5>
+      <p class="text-center">This will move the employee to the archive. Enter your admin password to confirm.</p>
+      <form id="removeEmployeeForm">
+        <div class="mb-3">
+          <label for="adminPasswordInput" class="form-label">Admin Password <span class="text-danger">*</span></label>
+          <input type="password" class="form-control" id="adminPasswordInput" name="admin_password" required placeholder="Enter your password">
+          <div id="passwordError" class="text-danger small mt-1" style="display: none;"></div>
+        </div>
+        <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger" id="confirmRemoveBtn">
+            <span id="removeBtnText">Remove Employee</span>
+            <span id="removeBtnSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;" role="status" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -711,8 +721,22 @@ $schedules = $viewer->getSchedules();
 <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-success">Removed Successfully</h5>
-      <p>The employee has been moved to the archive.</p>
+      <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+      <h5 class="fw-bold mb-3 text-success">Employee Archived Successfully</h5>
+      <p>The employee has been moved to the archive and is no longer active.</p>
+      <p class="small text-muted">Redirecting to staff page...</p>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 Error Remove Modal -->
+<div class="modal fade" id="errorRemoveModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <i class="bi bi-exclamation-circle-fill text-danger fs-1 mb-3"></i>
+      <h5 class="fw-bold mb-3 text-danger">Removal Failed</h5>
+      <p id="errorRemoveMessage">An error occurred while archiving the employee.</p>
+      <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">Close</button>
     </div>
   </div>
         </div>
@@ -737,35 +761,106 @@ $schedules = $viewer->getSchedules();
           </div>
         </div>
 
+
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const removeBtn = document.getElementById("btnRemove");
     const removeEmployeeModal = new bootstrap.Modal(document.getElementById("removeEmployeeModal"));
     const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+    const errorRemoveModal = new bootstrap.Modal(document.getElementById("errorRemoveModal"));
+    const removeForm = document.getElementById("removeEmployeeForm");
+    const passwordInput = document.getElementById("adminPasswordInput");
+    const passwordError = document.getElementById("passwordError");
+    const removeBtnText = document.getElementById("removeBtnText");
+    const removeBtnSpinner = document.getElementById("removeBtnSpinner");
+    const confirmRemoveBtn = document.getElementById("confirmRemoveBtn");
 
     // Step 1: When Remove Employee button is clicked, show the remove employee modal
     removeBtn.addEventListener("click", (e) => {
       e.preventDefault();
+      // Reset form
+      removeForm.reset();
+      passwordError.style.display = 'none';
       removeEmployeeModal.show();
     });
 
-    // Step 2: When "Yes" clicked in confirmation → show success modal
-    document.getElementById("confirmRemoveBtn").addEventListener("click", () => {
-      removeEmployeeModal.hide();
-      setTimeout(() => successModal.show(), 400);
+    // Step 2: Handle form submission with password verification
+    removeForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const adminPassword = passwordInput.value.trim();
+      
+      if (!adminPassword) {
+        passwordError.textContent = 'Password is required';
+        passwordError.style.display = 'block';
+        return;
+      }
+      
+      // Disable button and show spinner
+      confirmRemoveBtn.disabled = true;
+      removeBtnText.textContent = 'Processing...';
+      removeBtnSpinner.style.display = 'inline-block';
+      passwordError.style.display = 'none';
+      
+      try {
+        const formData = new FormData();
+        formData.append('employee_id', '<?= $employee_id ?>');
+        formData.append('admin_password', adminPassword);
+        formData.append('csrf_token', '<?= $_SESSION["csrf_token"] ?? "" ?>');
+        
+        const response = await fetch('processes/remove_employee.php', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Hide removal modal and show success modal
+          removeEmployeeModal.hide();
+          setTimeout(() => {
+            successModal.show();
+            
+            // Auto-redirect after 3 seconds
+            setTimeout(() => {
+              window.location.href = 'staff.php';
+            }, 3000);
+          }, 400);
+        } else {
+          // Show error in the password field or modal
+          if (result.message.toLowerCase().includes('password')) {
+            passwordError.textContent = result.message;
+            passwordError.style.display = 'block';
+            passwordInput.classList.add('is-invalid');
+          } else {
+            // Show error modal for other errors
+            removeEmployeeModal.hide();
+            setTimeout(() => {
+              document.getElementById('errorRemoveMessage').textContent = result.message;
+              errorRemoveModal.show();
+            }, 400);
+          }
+        }
+      } catch (error) {
+        console.error('Error removing employee:', error);
+        removeEmployeeModal.hide();
+        setTimeout(() => {
+          document.getElementById('errorRemoveMessage').textContent = 'Failed to connect to server. Please try again.';
+          errorRemoveModal.show();
+        }, 400);
+      } finally {
+        // Re-enable button and hide spinner
+        confirmRemoveBtn.disabled = false;
+        removeBtnText.textContent = 'Remove Employee';
+        removeBtnSpinner.style.display = 'none';
+      }
     });
-
-    // Step 3: Auto-close success modal after 5 seconds, then redirect to staff.php
-    successModal._element.addEventListener('shown.bs.modal', () => {
-      setTimeout(() => {
-        try {
-          successModal.hide();
-        } catch (e) {}
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-        document.body.classList.remove('modal-open');
-        document.body.style.overflow = '';
-        window.location.href = "staff.php";
-      }, 5000);
+    
+    // Clear error when user starts typing
+    passwordInput.addEventListener('input', () => {
+      passwordError.style.display = 'none';
+      passwordInput.classList.remove('is-invalid');
     });
   });
 
@@ -1506,10 +1601,13 @@ $schedules = $viewer->getSchedules();
               </div>
               <div class="modal-body">
                 <div id="attendanceContainer">
-                  <div class="attendance-row row mb-2">
+                  <div class="attendance-row row mb-3 align-items-start">
                     <div class="col-md-3">
                       <label>Date:</label>
                       <input type="date" class="form-control">
+                      <div class="schedule-error-container" style="min-height: 0;">
+                        <small class="text-danger schedule-error d-block" style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
+                      </div>
                     </div>
                     <div class="col-md-3">
                       <label>Time In:</label>
@@ -1519,8 +1617,8 @@ $schedules = $viewer->getSchedules();
                       <label>Time Out:</label>
                       <input type="time" class="form-control">
                     </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                      <button class="btn btn-danger removeRow" style="display:none;">−</button>
+                    <div class="col-md-3">
+                      <button class="btn btn-danger removeRow" style="display:none; margin-top: 32px;">−</button>
                     </div>
                   </div>
                 </div>
@@ -1552,19 +1650,146 @@ $schedules = $viewer->getSchedules();
 
     const attendanceModal = new bootstrap.Modal(attendanceModalEl);
 
-    // 🔹 Step 1: Open Manual Attendance directly (no password)
+    // 🔹 Function to fetch and populate schedule times for a date
+    async function populateScheduleTimes(dateInput, timeInInput, timeOutInput) {
+      const selectedDate = dateInput.value;
+      
+      // Find the error message element for this row
+      const row = dateInput.closest('.attendance-row');
+      const errorMsg = row ? row.querySelector('.schedule-error') : null;
+      
+      if (!selectedDate) {
+        if (errorMsg) {
+          errorMsg.style.display = 'none';
+          errorMsg.textContent = '';
+        }
+        return;
+      }
+
+      try {
+        // First, check if attendance record already exists for this date
+        const existsResponse = await fetch(`api/check_attendance_exists.php?employee_id=<?php echo $employee['id']; ?>&date=${selectedDate}`);
+        const existsResult = await existsResponse.json();
+        
+        if (existsResult.success && existsResult.exists) {
+          // Clear time inputs
+          timeInInput.value = '';
+          timeOutInput.value = '';
+          timeInInput.classList.remove('bg-light');
+          timeOutInput.classList.remove('bg-light');
+          
+          // Show error message about existing record
+          if (errorMsg) {
+            const dateObj = new Date(selectedDate);
+            const formattedDate = dateObj.toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            });
+            
+            errorMsg.textContent = `Attendance record already exists for ${formattedDate}`;
+            errorMsg.style.display = 'block';
+          }
+          return; // Stop here, don't fetch schedule
+        }
+        
+        // If no existing record, proceed to fetch schedule
+        const response = await fetch(`api/get_employee_schedule.php?employee_id=<?php echo $employee['id']; ?>&date=${selectedDate}`);
+        const result = await response.json();
+
+        if (result.success && result.has_schedule) {
+          // Pre-populate the time inputs with the schedule times
+          timeInInput.value = result.schedule.start_time;
+          timeOutInput.value = result.schedule.end_time;
+          
+          // Add a visual indicator that times are from schedule
+          timeInInput.classList.add('bg-light');
+          timeOutInput.classList.add('bg-light');
+          
+          // Hide error message if schedule is found
+          if (errorMsg) {
+            errorMsg.style.display = 'none';
+            errorMsg.textContent = '';
+          }
+        } else {
+          // Clear times if no schedule found
+          timeInInput.value = '';
+          timeOutInput.value = '';
+          timeInInput.classList.remove('bg-light');
+          timeOutInput.classList.remove('bg-light');
+          
+          if (selectedDate && errorMsg) {
+            // Show inline error message below date picker
+            const dateObj = new Date(selectedDate);
+            const formattedDate = dateObj.toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            });
+            
+            errorMsg.textContent = `No schedule assigned for ${formattedDate}`;
+            errorMsg.style.display = 'block';
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching schedule:', error);
+        if (errorMsg) {
+          errorMsg.textContent = 'Error checking schedule';
+          errorMsg.style.display = 'block';
+        }
+      }
+    }
+
+
+
+    // 🔹 Function to attach date change listener to a row
+    function attachDateListener(row) {
+      const dateInput = row.querySelector('input[type="date"]');
+      const timeInputs = row.querySelectorAll('input[type="time"]');
+      const timeInInput = timeInputs[0];
+      const timeOutInput = timeInputs[1];
+      
+      if (dateInput && timeInInput && timeOutInput) {
+        // Remove any existing listeners by cloning the element
+        const newDateInput = dateInput.cloneNode(true);
+        dateInput.parentNode.replaceChild(newDateInput, dateInput);
+        
+        // Add the change event listener
+        newDateInput.addEventListener('change', () => {
+          populateScheduleTimes(newDateInput, timeInInput, timeOutInput);
+        });
+        
+        // Also add input event for better responsiveness
+        newDateInput.addEventListener('input', () => {
+          populateScheduleTimes(newDateInput, timeInInput, timeOutInput);
+        });
+      }
+    }
+
+    // 🔹 Step 1: Open Manual Attendance and setup listeners
     openAttendanceBtn.addEventListener('click', () => {
       attendanceModal.show();
+      
+      // Setup listener for initial row when modal opens
+      const initialRow = attendanceContainer.querySelector('.attendance-row');
+      if (initialRow) {
+        attachDateListener(initialRow);
+      }
     });
 
     // 🔹 Step 2: Add another day
     addDayBtn.addEventListener('click', () => {
       const newRow = document.createElement('div');
-      newRow.classList.add('attendance-row', 'row', 'mb-2');
+      newRow.classList.add('attendance-row', 'row', 'mb-3', 'align-items-start');
       newRow.innerHTML = `
         <div class="col-md-3">
           <label>Date:</label>
           <input type="date" class="form-control">
+          <div class="schedule-error-container" style="min-height: 0;">
+            <small class="text-danger schedule-error d-block" style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
+          </div>
         </div>
         <div class="col-md-3">
           <label>Time In:</label>
@@ -1574,10 +1799,13 @@ $schedules = $viewer->getSchedules();
           <label>Time Out:</label>
           <input type="time" class="form-control">
         </div>
-        <div class="col-md-3 d-flex align-items-end">
-          <button class="btn btn-danger removeRow">−</button>
+        <div class="col-md-3">
+          <button class="btn btn-danger removeRow" style="margin-top: 32px;">−</button>
         </div>`;
       attendanceContainer.appendChild(newRow);
+      
+      // Attach date listener to the new row
+      attachDateListener(newRow);
     });
 
     // 🔹 Step 3: Remove a day row
@@ -1656,13 +1884,6 @@ $schedules = $viewer->getSchedules();
           })
         });
 
-        // Check if response is ok
-        if (!response.ok) {
-          const text = await response.text();
-          console.error('Server response:', text);
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const result = await response.json();
         console.log('Server result:', result);
 
@@ -1703,7 +1924,14 @@ $schedules = $viewer->getSchedules();
           }, 5000);
 
         } else {
-          const errMsg = 'Error: ' + (result.error || 'Unknown error occurred');
+          // Handle backend errors - properly display the error message from backend
+          let errMsg = result.error || 'Unknown error occurred';
+          
+          // If there are warnings, include them in the error message
+          if (result.warnings && result.warnings.length > 0) {
+            errMsg = result.warnings.join('\n');
+          }
+          
           const errEl = document.getElementById('attendanceErrorMessage');
           if (errEl) errEl.textContent = errMsg;
           const errModalEl = document.getElementById('attendanceErrorModal');
@@ -1716,12 +1944,12 @@ $schedules = $viewer->getSchedules();
               const em = new bootstrap.Modal(errModalEl);
               em.show();
               document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-              // Auto-hide after 5s
+              // Auto-hide after 8 seconds to give time to read the message
               setTimeout(() => {
                 try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) {}
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-              }, 5000);
+              }, 8000);
             }, 40);
           }
           saveBtn.disabled = false;
@@ -1729,7 +1957,7 @@ $schedules = $viewer->getSchedules();
         }
       } catch (error) {
         console.error('Error saving attendance:', error);
-        const errMsg = 'Failed to save attendance records. Error: ' + (error.message || error);
+        const errMsg = 'Failed to save attendance records. ' + (error.message || error);
         const errEl = document.getElementById('attendanceErrorMessage');
         if (errEl) errEl.textContent = errMsg;
         const errModalEl = document.getElementById('attendanceErrorModal');
@@ -1741,12 +1969,12 @@ $schedules = $viewer->getSchedules();
             const em = new bootstrap.Modal(errModalEl);
             em.show();
             document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-            // Auto-hide after 5s
+            // Auto-hide after 8 seconds
             setTimeout(() => {
               try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) {}
               document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
               document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 8000);
           }, 40);
         }
         saveBtn.disabled = false;
@@ -1866,7 +2094,7 @@ $schedules = $viewer->getSchedules();
         let lastSelectedDatesCount = 0;
         let isInitialLoad = true;
 
-        // Load recent DTR data (last 7 days by default)
+        // Load recent DTR data (first 15 records from present to past)
         function loadRecentDTR() {
           const dtrList = document.getElementById('dtrList');
           const dtrLoading = document.getElementById('dtrLoading');
@@ -1874,16 +2102,10 @@ $schedules = $viewer->getSchedules();
           dtrList.style.display = 'none';
           dtrLoading.style.display = 'block';
 
-          // Get last 7 days
-          const endDate = new Date();
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - 6); // 7 days including today
-
-          const startDateStr = startDate.toISOString().split('T')[0];
-          const endDateStr = endDate.toISOString().split('T')[0];
           const cacheBuster = Date.now(); // Force fresh data
           
-          fetch(`get_employee_attendance.php?employee_id=${employeeInternalId}&start_date=${startDateStr}&end_date=${endDateStr}&_=${cacheBuster}`)
+          // Use limit parameter to get first 15 records from present to past
+          fetch(`get_employee_attendance.php?employee_id=${employeeInternalId}&limit=15&_=${cacheBuster}`)
             .then(res => res.json())
             .then(response => {
               dtrLoading.style.display = 'none';

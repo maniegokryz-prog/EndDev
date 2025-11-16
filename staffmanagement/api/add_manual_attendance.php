@@ -166,6 +166,36 @@ function addManualAttendance($conn) {
                 $last_period_end = $period['end_time'];
             }
             
+            // NEW VALIDATION: Ensure manual attendance is applicable to the employee's schedule
+            // Accept if attendance fully occupies or overlaps with the schedule
+            // Reject if time_in starts after schedule ends OR time_out ends before schedule starts
+            if ($first_period_start && $last_period_end) {
+                $schedule_start_dt = new DateTime($date . ' ' . $first_period_start);
+                $schedule_end_dt = new DateTime($date . ' ' . $last_period_end);
+                
+                // Reject if time_in starts AFTER the schedule ends (e.g., schedule ends at 5 PM, time_in is 6 PM)
+                if ($timeInObj > $schedule_end_dt) {
+                    $errors[] = "Record " . ($index + 1) . " (" . $dateObj->format('M d, Y') . "): " .
+                               "Time in (" . $timeInObj->format('g:i A') . ") starts after the schedule ends. " .
+                               "Employee's schedule for this day ends at " . $schedule_end_dt->format('g:i A');
+                    continue;
+                }
+                
+                // Reject if time_out ends BEFORE the schedule starts (e.g., schedule starts at 7 AM, time_out is 6 AM)
+                if ($timeOutObj < $schedule_start_dt) {
+                    $errors[] = "Record " . ($index + 1) . " (" . $dateObj->format('M d, Y') . "): " .
+                               "Time out (" . $timeOutObj->format('g:i A') . ") ends before the schedule starts. " .
+                               "Employee's schedule for this day starts at " . $schedule_start_dt->format('g:i A');
+                    continue;
+                }
+                
+                // All other cases are accepted:
+                // - Time can start before schedule (early arrival)
+                // - Time can end after schedule (overtime)
+                // - Time can fully occupy the schedule (6 AM - 8 PM covering 7 AM - 5 PM)
+                // - Time can partially overlap with schedule
+            }
+            
             // Convert scheduled_minutes to decimal (for storage in scheduled_hours field)
             $scheduled_hours = round($scheduled_minutes, 2);
             
@@ -331,17 +361,23 @@ function updateTimeOut($conn) {
         }
         
         // Get employee's schedule for this date to calculate hours
+        // Convert date to day of week (0=Monday, 6=Sunday to match database format)
+        $dateObj = new DateTime($date);
+        $dayOfWeek = $dateObj->format('w'); // 0 (Sunday) to 6 (Saturday)
+        $dayOfWeekDb = ($dayOfWeek == 0) ? 6 : ($dayOfWeek - 1); // Convert to 0=Monday format
+        
         $schedule_sql = "SELECT 
                             SUM(TIMESTAMPDIFF(MINUTE, sp.start_time, sp.end_time)) as scheduled_minutes
-                         FROM schedule_assignments sa
-                         JOIN schedule_periods sp ON sa.id = sp.schedule_assignment_id
-                         WHERE sa.employee_id = ? 
-                         AND sa.effective_from <= ? 
-                         AND (sa.effective_to IS NULL OR sa.effective_to >= ?)
-                         AND sp.day_of_week = WEEKDAY(?)";
+                         FROM employee_schedules es
+                         JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                         WHERE es.employee_id = ? 
+                         AND es.is_active = 1
+                         AND sp.day_of_week = ?
+                         AND sp.is_active = 1
+                         AND (es.end_date IS NULL OR es.end_date >= ?)";
         
         $schedule_stmt = $conn->prepare($schedule_sql);
-        $schedule_stmt->bind_param('isss', $employee_id, $date, $date, $date);
+        $schedule_stmt->bind_param('iis', $employee_id, $dayOfWeekDb, $date);
         $schedule_stmt->execute();
         $schedule_result = $schedule_stmt->get_result();
         $schedule_data = $schedule_result->fetch_assoc();
@@ -360,15 +396,16 @@ function updateTimeOut($conn) {
         
         // Calculate late minutes (compare time_in with first schedule start_time)
         $late_sql = "SELECT MIN(sp.start_time) as schedule_start
-                    FROM schedule_assignments sa
-                    JOIN schedule_periods sp ON sa.id = sp.schedule_assignment_id
-                    WHERE sa.employee_id = ? 
-                    AND sa.effective_from <= ? 
-                    AND (sa.effective_to IS NULL OR sa.effective_to >= ?)
-                    AND sp.day_of_week = WEEKDAY(?)";
+                    FROM employee_schedules es
+                    JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                    WHERE es.employee_id = ? 
+                    AND es.is_active = 1
+                    AND sp.day_of_week = ?
+                    AND sp.is_active = 1
+                    AND (es.end_date IS NULL OR es.end_date >= ?)";
         
         $late_stmt = $conn->prepare($late_sql);
-        $late_stmt->bind_param('isss', $employee_id, $date, $date, $date);
+        $late_stmt->bind_param('iis', $employee_id, $dayOfWeekDb, $date);
         $late_stmt->execute();
         $late_result = $late_stmt->get_result();
         $late_data = $late_result->fetch_assoc();
@@ -383,15 +420,16 @@ function updateTimeOut($conn) {
         
         // Calculate early departure (compare time_out with last schedule end_time)
         $early_sql = "SELECT MAX(sp.end_time) as schedule_end
-                     FROM schedule_assignments sa
-                     JOIN schedule_periods sp ON sa.id = sp.schedule_assignment_id
-                     WHERE sa.employee_id = ? 
-                     AND sa.effective_from <= ? 
-                     AND (sa.effective_to IS NULL OR sa.effective_to >= ?)
-                     AND sp.day_of_week = WEEKDAY(?)";
+                     FROM employee_schedules es
+                     JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                     WHERE es.employee_id = ? 
+                     AND es.is_active = 1
+                     AND sp.day_of_week = ?
+                     AND sp.is_active = 1
+                     AND (es.end_date IS NULL OR es.end_date >= ?)";
         
         $early_stmt = $conn->prepare($early_sql);
-        $early_stmt->bind_param('isss', $employee_id, $date, $date, $date);
+        $early_stmt->bind_param('iis', $employee_id, $dayOfWeekDb, $date);
         $early_stmt->execute();
         $early_result = $early_stmt->get_result();
         $early_data = $early_result->fetch_assoc();
