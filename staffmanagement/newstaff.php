@@ -175,6 +175,22 @@ try {
   document.getElementById("confirmLeave").addEventListener("click", function () {
     window.location.href = "staff.php"; // redirect to staff page
   });
+
+  // Toggle password visibility for add_password field
+  function toggleAddPassword() {
+    const passwordInput = document.getElementById("add_password");
+    const icon = document.getElementById("toggleAddPasswordIcon");
+    
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      icon.classList.remove("bi-eye");
+      icon.classList.add("bi-eye-slash");
+    } else {
+      passwordInput.type = "password";
+      icon.classList.remove("bi-eye-slash");
+      icon.classList.add("bi-eye");
+    }
+  }
 </script>
 
   <div class="container py-4">
@@ -192,9 +208,13 @@ try {
                 </div>
                 <div class="form-group">
                     <label for="add_password">Add Password:</label>
-                    <div class="password-input-wrapper">
-                        <input type="password" id="add_password" name="add_password" required>
+                    <div class="password-input-wrapper" style="position: relative;">
+                        <input type="password" id="add_password" name="add_password" value="defaultpassword" required style="padding-right: 40px;">
+                        <span class="toggle-password" onclick="toggleAddPassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                            <i class="bi bi-eye" id="toggleAddPasswordIcon"></i>
+                        </span>
                     </div>
+                    <small style="color: #666; font-size: 0.8em;">Default: "defaultpassword" (user can change after login)</small>
                 </div>
                 <div class="form-group">
                     <label for="roles">Role:</label>

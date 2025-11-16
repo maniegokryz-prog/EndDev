@@ -4,15 +4,18 @@
  * Include this file whenever you need database access
  */
 
-// Only set error reporting if not already configured (API files may override)
-if (!ini_get('error_log')) {
+// Don't override error settings if they're already configured
+// This allows API files to control their own error display settings
+if (!isset($GLOBALS['error_reporting_configured'])) {
     error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+    ini_set('display_errors', 0); // Changed to 0 for production safety
     ini_set('log_errors', 1);
 }
 
 // Set timezone to Philippine Time
-date_default_timezone_set('Asia/Manila');
+if (!ini_get('date.timezone')) {
+    date_default_timezone_set('Asia/Manila');
+}
 
 // Only set headers if not already sent (API files may need different headers)
 if (!headers_sent()) {
@@ -25,11 +28,12 @@ if (!headers_sent()) {
 
 // Start session only if not already active
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    @session_start();
 }
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
 // Database configuration
 $servername = "localhost";
 $username = "root";
@@ -41,7 +45,12 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    // For API endpoints, throw exception instead of die()
+    if (isset($GLOBALS['error_reporting_configured'])) {
+        throw new Exception("Database connection failed: " . $conn->connect_error);
+    } else {
+        die("Connection failed: " . $conn->connect_error);
+    }
 }
 
 // Set charset to UTF-8
