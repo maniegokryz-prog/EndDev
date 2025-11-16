@@ -325,6 +325,24 @@ class EmployeeProcessor{
             
             $employee_id = $this->db->insert_id;
             
+            // Sync to cloud database
+            require_once __DIR__ . '/../../db_cloud_sync.php';
+            syncToCloud('employees', [
+                'employee_id' => $this->validatedData['employee_id'],
+                'employee_password' => $hashed_password,
+                'first_name' => $this->validatedData['first_name'],
+                'middle_name' => $middle_name,
+                'last_name' => $this->validatedData['last_name'],
+                'email' => $email,
+                'phone' => $this->validatedData['phone'],
+                'roles' => $this->validatedData['roles'],
+                'department' => $this->validatedData['department'],
+                'position' => $this->validatedData['position'],
+                'hire_date' => $this->validatedData['hire_date'],
+                'profile_photo' => $default_profile_pic,
+                'status' => 'active'
+            ], 'insert');
+            
             // Process face photos if provided
             $facePhotosProcessed = false;
             if(!empty($this->validatedData['face_photos'])){
@@ -794,6 +812,14 @@ class EmployeeProcessor{
             throw new Exception('Failed to create schedule template');
         }
 
+        // Sync schedule to cloud
+        require_once __DIR__ . '/../../db_cloud_sync.php';
+        syncToCloud('schedules', [
+            'id' => $mainScheduleId,
+            'schedule_name' => $scheduleName,
+            'description' => $description
+        ], 'insert');
+
         $this->logActivity('Schedule Template Created', "Employee: {$employeeId}, Schedule ID: {$mainScheduleId}");
 
         // 2. Assign this main schedule to the employee.
@@ -804,6 +830,15 @@ class EmployeeProcessor{
         ");
         $stmt->bind_param('iis', $employeeId, $mainScheduleId, $effectiveDate);
         $stmt->execute();
+        $empScheduleId = $this->db->insert_id;
+
+        // Sync employee schedule to cloud with ID lookup
+        syncToCloudWithLookup('employee_schedules', [
+            'employee_id_string' => $this->validatedData['employee_id'],
+            'schedule_name' => $scheduleName,
+            'effective_date' => $effectiveDate,
+            'is_active' => 1
+        ]);
 
         // 3. Iterate through each schedule block from the UI and add periods/assignments.
         // IMPORTANT: Use 0-6 format (Monday=0, Sunday=6) to match Python's datetime.weekday()
@@ -834,6 +869,17 @@ class EmployeeProcessor{
                     continue; // Skip to next day
                 }
 
+                // Sync schedule period to cloud
+                syncToCloud('schedule_periods', [
+                    'id' => $periodId,
+                    'schedule_id' => $mainScheduleId,
+                    'day_of_week' => $dayOfWeek,
+                    'period_name' => $periodName,
+                    'start_time' => $scheduleBlock['startTime'],
+                    'end_time' => $scheduleBlock['endTime'],
+                    'is_active' => 1
+                ], 'insert');
+
                 // If it's a faculty schedule, create a specific assignment
                 if ($isFacultySchedule) {
                     $room_num = $scheduleBlock['room_num'] ?? 'TBD';
@@ -846,6 +892,20 @@ class EmployeeProcessor{
                     ");
                     $stmt->bind_param('iisss', $employeeId, $periodId, $subject_code, $designate_class, $room_num);
                     $stmt->execute();
+                    $assignmentId = $this->db->insert_id;
+
+                    // Sync employee assignment to cloud with ID lookup
+                    syncToCloudWithLookup('employee_assignments', [
+                        'employee_id_string' => $this->validatedData['employee_id'],
+                        'schedule_name' => $scheduleName,
+                        'day_of_week' => $dayOfWeek,
+                        'start_time' => $scheduleBlock['startTime'],
+                        'end_time' => $scheduleBlock['endTime'],
+                        'subject_code' => $subject_code,
+                        'designate_class' => $designate_class,
+                        'room_num' => $room_num,
+                        'is_active' => 1
+                    ]);
                 }
             }
         }

@@ -148,6 +148,12 @@ class EmployeeUpdater {
                 unlink($newFilepath);
                 throw new Exception("Failed to update profile picture path in the database.");
             }
+            
+            // Sync profile photo update to cloud
+            require_once __DIR__ . '/../../db_cloud_sync.php';
+            syncToCloud('employees', [
+                'profile_photo' => $relativePath
+            ], 'update', "employee_id = '{$this->validatedData['employee_id_string']}'");
 
             $this->logActivity('Profile picture updated', "Employee ID: {$employee['id']}, Path: {$relativePath}");
         }
@@ -170,6 +176,23 @@ class EmployeeUpdater {
         if (!$stmt->execute()) {
             throw new Exception("Failed to update employee details: " . $stmt->error);
         }
+        
+        // Sync employee update to cloud
+        require_once __DIR__ . '/../../db_cloud_sync.php';
+        syncToCloud('employees', [
+            'employee_id' => $this->validatedData['employee_id_string'],
+            'first_name' => $this->validatedData['first_name'],
+            'middle_name' => $this->validatedData['middle_name'],
+            'last_name' => $this->validatedData['last_name'],
+            'email' => $this->validatedData['email'],
+            'phone' => $this->validatedData['phone'],
+            'roles' => $this->validatedData['roles'],
+            'department' => $this->validatedData['department'],
+            'position' => $this->validatedData['position'],
+            'hire_date' => $this->validatedData['hire_date'],
+            'status' => $this->validatedData['status']
+        ], 'update', "employee_id = '{$this->validatedData['employee_id_string']}'");
+        
         $this->logActivity('Employee details updated', "ID: {$employeeId}");
     }
 

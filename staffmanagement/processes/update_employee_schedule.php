@@ -1,5 +1,6 @@
 <?php
 require '../../db_connection.php';
+require_once __DIR__ . '/../../db_cloud_sync.php';
 
 class EmployeeScheduleUpdater {
     private $db;
@@ -118,6 +119,9 @@ class EmployeeScheduleUpdater {
             return; // No new schedule to create
         }
 
+        // Get or create schedule name
+        $scheduleName = null;
+        
         // If no schedule exists, create a new schedule and link it
         if (!$currentSchedule || !$currentSchedule['schedule_id']) {
             $scheduleName = "Schedule_" . $this->validatedData['employee_id_string'] . "_" . date('Ymd_His');
@@ -128,12 +132,37 @@ class EmployeeScheduleUpdater {
             $stmt->execute();
             $oldScheduleId = $this->db->insert_id;
             
+            // Sync schedule to cloud
+            syncToCloud('schedules', [
+                'id' => $oldScheduleId,
+                'schedule_name' => $scheduleName,
+                'description' => $description
+            ], 'insert');
+            
             $stmt = $this->db->prepare("INSERT INTO employee_schedules (employee_id, schedule_id, effective_date, is_active) VALUES (?, ?, ?, 1)");
             $effectiveDate = date('Y-m-d');
             $stmt->bind_param('iis', $employeeId, $oldScheduleId, $effectiveDate);
             $stmt->execute();
+            $empScheduleId = $this->db->insert_id;
+            
+            // Sync employee schedule to cloud with ID lookup
+            syncToCloudWithLookup('employee_schedules', [
+                'employee_id_string' => $this->validatedData['employee_id_string'],
+                'schedule_name' => $scheduleName,
+                'effective_date' => $effectiveDate,
+                'is_active' => 1
+            ]);
             
             $this->logActivity('New schedule created and linked', "Schedule ID: {$oldScheduleId}");
+        } else {
+            // Get existing schedule name
+            $stmt = $this->db->prepare("SELECT schedule_name FROM schedules WHERE id = ?");
+            $stmt->bind_param('i', $oldScheduleId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($row = $result->fetch_assoc()) {
+                $scheduleName = $row['schedule_name'];
+            }
         }
 
         // Insert new periods and assignments
@@ -189,6 +218,17 @@ class EmployeeScheduleUpdater {
                     continue;
                 }
 
+                // Sync schedule period to cloud
+                syncToCloud('schedule_periods', [
+                    'id' => $periodId,
+                    'schedule_id' => $oldScheduleId,
+                    'day_of_week' => $dayOfWeek,
+                    'period_name' => $periodName,
+                    'start_time' => $scheduleBlock['startTime'],
+                    'end_time' => $scheduleBlock['endTime'],
+                    'is_active' => 1
+                ], 'insert');
+
                 // If faculty schedule, insert assignment details
                 if ($isFacultySchedule) {
                     $stmt = $this->db->prepare("
@@ -207,9 +247,23 @@ class EmployeeScheduleUpdater {
                         $roomNum
                     );
                     $stmt->execute();
+                    $assignmentId = $this->db->insert_id;
                     
                     if (!$stmt->affected_rows) {
                         $this->logError('Schedule Update', "Failed to create assignment for period {$periodId}");
+                    } else {
+                        // Sync employee assignment to cloud with ID lookup
+                        syncToCloudWithLookup('employee_assignments', [
+                            'employee_id_string' => $this->validatedData['employee_id_string'],
+                            'schedule_name' => $scheduleName,
+                            'day_of_week' => $dayOfWeek,
+                            'start_time' => $scheduleBlock['startTime'],
+                            'end_time' => $scheduleBlock['endTime'],
+                            'subject_code' => $scheduleBlock['subject'],
+                            'designate_class' => $scheduleBlock['class'],
+                            'room_num' => $roomNum,
+                            'is_active' => 1
+                        ]);
                     }
                 }
             }
