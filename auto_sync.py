@@ -392,19 +392,36 @@ def sync_all_tables():
             if sync_to_cloud('holidays', data, 'insert'):
                 synced_count += 1
         
-        # Sync leave_types
-        cursor.execute("SELECT * FROM leave_types WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")
+        # Sync ALL leave_types (not just recent ones) - these are reference data
+        # Keep the id so foreign keys work properly
+        cursor.execute("SELECT * FROM leave_types")
         for record in cursor.fetchall():
             data = convert_to_json_serializable(record)
-            data.pop('id', None)
+            # Keep the id field for leave_types since employee_leaves references it
             if sync_to_cloud('leave_types', data, 'insert'):
                 synced_count += 1
         
-        # Sync employee_leaves
-        cursor.execute("SELECT * FROM employee_leaves WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR) OR updated_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)")
+        # Sync employee_leaves (convert employee_id to employee_id string)
+        cursor.execute("""
+            SELECT el.*, e.employee_id as employee_id_string 
+            FROM employee_leaves el
+            JOIN employees e ON el.employee_id = e.id
+            WHERE el.created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR) 
+               OR el.updated_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+        """)
         for record in cursor.fetchall():
             data = convert_to_json_serializable(record)
+            # Store the employee_id_string before popping fields
+            employee_id_string = record['employee_id_string']
+            
+            # Remove fields that shouldn't be sent
             data.pop('id', None)
+            data.pop('employee_id', None)
+            data.pop('employee_id_string', None)  # Remove the alias column
+            
+            # Set employee_id to the string value (EMP001, etc.)
+            data['employee_id'] = employee_id_string
+            
             if sync_to_cloud('employee_leaves', data, 'insert'):
                 synced_count += 1
         

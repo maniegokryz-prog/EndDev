@@ -87,27 +87,67 @@ class EmployeeScheduleUpdater {
         if ($currentSchedule && $currentSchedule['schedule_id']) {
             $oldScheduleId = $currentSchedule['schedule_id'];
             
+            // Get schedule name for cloud sync
+            $stmt = $this->db->prepare("SELECT schedule_name FROM schedules WHERE id = ?");
+            $stmt->bind_param('i', $oldScheduleId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $scheduleNameForDelete = $result->fetch_assoc()['schedule_name'] ?? null;
+            
             // Delete old periods and assignments for this schedule
-            $stmt = $this->db->prepare("SELECT id FROM schedule_periods WHERE schedule_id = ?");
+            $stmt = $this->db->prepare("SELECT id, day_of_week, start_time, end_time FROM schedule_periods WHERE schedule_id = ?");
             $stmt->bind_param('i', $oldScheduleId);
             $stmt->execute();
             $periodsResult = $stmt->get_result();
             $periodIds = [];
+            $periodDetails = [];
             while ($row = $periodsResult->fetch_assoc()) {
                 $periodIds[] = $row['id'];
+                $periodDetails[] = [
+                    'day_of_week' => $row['day_of_week'],
+                    'start_time' => $row['start_time'],
+                    'end_time' => $row['end_time']
+                ];
             }
             
-            // Delete assignments for these periods
-            foreach ($periodIds as $pid) {
+            // Delete assignments for these periods and sync to cloud
+            foreach ($periodIds as $index => $pid) {
                 $stmt = $this->db->prepare("DELETE FROM employee_assignments WHERE schedule_period_id = ?");
                 $stmt->bind_param('i', $pid);
                 $stmt->execute();
+                
+                // Sync deletion to cloud - set is_active = 0 (soft delete)
+                if ($scheduleNameForDelete) {
+                    syncToCloudWithLookup('employee_assignments', [
+                        'employee_id_string' => $this->validatedData['employee_id_string'],
+                        'schedule_name' => $scheduleNameForDelete,
+                        'day_of_week' => $periodDetails[$index]['day_of_week'],
+                        'start_time' => $periodDetails[$index]['start_time'],
+                        'end_time' => $periodDetails[$index]['end_time'],
+                        'is_active' => 0,
+                        '_delete_mode' => true  // Signal to update instead of insert
+                    ]);
+                }
             }
             
-            // Delete periods
+            // Delete periods and sync to cloud
             $stmt = $this->db->prepare("DELETE FROM schedule_periods WHERE schedule_id = ?");
             $stmt->bind_param('i', $oldScheduleId);
             $stmt->execute();
+            
+            // Sync period deletions to cloud - delete each period individually
+            foreach ($periodDetails as $period) {
+                if ($scheduleNameForDelete) {
+                    // Build WHERE clause using schedule_id lookup
+                    $scheduleIdQuery = "(SELECT id FROM schedules WHERE schedule_name = '{$scheduleNameForDelete}')";
+                    syncToCloud('schedule_periods', [], 'delete', 
+                        "schedule_id = {$scheduleIdQuery} " .
+                        "AND day_of_week = {$period['day_of_week']} " .
+                        "AND start_time = '{$period['start_time']}' " .
+                        "AND end_time = '{$period['end_time']}'"
+                    );
+                }
+            }
             
             $this->logActivity('Old schedule periods and assignments deleted', "Schedule ID: {$oldScheduleId}");
         }

@@ -446,6 +446,73 @@ function syncToCloudWithLookup($table, $data) {
     }
 }
 
+/**
+ * Delete from cloud database with foreign key lookup
+ * Used for tables that reference other tables by string IDs
+ * 
+ * @param string $table Table name (employee_assignments, schedule_periods)
+ * @param array $data Lookup data (employee_id_string, schedule_name, day_of_week, start_time, end_time)
+ * @return bool Success status
+ */
+function syncDeleteWithLookup($table, $data) {
+    $apiUrl = 'http://bpcfaceid.com/api/sync_endpoint.php';
+    $apiKey = 'lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo';
+    
+    // Simple logging
+    $logFile = __DIR__ . '/logs/cloud_sync.log';
+    $logDir = dirname($logFile);
+    if (!file_exists($logDir)) {
+        @mkdir($logDir, 0755, true);
+    }
+    
+    try {
+        $ch = curl_init($apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+            'X-API-KEY: ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+            'action' => 'delete_with_lookup',
+            'table' => $table,
+            'data' => json_encode($data)
+        ]));
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] ❌ Delete lookup error for $table: $error\n", FILE_APPEND);
+            curl_close($ch);
+            return false;
+        }
+        
+        curl_close($ch);
+        
+        $result = json_decode($response, true);
+        if ($httpCode === 200 && isset($result['success']) && $result['success']) {
+            $msg = $result['message'] ?? 'OK';
+            $affected = $result['affected_rows'] ?? 0;
+            file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] ✅ Delete lookup success for $table: $msg ($affected rows)\n", FILE_APPEND);
+            return true;
+        } else {
+            $error = $result['error'] ?? 'Unknown error';
+            file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] ❌ Delete lookup failed for $table: $error\n", FILE_APPEND);
+            return false;
+        }
+        
+    } catch (Exception $e) {
+        file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] ❌ Exception during delete lookup: " . $e->getMessage() . "\n", FILE_APPEND);
+        return false;
+    }
+}
+
 // Example usage:
 /*
 // After inserting an employee
