@@ -1059,10 +1059,27 @@ $schedules = $viewer->getSchedules();
             </div>
           </div>
         </div>
+
+        <!-- Leave Approve Confirmation Modal -->
+        <div class="modal fade" id="leaveApproveConfirmModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+              <div class="mb-3">
+                <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+              </div>
+              <h5 class="fw-bold mb-3 text-success">Approve Leave Request</h5>
+              <p id="leaveApproveConfirmMsg"></p>
+              <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="leaveApproveConfirmBtn">Yes, Approve</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <script>
           // Leave Management System with API
           const employeeIdForLeave = <?php echo json_encode($employee['id']); ?>;
-          const isAdmin = true; // Set based on actual session role
+          const isAdmin = <?php echo isAdmin() ? 'true' : 'false'; ?>; // Set based on actual session role
           
           // Show/hide admin options on page load
           document.addEventListener('DOMContentLoaded', function() {
@@ -1275,17 +1292,32 @@ $schedules = $viewer->getSchedules();
                     entry.className = "leave-entry d-flex justify-content-between align-items-start";
                     
                     let statusBadge = '';
-                    let actionButton = '';
+                    let actionButtons = '';
                     
                     if (leave.status === 'pending') {
                       statusBadge = '<span class="badge bg-warning text-dark ms-2">Pending</span>';
-                      actionButton = `<button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'pending')" title="Cancel Request"><i class="bi bi-x-circle"></i></button>`;
+                      
+                      // Show approve button for admin
+                      if (isAdmin) {
+                        actionButtons = `
+                          <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-success" onclick="approveLeave(${leave.id})" title="Approve Leave">
+                              <i class="bi bi-check-circle"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'pending')" title="Reject Request">
+                              <i class="bi bi-x-circle"></i>
+                            </button>
+                          </div>
+                        `;
+                      } else {
+                        actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'pending')" title="Cancel Request"><i class="bi bi-x-circle"></i></button>`;
+                      }
                     } else if (leave.status === 'approved') {
                       statusBadge = '<span class="badge bg-success ms-2">Approved</span>';
-                      actionButton = `<button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'approved')" title="Cancel Leave"><i class="bi bi-trash"></i></button>`;
+                      actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'approved')" title="Cancel Leave"><i class="bi bi-trash"></i></button>`;
                     } else if (leave.status === 'rejected') {
                       statusBadge = '<span class="badge bg-danger ms-2">Rejected</span>';
-                      actionButton = `<button class="btn btn-sm btn-outline-secondary" onclick="cancelLeave(${leave.id}, 'rejected')" title="Delete"><i class="bi bi-trash"></i></button>`;
+                      actionButtons = `<button class="btn btn-sm btn-outline-secondary" onclick="cancelLeave(${leave.id}, 'rejected')" title="Delete"><i class="bi bi-trash"></i></button>`;
                     }
 
                     entry.innerHTML = `
@@ -1293,7 +1325,7 @@ $schedules = $viewer->getSchedules();
                         <strong>${leave.leave_type}</strong> ${statusBadge}<br>
                         <small>${leave.formatted_dates}</small>
                       </div>
-                      <div>${actionButton}</div>
+                      <div>${actionButtons}</div>
                     `;
 
                     leaveList.appendChild(entry);
@@ -1306,6 +1338,86 @@ $schedules = $viewer->getSchedules();
           }
 
           let pendingLeaveDelete = { leaveId: null, status: null };
+          let pendingLeaveApprove = null;
+
+          // Approve leave function (admin only)
+          async function approveLeave(leaveId) {
+            // Store the leave ID
+            pendingLeaveApprove = leaveId;
+            
+            // Show confirmation modal
+            document.getElementById("leaveApproveConfirmMsg").textContent = 'Are you sure you want to approve this leave request? The employee will be marked as on leave for the selected dates.';
+            const confirmModal = new bootstrap.Modal(document.getElementById("leaveApproveConfirmModal"));
+            confirmModal.show();
+          }
+
+          // Handle the confirmed approve
+          document.getElementById("leaveApproveConfirmBtn").addEventListener("click", async function() {
+            const leaveId = pendingLeaveApprove;
+            
+            try {
+              const formData = new FormData();
+              formData.append('leave_id', leaveId);
+              formData.append('approved_by', 'admin');
+              
+              const response = await fetch('api/leave_request.php?action=approve_request', {
+                method: 'POST',
+                body: formData
+              });
+              
+              const result = await response.json();
+              
+              if (result.success) {
+                // Hide the approve confirmation modal
+                bootstrap.Modal.getInstance(document.getElementById("leaveApproveConfirmModal")).hide();
+                
+                // Show success message
+                document.getElementById("leaveSuccessMsg").textContent = result.message || "Leave approved successfully!";
+                const successModal = new bootstrap.Modal(document.getElementById('leaveSuccessModal'));
+                successModal.show();
+                
+                // Auto-close success modal and reload list
+                setTimeout(() => {
+                  successModal.hide();
+                  loadEmployeeLeaves();
+                  
+                  // Clean up backdrops
+                  setTimeout(() => {
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                  }, 150);
+                }, 3000);
+              } else {
+                bootstrap.Modal.getInstance(document.getElementById("leaveApproveConfirmModal")).hide();
+                document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + result.error;
+                const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+                errorModal.show();
+                
+                // Auto-close after 5 seconds
+                setTimeout(() => {
+                  errorModal.hide();
+                  document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                  document.body.classList.remove('modal-open');
+                  document.body.style.overflow = '';
+                }, 5000);
+              }
+            } catch (error) {
+              console.error('Error approving leave:', error);
+              bootstrap.Modal.getInstance(document.getElementById("leaveApproveConfirmModal")).hide();
+              document.getElementById("leaveValidationErrorMsg").textContent = 'Failed to approve leave. Please try again.';
+              const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+              errorModal.show();
+              
+              // Auto-close after 5 seconds
+              setTimeout(() => {
+                errorModal.hide();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+              }, 5000);
+            }
+          });
 
           async function cancelLeave(leaveId, status) {
             let confirmMessage = '';
