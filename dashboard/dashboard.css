@@ -286,6 +286,8 @@
   height: 1.5rem;
 }
 
+
+
 .clickable-card {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;

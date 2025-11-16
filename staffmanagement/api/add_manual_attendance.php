@@ -280,6 +280,24 @@ function addManualAttendance($conn) {
             
             if ($stmt->execute()) {
                 $success_count++;
+                
+                // Sync to cloud database
+                require_once __DIR__ . '/../../db_cloud_sync.php';
+                $action = $existing ? 'update' : 'insert';
+                $whereClause = $existing ? "employee_id = $employee_id AND attendance_date = '$date'" : '';
+                
+                syncToCloud('daily_attendance', [
+                    'employee_id' => $employee_id,
+                    'attendance_date' => $date,
+                    'time_in' => $time_in,
+                    'time_out' => $time_out,
+                    'scheduled_hours' => $scheduled_hours,
+                    'actual_hours' => $actual_hours,
+                    'late_minutes' => $late_minutes,
+                    'early_departure_minutes' => $early_departure_minutes,
+                    'overtime_minutes' => $overtime_minutes,
+                    'status' => 'manual'
+                ], $action, $whereClause);
             } else {
                 $errors[] = "Record " . ($index + 1) . ": Database error - " . $stmt->error;
                 error_log("Manual Attendance SQL Error: " . $stmt->error . " | SQL: " . $sql);

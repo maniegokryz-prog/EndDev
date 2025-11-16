@@ -59,16 +59,16 @@
   <div class="modal-dialog">
     <div class="modal-content p-3">
       <h4 class="text-center mt-2">Forgot Password?</h4>
-      <p class="text-center">Enter your details so we can verify your account</p>
+      <p class="text-center">Enter your Employee ID and Email to receive an OTP</p>
       
       <div id="step1Error" class="alert alert-danger" style="display: none;"></div>
       
-      <input type="text" id="resetEmployeeId" class="form-control mb-2" placeholder="ID Number" required>
-      <input type="text" id="resetContact" class="form-control mb-3" placeholder="Email or Contact Number" required>
+      <input type="text" id="resetEmployeeId" class="form-control mb-2" placeholder="Employee ID" required>
+      <input type="email" id="resetEmail" class="form-control mb-3" placeholder="Email Address" required>
 
       <div class="d-flex justify-content-between">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-success" id="toStep2">Continue</button>
+        <button class="btn btn-success" id="toStep2">Send OTP</button>
       </div>
     </div>
   </div>
@@ -78,13 +78,15 @@
 <div class="modal fade" id="modalStep2" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content p-3">
-      <h4 class="text-center mt-2">Confirmation</h4>
-      <p class="text-center" id="otpMessage">You may receive OTP sent to your mobile phone number or email</p>
+      <h4 class="text-center mt-2">Enter OTP</h4>
+      <p class="text-center" id="otpMessage">A 6-digit OTP has been sent to your email address</p>
       
       <div id="step2Error" class="alert alert-danger" style="display: none;"></div>
-      <div id="otpDisplay" class="alert alert-info" style="display: none;"></div>
+      <div id="step2Success" class="alert alert-success" style="display: none;"></div>
       
-      <input type="text" id="otpCode" class="form-control mb-3" placeholder="Enter 6-digit OTP" maxlength="6" required>
+      <input type="text" id="otpCode" class="form-control mb-3" placeholder="Enter 6-digit OTP" maxlength="6" pattern="[0-9]{6}" required>
+      
+      <p class="text-center small text-muted">OTP expires in 10 minutes</p>
 
       <div class="d-flex justify-content-between">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

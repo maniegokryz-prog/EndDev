@@ -1,6 +1,7 @@
 <?php
 // Protect this page - require authentication
 require_once '../auth_guard.php';
+require_once '../navigation.php';
 
 // Get current user info
 $currentUser = getCurrentUser();
@@ -15,9 +16,9 @@ $currentUser = getCurrentUser();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Bootstrap CSS -->
-  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="dashboard.css">
@@ -49,11 +50,7 @@ $currentUser = getCurrentUser();
     </div>
     
     <nav class="nav flex-column px-2">
-      <a class="nav-link active" href="../dashboard/dashboard.php"><i class="bi bi-house-door me-2"></i> Dashboard</a>
-      <a class="nav-link" href="../attendancerep/attendancerep.php"><i class="bi bi-file-earmark-bar-graph me-2"></i> Attendance Reports</a>
-      <a class="nav-link" href="../staffmanagement/staff.php"><i class="bi bi-people me-2"></i> Staff Management</a>
-      <a class="nav-link" href="../settings/settings.php"><i class="bi bi-gear me-2"></i> Settings</a>
-      <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-left me-2"></i> Logout</a>
+      <?php renderNavigation('Dashboard'); ?>
     </nav>
   </div>
 
@@ -191,7 +188,7 @@ $currentUser = getCurrentUser();
 <!-- CALENDAR-->
 <div class="col-lg-6 col-md-12">
   <div class="card h-100 calendar-card" id="calendar-container">
-      <div class="d-flex align-items-center justify-content-between mb-2">
+      <div class="d-flex align-items-center justify-content-between mb-2" style="padding: 1.5rem;">
       <h6 id="cal-month-year" class="fw-bold mb-0" style="font-size: 2rem;">Month Year</h6>
       <div>
         <button id="cal-prev" class="btn btn-sm btn-outline-secondary me-1 px-2 py-1"
@@ -213,8 +210,6 @@ $currentUser = getCurrentUser();
           <!-- JS will populate -->
         </tbody>
     </table>
-
-<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <script>
   let currentMonth, currentYear;
@@ -339,7 +334,7 @@ $currentUser = getCurrentUser();
   </div> <!-- container-fluid -->
   </div> <!-- content -->
 
-  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="dashboard.js"></script>
 
 

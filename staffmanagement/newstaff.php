@@ -1,5 +1,10 @@
  <?php
+require_once '../auth_guard.php';
+require_once '../navigation.php';
 require '../db_connection.php';
+
+// Get current user info
+$currentUser = getCurrentUser();
 
 // Get existing roles from database
 $existing_roles = [];
@@ -84,7 +89,7 @@ try {
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="staff.css">
@@ -125,11 +130,7 @@ try {
       <small class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
     </div>
     <nav class="nav flex-column px-2">
-      <a class="nav-link active" href="../dashboard/dashboard.php"><i class="bi bi-house-door me-2"></i> Dashboard</a>
-      <a class="nav-link" href="../attendancerep/attendancerep.php"><i class="bi bi-file-earmark-bar-graph me-2"></i> Attendance Reports</a>
-      <a class="nav-link" href="../staffmanagement/staff.php"><i class="bi bi-people me-2"></i> Staff Management</a>
-      <a class="nav-link" href="../settings/settings.php"><i class="bi bi-gear me-2"></i> Settings</a>
-      <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-left me-2"></i> Logout</a>
+      <?php renderNavigation('Staff'); ?>
     </nav>
   </div>
 <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->

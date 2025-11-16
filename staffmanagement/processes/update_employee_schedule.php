@@ -1,5 +1,6 @@
 <?php
 require '../../db_connection.php';
+require_once __DIR__ . '/../../db_cloud_sync.php';
 
 class EmployeeScheduleUpdater {
     private $db;
@@ -86,27 +87,67 @@ class EmployeeScheduleUpdater {
         if ($currentSchedule && $currentSchedule['schedule_id']) {
             $oldScheduleId = $currentSchedule['schedule_id'];
             
+            // Get schedule name for cloud sync
+            $stmt = $this->db->prepare("SELECT schedule_name FROM schedules WHERE id = ?");
+            $stmt->bind_param('i', $oldScheduleId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $scheduleNameForDelete = $result->fetch_assoc()['schedule_name'] ?? null;
+            
             // Delete old periods and assignments for this schedule
-            $stmt = $this->db->prepare("SELECT id FROM schedule_periods WHERE schedule_id = ?");
+            $stmt = $this->db->prepare("SELECT id, day_of_week, start_time, end_time FROM schedule_periods WHERE schedule_id = ?");
             $stmt->bind_param('i', $oldScheduleId);
             $stmt->execute();
             $periodsResult = $stmt->get_result();
             $periodIds = [];
+            $periodDetails = [];
             while ($row = $periodsResult->fetch_assoc()) {
                 $periodIds[] = $row['id'];
+                $periodDetails[] = [
+                    'day_of_week' => $row['day_of_week'],
+                    'start_time' => $row['start_time'],
+                    'end_time' => $row['end_time']
+                ];
             }
             
-            // Delete assignments for these periods
-            foreach ($periodIds as $pid) {
+            // Delete assignments for these periods and sync to cloud
+            foreach ($periodIds as $index => $pid) {
                 $stmt = $this->db->prepare("DELETE FROM employee_assignments WHERE schedule_period_id = ?");
                 $stmt->bind_param('i', $pid);
                 $stmt->execute();
+                
+                // Sync deletion to cloud - set is_active = 0 (soft delete)
+                if ($scheduleNameForDelete) {
+                    syncToCloudWithLookup('employee_assignments', [
+                        'employee_id_string' => $this->validatedData['employee_id_string'],
+                        'schedule_name' => $scheduleNameForDelete,
+                        'day_of_week' => $periodDetails[$index]['day_of_week'],
+                        'start_time' => $periodDetails[$index]['start_time'],
+                        'end_time' => $periodDetails[$index]['end_time'],
+                        'is_active' => 0,
+                        '_delete_mode' => true  // Signal to update instead of insert
+                    ]);
+                }
             }
             
-            // Delete periods
+            // Delete periods and sync to cloud
             $stmt = $this->db->prepare("DELETE FROM schedule_periods WHERE schedule_id = ?");
             $stmt->bind_param('i', $oldScheduleId);
             $stmt->execute();
+            
+            // Sync period deletions to cloud - delete each period individually
+            foreach ($periodDetails as $period) {
+                if ($scheduleNameForDelete) {
+                    // Build WHERE clause using schedule_id lookup
+                    $scheduleIdQuery = "(SELECT id FROM schedules WHERE schedule_name = '{$scheduleNameForDelete}')";
+                    syncToCloud('schedule_periods', [], 'delete', 
+                        "schedule_id = {$scheduleIdQuery} " .
+                        "AND day_of_week = {$period['day_of_week']} " .
+                        "AND start_time = '{$period['start_time']}' " .
+                        "AND end_time = '{$period['end_time']}'"
+                    );
+                }
+            }
             
             $this->logActivity('Old schedule periods and assignments deleted', "Schedule ID: {$oldScheduleId}");
         }
@@ -118,6 +159,9 @@ class EmployeeScheduleUpdater {
             return; // No new schedule to create
         }
 
+        // Get or create schedule name
+        $scheduleName = null;
+        
         // If no schedule exists, create a new schedule and link it
         if (!$currentSchedule || !$currentSchedule['schedule_id']) {
             $scheduleName = "Schedule_" . $this->validatedData['employee_id_string'] . "_" . date('Ymd_His');
@@ -128,12 +172,37 @@ class EmployeeScheduleUpdater {
             $stmt->execute();
             $oldScheduleId = $this->db->insert_id;
             
+            // Sync schedule to cloud
+            syncToCloud('schedules', [
+                'id' => $oldScheduleId,
+                'schedule_name' => $scheduleName,
+                'description' => $description
+            ], 'insert');
+            
             $stmt = $this->db->prepare("INSERT INTO employee_schedules (employee_id, schedule_id, effective_date, is_active) VALUES (?, ?, ?, 1)");
             $effectiveDate = date('Y-m-d');
             $stmt->bind_param('iis', $employeeId, $oldScheduleId, $effectiveDate);
             $stmt->execute();
+            $empScheduleId = $this->db->insert_id;
+            
+            // Sync employee schedule to cloud with ID lookup
+            syncToCloudWithLookup('employee_schedules', [
+                'employee_id_string' => $this->validatedData['employee_id_string'],
+                'schedule_name' => $scheduleName,
+                'effective_date' => $effectiveDate,
+                'is_active' => 1
+            ]);
             
             $this->logActivity('New schedule created and linked', "Schedule ID: {$oldScheduleId}");
+        } else {
+            // Get existing schedule name
+            $stmt = $this->db->prepare("SELECT schedule_name FROM schedules WHERE id = ?");
+            $stmt->bind_param('i', $oldScheduleId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($row = $result->fetch_assoc()) {
+                $scheduleName = $row['schedule_name'];
+            }
         }
 
         // Insert new periods and assignments
@@ -189,6 +258,17 @@ class EmployeeScheduleUpdater {
                     continue;
                 }
 
+                // Sync schedule period to cloud
+                syncToCloud('schedule_periods', [
+                    'id' => $periodId,
+                    'schedule_id' => $oldScheduleId,
+                    'day_of_week' => $dayOfWeek,
+                    'period_name' => $periodName,
+                    'start_time' => $scheduleBlock['startTime'],
+                    'end_time' => $scheduleBlock['endTime'],
+                    'is_active' => 1
+                ], 'insert');
+
                 // If faculty schedule, insert assignment details
                 if ($isFacultySchedule) {
                     $stmt = $this->db->prepare("
@@ -207,9 +287,23 @@ class EmployeeScheduleUpdater {
                         $roomNum
                     );
                     $stmt->execute();
+                    $assignmentId = $this->db->insert_id;
                     
                     if (!$stmt->affected_rows) {
                         $this->logError('Schedule Update', "Failed to create assignment for period {$periodId}");
+                    } else {
+                        // Sync employee assignment to cloud with ID lookup
+                        syncToCloudWithLookup('employee_assignments', [
+                            'employee_id_string' => $this->validatedData['employee_id_string'],
+                            'schedule_name' => $scheduleName,
+                            'day_of_week' => $dayOfWeek,
+                            'start_time' => $scheduleBlock['startTime'],
+                            'end_time' => $scheduleBlock['endTime'],
+                            'subject_code' => $scheduleBlock['subject'],
+                            'designate_class' => $scheduleBlock['class'],
+                            'room_num' => $roomNum,
+                            'is_active' => 1
+                        ]);
                     }
                 }
             }

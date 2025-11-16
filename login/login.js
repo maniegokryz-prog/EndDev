@@ -79,23 +79,31 @@ document.addEventListener('DOMContentLoaded', function() {
 // Step 1: Verify Account and Send OTP
 document.getElementById("toStep2").onclick = async function() {
   const employeeId = document.getElementById('resetEmployeeId').value.trim();
-  const contact = document.getElementById('resetContact').value.trim();
+  const email = document.getElementById('resetEmail').value.trim();
   const errorDiv = document.getElementById('step1Error');
   
-  if (!employeeId || !contact) {
+  if (!employeeId || !email) {
     errorDiv.textContent = 'Please fill in all fields';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    errorDiv.textContent = 'Please enter a valid email address';
     errorDiv.style.display = 'block';
     return;
   }
   
   errorDiv.style.display = 'none';
   this.disabled = true;
-  this.textContent = 'Verifying...';
+  this.textContent = 'Sending OTP...';
   
   try {
     const formData = new FormData();
     formData.append('employee_id', employeeId);
-    formData.append('contact', contact);
+    formData.append('email', email);
     
     const response = await fetch('password_recovery.php?action=verify_account', {
       method: 'POST',
@@ -107,11 +115,9 @@ document.getElementById("toStep2").onclick = async function() {
     if (result.success) {
       resetEmployeeIdGlobal = employeeId;
       
-      // Show OTP in modal (ONLY FOR DEVELOPMENT - REMOVE IN PRODUCTION)
-      if (result.otp) {
-        document.getElementById('otpDisplay').textContent = 'Your OTP: ' + result.otp;
-        document.getElementById('otpDisplay').style.display = 'block';
-      }
+      // Show success message in Step 2
+      document.getElementById('step2Success').textContent = 'OTP sent to ' + email;
+      document.getElementById('step2Success').style.display = 'block';
       
       // Close step 1, open step 2
       bootstrap.Modal.getInstance(document.getElementById("modalStep1")).hide();
@@ -127,7 +133,7 @@ document.getElementById("toStep2").onclick = async function() {
   }
   
   this.disabled = false;
-  this.textContent = 'Continue';
+  this.textContent = 'Send OTP';
 };
 
 // Step 2: Verify OTP
@@ -223,10 +229,11 @@ document.getElementById("finalStep").onclick = async function() {
       
       // Clear form fields
       document.getElementById('resetEmployeeId').value = '';
-      document.getElementById('resetContact').value = '';
+      document.getElementById('resetEmail').value = '';
       document.getElementById('otpCode').value = '';
       document.getElementById('newPassword').value = '';
       document.getElementById('confirmPassword').value = '';
+      document.getElementById('step2Success').style.display = 'none';
       resetEmployeeIdGlobal = '';
     } else {
       errorDiv.textContent = result.error || 'Password reset failed';

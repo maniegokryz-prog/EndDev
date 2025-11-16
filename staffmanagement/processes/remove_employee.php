@@ -185,6 +185,12 @@ class EmployeeRemovalProcessor {
                 throw new Exception('Failed to update employee status.');
             }
             
+            // Sync employee deactivation to cloud
+            require_once __DIR__ . '/../../db_cloud_sync.php';
+            syncToCloud('employees', [
+                'status' => 'inactive'
+            ], 'update', "id = {$internalEmployeeId}");
+            
             // Deactivate employee schedules
             $stmt = $this->db->prepare("
                 UPDATE employee_schedules 
@@ -196,6 +202,12 @@ class EmployeeRemovalProcessor {
             $stmt->bind_param('i', $internalEmployeeId);
             $stmt->execute();
             
+            // Sync employee schedules deactivation to cloud
+            syncToCloud('employee_schedules', [
+                'is_active' => 0,
+                'end_date' => date('Y-m-d')
+            ], 'update', "employee_id = {$internalEmployeeId} AND is_active = 1");
+            
             // Deactivate employee assignments
             $stmt = $this->db->prepare("
                 UPDATE employee_assignments 
@@ -205,6 +217,11 @@ class EmployeeRemovalProcessor {
             
             $stmt->bind_param('i', $internalEmployeeId);
             $stmt->execute();
+            
+            // Sync employee assignments deactivation to cloud
+            syncToCloud('employee_assignments', [
+                'is_active' => 0
+            ], 'update', "employee_id = {$internalEmployeeId} AND is_active = 1");
             
             $this->db->commit();
             

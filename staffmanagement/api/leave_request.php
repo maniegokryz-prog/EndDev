@@ -132,6 +132,18 @@ function submitLeaveRequest($conn) {
     
     $leave_id = $conn->insert_id;
     
+    // Sync employee leave to cloud
+    require_once __DIR__ . '/../../db_cloud_sync.php';
+    syncToCloud('employee_leaves', [
+        'id' => $leave_id,
+        'employee_id' => $employee_id,
+        'leave_type_id' => $leave_type_id,
+        'start_date' => $start_date,
+        'end_date' => $end_date,
+        'reason' => $reason,
+        'status' => $initial_status
+    ], 'insert');
+    
     // If admin auto-approved, mark dates as leave
     if ($initial_status === 'approved') {
         markDatesAsLeave($conn, $employee_id, $start_date, $end_date);
@@ -248,6 +260,12 @@ function approveLeaveRequest($conn) {
         throw new Exception('Failed to approve leave request');
     }
     
+    // Sync leave approval to cloud
+    require_once __DIR__ . '/../../db_cloud_sync.php';
+    syncToCloud('employee_leaves', [
+        'status' => 'approved'
+    ], 'update', "id = $leave_id");
+    
     // Mark attendance dates as "on_leave"
     markDatesAsLeave($conn, $leave['employee_id'], $leave['start_date'], $leave['end_date']);
     
@@ -294,6 +312,12 @@ function rejectLeaveRequest($conn) {
     if (!$stmt->execute()) {
         throw new Exception('Failed to reject leave request');
     }
+    
+    // Sync leave rejection to cloud
+    require_once __DIR__ . '/../../db_cloud_sync.php';
+    syncToCloud('employee_leaves', [
+        'status' => 'rejected'
+    ], 'update', "id = $leave_id");
     
     // Create notification for employee
     createEmployeeNotification($conn, $leave['employee_id'], $leave_id, 'rejected');
@@ -589,6 +613,20 @@ function markDatesAsLeave($conn, $employee_id, $start_date, $end_date) {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("is", $employee_id, $date);
         $stmt->execute();
+        
+        // Sync daily attendance to cloud
+        require_once __DIR__ . '/../../db_cloud_sync.php';
+        if ($result->num_rows > 0) {
+            syncToCloud('daily_attendance', [
+                'status' => 'on_leave'
+            ], 'update', "employee_id = $employee_id AND attendance_date = '$date'");
+        } else {
+            syncToCloud('daily_attendance', [
+                'employee_id' => $employee_id,
+                'attendance_date' => $date,
+                'status' => 'on_leave'
+            ], 'insert');
+        }
         
         $start->modify('+1 day');
     }

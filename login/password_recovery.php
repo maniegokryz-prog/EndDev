@@ -48,31 +48,35 @@ $conn->close();
  */
 function verifyAccount($conn) {
     $employee_id = $_POST['employee_id'] ?? '';
-    $contact = $_POST['contact'] ?? ''; // Email or phone
+    $email = $_POST['email'] ?? '';
     
-    if (empty($employee_id) || empty($contact)) {
-        throw new Exception('Employee ID and email/contact are required');
+    if (empty($employee_id) || empty($email)) {
+        throw new Exception('Employee ID and email are required');
     }
     
-    // Check if user exists
-    $sql = "SELECT id, employee_id, email, phone, first_name, last_name 
+    // Validate email format
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        throw new Exception('Invalid email format');
+    }
+    
+    // Check if user exists with matching employee_id AND email
+    $sql = "SELECT id, employee_id, email, first_name, last_name 
             FROM employees 
-            WHERE employee_id = ? AND (email = ? OR phone = ?)";
+            WHERE employee_id = ? AND email = ? AND status = 'active'";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $employee_id, $contact, $contact);
+    $stmt->bind_param("ss", $employee_id, $email);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
-        throw new Exception('Account not found. Please verify your ID and email/contact.');
+        throw new Exception('No account found with this Employee ID and Email combination');
     }
     
     $user = $result->fetch_assoc();
     
-    // Generate 6-digit OTP
-    $otp = sprintf("%06d", mt_rand(1, 999999));
-    $expires_at = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+    // Generate OTP
+    $otp = str_pad(rand(100000, 999999), 6, '0', STR_PAD_LEFT);
     
     // Store OTP in database
     ensureOTPTable($conn);
@@ -83,21 +87,23 @@ function verifyAccount($conn) {
     $stmt->bind_param("s", $employee_id);
     $stmt->execute();
     
-    // Insert new OTP
-    $sql = "INSERT INTO password_reset_otp (employee_id, otp, contact, expires_at) 
-            VALUES (?, ?, ?, ?)";
+    // Insert new OTP (use NOW() + INTERVAL to avoid timezone issues)
+    $sql = "INSERT INTO password_reset_otp (employee_id, otp, email, expires_at) 
+            VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $employee_id, $otp, $contact, $expires_at);
+    $stmt->bind_param("sss", $employee_id, $otp, $email);
     $stmt->execute();
     
-    // Send OTP (in production, use SMS/Email service)
-    // For now, we'll just return it in the response (REMOVE IN PRODUCTION)
-    sendOTP($contact, $otp, $user['first_name']);
+    // Send OTP via email
+    $emailSent = sendOTPEmail($email, $otp, $user['first_name'], $user['last_name']);
+    
+    if (!$emailSent) {
+        throw new Exception('Failed to send OTP email. Please contact system administrator.');
+    }
     
     echo json_encode([
         'success' => true,
-        'message' => 'OTP has been sent to your ' . (filter_var($contact, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone'),
-        'otp' => $otp, // REMOVE THIS IN PRODUCTION
+        'message' => 'OTP has been sent to your email address',
         'user_name' => $user['first_name']
     ]);
 }
@@ -213,7 +219,7 @@ function ensureOTPTable($conn) {
         id INT AUTO_INCREMENT PRIMARY KEY,
         employee_id VARCHAR(255) NOT NULL,
         otp VARCHAR(10) NOT NULL,
-        contact VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
         expires_at DATETIME NOT NULL,
         verified BOOLEAN DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -222,21 +228,91 @@ function ensureOTPTable($conn) {
 }
 
 /**
- * Send OTP via SMS/Email (mock function)
+ * Send OTP via Email using PHPMailer
  */
-function sendOTP($contact, $otp, $name) {
-    // In production, integrate with SMS/Email service
-    // For example: Twilio, SendGrid, PHPMailer, etc.
+function sendOTPEmail($email, $otp, $firstName, $lastName) {
+    // Check if PHPMailer is available
+    $phpmailerPath = __DIR__ . '/../vendor/autoload.php';
     
-    if (filter_var($contact, FILTER_VALIDATE_EMAIL)) {
-        // Send via email
-        // mail($contact, "Password Reset OTP", "Your OTP is: $otp");
-    } else {
-        // Send via SMS
-        // SMSProvider::send($contact, "Your OTP is: $otp");
+    if (!file_exists($phpmailerPath)) {
+        // PHPMailer not installed, log OTP for development
+        $logDir = __DIR__ . '/../logs/';
+        if (!file_exists($logDir)) {
+            mkdir($logDir, 0755, true);
+        }
+        $logFile = $logDir . 'otp_errors.log';
+        $logEntry = date('Y-m-d H:i:s') . " - OTP for $firstName $lastName ($email): $otp - PHPMailer not installed" . PHP_EOL;
+        file_put_contents($logFile, $logEntry, FILE_APPEND);
+        
+        // Return true for development (CHANGE TO FALSE IN PRODUCTION)
+        return true;
     }
     
-    // For development, just log it
-    error_log("OTP for $name ($contact): $otp");
+    // Load PHPMailer
+    require $phpmailerPath;
+    
+    try {
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+        
+        // SMTP Configuration - IONOS Web Hosting
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.ionos.com'; // IONOS SMTP server
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'accounts@bpcfaceid.com'; // Your IONOS email
+        $mail->Password   = 'Confirmp@ssword123'; // Your IONOS email password
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+        
+        // Email content
+        $mail->setFrom('accounts@bpcfaceid.com', 'BPC FaceID Attendance System');
+        $mail->addAddress($email, "$firstName $lastName");
+        
+        $mail->isHTML(true);
+        $mail->Subject = 'Password Reset OTP - Attendance System';
+        $mail->Body    = "
+            <html>
+            <body style='font-family: Arial, sans-serif;'>
+                <div style='max-width: 600px; margin: 0 auto; padding: 20px;'>
+                    <h2 style='color: #333;'>Password Reset Request</h2>
+                    <p>Hello $firstName,</p>
+                    <p>You requested to reset your password. Use the OTP code below to continue:</p>
+                    <div style='background-color: #f0f0f0; padding: 15px; text-align: center; margin: 20px 0;'>
+                        <h1 style='color: #28a745; font-size: 32px; letter-spacing: 5px; margin: 0;'>$otp</h1>
+                    </div>
+                    <p><strong>This OTP will expire in 10 minutes.</strong></p>
+                    <p>If you didn't request this, please ignore this email.</p>
+                    <hr style='border: 1px solid #ddd; margin: 20px 0;'>
+                    <p style='color: #999; font-size: 12px;'>Automated Attendance System with Facial Recognition</p>
+                </div>
+            </body>
+            </html>
+        ";
+        $mail->AltBody = "Your OTP code is: $otp\n\nThis code will expire in 10 minutes.";
+        
+        $mail->send();
+        
+        // Log success
+        $logDir = __DIR__ . '/../logs/';
+        if (!file_exists($logDir)) {
+            mkdir($logDir, 0755, true);
+        }
+        $logFile = $logDir . 'otp_success.log';
+        $logEntry = date('Y-m-d H:i:s') . " - OTP sent successfully to $email for $firstName $lastName" . PHP_EOL;
+        file_put_contents($logFile, $logEntry, FILE_APPEND);
+        
+        return true;
+        
+    } catch (\Exception $e) {
+        // Log error
+        $logDir = __DIR__ . '/../logs/';
+        if (!file_exists($logDir)) {
+            mkdir($logDir, 0755, true);
+        }
+        $logFile = $logDir . 'otp_errors.log';
+        $logEntry = date('Y-m-d H:i:s') . " - Failed to send OTP to $email for $firstName $lastName - Error: {$e->getMessage()}" . PHP_EOL;
+        file_put_contents($logFile, $logEntry, FILE_APPEND);
+        
+        return false;
+    }
 }
 ?>

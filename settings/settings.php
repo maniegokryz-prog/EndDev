@@ -1,10 +1,11 @@
 <?php
-// Protect this page - require authentication and admin role
+// Protect this page - require authentication
 require_once '../auth_guard.php';
-requireAdmin(); // Only admins can access settings
+require_once '../navigation.php';
 
 // Get current user info
 $currentUser = getCurrentUser();
+$isAdmin = isAdmin();
 ?>
     <!DOCTYPE html>
 <html lang="en">
@@ -16,12 +17,12 @@ $currentUser = getCurrentUser();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Bootstrap CSS -->
-  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
  <!-- ✅ BOOTSTRAP 5 -->
-  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
  <!-- Bootstrap Icons -->
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <!-- ✅ FONT AWESOME (official CDN – works on localhost) -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -54,11 +55,7 @@ $currentUser = getCurrentUser();
       <small class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
     </div>
     <nav class="nav flex-column px-2">
-      <a class="nav-link active" href="../dashboard/dashboard.php"><i class="bi bi-house-door me-2"></i> Dashboard</a>
-      <a class="nav-link" href="../attendancerep/attendancerep.php"><i class="bi bi-file-earmark-bar-graph me-2"></i> Attendance Reports</a>
-      <a class="nav-link" href="../staffmanagement/staff.php"><i class="bi bi-people me-2"></i> Staff Management</a>
-      <a class="nav-link" href="../settings/settings.php"><i class="bi bi-gear me-2"></i> Settings</a>
-      <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-left me-2"></i> Logout</a>
+      <?php renderNavigation('Settings'); ?>
     </nav>
   </div>
 <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -89,6 +86,7 @@ $currentUser = getCurrentUser();
         </div>
       </div>
 
+      <?php if ($isAdmin): ?>
       <div class="col-6 col-md-3">
   <div class="setting-card" id="employeeArchive" style="cursor: pointer;">
     <div class="setting-icon">
@@ -97,38 +95,116 @@ $currentUser = getCurrentUser();
     <h6>Employee Archive</h6>
   </div>
 </div>
+      <?php endif; ?>
 
-  <!-- ✅ Change Password Modal -->
+  <!-- ✅ Change Password Modal - Step 1: Verify Email -->
 <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
 
       <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold" id="changePasswordLabel">Change Password</h5>
+        <h5 class="modal-title fw-bold" id="changePasswordLabel">Change Password - Step 1</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <div class="modal-body px-4 pb-4">
-        <form id="changePasswordForm">
+        <p class="text-muted mb-3">We'll send a verification code to your email</p>
+        
+        <div class="alert alert-danger" id="changeStep1Error" style="display:none;"></div>
 
-          <div class="mb-3">
-            <label for="currentPassword" class="form-label fw-semibold">Current Password</label>
-            <input type="password" class="form-control" id="currentPassword" placeholder="Enter Current Password" required>
-          </div>
+        <div class="mb-3">
+          <label for="changeEmail" class="form-label fw-semibold">Email Address</label>
+          <input type="email" class="form-control" id="changeEmail" placeholder="Enter your registered email" required>
+        </div>
 
-          <div class="mb-4">
-            <label for="newPassword" class="form-label fw-semibold">New Password</label>
-            <input type="password" class="form-control" id="newPassword" placeholder="Enter New Password" required>
-          </div>
-
-          <div class="d-flex justify-content-between">
-            <button type="button" class="btn btn-outline-danger px-4" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn text-white px-4" style="background-color: #083c34;">Save</button>
-          </div>
-
-        </form>
+        <div class="d-flex justify-content-between mt-4">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn text-white px-4" style="background-color: #083c34;" id="changeToStep2">Send OTP</button>
+        </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Change Password Modal - Step 2: Verify OTP -->
+<div class="modal fade" id="changePasswordModalStep2" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Change Password - Step 2</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body px-4 pb-4">
+        <p class="text-muted mb-3">Enter the 6-digit code sent to your email</p>
+        
+        <div class="alert alert-success" id="changeStep2Success" style="display:none;"></div>
+        <div class="alert alert-danger" id="changeStep2Error" style="display:none;"></div>
+
+        <div class="mb-3">
+          <label for="changeOtpCode" class="form-label fw-semibold">OTP Code</label>
+          <input type="text" class="form-control" id="changeOtpCode" maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit code" required>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn text-white px-4" style="background-color: #083c34;" id="changeToStep3">Verify OTP</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Change Password Modal - Step 3: Enter New Password -->
+<div class="modal fade" id="changePasswordModalStep3" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Change Password - Step 3</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body px-4 pb-4">
+        <p class="text-muted mb-3">Enter your new password</p>
+        
+        <div class="alert alert-danger" id="changeStep3Error" style="display:none;"></div>
+
+        <div class="mb-3">
+          <label for="changeNewPassword" class="form-label fw-semibold">New Password</label>
+          <input type="password" class="form-control" id="changeNewPassword" placeholder="Enter new password" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="changeConfirmPassword" class="form-label fw-semibold">Confirm Password</label>
+          <input type="password" class="form-control" id="changeConfirmPassword" placeholder="Confirm new password" required>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn text-white px-4" style="background-color: #083c34;" id="changeFinalStep">Change Password</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Change Password Success Modal -->
+<div class="modal fade" id="changePasswordSuccess" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg text-center">
+      <div class="modal-body px-4 py-5">
+        <div class="mb-3">
+          <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+        </div>
+        <h5 class="fw-bold mb-2">Password Changed Successfully!</h5>
+        <p class="text-muted">Your password has been updated.</p>
+        <button type="button" class="btn text-white px-4 mt-3" style="background-color: #083c34;" id="changeGoSettings">Back to Settings</button>
+      </div>
     </div>
   </div>
 </div>
@@ -240,7 +316,6 @@ $currentUser = getCurrentUser();
 </div>
 
 <!-- ✅ Bootstrap JS and Script -->
-<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
   const clearBtn = document.getElementById('clearRecords');
@@ -282,7 +357,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
- <script src="settings.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="settings.js"></script>
 </body>
 </html>
