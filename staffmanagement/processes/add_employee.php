@@ -16,6 +16,7 @@ class EmployeeProcessor{
         'department' => ['required', 'string', 'max:100'],
         'position' => ['required', 'string', 'max:100'],
         'hire_date' => ['required', 'date', 'before_or_equal:today'],
+        'add_password' => ['optional', 'string', 'max:255'],
         'face_photos' => ['optional', 'json'],
         'schedule_data' => ['optional', 'json'],
         'designate_class' => ['optional', 'string', 'max:50'],
@@ -286,15 +287,24 @@ class EmployeeProcessor{
             $email = $this->validatedData['email'] ?? '';
             $default_profile_pic = 'assets/profile_pic/user.png';
             
-            // FIXED: Column name and added middle_name
+            // Use provided password or fall back to employee_id as default
+            $password = $this->validatedData['add_password'] ?? $this->validatedData['employee_id'];
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            
+            // Log password generation for debugging
+            $password_source = isset($this->validatedData['add_password']) ? 'custom password' : 'employee ID';
+            $this->logActivity('Password Generated', "Employee ID: {$this->validatedData['employee_id']}, Password set from {$password_source} (hashed)");
+            
+            // FIXED: Added employee_password column
             $stmt = $this->db->prepare("
                 INSERT INTO employees(
-                    employee_id, first_name, middle_name, last_name,
+                    employee_id, employee_password, first_name, middle_name, last_name,
                     email, phone, roles, department, position, hire_date, profile_photo
-                ) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+                ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
                 
-            $stmt->bind_param('sssssssssss',
+            $stmt->bind_param('ssssssssssss',
                 $this->validatedData['employee_id'],
+                $hashed_password,
                 $this->validatedData['first_name'],
                 $middle_name,
                 $this->validatedData['last_name'],
