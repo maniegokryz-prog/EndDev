@@ -75,9 +75,8 @@ function verifyAccount($conn) {
     
     $user = $result->fetch_assoc();
     
-    // Generate 6-digit OTP
-    $otp = sprintf("%06d", mt_rand(100000, 999999));
-    $expires_at = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+    // Generate OTP
+    $otp = str_pad(rand(100000, 999999), 6, '0', STR_PAD_LEFT);
     
     // Store OTP in database
     ensureOTPTable($conn);
@@ -88,11 +87,11 @@ function verifyAccount($conn) {
     $stmt->bind_param("s", $employee_id);
     $stmt->execute();
     
-    // Insert new OTP
+    // Insert new OTP (use NOW() + INTERVAL to avoid timezone issues)
     $sql = "INSERT INTO password_reset_otp (employee_id, otp, email, expires_at) 
-            VALUES (?, ?, ?, ?)";
+            VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $employee_id, $otp, $email, $expires_at);
+    $stmt->bind_param("sss", $employee_id, $otp, $email);
     $stmt->execute();
     
     // Send OTP via email

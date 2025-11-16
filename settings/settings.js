@@ -19,51 +19,208 @@ document.getElementById("employeeArchive").addEventListener("click", function() 
     window.location.href = "emploarc.php";
   });
 
-//changepass
+//changepass - OTP-based Password Change Flow
+let changeEmployeeIdGlobal = '';
+
 // Open modal when "Change Password" card is clicked
-  document.getElementById("changePassword").addEventListener("click", () => {
-    const modal = new bootstrap.Modal(document.getElementById("changePasswordModal"));
-    modal.show();
-  });
+document.getElementById("changePassword").addEventListener("click", () => {
+  const modal = new bootstrap.Modal(document.getElementById("changePasswordModal"));
+  modal.show();
+});
 
-  // Handle form submission
-  document.getElementById("changePasswordForm").addEventListener("submit", function(e) {
-    e.preventDefault(); // Prevent reload
+// Step 1: Send OTP to Email
+document.getElementById("changeToStep2").onclick = async function() {
+  const email = document.getElementById('changeEmail').value.trim();
+  const errorDiv = document.getElementById('changeStep1Error');
+  
+  if (!email) {
+    errorDiv.textContent = 'Please enter your email address';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    errorDiv.textContent = 'Please enter a valid email address';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  errorDiv.style.display = 'none';
+  this.disabled = true;
+  this.textContent = 'Sending OTP...';
+  
+  try {
+    const formData = new FormData();
+    formData.append('email', email);
+    
+    const response = await fetch('processes/change_password.php?action=send_otp', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      changeEmployeeIdGlobal = result.employee_id;
+      
+      // Show success message in Step 2
+      document.getElementById('changeStep2Success').textContent = 'OTP sent to ' + email;
+      document.getElementById('changeStep2Success').style.display = 'block';
+      
+      // Close step 1, open step 2
+      bootstrap.Modal.getInstance(document.getElementById("changePasswordModal")).hide();
+      new bootstrap.Modal(document.getElementById("changePasswordModalStep2")).show();
+    } else {
+      errorDiv.textContent = result.error || 'Failed to send OTP';
+      errorDiv.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Send OTP error:', error);
+    errorDiv.textContent = 'An error occurred. Please try again.';
+    errorDiv.style.display = 'block';
+  }
+  
+  this.disabled = false;
+  this.textContent = 'Send OTP';
+};
 
-    // Optional: Add password validation here before saving
+// Step 2: Verify OTP
+document.getElementById("changeToStep3").onclick = async function() {
+  const otp = document.getElementById('changeOtpCode').value.trim();
+  const errorDiv = document.getElementById('changeStep2Error');
+  
+  if (!otp || otp.length !== 6) {
+    errorDiv.textContent = 'Please enter a valid 6-digit OTP';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  errorDiv.style.display = 'none';
+  this.disabled = true;
+  this.textContent = 'Verifying...';
+  
+  try {
+    const formData = new FormData();
+    formData.append('employee_id', changeEmployeeIdGlobal);
+    formData.append('otp', otp);
+    
+    const response = await fetch('processes/change_password.php?action=verify_otp', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Close step 2, open step 3
+      bootstrap.Modal.getInstance(document.getElementById("changePasswordModalStep2")).hide();
+      new bootstrap.Modal(document.getElementById("changePasswordModalStep3")).show();
+    } else {
+      errorDiv.textContent = result.error || 'Invalid OTP';
+      errorDiv.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('OTP verification error:', error);
+    errorDiv.textContent = 'An error occurred. Please try again.';
+    errorDiv.style.display = 'block';
+  }
+  
+  this.disabled = false;
+  this.textContent = 'Verify OTP';
+};
 
-    // Close modal
-    const modalEl = document.getElementById("changePasswordModal");
-    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-    modalInstance.hide();
+// Step 3: Change Password
+document.getElementById("changeFinalStep").onclick = async function() {
+  const newPassword = document.getElementById('changeNewPassword').value;
+  const confirmPassword = document.getElementById('changeConfirmPassword').value;
+  const errorDiv = document.getElementById('changeStep3Error');
+  
+  if (!newPassword || !confirmPassword) {
+    errorDiv.textContent = 'Please fill in all fields';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  if (newPassword !== confirmPassword) {
+    errorDiv.textContent = 'Passwords do not match';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  if (newPassword.length < 6) {
+    errorDiv.textContent = 'Password must be at least 6 characters';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  errorDiv.style.display = 'none';
+  this.disabled = true;
+  this.textContent = 'Changing...';
+  
+  try {
+    const formData = new FormData();
+    formData.append('employee_id', changeEmployeeIdGlobal);
+    formData.append('new_password', newPassword);
+    formData.append('confirm_password', confirmPassword);
+    
+    const response = await fetch('processes/change_password.php?action=change_password', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Close step 3, show success modal
+      bootstrap.Modal.getInstance(document.getElementById("changePasswordModalStep3")).hide();
+      new bootstrap.Modal(document.getElementById("changePasswordSuccess")).show();
+      
+      // Clear form fields
+      document.getElementById('changeEmail').value = '';
+      document.getElementById('changeOtpCode').value = '';
+      document.getElementById('changeNewPassword').value = '';
+      document.getElementById('changeConfirmPassword').value = '';
+      document.getElementById('changeStep2Success').style.display = 'none';
+      changeEmployeeIdGlobal = '';
+    } else {
+      errorDiv.textContent = result.error || 'Password change failed';
+      errorDiv.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Password change error:', error);
+    errorDiv.textContent = 'An error occurred. Please try again.';
+    errorDiv.style.display = 'block';
+  }
+  
+  this.disabled = false;
+  this.textContent = 'Change Password';
+};
 
-    // ✅ Show success popup in the middle
-    showPopupMessage("Your password has been updated");
+// Redirect to settings after success
+document.getElementById("changeGoSettings").onclick = function() {
+  window.location.href = "settings.php";
+};
 
-    // Redirect back to settings.php after 2 seconds
-    setTimeout(() => {
-      window.location.href = "settings.php";
-    }, 2000);
-  });
-
-  // ✅ Centered popup function
-  function showPopupMessage(message) {
-    const popup = document.createElement("div");
-    popup.textContent = message;
-    popup.style.position = "fixed";
-    popup.style.top = "50%";
-    popup.style.left = "50%";
-    popup.style.transform = "translate(-50%, -50%)";
-    popup.style.backgroundColor = "#083c34";
-    popup.style.color = "white";
-    popup.style.padding = "15px 25px";
-    popup.style.borderRadius = "10px";
-    popup.style.fontWeight = "500";
-    popup.style.boxShadow = "0 3px 10px rgba(0,0,0,0.2)";
-    popup.style.zIndex = "2000";
-    document.body.appendChild(popup);
-
-    setTimeout(() => popup.remove(), 1500);}
+// ✅ Centered popup function
+function showPopupMessage(message) {
+  const popup = document.createElement("div");
+  popup.textContent = message;
+  popup.style.position = "fixed";
+  popup.style.top = "50%";
+  popup.style.left = "50%";
+  popup.style.transform = "translate(-50%, -50%)";
+  popup.style.backgroundColor = "#083c34";
+  popup.style.color = "white";
+  popup.style.padding = "15px 25px";
+  popup.style.borderRadius = "10px";
+  popup.style.fontWeight = "500";
+  popup.style.boxShadow = "0 3px 10px rgba(0,0,0,0.2)";
+  popup.style.zIndex = "2000";
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1500);
+}
 
 //privacy
  // When the "Privacy Policy/Terms" card is clicked
