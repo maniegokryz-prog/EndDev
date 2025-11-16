@@ -4,15 +4,24 @@
  * Handles login, logout, and session management
  */
 
-// Start session first (required for login/logout operations)
-session_start();
+// Start output buffering to catch any stray output
+ob_start();
+
+// Disable ALL error display to prevent breaking JSON output BEFORE any other code
+$GLOBALS['error_reporting_configured'] = true;
+error_reporting(0);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
+// Start session only if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    @session_start();
+}
 
 date_default_timezone_set('Asia/Manila');
 
-// Disable error display to prevent breaking JSON output
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
-ini_set('log_errors', 1);
+// Clear any output that might have been generated
+ob_clean();
 
 // Set JSON header
 header('Content-Type: application/json');
@@ -81,7 +90,7 @@ function handleLogin($conn) {
         $pass_result = $stmt_pass->get_result();
         $pass_data = $pass_result->fetch_assoc();
         
-        if (!password_verify($password, $pass_data['password_hash'])) {
+        if (empty($pass_data['password_hash']) || !password_verify($password, $pass_data['password_hash'])) {
             logLoginAttempt($conn, $employee_id, false, 'Invalid password (admin)');
             throw new Exception('Invalid credentials');
         }
@@ -145,7 +154,7 @@ function handleLogin($conn) {
     $user = $result->fetch_assoc();
     
     // Verify password (assuming passwords are hashed with password_hash)
-    if (!password_verify($password, $user['employee_password'])) {
+    if (empty($user['employee_password']) || !password_verify($password, $user['employee_password'])) {
         // Log failed attempt
         logLoginAttempt($conn, $employee_id, false, 'Invalid password');
         throw new Exception('Invalid credentials');
@@ -205,7 +214,7 @@ function handleLogin($conn) {
  * Handle user logout
  */
 function handleLogout() {
-    session_start();
+    // Session already started at the top of the file
     session_unset();
     session_destroy();
     
@@ -283,4 +292,7 @@ function logLoginAttempt($conn, $employee_id, $success, $message) {
     $stmt->bind_param("sisss", $employee_id, $success, $message, $ip_address, $user_agent);
     $stmt->execute();
 }
+
+// Flush output buffer
+ob_end_flush();
 ?>
