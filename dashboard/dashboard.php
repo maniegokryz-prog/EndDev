@@ -188,7 +188,7 @@ $currentUser = getCurrentUser();
 <!-- CALENDAR-->
 <div class="col-lg-6 col-md-12">
   <div class="card h-100 calendar-card" id="calendar-container">
-      <div class="d-flex align-items-center justify-content-between mb-2">
+      <div class="d-flex align-items-center justify-content-between mb-2" style="padding: 1.5rem;">
       <h6 id="cal-month-year" class="fw-bold mb-0" style="font-size: 2rem;">Month Year</h6>
       <div>
         <button id="cal-prev" class="btn btn-sm btn-outline-secondary me-1 px-2 py-1"

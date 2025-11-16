@@ -331,24 +331,16 @@ $schedules = $viewer->getSchedules();
   <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- Prevent caching -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- Bootstrap CSS (Local - Works Offline) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   
-  <!-- Bootstrap Icons (Local - Works Offline) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   
-  <!-- FullCalendar CSS (included in JS bundle) -->
-  <!-- Note: FullCalendar's index.global.min.js includes all CSS -->
-
-  <!-- Chart.js for Performance Metrics (Local - Works Offline) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-  <!-- Custom CSS with cache busting -->
   <link rel="stylesheet" href="staff.css?v=<?php echo time(); ?>">
   <link rel="stylesheet" href="../assets/css/styles.css?v=<?php echo time(); ?>">
     <style>
@@ -502,7 +494,6 @@ $schedules = $viewer->getSchedules();
   </div>
 </div>
 
-  <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
       <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
@@ -522,16 +513,12 @@ $schedules = $viewer->getSchedules();
 
   <div class="content pt-3" id="content">
   <div class="container-fluid"></div>
-<!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-<!-- PAGE CONTENT -->
 <div class="container-fluid p-4">
   <div class="row g-3">
 
-    <!-- LEFT: main card + metrics -->
     <div class="col-xl-8">
 
-      <!-- Staff card -->
-     <div class="card shadow-sm mb-4 staff-card">
+      <div class="card shadow-sm mb-4 staff-card" style="max-height: 400px;">
       
     <div class="header-bar d-flex align-items-center px-3 py-2">
       <i class="bi bi-arrow-left-circle fs-4 me-2" id="backBtn"></i>
@@ -576,8 +563,7 @@ $schedules = $viewer->getSchedules();
     </div>
   </div>
 
-    <!-- EDIT INFO MODAL -->
-<div class="modal fade" id="editInfoModal" tabindex="-1" aria-labelledby="editInfoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editInfoModal" tabindex="-1" aria-labelledby="editInfoModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content p-4">
       <div class="modal-header border-0">
@@ -681,7 +667,6 @@ $schedules = $viewer->getSchedules();
   </div>
 </div>
 
-   <!-- Save Success Modal (shown after editing and saving employee info) -->
    <div class="modal fade" id="saveSuccessModal" tabindex="-1" aria-hidden="true">
      <div class="modal-dialog modal-dialog-centered">
        <div class="modal-content p-4 text-center">
@@ -691,8 +676,7 @@ $schedules = $viewer->getSchedules();
      </div>
    </div>
 
-   <!-- 🔹 Confirm Removal Modal -->
-<div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true">
+   <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4">
       <h5 class="fw-bold mb-3 text-danger text-center">Confirm Employee Removal</h5>
@@ -715,7 +699,6 @@ $schedules = $viewer->getSchedules();
   </div>
 </div>
 
-<!-- 🔹 Success Remove Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -727,7 +710,6 @@ $schedules = $viewer->getSchedules();
   </div>
 </div>
 
-<!-- 🔹 Error Remove Modal -->
 <div class="modal fade" id="errorRemoveModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -739,7 +721,6 @@ $schedules = $viewer->getSchedules();
   </div>
         </div>
 
-        <!-- Attendance Success Modal -->
         <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
@@ -749,7 +730,6 @@ $schedules = $viewer->getSchedules();
           </div>
         </div>
 
-        <!-- Attendance Error Modal -->
         <div class="modal fade" id="attendanceErrorModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
@@ -916,11 +896,8 @@ $schedules = $viewer->getSchedules();
 });
 </script>
 
-   <!-- RIGHT COLUMN (Calendar, Add Manual, Export DTR) -->
-    <div class="col-xl-4">
-      <!--add leave-->
-
-         <div class="container py-4">
+   <div class="col-xl-4">
+      <div class="container py-4">
           <div class="row justify-content-end">
             <div class="col-xl-4 col-lg-5 col-md-6 px-2 scheduled-leave-card">
               <div class="card shadow-sm border-0">
@@ -931,17 +908,14 @@ $schedules = $viewer->getSchedules();
                     <button class="btn btn-success btn-sml" data-bs-toggle="modal" data-bs-target="#addLeaveModal">ADD</button>
                   </div>
 
-                  <!-- Leave Entries -->
                   <div id="leaveList"  class="leave-list-container mt-3">
-                    <!-- Entries will be added here -->
-                  </div>
+                    </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- MODAL 1: Add Scheduled Leave -->
         <div class="modal fade" id="addLeaveModal" tabindex="-1" aria-labelledby="addLeaveLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -970,7 +944,6 @@ $schedules = $viewer->getSchedules();
                 <label class="form-label">Reason:</label>
                 <textarea class="form-control mb-3" id="leaveReason" rows="3" placeholder="Briefly explain your reason for leave"></textarea>
                 
-                <!-- Admin-only options -->
                 <div class="form-check mb-2" id="adminOptionsDiv" style="display: none;">
                   <input class="form-check-input" type="checkbox" id="autoApprove">
                   <label class="form-check-label" for="autoApprove">
@@ -987,7 +960,6 @@ $schedules = $viewer->getSchedules();
           </div>
         </div>
 
-          <!-- MODAL 1.5: Confirm Leave Details -->
           <div class="modal fade" id="leaveDetailsModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content text-center p-4">
@@ -1004,8 +976,7 @@ $schedules = $viewer->getSchedules();
           </div>
 
 
-          <!-- MODAL 2: Confirmation -->
-        <div class="modal fade" id="confirmModal" tabindex="-1">
+          <div class="modal fade" id="confirmModal" tabindex="-1">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-center p-4">
               <div class="modal-body">
@@ -1020,7 +991,6 @@ $schedules = $viewer->getSchedules();
           </div>
         </div>
 
-        <!-- Leave Validation Error Modal -->
         <div class="modal fade" id="leaveValidationErrorModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
@@ -1033,7 +1003,6 @@ $schedules = $viewer->getSchedules();
           </div>
         </div>
 
-        <!-- Leave Success Modal -->
         <div class="modal fade" id="leaveSuccessModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
@@ -1046,7 +1015,6 @@ $schedules = $viewer->getSchedules();
           </div>
         </div>
 
-        <!-- Leave Delete Confirmation Modal -->
         <div class="modal fade" id="leaveDeleteConfirmModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
@@ -1060,7 +1028,6 @@ $schedules = $viewer->getSchedules();
           </div>
         </div>
 
-        <!-- Leave Approve Confirmation Modal -->
         <div class="modal fade" id="leaveApproveConfirmModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
@@ -1516,7 +1483,6 @@ $schedules = $viewer->getSchedules();
           }
           </script>
 
-      <!-- Calendar with Date Range Picker -->
       <div class="card shadow-sm mb-3">
       <div class="card-header d-flex justify-content-between align-items-center">
         <button class="btn btn-sm btn-outline-secondary" id="prevMonth"><i class="bi bi-chevron-left"></i></button>
@@ -1697,13 +1663,11 @@ $schedules = $viewer->getSchedules();
         });
 
     </script> 
-      <!-- Add Manual Attendance -->
       <div class="d-grid mb-4" style="margin-top: 10px !important;">
         <button class="btn btn-success btn-sm" id="openAttendance">Add Manual Attendance</button>
       </div>
 
-         <!-- 🔹 Manual Attendance Modal -->
-        <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
+         <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content p-3">
               <div class="modal-header">
@@ -2095,9 +2059,8 @@ $schedules = $viewer->getSchedules();
   }); // End DOMContentLoaded
 </script>
 
-      <!-- Export DTR -->
       <div class="card" style="margin-top: 0 !important;">
-        <div class="card-body">
+        <div class="card-body" style="min-height: 800px; max-height: 800px; overflow-y: auto;">
           <button class="btn btn-success w-100 mb-3" id="exportDtrBtn" onclick="exportDTR()">Export DTR</button>
 
           <div class="d-flex justify-content-between align-items-center mb-2">
@@ -2118,7 +2081,6 @@ $schedules = $viewer->getSchedules();
         </div>
       </div>
 
-      <!-- Edit Time Out Modal -->
       <div class="modal fade" id="editTimeOutModal" tabindex="-1" aria-labelledby="editTimeOutModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
@@ -2149,7 +2111,6 @@ $schedules = $viewer->getSchedules();
         </div>
       </div>
 
-      <!-- Confirm Edit Modal -->
       <div class="modal fade" id="confirmEditModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
@@ -2180,7 +2141,6 @@ $schedules = $viewer->getSchedules();
         </div>
       </div>
 
-      <!-- Success Edit Modal -->
       <div class="modal fade" id="successEditModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
@@ -2603,8 +2563,7 @@ $schedules = $viewer->getSchedules();
   </div>
 </div> 
 
-<!-- PERFORMANCE METRICS -->
-<div class="card mb-3 metrics-card mt-3">
+<div class="card mb-3 metrics-card" style="margin-top: -1100px !important;">
   <div class="card-header d-flex align-items-center justify-content-between flex-wrap">
     <strong>Performance Metrics</strong>
     <div class="d-flex gap-2 mt-2 mt-sm-0">
@@ -2805,7 +2764,6 @@ document.getElementById('selectYear').addEventListener('change', loadPerformance
 document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 </script>
 
-<!-- SCHEDULE SECTION -->
 <div class="card mb-3 schedule-card">
   <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
     <strong>Schedule</strong>
@@ -2813,15 +2771,12 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
       Edit Schedule
     </button>
   </div>
-  <!-- Visual Schedule section -->
-       <div class="info-section">
+  <div class="info-section">
         <?php if (!empty($schedules)): ?>
                 <div class="calendar-wrapper">
                     <div class="schedule-calendar" id="employee-schedule-calendar">
-                        <!-- Time slots header -->
                         <div class="time-header"></div>
                         
-                        <!-- Day headers -->
                         <div class="day-header" data-day="Monday">Mon</div>
                         <div class="day-header" data-day="Tuesday">Tue</div>
                         <div class="day-header" data-day="Wednesday">Wed</div>
@@ -2830,8 +2785,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                         <div class="day-header" data-day="Saturday">Sat</div>
                         <div class="day-header" data-day="Sunday">Sun</div>
                         
-                        <!-- Calendar grid will be populated by JavaScript -->
-                    </div>
+                        </div>
                 </div>
             <script>
                 // Schedule data from PHP - convert to format matching index.php
@@ -3078,7 +3032,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 
 </div>
 
-<!-- Edit Schedule Modal -->
 <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered edit-schedule-modal-dialog">
     <div class="modal-content border-0 shadow-sm">
@@ -3089,7 +3042,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 
       <div class="modal-body">
         <form id="editScheduleForm" action="processes/update_employee_schedule.php" method="POST">
-            <!-- Hidden fields for employee identification -->
             <input type="hidden" name="employee_id" value="<?php echo htmlspecialchars($employee['employee_id']); ?>">
             <input type="hidden" name="first_name" value="<?php echo htmlspecialchars($employee['first_name']); ?>">
             <input type="hidden" name="last_name" value="<?php echo htmlspecialchars($employee['last_name']); ?>">
@@ -3151,7 +3103,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                     </div>
                 </div>
 
-                <!-- Weekly Schedule Calendar -->
                 <div class="schedule-calendar-section">
                     <div class="schedule-header">
                         <h3>Schedule</h3>
@@ -3161,10 +3112,8 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                     </div>
                     <div class="calendar-wrapper">
                         <div class="schedule-calendar" id="edit-schedule-calendar">
-                            <!-- Time slots header -->
                             <div class="time-header"></div>
                             
-                            <!-- Day headers -->
                             <div class="day-header" data-day="Monday">Mon</div>
                             <div class="day-header" data-day="Tuesday">Tue</div>
                             <div class="day-header" data-day="Wednesday">Wed</div>
@@ -3173,13 +3122,11 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                             <div class="day-header" data-day="Saturday">Sat</div>
                             <div class="day-header" data-day="Sunday">Sun</div>
                             
-                            <!-- Time slots and schedule cells -->
                             <div id="calendar-grid"></div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Hidden input for schedule data -->
                 <input type="hidden" name="schedule_data" id="schedule_data">
                 
             </div>
@@ -3236,8 +3183,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- Edit Schedule Notification Modals -->
-<!-- 1. No Working Day Selected Modal -->
 <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3247,7 +3192,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- 2. Schedule Missing Time Modal -->
 <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3257,7 +3201,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- 3. Invalid Time Order Modal -->
 <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3267,7 +3210,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- 4. Faculty Missing Fields Modal -->
 <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3277,7 +3219,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- 5. Schedule Added Success Modal -->
 <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3287,7 +3228,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- 6. Schedule Updated Success Modal -->
 <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3297,7 +3237,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- 7. Clear All Schedules Confirm Modal -->
 <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3311,7 +3250,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- 8. Clear All Schedules Success Modal (No OK button, auto-close) -->
 <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3321,7 +3259,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- 9. Schedule Saved Success Modal -->
 <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3331,7 +3268,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!-- 10. Schedule No Data Modal -->
 <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3341,11 +3277,8 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-<!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-<!-- Bootstrap JS (Local - Works Offline) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Custom Scripts -->
 <script src="staff.js"></script>
 <script>
     // --- JS: Populate calendar with existing schedules for the edit modal ---
@@ -3387,8 +3320,3 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 </script>
 </body>
 </html>
-
-
-
-
-<!-- TODO FIX THE SCHEDULE CALENDAR GRID -->
