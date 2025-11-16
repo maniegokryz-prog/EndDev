@@ -337,16 +337,16 @@ $schedules = $viewer->getSchedules();
   <meta http-equiv="Expires" content="0">
 
   <!-- Bootstrap CSS (Local - Works Offline) -->
-  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   
   <!-- Bootstrap Icons (Local - Works Offline) -->
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   
   <!-- FullCalendar CSS (included in JS bundle) -->
   <!-- Note: FullCalendar's index.global.min.js includes all CSS -->
 
   <!-- Chart.js for Performance Metrics (Local - Works Offline) -->
-  <script src="../assets/vendor/chartjs/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <!-- Custom CSS with cache busting -->
   <link rel="stylesheet" href="staff.css?v=<?php echo time(); ?>">
@@ -3231,7 +3231,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 <!-- Bootstrap JS (Local - Works Offline) -->
-<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- Custom Scripts -->
 <script src="staff.js"></script>

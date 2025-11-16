@@ -16,9 +16,9 @@ $currentUser = getCurrentUser();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Bootstrap CSS -->
-  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="dashboard.css">
@@ -211,8 +211,6 @@ $currentUser = getCurrentUser();
         </tbody>
     </table>
 
-<script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
 <script>
   let currentMonth, currentYear;
 
@@ -336,7 +334,7 @@ $currentUser = getCurrentUser();
   </div> <!-- container-fluid -->
   </div> <!-- content -->
 
-  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="dashboard.js"></script>
 
 
