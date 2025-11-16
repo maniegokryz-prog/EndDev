@@ -1,10 +1,11 @@
 <?php
-// Protect this page - require authentication and admin role
+// Protect this page - require authentication
 require_once '../auth_guard.php';
-requireAdmin(); // Only admins can access settings
+require_once '../navigation.php';
 
 // Get current user info
 $currentUser = getCurrentUser();
+$isAdmin = isAdmin();
 ?>
     <!DOCTYPE html>
 <html lang="en">
@@ -54,11 +55,7 @@ $currentUser = getCurrentUser();
       <small class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
     </div>
     <nav class="nav flex-column px-2">
-      <a class="nav-link active" href="../dashboard/dashboard.php"><i class="bi bi-house-door me-2"></i> Dashboard</a>
-      <a class="nav-link" href="../attendancerep/attendancerep.php"><i class="bi bi-file-earmark-bar-graph me-2"></i> Attendance Reports</a>
-      <a class="nav-link" href="../staffmanagement/staff.php"><i class="bi bi-people me-2"></i> Staff Management</a>
-      <a class="nav-link" href="../settings/settings.php"><i class="bi bi-gear me-2"></i> Settings</a>
-      <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-left me-2"></i> Logout</a>
+      <?php renderNavigation('Settings'); ?>
     </nav>
   </div>
 <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -89,6 +86,7 @@ $currentUser = getCurrentUser();
         </div>
       </div>
 
+      <?php if ($isAdmin): ?>
       <div class="col-6 col-md-3">
   <div class="setting-card" id="employeeArchive" style="cursor: pointer;">
     <div class="setting-icon">
@@ -97,6 +95,7 @@ $currentUser = getCurrentUser();
     <h6>Employee Archive</h6>
   </div>
 </div>
+      <?php endif; ?>
 
   <!-- ✅ Change Password Modal -->
 <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordLabel" aria-hidden="true">
