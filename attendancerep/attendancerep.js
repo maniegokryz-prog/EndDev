@@ -15,17 +15,20 @@ menuBtn.addEventListener('click', () => {
 //----------------------------------------------------------------------------------------------//
 
 // Filter handlers
+document.getElementById("dateFilter").addEventListener("change", applyFilters);
 document.getElementById("roleFilter").addEventListener("change", applyFilters);
 document.getElementById("deptFilter").addEventListener("change", applyFilters);
 document.getElementById("searchBox").addEventListener("input", applyFilters);
 
 function applyFilters() {
+  const date = document.getElementById("dateFilter").value;
   const role = document.getElementById("roleFilter").value;
   const dept = document.getElementById("deptFilter").value;
   const search = document.getElementById("searchBox").value;
   
   // Build query string
   const params = new URLSearchParams();
+  if (date) params.append('date', date);
   if (role) params.append('role', role);
   if (dept) params.append('department', dept);
   if (search) params.append('search', search);

@@ -5,6 +5,9 @@ require_once '../navigation.php';
 
 require '../db_connection.php';
 
+// Set timezone to Manila
+date_default_timezone_set('Asia/Manila');
+
 // Get current user info
 $currentUser = getCurrentUser();
 
@@ -19,8 +22,8 @@ class AttendanceReportViewer {
     
     public function loadTodayAttendance($filters = []) {
         try {
-            // Get current date
-            $currentDate = date('Y-m-d');
+            // Get date from filters or use current date
+            $currentDate = !empty($filters['date']) ? $filters['date'] : date('Y-m-d');
             
             // Build query to fetch daily attendance with employee details
             $query = "SELECT 
@@ -250,13 +253,15 @@ if ($roleResult) {
 $filters = [
     'role' => $_GET['role'] ?? '',
     'department' => $_GET['department'] ?? '',
-    'search' => $_GET['search'] ?? ''
+    'search' => $_GET['search'] ?? '',
+    'date' => $_GET['date'] ?? date('Y-m-d') // Default to today in Manila timezone
 ];
 
-// Load today's attendance records
+// Load attendance records for selected date
 $loadSuccess = $viewer->loadTodayAttendance($filters);
 $attendanceRecords = $viewer->getAttendanceRecords();
-$currentDate = date('F d, Y'); // Format: November 11, 2025
+$selectedDate = $filters['date'];
+$currentDate = date('F d, Y', strtotime($selectedDate)); // Format: November 11, 2025
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -266,6 +271,13 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Prevent caching -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
+  <!-- Version: 2.0 - Date Picker Added -->
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -273,7 +285,7 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Custom CSS -->
-<link rel="stylesheet" href="attendancerep.css">
+<link rel="stylesheet" href="attendancerep.css?v=<?php echo time(); ?>">
 </head>
 
 <body>
@@ -309,13 +321,21 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="fw-bold display-4 text-dark">Attendance Reports</h2>
       <div class="d-flex align-items-center gap-3">
-        <span class="text-muted">Today: <strong><?php echo $currentDate; ?></strong></span>
+        <span class="text-muted">Selected Date: <strong><?php echo $currentDate; ?></strong></span>
         <a href="exporep.php" class="btn btn-warning">Batch Export DTR</a>
       </div>
   </div>
 
   <div class="row g-3 mb-4">
+    <div class="col-md-2">
+      <label for="dateFilter" class="form-label small text-muted">Select Date</label>
+      <input type="date" class="form-control" id="dateFilter" 
+             value="<?php echo htmlspecialchars($selectedDate, ENT_QUOTES, 'UTF-8'); ?>"
+             max="<?php echo date('Y-m-d'); ?>"
+             title="Select date to view attendance">
+    </div>
     <div class="col-md-3">
+      <label for="roleFilter" class="form-label small text-muted">Role</label>
       <select class="form-select" id="roleFilter">
         <option value="">All Roles</option>
         <?php foreach ($roles as $role): ?>
@@ -326,7 +346,8 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
         <?php endforeach; ?>
       </select>
     </div>
-    <div class="col-md-5">
+    <div class="col-md-4">
+      <label for="deptFilter" class="form-label small text-muted">Department</label>
       <select class="form-select" id="deptFilter">
         <option value="">All Departments</option>
         <?php foreach ($departments as $department): ?>
@@ -337,7 +358,8 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
         <?php endforeach; ?>
       </select>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
+      <label for="searchBox" class="form-label small text-muted">Search</label>
       <input type="text" id="searchBox" class="form-control" placeholder="Search by name or ID" 
              value="<?php echo htmlspecialchars($filters['search'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
     </div>
@@ -362,7 +384,7 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
         <tr>
           <td colspan="7" class="text-center py-4 text-muted">
             <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-            No attendance records found for today
+            No attendance records found for <?php echo $currentDate; ?>
           </td>
         </tr>
         <?php else: ?>
@@ -400,6 +422,6 @@ $currentDate = date('F d, Y'); // Format: November 11, 2025
 
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
- <script src="attendancerep.js"></script>
+ <script src="attendancerep.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
