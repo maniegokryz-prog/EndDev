@@ -1,5 +1,9 @@
 <?php
 require '../../db_connection.php';
+// Set the maximum execution time to 5 minutes (300 seconds) 
+ini_set('max_execution_time', 60); 
+// You can also use this function, which does the same thing: //set_time_limit(300);
+
 
 class EmployeeProcessor{
     private $db;

@@ -396,7 +396,16 @@ try {
             <!-- Submit -->
             <input type="submit" value="Add Employee" id="submit-btn" disabled>
         </form>
-    <!-- JavaScript Modules with cache busting -->
+    <!-- Pass PHP data to JavaScript -->
+        <script>
+            // Make PHP data available to JavaScript
+            window.existingRoles = <?php echo json_encode($existing_roles); ?>;
+            window.existingDepartments = <?php echo json_encode($existing_departments); ?>;
+            window.existingClasses = <?php echo json_encode($existing_classes); ?>;
+            window.existingSubjects = <?php echo json_encode($existing_subjects); ?>;
+            window.existingRooms = <?php echo json_encode($existing_rooms); ?>;
+        </script>
+        <!-- JavaScript Modules with cache busting -->
         <script src="../assets/js/face-detection.js?v=<?php echo time(); ?>"></script>
         <script src="../assets/js/camera-controller.js?v=<?php echo time(); ?>"></script>
         <script src="../assets/js/face-registration-app.js?v=<?php echo time(); ?>"></script>

@@ -451,6 +451,436 @@ class EmployeeIDValidator {
 }
 
 // =========================
+// EmailValidator Class
+// =========================
+
+/**
+ * EmailValidator
+ * Validates email input asynchronously, shows status messages, and updates input styling.
+ * Usage: new EmailValidator()
+ */
+class EmailValidator {
+    constructor() {
+        this.validationTimeout = null;
+        this.lastValidatedEmail = '';
+        this.isValidating = false;
+        this.validationDelay = 800; // ms
+        this.init();
+    }
+
+    /**
+     * Initialize validator UI and events.
+     */
+    init() {
+        const emailInput = document.getElementById('email');
+        if (!emailInput) return;
+        this.createValidationUI(emailInput);
+        emailInput.addEventListener('input', (e) => this.handleInput(e));
+        emailInput.addEventListener('blur', (e) => this.handleBlur(e));
+        emailInput.addEventListener('focus', (e) => this.handleFocus(e));
+    }
+
+    /**
+     * Create validation message container after input.
+     * @param {HTMLElement} input
+     */
+    createValidationUI(input) {
+        const validationMsg = document.createElement('div');
+        validationMsg.id = 'email-validation';
+        validationMsg.className = 'validation-message';
+        validationMsg.style.cssText = `
+            margin-top: 5px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+            display: none;
+            transition: all 0.3s ease;
+        `;
+        input.parentNode.insertBefore(validationMsg, input.nextSibling);
+    }
+
+    /**
+     * Handle input event for validation.
+     * @param {Event} e
+     */
+    handleInput(e) {
+        const value = e.target.value.trim();
+        if (this.validationTimeout) clearTimeout(this.validationTimeout);
+        if (!value) {
+            this.resetValidationUI(e.target);
+            return;
+        }
+        
+        // Check basic email format first
+        if (!this.isValidEmailFormat(value)) {
+            this.showValidationMessage('error', '✗ Invalid email format', e.target);
+            this.setInputValidationState(e.target, 'invalid');
+            return;
+        }
+        
+        this.showValidationMessage('checking', 'Checking availability...', e.target);
+        this.validationTimeout = setTimeout(() => {
+            this.validateEmail(value, e.target);
+        }, this.validationDelay);
+    }
+
+    /**
+     * Handle blur event for validation.
+     * @param {Event} e
+     */
+    handleBlur(e) {
+        const value = e.target.value.trim();
+        if (value && value !== this.lastValidatedEmail) {
+            if (this.validationTimeout) clearTimeout(this.validationTimeout);
+            if (this.isValidEmailFormat(value)) {
+                this.validateEmail(value, e.target);
+            }
+        }
+    }
+
+    /**
+     * Handle focus event to clear messages.
+     * @param {Event} e
+     */
+    handleFocus(e) {
+        const msgContainer = document.getElementById('email-validation');
+        if (msgContainer && msgContainer.style.display === 'none') {
+            msgContainer.style.display = 'none';
+        }
+    }
+
+    /**
+     * Check if email format is valid
+     * @param {string} email
+     * @returns {boolean}
+     */
+    isValidEmailFormat(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    /**
+     * Validate email via AJAX.
+     * @param {string} email
+     * @param {HTMLElement} inputElement
+     */
+    async validateEmail(email, inputElement) {
+        if (this.isValidating || email === this.lastValidatedEmail) return;
+        this.isValidating = true;
+        try {
+            const csrfToken = document.querySelector('input[name="csrf_token"]')?.value;
+            if (!csrfToken) throw new Error('Security token not found on page');
+            const requestData = { email: email, csrf_token: csrfToken };
+            const response = await fetch('processes/validate_email.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(requestData)
+            });
+            const responseText = await response.text();
+            if (!response.ok) {
+                let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                try {
+                    const errorData = JSON.parse(responseText);
+                    if (errorData.message) errorMessage = errorData.message;
+                } catch (e) {}
+                throw new Error(errorMessage);
+            }
+            const result = JSON.parse(responseText);
+            if (result.success && result.available) {
+                this.showValidationMessage('success', '✓ Email is available', inputElement);
+                this.setInputValidationState(inputElement, 'valid');
+            } else if (!result.available) {
+                this.showValidationMessage('error', '✗ Email is already in use', inputElement);
+                this.setInputValidationState(inputElement, 'invalid');
+            } else {
+                this.showValidationMessage('error', result.message || 'Validation failed', inputElement);
+                this.setInputValidationState(inputElement, 'invalid');
+            }
+            this.lastValidatedEmail = email;
+        } catch (error) {
+            if (error.message.includes('429')) {
+                this.showValidationMessage('warning', '⚠ Too many requests. Please wait a moment.', inputElement);
+            } else if (error.message.includes('403')) {
+                this.showValidationMessage('error', '✗ Security token expired. Refreshing page...', inputElement);
+                setTimeout(() => { window.location.reload(); }, 2000);
+            } else {
+                this.showValidationMessage('warning', '⚠ Unable to verify email availability. Please try again.', inputElement);
+            }
+            this.setInputValidationState(inputElement, 'warning');
+        } finally {
+            this.isValidating = false;
+        }
+    }
+
+    /**
+     * Show validation message below input.
+     * @param {'success'|'error'|'warning'|'checking'} type
+     * @param {string} message
+     * @param {HTMLElement} inputElement
+     */
+    showValidationMessage(type, message, inputElement) {
+        const msgContainer = document.getElementById('email-validation');
+        if (!msgContainer) return;
+        msgContainer.textContent = message;
+        msgContainer.style.display = 'block';
+        switch (type) {
+            case 'success':
+                msgContainer.style.cssText += 'background: #d4edda; color: #155724; border-left: 4px solid #28a745;';
+                break;
+            case 'error':
+                msgContainer.style.cssText += 'background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545;';
+                break;
+            case 'warning':
+                msgContainer.style.cssText += 'background: #fff3cd; color: #856404; border-left: 4px solid #ffc107;';
+                break;
+            case 'checking':
+                msgContainer.style.cssText += 'background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8;';
+                break;
+        }
+    }
+
+    /**
+     * Set input border and class based on validation state.
+     * @param {HTMLElement} inputElement
+     * @param {'valid'|'invalid'|'warning'|'default'} state
+     */
+    setInputValidationState(inputElement, state) {
+        inputElement.classList.remove('input-valid', 'input-invalid', 'input-warning');
+        switch (state) {
+            case 'valid':
+                inputElement.classList.add('input-valid');
+                inputElement.style.borderColor = '#28a745';
+                break;
+            case 'invalid':
+                inputElement.classList.add('input-invalid');
+                inputElement.style.borderColor = '#dc3545';
+                break;
+            case 'warning':
+                inputElement.classList.add('input-warning');
+                inputElement.style.borderColor = '#ffc107';
+                break;
+            default:
+                inputElement.style.borderColor = '';
+        }
+    }
+
+    /**
+     * Reset validation UI to default.
+     * @param {HTMLElement} inputElement
+     */
+    resetValidationUI(inputElement) {
+        const msgContainer = document.getElementById('email-validation');
+        if (msgContainer) msgContainer.style.display = 'none';
+        this.setInputValidationState(inputElement, 'default');
+        this.lastValidatedEmail = '';
+    }
+}
+
+// =========================
+// PasswordValidator Class
+// =========================
+
+/**
+ * PasswordValidator
+ * Validates password strength and requirements, shows status messages.
+ * Usage: new PasswordValidator()
+ */
+class PasswordValidator {
+    constructor() {
+        this.validationTimeout = null;
+        this.isValidating = false;
+        this.validationDelay = 500; // ms
+        this.init();
+    }
+
+    /**
+     * Initialize validator UI and events.
+     */
+    init() {
+        const passwordInput = document.getElementById('add_password');
+        if (!passwordInput) return;
+        this.createValidationUI(passwordInput);
+        passwordInput.addEventListener('input', (e) => this.handleInput(e));
+        passwordInput.addEventListener('blur', (e) => this.handleBlur(e));
+    }
+
+    /**
+     * Create validation message container after input.
+     * @param {HTMLElement} input
+     */
+    createValidationUI(input) {
+        const validationMsg = document.createElement('div');
+        validationMsg.id = 'password-validation';
+        validationMsg.className = 'validation-message';
+        validationMsg.style.cssText = `
+            margin-top: 5px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+            display: none;
+            transition: all 0.3s ease;
+        `;
+        
+        // Find the small helper text and insert after it
+        const helperText = input.parentNode.parentNode.querySelector('small');
+        if (helperText) {
+            helperText.parentNode.insertBefore(validationMsg, helperText.nextSibling);
+        } else {
+            input.parentNode.insertBefore(validationMsg, input.nextSibling);
+        }
+    }
+
+    /**
+     * Handle input event for validation.
+     * @param {Event} e
+     */
+    handleInput(e) {
+        const value = e.target.value;
+        if (this.validationTimeout) clearTimeout(this.validationTimeout);
+        if (!value || value === 'defaultpassword') {
+            this.resetValidationUI(e.target);
+            return;
+        }
+        
+        this.validationTimeout = setTimeout(() => {
+            this.validatePassword(value, e.target);
+        }, this.validationDelay);
+    }
+
+    /**
+     * Handle blur event for validation.
+     * @param {Event} e
+     */
+    handleBlur(e) {
+        const value = e.target.value;
+        if (value && value !== 'defaultpassword') {
+            if (this.validationTimeout) clearTimeout(this.validationTimeout);
+            this.validatePassword(value, e.target);
+        }
+    }
+
+    /**
+     * Validate password via AJAX.
+     * @param {string} password
+     * @param {HTMLElement} inputElement
+     */
+    async validatePassword(password, inputElement) {
+        if (this.isValidating) return;
+        this.isValidating = true;
+        try {
+            const csrfToken = document.querySelector('input[name="csrf_token"]')?.value;
+            if (!csrfToken) throw new Error('Security token not found on page');
+            const requestData = { password: password, csrf_token: csrfToken };
+            const response = await fetch('processes/validate_password.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(requestData)
+            });
+            const responseText = await response.text();
+            if (!response.ok) {
+                let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                try {
+                    const errorData = JSON.parse(responseText);
+                    if (errorData.message) errorMessage = errorData.message;
+                } catch (e) {}
+                throw new Error(errorMessage);
+            }
+            const result = JSON.parse(responseText);
+            if (result.success && result.valid) {
+                const strength = result.strength || 'medium';
+                const strengthLabel = strength === 'strong' ? '💪 Strong' : 
+                                    strength === 'medium' ? '👍 Medium' : '⚠ Weak';
+                this.showValidationMessage('success', `✓ ${strengthLabel} password`, inputElement);
+                this.setInputValidationState(inputElement, 'valid');
+            } else if (result.success && !result.valid) {
+                this.showValidationMessage('error', `✗ ${result.message}`, inputElement);
+                this.setInputValidationState(inputElement, 'invalid');
+            } else {
+                this.showValidationMessage('error', result.message || 'Validation failed', inputElement);
+                this.setInputValidationState(inputElement, 'invalid');
+            }
+        } catch (error) {
+            if (error.message.includes('403')) {
+                this.showValidationMessage('error', '✗ Security token expired. Refreshing page...', inputElement);
+                setTimeout(() => { window.location.reload(); }, 2000);
+            } else {
+                this.showValidationMessage('warning', '⚠ Unable to verify password. Please try again.', inputElement);
+            }
+            this.setInputValidationState(inputElement, 'warning');
+        } finally {
+            this.isValidating = false;
+        }
+    }
+
+    /**
+     * Show validation message below input.
+     * @param {'success'|'error'|'warning'} type
+     * @param {string} message
+     * @param {HTMLElement} inputElement
+     */
+    showValidationMessage(type, message, inputElement) {
+        const msgContainer = document.getElementById('password-validation');
+        if (!msgContainer) return;
+        msgContainer.textContent = message;
+        msgContainer.style.display = 'block';
+        switch (type) {
+            case 'success':
+                msgContainer.style.cssText += 'background: #d4edda; color: #155724; border-left: 4px solid #28a745; display: block;';
+                break;
+            case 'error':
+                msgContainer.style.cssText += 'background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; display: block;';
+                break;
+            case 'warning':
+                msgContainer.style.cssText += 'background: #fff3cd; color: #856404; border-left: 4px solid #ffc107; display: block;';
+                break;
+        }
+    }
+
+    /**
+     * Set input border and class based on validation state.
+     * @param {HTMLElement} inputElement
+     * @param {'valid'|'invalid'|'warning'|'default'} state
+     */
+    setInputValidationState(inputElement, state) {
+        inputElement.classList.remove('input-valid', 'input-invalid', 'input-warning');
+        switch (state) {
+            case 'valid':
+                inputElement.classList.add('input-valid');
+                inputElement.style.borderColor = '#28a745';
+                break;
+            case 'invalid':
+                inputElement.classList.add('input-invalid');
+                inputElement.style.borderColor = '#dc3545';
+                break;
+            case 'warning':
+                inputElement.classList.add('input-warning');
+                inputElement.style.borderColor = '#ffc107';
+                break;
+            default:
+                inputElement.style.borderColor = '';
+        }
+    }
+
+    /**
+     * Reset validation UI to default.
+     * @param {HTMLElement} inputElement
+     */
+    resetValidationUI(inputElement) {
+        const msgContainer = document.getElementById('password-validation');
+        if (msgContainer) msgContainer.style.display = 'none';
+        this.setInputValidationState(inputElement, 'default');
+    }
+}
+
+// =========================
 // Faculty Field Toggle System
 // =========================
 
@@ -619,11 +1049,19 @@ function initializeFacultyFieldToggle() {
  * Initializes all UI components when DOM is ready.
  * - CustomDropdowns for roles, department, class, subject, room
  * - EmployeeIDValidator
+ * - EmailValidator
+ * - PasswordValidator
  * - FacultyFieldToggle
  */
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Employee ID Validator
     new EmployeeIDValidator();
+    
+    // Initialize Email Validator
+    new EmailValidator();
+    
+    // Initialize Password Validator
+    new PasswordValidator();
 
     // Get input elements
     const rolesInput = document.getElementById('roles');
@@ -637,44 +1075,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // CustomDropdowns for each field
     if (rolesInput) {
-        // Get roles options from PHP
-        const rolesOptions = [
+        // Get roles options from PHP, merge with defaults
+        const defaultRoles = [
             'Administrator',
-            'Faculty_Member',
-            'Non-Teaching_Personnel'
-            // Additional roles injected by PHP
-            // ...existing code...
+            'Faculty Member',
+            'Non Teaching Staff'
         ];
-        new CustomDropdown(rolesInput, rolesOptions);
+        const existingRoles = window.existingRoles || [];
+        
+        // Combine defaults with existing roles, remove duplicates
+        const allRoles = [...new Set([...defaultRoles, ...existingRoles])];
+        console.log('Role options loaded:', allRoles);
+        
+        new CustomDropdown(rolesInput, allRoles);
     }
     if (departmentInput) {
-        const departmentOptions = [
-            // ...existing code...
-        ];
+        // Get department options from PHP
+        const departmentOptions = window.existingDepartments || [];
+        console.log('Department options loaded:', departmentOptions);
         new CustomDropdown(departmentInput, departmentOptions);
     }
     if (classInput) {
-        const classOptions = [
-            // ...existing code...
-        ];
+        // Get class options from PHP
+        const classOptions = window.existingClasses || [];
         const classDropdown = new CustomDropdown(classInput, classOptions);
         classInput.addEventListener('input', function() {
             this.value = this.value.toUpperCase();
         });
     }
     if (subjectInput) {
-        const subjectOptions = [
-            // ...existing code...
-        ];
+        // Get subject options from PHP
+        const subjectOptions = window.existingSubjects || [];
         const subjectDropdown = new CustomDropdown(subjectInput, subjectOptions);
         subjectInput.addEventListener('input', function() {
             this.value = this.value.toUpperCase();
         });
     }
     if (roomInput) {
-        const roomOptions = [
-            // ...existing code...
-        ];
+        // Get room options from PHP
+        const roomOptions = window.existingRooms || [];
         const roomDropdown = new CustomDropdown(roomInput, roomOptions);
         roomInput.addEventListener('input', function() {
             this.value = this.value.toUpperCase();
