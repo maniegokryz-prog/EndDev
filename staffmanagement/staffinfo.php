@@ -8,6 +8,13 @@ require '../db_connection.php';
 // Get current user info
 $currentUser = getCurrentUser();
 
+// Check if current user is admin
+// Note: user_role is set to 'admin' in auth.php when roles contains 'admin' or 'administrator'
+$isAdmin = isset($currentUser['role']) && $currentUser['role'] === 'admin';
+
+// Debug: Remove this after testing
+// echo "<!-- DEBUG: Role = '" . htmlspecialchars($currentUser['role']) . "', isAdmin = " . ($isAdmin ? 'true' : 'false') . " -->";
+
 class EmployeeEditor {
     private $db;
     private $employee = null;
@@ -556,7 +563,9 @@ $schedules = $viewer->getSchedules();
 
           <div class="d-flex justify-content-center justify-content-lg-start gap-2">
             <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#editInfoModal">Edit Info</button>
+            <?php if ($isAdmin): ?>
             <button class="btn btn-danger btn-sm" id="btnRemove" data-bs-toggle="modal" data-bs-target="#removeEmployeeModal">Remove Employee</button>
+            <?php endif; ?>
           </div>
         </div>
       </div>
@@ -1046,11 +1055,11 @@ $schedules = $viewer->getSchedules();
         <script>
           // Leave Management System with API
           const employeeIdForLeave = <?php echo json_encode($employee['id']); ?>;
-          const isAdmin = <?php echo isAdmin() ? 'true' : 'false'; ?>; // Set based on actual session role
           
           // Show/hide admin options on page load
           document.addEventListener('DOMContentLoaded', function() {
-            if (isAdmin) {
+            const isAdminForLeave = <?php echo json_encode($isAdmin); ?>;
+            if (isAdminForLeave) {
               document.getElementById('adminOptionsDiv').style.display = 'block';
             }
           });
@@ -1636,6 +1645,11 @@ $schedules = $viewer->getSchedules();
             }
 
             generateCalendar(year, month);
+            
+            // Trigger DTR loading when dates are selected
+            if (typeof loadDTRForSelectedRange === 'function') {
+              loadDTRForSelectedRange();
+            }
           }
 
           prevBtn.addEventListener("click", () => {
@@ -1663,9 +1677,11 @@ $schedules = $viewer->getSchedules();
         });
 
     </script> 
+      <?php if ($isAdmin): ?>
       <div class="d-grid mb-4" style="margin-top: 10px !important;">
         <button class="btn btn-success btn-sm" id="openAttendance">Add Manual Attendance</button>
       </div>
+      <?php endif; ?>
 
          <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -2212,6 +2228,9 @@ $schedules = $viewer->getSchedules();
             });
         }
 
+        // Check if user is admin
+        const isAdmin = <?php echo json_encode($isAdmin); ?>;
+
         // Display DTR records
         function displayDTRRecords(records) {
           const dtrList = document.getElementById('dtrList');
@@ -2244,7 +2263,8 @@ $schedules = $viewer->getSchedules();
             };
 
             // Check if record is incomplete with time_in but no time_out
-            const showEditButton = record.status === 'incomplete' && 
+            const showEditButton = isAdmin && 
+                                   record.status === 'incomplete' && 
                                    record.time_in && 
                                    !record.time_out;
 
@@ -2437,9 +2457,6 @@ $schedules = $viewer->getSchedules();
         document.addEventListener('DOMContentLoaded', function() {
           // Load recent DTR on page load
           loadRecentDTR();
-          
-          // Check for calendar updates every 500ms
-          setInterval(loadDTRForSelectedRange, 500);
         });
 
         // Edit Time Out Modal Functions
@@ -2563,7 +2580,7 @@ $schedules = $viewer->getSchedules();
   </div>
 </div> 
 
-<div class="card mb-3 metrics-card" style="margin-top: -1100px !important;">
+<div class="card mb-3 metrics-card" style="margin-top: <?php echo $isAdmin ? '-1100px' : '-1000px'; ?> !important;">
   <div class="card-header d-flex align-items-center justify-content-between flex-wrap">
     <strong>Performance Metrics</strong>
     <div class="d-flex gap-2 mt-2 mt-sm-0">
@@ -2767,9 +2784,11 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 <div class="card mb-3 schedule-card">
   <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
     <strong>Schedule</strong>
+    <?php if ($isAdmin): ?>
     <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editScheduleModal">
       Edit Schedule
     </button>
+    <?php endif; ?>
   </div>
   <div class="info-section">
         <?php if (!empty($schedules)): ?>
