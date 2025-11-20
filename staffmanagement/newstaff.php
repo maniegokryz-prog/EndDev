@@ -302,21 +302,21 @@ try {
                     <div class="form-group">
                         <label for="designate_class">Designate Class <span style="color: #999;">(Faculty Only)</span></label>
                         <input type="text" id="designate_class" name="designate_class" 
-                               placeholder="Available for Faculty Members only" 
+                               placeholder="Available for Faculty_Members only" 
                                autocomplete="off" style="text-transform: uppercase;" disabled>
                         <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing classes</small>
                     </div>
                     <div class="form-group">
                         <label for="designate_subject">Subject <span style="color: #999;">(Faculty Only)</span></label>
                         <input type="text" id="designate_subject" name="designate_subject" 
-                               placeholder="Available for Faculty Members only" 
+                               placeholder="Available for Faculty_Members only" 
                                autocomplete="off" style="text-transform: uppercase;" disabled>
                         <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing subjects</small>
                     </div>
                     <div class="form-group">
                         <label for="room-number">Room Number <span style="color: #999;">(Faculty Only)</span></label>
                         <input type="text" id="room-number" name="room-number" 
-                               placeholder="Available for Faculty Members only" 
+                               placeholder="Available for Faculty_Members only" 
                                autocomplete="off" style="text-transform: uppercase;" disabled>
                         <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing rooms</small>
                      </div>
@@ -327,6 +327,59 @@ try {
                         <button type="button" class="add-schedule-btn" onclick="addSchedule()">Add Schedule</button>
                     </div>
                 </div>
+
+                <!-- Success Modal -->
+                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="successModalLabel">Staff Added</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ✅ New staff record has been successfully added!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <a href="staffmanagement.php" class="btn btn-success">Go to Staff Management</a>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Error Modal -->
+                <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ❌ Something went wrong while adding staff. Please try again.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const status = urlParams.get("status");
+
+                    if (status === "success") {
+                        var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                        successModal.show();
+                    } else if (status === "error") {
+                        var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                        errorModal.show();
+                    }
+                });
+                </script>
+
 
                 <!-- Weekly Schedule Calendar -->
                 <div class="schedule-calendar-section">

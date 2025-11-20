@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get roles options from PHP
         const rolesOptions = [
             'Administrator',
-            'Faculty_Member',
+            'Faculty Member',
             'Non-Teaching_Personnel'
             // Additional roles injected by PHP
             // ...existing code...
@@ -890,14 +890,14 @@ function setupDepartmentInput() {
         this.style.borderColor = '';
         // Trim whitespace and format properly
         let value = this.value.trim();
-        if (value) {
-            // Convert to proper format (title case)
-            value = value.split(' ').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-            ).join(' ');
+        // if (value) {
+        //     // Convert to proper format (title case)
+        //     value = value.split(' ').map(word => 
+        //         word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        //     ).join(' ');
             
-            this.value = value;
-        }
+        //     this.value = value;
+        // }
     });
     
     // Provide visual feedback while typing
@@ -1369,7 +1369,7 @@ function addSchedule() {
     
     // Show confirmation with adjustment info
     const daysList = editSelectedDays.join(', ');
-    const roleDisplay = isFaculty ? 'Faculty Member' : 'Non-Faculty';
+    const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
     let message = `Schedule Added Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
     
     if (adjustments.length > 0) {
@@ -1565,7 +1565,7 @@ function editSchedule() {
     
     // Show confirmation with adjustment info
     const daysList = editSelectedDays.join(', ');
-    const roleDisplay = isFaculty ? 'Faculty Member' : 'Non-Faculty';
+    const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
     let message = `Schedule Updated Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
     
     if (adjustments.length > 0) {

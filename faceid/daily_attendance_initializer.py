@@ -27,7 +27,7 @@ if sys.platform == 'win32':
 DB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database")
 sys.path.insert(0, DB_DIR)
 
-from init_local_db import get_db_connection
+from init_local_db import get_db_connection # type: ignore
 
 def mark_previous_day_absences():
     """

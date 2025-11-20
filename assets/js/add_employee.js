@@ -944,7 +944,7 @@ function initializeFacultyFieldToggle() {
                 `(All existing schedules will be cleared)`;
         } else {
             confirmationMessage = `⚠️ Role Change Detected\n\n` +
-                `You are changing from "Faculty_Member" to "${newRole}".\n\n` +
+                `You are changing from "Faculty Member" to "${newRole}".\n\n` +
                 `You currently have ${scheduleTypeInfo} created.\n\n` +
                 `Changing from Faculty Member will:\n` +
                 `• Disable class, subject, and room fields\n` +
@@ -1078,8 +1078,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get roles options from PHP, merge with defaults
         const defaultRoles = [
             'Administrator',
-            'Faculty Member',
-            'Non Teaching Staff'
+            'Faculty_Member',
+            'Non Teaching Staff',
+            'Other'
         ];
         const existingRoles = window.existingRoles || [];
         
@@ -1209,14 +1210,14 @@ function setupDepartmentInput() {
         this.style.borderColor = '';
         // Trim whitespace and format properly
         let value = this.value.trim();
-        if (value) {
-            // Convert to proper format (title case)
-            value = value.split(' ').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-            ).join(' ');
+        // if (value) {
+        //     // Convert to proper format (title case)
+        //     value = value.split(' ').map(word => 
+        //         word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        //     ).join(' ');
             
-            this.value = value;
-        }
+        //     this.value = value;
+        // }
     });
     
     // Provide visual feedback while typing
@@ -1550,7 +1551,7 @@ function addSchedule() {
     
     // Show confirmation
     const daysList = selectedDays.join(', ');
-    const roleDisplay = isFaculty ? 'Faculty Member' : 'Non-Faculty';
+    const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
     const message = `Schedule Added Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
     alert(message);
     
