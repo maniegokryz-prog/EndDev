@@ -917,7 +917,7 @@ function initializeFacultyFieldToggle() {
     }
 
     // Handle role change with existing schedules
-    function handleRoleChangeWithSchedules(newRole, previousRole) {
+    async function handleRoleChangeWithSchedules(newRole, previousRole) {
         const scheduleAnalysis = analyzeExistingSchedules();
         if (!scheduleAnalysis.hasSchedules) return true;
         const newIsFaculty = newRole === 'Faculty_Member';
@@ -953,7 +953,7 @@ function initializeFacultyFieldToggle() {
                 `Do you want to proceed?\n` +
                 `(All existing schedules will be cleared)`;
         }
-        const userConfirmed = confirm(confirmationMessage);
+        const userConfirmed = await showAppConfirm(confirmationMessage, 'Confirm Role Change');
         if (userConfirmed) {
             if (typeof window.clearAllSchedulesQuietly === 'function') {
                 window.clearAllSchedulesQuietly();
@@ -964,16 +964,15 @@ function initializeFacultyFieldToggle() {
                 }
             }
             setTimeout(() => {
-                alert(`✅ Role changed successfully!\n\nAll schedules have been cleared.\nYou can now create new schedules for the "${newRole}" role.`);
+                showAppAlert(`✅ Role changed successfully!\n\nAll schedules have been cleared.\nYou can now create new schedules for the "${newRole}" role.`, 'Role Changed', 'success');
             }, 100);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     // Toggle faculty-specific fields based on role
-    function toggleFacultyFields(skipScheduleCheck = false) {
+    async function toggleFacultyFields(skipScheduleCheck = false) {
         const currentRole = rolesInput.value.trim();
         if (!skipScheduleCheck && currentRole !== previousRole) {
             const shouldProceed = handleRoleChangeWithSchedules(currentRole, previousRole);
@@ -1126,6 +1125,56 @@ console.log('✓ All scripts loaded at:', new Date().toLocaleTimeString());
 console.log('✓ FaceDetection class available:', typeof FaceDetection !== 'undefined');
 console.log('✓ CameraController class available:', typeof CameraController !== 'undefined');
 console.log('✓ FaceRegistrationApp class available:', typeof FaceRegistrationApp !== 'undefined');
+
+// showAppAlert: shows the `#appAlertModal` if present, otherwise falls back to native alert()
+function showAppAlert(message, title = 'Notice', type = 'info') {
+    try {
+        const modalEl = document.getElementById('appAlertModal');
+        const msgEl = document.getElementById('appAlertModalMessage');
+        const titleEl = document.getElementById('appAlertModalLabel');
+        const iconEl = document.getElementById('appAlertModalIcon');
+        if (msgEl && modalEl) {
+            // allow multiline messages using <br>
+            msgEl.innerHTML = String(message).replace(/\n/g, '<br>');
+            if (titleEl) titleEl.textContent = title;
+
+            // set icon and title color based on type
+            if (iconEl) {
+                // reset classes then add desired
+                iconEl.className = '';
+                if (type === 'success') {
+                    iconEl.classList.add('bi', 'bi-check-circle-fill', 'text-success', 'fs-1', 'mb-2');
+                } else if (type === 'error') {
+                    iconEl.classList.add('bi', 'bi-exclamation-circle-fill', 'text-danger', 'fs-1', 'mb-2');
+                } else {
+                    iconEl.classList.add('bi', 'bi-info-circle-fill', 'text-primary', 'fs-1', 'mb-2');
+                }
+            }
+
+            // update title color classes
+            if (titleEl) {
+                titleEl.classList.remove('text-success', 'text-danger', 'text-primary');
+                if (type === 'success') titleEl.classList.add('text-success');
+                else if (type === 'error') titleEl.classList.add('text-danger');
+                else titleEl.classList.add('text-primary');
+            }
+
+            // Ensure modal sits above any custom sidebar z-index
+            modalEl.style.zIndex = '22000';
+            const dialog = modalEl.querySelector('.modal-dialog');
+            if (dialog) dialog.style.zIndex = '22001';
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+                return;
+            }
+        }
+    } catch (e) {
+        // ignore and fallback
+    }
+    // fallback use native alert (preserve newlines)
+    alert(String(message));
+}
 
 // Schedule Day Toggle Functionality
 let selectedDays = [];
@@ -1470,10 +1519,10 @@ function checkConsecutiveSchedule(day, timeMinutes, direction) {
 }
 
 // Add Schedule functionality
-function addSchedule() {
+async function addSchedule() {
     // Validate that at least one day is selected
     if (selectedDays.length === 0) {
-        alert('Please select at least one working day first!');
+        showAppAlert('Please select at least one working day first!', 'Missing Work Days');
         return;
     }
     
@@ -1482,13 +1531,13 @@ function addSchedule() {
     const shiftEnd = document.getElementById('shift_end').value;
     
     if (!shiftStart || !shiftEnd) {
-        alert('Please select both start and end times!');
+        showAppAlert('Please select both start and end times!', 'Missing Times');
         return;
     }
     
     // Validate time order
     if (shiftStart >= shiftEnd) {
-        alert('Start time must be before end time!');
+        showAppAlert('Start time must be before end time!', 'Invalid Time');
         return;
     }
     
@@ -1503,7 +1552,7 @@ function addSchedule() {
     const isFaculty = currentRole === 'Faculty_Member';
     
     if (isFaculty && (!designateClass || !designateSubject || !roomNumber)) {
-        alert('Faculty members must enter class, subject, and room number for schedules!');
+        showAppAlert('Faculty members must enter class, subject, and room number for schedules!', 'Missing Faculty Details');
         return;
     }
     
@@ -1525,7 +1574,7 @@ function addSchedule() {
     
     // Check for conflicts
     if (checkScheduleConflict(scheduleData)) {
-        const proceed = confirm('This schedule conflicts with an existing schedule. Do you want to add it anyway?');
+        const proceed = await showAppConfirm('This schedule conflicts with an existing schedule. Do you want to add it anyway?', 'Schedule Conflict');
         if (!proceed) {
             return;
         }
@@ -1552,8 +1601,8 @@ function addSchedule() {
     // Show confirmation
     const daysList = selectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
-    const message = `Schedule Added Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
-    alert(message);
+    const message = `Schedule Added Successfully!\n Role: ${roleDisplay} \n Days: ${daysList} \n Time: ${shiftStart} - ${shiftEnd} \n Class: ${finalClass.toUpperCase()} Subject: ${finalSubject.toUpperCase()} \n Room: ${finalRoom.toUpperCase()}`;
+    showAppAlert(message, 'Schedule Added Successfully!', 'success');
     
     // Clear the form for next schedule entry
     clearScheduleForm();
@@ -1587,18 +1636,19 @@ function clearScheduleForm() {
     console.log('Schedule form cleared');
 }
 
-function clearAllSchedules() {
+async function clearAllSchedules() {
     if (addedSchedules.length === 0) {
-        alert('No schedules to clear!');
+        showAppAlert('No schedules to clear!', 'Nothing To Clear');
         return;
     }
-    
-    if (confirm(`Are you sure you want to clear all ${addedSchedules.length} schedule(s)?`)) {
+
+    const ok = await showAppConfirm(`Are you sure you want to clear all ${addedSchedules.length} schedule(s)?`, 'Confirm Clear');
+    if (ok) {
         addedSchedules = [];
         window.addedSchedules = addedSchedules; // Keep global reference in sync
         renderSchedules();
         console.log('All schedules cleared');
-        alert('All schedules have been cleared!');
+        showAppAlert('All schedules have been cleared!', 'Cleared');
     }
 }
 
@@ -1632,20 +1682,82 @@ function checkScheduleConflict(newSchedule) {
 }
 
 // Delete individual schedule
-function deleteSchedule(scheduleIndex, day) {
-    if (confirm('Are you sure you want to delete this schedule?')) {
-        const schedule = addedSchedules[scheduleIndex];
-        
-        // If schedule is only on this day, remove it completely
-        if (schedule.days.length === 1) {
-            addedSchedules.splice(scheduleIndex, 1);
-        } else {
-            // Remove just this day from the schedule
-            schedule.days = schedule.days.filter(d => d !== day);
-        }
-        
-        window.addedSchedules = addedSchedules; // Keep global reference in sync
-        renderSchedules();
-        console.log('Schedule deleted');
+async function deleteSchedule(scheduleIndex, day) {
+    const ok = await showAppConfirm('Are you sure you want to delete this schedule?', 'Confirm Delete');
+    if (!ok) return;
+
+    const schedule = addedSchedules[scheduleIndex];
+    // If schedule is only on this day, remove it completely
+    if (schedule.days.length === 1) {
+        addedSchedules.splice(scheduleIndex, 1);
+    } else {
+        // Remove just this day from the schedule
+        schedule.days = schedule.days.filter(d => d !== day);
     }
+
+    window.addedSchedules = addedSchedules; // Keep global reference in sync
+    renderSchedules();
+    console.log('Schedule deleted');
+}
+
+// showAppConfirm: returns a Promise that resolves to true if user clicks OK, false if Cancel
+function showAppConfirm(message, title = 'Confirm') {
+    return new Promise((resolve) => {
+        try {
+            const modalEl = document.getElementById('appConfirmModal');
+            const msgEl = document.getElementById('appConfirmModalMessage');
+            const titleEl = document.getElementById('appConfirmModalLabel');
+            const okBtn = document.getElementById('appConfirmOk');
+            const cancelBtn = document.getElementById('appConfirmCancel');
+            if (!modalEl || !okBtn) {
+                resolve(window.confirm(message));
+                return;
+            }
+
+            if (msgEl) msgEl.textContent = message;
+            if (titleEl) titleEl.textContent = title;
+
+            // Ensure modal sits above sidebar
+            modalEl.style.zIndex = '22000';
+            const dialog = modalEl.querySelector('.modal-dialog');
+            if (dialog) dialog.style.zIndex = '22001';
+
+            const bsModal = new bootstrap.Modal(modalEl);
+
+            function cleanup() {
+                okBtn.removeEventListener('click', onOk);
+                cancelBtn && cancelBtn.removeEventListener('click', onCancel);
+                modalEl.removeEventListener('hidden.bs.modal', onHidden);
+            }
+
+            function onOk(e) {
+                e && e.preventDefault();
+                cleanup();
+                bsModal.hide();
+                resolve(true);
+            }
+
+            function onCancel(e) {
+                e && e.preventDefault();
+                cleanup();
+                bsModal.hide();
+                resolve(false);
+            }
+
+            function onHidden() {
+                // If modal is hidden without clicking buttons, treat as cancel
+                cleanup();
+                resolve(false);
+            }
+
+            okBtn.addEventListener('click', onOk);
+            if (cancelBtn) cancelBtn.addEventListener('click', onCancel);
+            modalEl.addEventListener('hidden.bs.modal', onHidden);
+
+            bsModal.show();
+        } catch (err) {
+            // fallback to native confirm
+            resolve(window.confirm(message));
+        }
+    });
 }

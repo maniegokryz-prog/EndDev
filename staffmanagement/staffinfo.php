@@ -528,15 +528,8 @@ $schedules = $viewer->getSchedules();
       <div class="card shadow-sm mb-4 staff-card" style="max-height: 400px;">
       
     <div class="header-bar d-flex align-items-center px-3 py-2">
-      <i class="bi bi-arrow-left-circle fs-4 me-2" id="backBtn"></i>
       <h5 class="mb-0 fw-bold">Staff Information</h5>
     </div>
-
-    <script>
-      document.getElementById('backBtn').addEventListener('click', function () {
-        window.history.back(); // or use window.location.href = 'your-target-page.php';
-      });
-    </script>
 
  <div class="card-body d-flex flex-column flex-lg-row align-items-center justify-content-center gap-4">
         <div class="profile-wrapper">
@@ -3094,21 +3087,21 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                     <div class="form-group">
                         <label for="designate_class">Designate Class <span style="color: #999;">(Faculty Only)</span></label>
                         <input type="text" id="designate_class" name="designate_class" 
-                               placeholder="Available for Faculty Members only" 
+                               placeholder="Available for Faculty_Members only" 
                                autocomplete="off" style="text-transform: uppercase;" disabled>
                         <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing classes</small>
                     </div>
                     <div class="form-group">
                         <label for="designate_subject">Subject <span style="color: #999;">(Faculty Only)</span></label>
                         <input type="text" id="designate_subject" name="designate_subject" 
-                               placeholder="Available for Faculty Members only" 
+                               placeholder="Available for Faculty_Members only" 
                                autocomplete="off" style="text-transform: uppercase;" disabled>
                         <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing subjects</small>
                     </div>
                     <div class="form-group">
                         <label for="room-number">Room Number <span style="color: #999;">(Faculty Only)</span></label>
                         <input type="text" id="room-number" name="room-number" 
-                               placeholder="Available for Faculty Members only" 
+                               placeholder="Available for Faculty_Members only" 
                                autocomplete="off" style="text-transform: uppercase;" disabled>
                         <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing rooms</small>
                      </div>

@@ -288,9 +288,12 @@ $roles = $viewer->getDistinctRoles();
             <select id="roleFilter" class="form-select">
               <option value="">All Roles</option>
                         <?php foreach ($roles as $role): ?>
-                            <option value="<?php echo htmlspecialchars($role); ?>" 
-                                    <?php echo $filters['role'] === $role ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($role); ?>
+                            <?php $trimRole = trim($role); ?>
+                            <?php $displayRole = (preg_match('/faculty[\s_\-]*member/i', $trimRole) || strcasecmp($trimRole, 'faculty') === 0) ? 'Faculty' : $role; ?>
+                            <?php $isSelected = (isset($filters['role']) && (strcasecmp($filters['role'], $role) === 0 || strcasecmp($filters['role'], $displayRole) === 0)); ?>
+                            <option value="<?php echo htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8'); ?>" 
+                                    <?php echo $isSelected ? 'selected' : ''; ?> >
+                                <?php echo htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8'); ?>
                             </option>
                         <?php endforeach; ?>
             </select>
@@ -307,7 +310,7 @@ $roles = $viewer->getDistinctRoles();
             </select>
           </div>
           <div class="col-md-4">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search" value="<?php echo htmlspecialchars($filters['search']); ?>">
+            <input type="text" id="searchInput" class="form-control" placeholder="search by name or Id number" value="<?php echo htmlspecialchars($filters['search']); ?>">
           </div>
         </div>
 

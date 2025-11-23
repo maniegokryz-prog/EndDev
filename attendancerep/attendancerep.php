@@ -336,20 +336,23 @@ $currentDate = date('F d, Y', strtotime($selectedDate)); // Format: November 11,
     </div>
     <div class="col-md-3">
       <label for="roleFilter" class="form-label small text-muted">Role</label>
-      <select class="form-select" id="roleFilter">
-        <option value="">All Roles</option>
-        <?php foreach ($roles as $role): ?>
-          <option value="<?php echo htmlspecialchars($role, ENT_QUOTES, 'UTF-8'); ?>" 
-                  <?php echo (isset($filters['role']) && $filters['role'] === $role) ? 'selected' : ''; ?>>
-            <?php echo htmlspecialchars($role, ENT_QUOTES, 'UTF-8'); ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
+        <select class="form-select" id="roleFilter">
+          <option value="">All</option>
+          <?php foreach ($roles as $role): ?>
+            <?php $trimRole = trim($role); ?>
+            <?php $displayRole = (preg_match('/faculty[\s_\-]*member/i', $trimRole) || strcasecmp($trimRole, 'faculty') === 0) ? 'Faculty' : $role; ?>
+            <?php $isSelected = (isset($filters['role']) && (strcasecmp($filters['role'], $role) === 0 || strcasecmp($filters['role'], $displayRole) === 0)); ?>
+            <option value="<?php echo htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8'); ?>" 
+                    <?php echo $isSelected ? 'selected' : ''; ?>>
+              <?php echo htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8'); ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
     </div>
     <div class="col-md-4">
       <label for="deptFilter" class="form-label small text-muted">Department</label>
       <select class="form-select" id="deptFilter">
-        <option value="">All Departments</option>
+        <option value="">All</option>
         <?php foreach ($departments as $department): ?>
           <option value="<?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>" 
                   <?php echo (isset($filters['department']) && $filters['department'] === $department) ? 'selected' : ''; ?>>
@@ -360,7 +363,7 @@ $currentDate = date('F d, Y', strtotime($selectedDate)); // Format: November 11,
     </div>
     <div class="col-md-3">
       <label for="searchBox" class="form-label small text-muted">Search</label>
-      <input type="text" id="searchBox" class="form-control" placeholder="Search by name or ID" 
+      <input type="text" id="searchBox" class="form-control" placeholder="Search by name" 
              value="<?php echo htmlspecialchars($filters['search'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
     </div>
   </div>

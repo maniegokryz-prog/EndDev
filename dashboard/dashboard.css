@@ -286,8 +286,6 @@
   height: 1.5rem;
 }
 
-
-
 .clickable-card {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -483,10 +481,10 @@
 /*------------------------------------------------------------------------------------------------------------------------------------------*/
 /* Card container  time n date*/
 .time-card {
-  height: 480px;
+  height: 485px;
   padding: 2.5rem 4rem;
-  width: 75%;
-  margin-left: 3px;
+  width: 73.5%;
+  margin-left: 15px;
   border: 1px solid #ddd;
   border-radius: 1rem;
   box-shadow: none;
@@ -592,7 +590,7 @@
 .calendar-card {
   /* ... Original styles ... */
   /* Kinailangang i-override ito sa Media Query para mag-center */
-  width: 74% !important;
+  width: 73.5% !important;
   margin-left: -25% !important; 
   padding: 0.5rem !important;
   transition: all 0.3s ease-in-out;
@@ -645,7 +643,6 @@
     display: inline-block !important;
   }
 }
-
 
 /* Calendar toggle button styling */
 #calendar-toggle-btn {
@@ -774,7 +771,7 @@
 
     /* 1. Time Card (.time-card): Ito ang mauuna sa stack at nagtutulak pababa. */
     .time-card {
-        width: 102% !important;
+        width: 98% !important;
         padding: 1.8rem 2rem;
         
         /* FIX: Itinaas ang margin-top sa 380px para TIYAK na bababa sa ilalim ng 
@@ -783,8 +780,7 @@
         
         margin-bottom: -10px; 
         height: auto !important; 
-        margin-left: 5px;
-        margin-right: 10px;
+        margin-left: 13px !important;
         display: block !important; 
     }
 
@@ -808,13 +804,9 @@
    .late-card,
     .on-leave-card {
         width: 93% !important;
-        margin-left: 22px !important;
-        margin-right: 22px !important;
-        
+        margin-left: 50px !important;
         /* Panatilihin ang 0px margin-top para walang extra space sa taas nila */
         margin-top: 0px !important; 
-        
-        margin-bottom: 20px;
         display: block !important;
     }
 
@@ -943,8 +935,8 @@
 /*------------------------------------------------------------------------------------------------------------------------------------------*/
 /*LATE*/
 .late-card {
-  width: 75%;            /* adjust width (50%–90% depending sa gusto mo) */     /* para hindi masyadong malapad */
-  margin-left: 5px;
+  width: 73.5%;            /* adjust width (50%–90% depending sa gusto mo) */     /* para hindi masyadong malapad */
+  margin-left: 15px;
   border-radius: 1rem; 
 }
 

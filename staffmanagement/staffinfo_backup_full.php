@@ -3832,7 +3832,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                 }
             });
         }
-        
+      });
         // Initialize the edit schedule modal calendar when modal is shown
         const editScheduleModal = document.getElementById('editScheduleModal');
         if (editScheduleModal) {

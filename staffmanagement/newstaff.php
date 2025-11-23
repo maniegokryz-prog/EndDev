@@ -20,6 +20,17 @@ try {
     error_log("Error fetching roles: " . $e->getMessage());
 }
 
+// Normalize roles: convert any variant of 'faculty_member' (underscore/space/case) to 'Faculty' for UI
+if (!empty($existing_roles)) {
+    foreach ($existing_roles as &$r) {
+        $trimmed = trim($r);
+        if (preg_match('/faculty[\s_\-]*member/i', $trimmed) || strcasecmp($trimmed, 'faculty') === 0) {
+            $r = 'Faculty';
+        }
+    }
+    unset($r);
+}
+
 // Get existing departments from database
 $existing_departments = [];
 try {
@@ -324,11 +335,66 @@ try {
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <button type="button" class="add-schedule-btn" onclick="addSchedule()">Add Schedule</button>
+                                                <button type="button" class="add-schedule-btn" onclick="validateAndAddSchedule()">Add Schedule</button>
                     </div>
                 </div>
 
-                <!-- Success Modal -->
+                                <!-- Time Validation Modal -->
+                                <div class="modal fade" id="timeValidationModal" tabindex="-1" aria-labelledby="timeValidationModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content p-3 border-0 rounded-4 shadow-lg" style="background:#fff;color:#000;">
+                                            <div class="text-center border-bottom pb-2 mb-3">
+                                                <h5 class="fw-bold text-danger" id="timeValidationModalLabel">Invalid Time</h5>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="bi bi-exclamation-circle-fill text-danger fs-1 mb-2"></i>
+                                                <p class="text-muted px-3" id="timeValidationModalMessage">Start time must be before end time!</p>
+                                            </div>
+                                            <div class="d-flex justify-content-center gap-3 mt-3">
+                                                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">OK</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                                                </div>
+
+                                <!-- App Alert Modal (generic) -->
+                                <div class="modal fade" id="appAlertModal" tabindex="-1" aria-labelledby="appAlertModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content p-3 border-0 rounded-4 shadow-lg" style="background:#fff;color:#000;">
+                                            <div class="text-center border-bottom pb-2 mb-3">
+                                                <h5 class="fw-bold" id="appAlertModalLabel">Notice</h5>
+                                            </div>
+                                            <div class="text-center">
+                                                <i id="appAlertModalIcon" class="bi bi-check-circle-fill text-success fs-1 mb-2" aria-hidden="true"></i>
+                                                <p class="text-muted px-3" id="appAlertModalMessage">Message</p>
+                                            </div>
+                                            <div class="d-flex justify-content-center gap-3 mt-3">
+                                                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">OK</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- App Confirm Modal (generic confirm with OK / Cancel) -->
+                                <div class="modal fade" id="appConfirmModal" tabindex="-1" aria-labelledby="appConfirmModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content p-3 border-0 rounded-4 shadow-lg" style="background:#fff;color:#000;">
+                                            <div class="text-center border-bottom pb-2 mb-3">
+                                                <h5 class="fw-bold text-dark" id="appConfirmModalLabel">Confirm</h5>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="bi bi-question-circle-fill text-primary fs-1 mb-2" aria-hidden="true"></i>
+                                                <p class="text-muted px-3" id="appConfirmModalMessage">Are you sure?</p>
+                                            </div>
+                                            <div class="d-flex justify-content-center gap-3 mt-3">
+                                                <button type="button" id="appConfirmCancel" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="button" id="appConfirmOk" class="btn btn-primary px-4">OK</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Success Modal -->
                 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -378,6 +444,44 @@ try {
                         errorModal.show();
                     }
                 });
+                </script>
+
+                <script>
+                // Validate shift times before adding schedule. Show Bootstrap modal on invalid times.
+                function validateAndAddSchedule() {
+                    const startEl = document.getElementById('shift_start');
+                    const endEl = document.getElementById('shift_end');
+                    const start = startEl ? startEl.value : '';
+                    const end = endEl ? endEl.value : '';
+
+                    function toMinutes(t) {
+                        if (!t) return null;
+                        const parts = t.split(':');
+                        if (parts.length < 2) return null;
+                        const h = parseInt(parts[0], 10);
+                        const m = parseInt(parts[1], 10);
+                        return h * 60 + m;
+                    }
+
+                    const s = toMinutes(start);
+                    const e = toMinutes(end);
+
+                    if (s !== null && e !== null && s >= e) {
+                        const msgEl = document.getElementById('timeValidationModalMessage');
+                        if (msgEl) msgEl.textContent = 'Start time must be before end time!';
+                        const modalEl = document.getElementById('timeValidationModal');
+                        if (modalEl) {
+                            var m = new bootstrap.Modal(modalEl);
+                            m.show();
+                            return; // do not proceed to add schedule
+                        }
+                    }
+
+                    // If validation passed or no times provided, call original addSchedule if present
+                    if (typeof addSchedule === 'function') {
+                        addSchedule();
+                    }
+                }
                 </script>
 
 

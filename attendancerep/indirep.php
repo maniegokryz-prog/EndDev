@@ -201,8 +201,7 @@ if ($id) {
   <div class="content" id="content">
     <div class="container-fluid">
       <div class="mb-10">
-    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
-      <i class="fa-solid fa-arrow-left me-1"></i> Back
+      <a href="attendancerep.php" class="btn btn-outline-secondary mb-2 mt-3">&larr; Back</a>
     </a>
   </div>
     <h2 class="fw-bold mt-3 mb-4 display-4 text-dark">
@@ -275,7 +274,7 @@ if ($id) {
 
     <!-- Reset Button -->
     <button class="btn btn-outline-secondary" id="resetBtn">
-      <i class="bi bi-arrow-clockwise me-1"></i> Reset
+      <i class="bi bi-arrow-clockwise me-1"></i> 
     </button>
 
     <!-- Export -->
