@@ -46,6 +46,7 @@ function getCurrentUser() {
     return [
         'id' => $_SESSION['user_id'] ?? null,
         'employee_id' => $_SESSION['employee_id'] ?? null,
+        'username' => $_SESSION['employee_id'] ?? null,
         'name' => $_SESSION['user_name'] ?? null,
         'role' => $_SESSION['user_role'] ?? 'user',
         'email' => $_SESSION['user_email'] ?? null,

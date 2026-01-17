@@ -261,6 +261,106 @@ function showPopupMessage(message) {
     setTimeout(() => popup.remove(), 1500);
   } 
 
+  // ✅ Clear All Records functionality
+  async function handleClearRecordsClick() {
+    console.log('Clear All Records clicked!');
+    
+    // Fetch the actual count of records
+    try {
+      const response = await fetch('processes/get_records_count.php');
+      const result = await response.json();
+      
+      console.log('Records count result:', result);
+      
+      if (result.success) {
+        document.getElementById('recordsCountDisplay').textContent = `(${result.count.toLocaleString()})`;
+      } else {
+        document.getElementById('recordsCountDisplay').textContent = '(unknown)';
+      }
+    } catch (error) {
+      console.error('Failed to fetch record count:', error);
+      document.getElementById('recordsCountDisplay').textContent = '(unknown)';
+    }
+    
+    const modal = new bootstrap.Modal(document.getElementById("clearAllRecordsModal"));
+    modal.show();
+  }
+  
+  // Make function globally accessible
+  window.handleClearRecordsClick = handleClearRecordsClick;
 
+  // Handle proceeding to second confirmation
+  const proceedBtn = document.getElementById("proceedDeleteBtn");
+  if (proceedBtn) {
+    proceedBtn.addEventListener("click", () => {
+      bootstrap.Modal.getInstance(document.getElementById("clearAllRecordsModal")).hide();
+      const secondModal = new bootstrap.Modal(document.getElementById("secondConfirmModal"));
+      secondModal.show();
+    });
+  }
 
+  // Handle final confirmation with password
+  const confirmBtn = document.getElementById("confirmDeleteBtn");
+  if (confirmBtn) {
+    confirmBtn.addEventListener("click", async function() {
+      const password = document.getElementById('clearPasswordInput').value.trim();
+      const errorDiv = document.getElementById('clearPasswordError');
+      const btnText = document.getElementById('deleteBtnText');
+      const btnSpinner = document.getElementById('deleteBtnSpinner');
+      
+      if (!password) {
+        errorDiv.textContent = 'Please enter your password';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      
+      errorDiv.style.display = 'none';
+      this.disabled = true;
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline-block';
+      
+      try {
+        const formData = new FormData();
+        formData.append('password', password);
+        formData.append('csrf_token', CSRF_TOKEN);
+        
+        const response = await fetch('processes/clear_all_records.php', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Close modal
+          bootstrap.Modal.getInstance(document.getElementById("secondConfirmModal")).hide();
+          
+          // Clear password input
+          document.getElementById('clearPasswordInput').value = '';
+          
+          // Show success message with count
+          const message = result.count > 0 
+            ? `Successfully cleared ${result.count} attendance record(s)` 
+            : 'No records found to clear';
+          showPopupMessage(message);
+          
+          // Redirect after a moment
+          setTimeout(() => {
+            window.location.href = "settings.php";
+          }, 2000);
+        } else {
+          errorDiv.textContent = result.error || 'Failed to clear records';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Clear records error:', error);
+        errorDiv.textContent = 'An error occurred. Please try again.';
+        errorDiv.style.display = 'block';
+      }
+      
+      this.disabled = false;
+      btnText.style.display = 'inline';
+      btnSpinner.style.display = 'none';
+    });
+  }
   

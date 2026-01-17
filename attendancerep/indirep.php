@@ -277,7 +277,8 @@ if ($id) {
       <i class="bi bi-arrow-clockwise me-1"></i> 
     </button>
 
-    <!-- Export -->
+    <!-- Export - Admin Only -->
+    <?php if (isAdmin()): ?>
     <div class="dropdown ms-auto">
       <button class="btn btn-outline-success dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-download me-1"></i> Export
@@ -291,6 +292,7 @@ if ($id) {
         </a></li>
       </ul>
     </div>
+    <?php endif; ?>
   </div>
 
   <!-- Table -->

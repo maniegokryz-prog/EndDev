@@ -39,7 +39,7 @@ $currentUser = getCurrentUser();
   <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
-      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
+      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
            alt="Profile" 
            class="rounded-circle mb-2" 
            width="70" 
@@ -210,92 +210,6 @@ $currentUser = getCurrentUser();
           <!-- JS will populate -->
         </tbody>
     </table>
-
-<script>
-  let currentMonth, currentYear;
-
-  function renderCalendar(targetBodyId, targetHeaderId, month, year) {
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"];
-    const firstDay = new Date(year, month).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const calendarBody = document.getElementById(targetBodyId);
-    const calendarHeader = document.getElementById(targetHeaderId);
-
-    calendarBody.innerHTML = "";
-    calendarHeader.textContent = `${monthNames[month]} ${year}`;
-
-    let date = 1;
-    for (let i = 0; i < 6; i++) {
-      const row = document.createElement("tr");
-      for (let j = 0; j < 7; j++) {
-        const cell = document.createElement("td");
-        if (i === 0 && j < firstDay) {
-          cell.textContent = "";
-        } else if (date > daysInMonth) {
-          cell.textContent = "";
-        } else {
-          cell.textContent = date;
-          cell.classList.add("calendar-date");
-          cell.setAttribute("data-date", `${year}-${month + 1}-${date}`);
-
-          cell.addEventListener("click", function () {
-            const selectedDate = this.getAttribute("data-date");
-            loadAttendanceHistory(selectedDate);
-          });
-
-          date++;
-        }
-        row.appendChild(cell);
-      }
-      calendarBody.appendChild(row);
-    }
-  }
-
-  function loadAttendanceHistory(dateString) {
-    alert("Loading attendance for: " + dateString);
-    // Replace this with actual logic to fetch/display attendance
-  }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const toggleBtn = document.getElementById("calendar-toggle-btn");
-    const prevBtn = document.getElementById("cal-prev-modal");
-    const nextBtn = document.getElementById("cal-next-modal");
-
-    const today = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    toggleBtn.textContent = today.toLocaleDateString('en-US', options);
-
-    toggleBtn.addEventListener("click", function () {
-      currentMonth = today.getMonth();
-      currentYear = today.getFullYear();
-
-      renderCalendar("calendar-body-modal", "cal-month-year-modal", currentMonth, currentYear);
-
-      const calendarModal = new bootstrap.Modal(document.getElementById('calendarModal'));
-      calendarModal.show();
-    });
-
-    prevBtn.addEventListener("click", function () {
-      currentMonth--;
-      if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear--;
-      }
-      renderCalendar("calendar-body-modal", "cal-month-year-modal", currentMonth, currentYear);
-    });
-
-    nextBtn.addEventListener("click", function () {
-      currentMonth++;
-      if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear++;
-      }
-      renderCalendar("calendar-body-modal", "cal-month-year-modal", currentMonth, currentYear);
-    });
-  });
-</script>
 
 
     </div>

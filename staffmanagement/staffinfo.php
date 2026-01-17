@@ -12,6 +12,32 @@ $currentUser = getCurrentUser();
 // Note: user_role is set to 'admin' in auth.php when roles contains 'admin' or 'administrator'
 $isAdmin = isset($currentUser['role']) && $currentUser['role'] === 'admin';
 
+// Check if user can request leave (admin or non-teaching staff only, NOT faculty)
+function canRequestLeave($employeeRoles) {
+    if (empty($employeeRoles)) return false;
+    
+    // Normalize the role string for checking
+    $rolesLower = strtolower($employeeRoles);
+    
+    // Faculty members CANNOT request leave
+    if (stripos($rolesLower, 'faculty') !== false) {
+        return false;
+    }
+    
+    // Admin can always request leave
+    if (stripos($rolesLower, 'admin') !== false) {
+        return true;
+    }
+    
+    // Non-teaching staff can request leave
+    if (stripos($rolesLower, 'non-teaching') !== false || stripos($rolesLower, 'non_teaching') !== false) {
+        return true;
+    }
+    
+    // Default: allow if not explicitly faculty
+    return true;
+}
+
 // Debug: Remove this after testing
 // echo "<!-- DEBUG: Role = '" . htmlspecialchars($currentUser['role']) . "', isAdmin = " . ($isAdmin ? 'true' : 'false') . " -->";
 
@@ -503,7 +529,7 @@ $schedules = $viewer->getSchedules();
 
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
-      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
+      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
            alt="Profile" 
            class="rounded-circle mb-2" 
            width="70" 
@@ -543,8 +569,10 @@ $schedules = $viewer->getSchedules();
                     $profilePhoto = '../assets/profile_pic/' . htmlspecialchars($employee['profile_photo']);
                 }
             }
+            // Add cache-busting timestamp
+            $profilePhoto .= '?v=' . time();
           ?>
-          <img src="<?php echo '../' . $employee['profile_photo']; ?>" class="profile-img" alt="Profile Picture" onerror="this.src='../assets/profile_pic/user.png'">
+          <img src="<?php echo $profilePhoto; ?>" class="profile-img" alt="Profile Picture" onerror="this.src='../assets/profile_pic/user.png'">
         </div>
 
           <div class="text-center text-lg-start ms-lg-5">
@@ -594,10 +622,10 @@ $schedules = $viewer->getSchedules();
                 <div class="form-group">
                     <label>Profile Picture</label>
                     <img id="profile-preview" 
-                         src="<?php echo $employee['profile_photo'] !== 'N/A' ? htmlspecialchars($employee['profile_photo']) : 'profile_pic/user.png'; ?>" 
+                         src="<?php echo $employee['profile_photo'] !== 'N/A' ? '../' . htmlspecialchars($employee['profile_photo']) . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
                          alt="Profile Preview" 
                          style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block; margin-bottom: 10px;"
-                         onerror="this.src='profile_pic/user.png'">
+                         onerror="this.src='../assets/profile_pic/user.png'">
                     <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
                     <small>Select a new image to update the profile picture. Leave blank to keep the current one.</small>
                 </div>
@@ -794,7 +822,23 @@ $schedules = $viewer->getSchedules();
           body: formData
         });
         
-        const result = await response.json();
+        // Check if response is OK
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Get the response text first to check if it's valid JSON
+        const responseText = await response.text();
+        console.log('Server response:', responseText);
+        
+        let result;
+        try {
+          result = JSON.parse(responseText);
+        } catch (jsonError) {
+          console.error('JSON parse error:', jsonError);
+          console.error('Response was:', responseText);
+          throw new Error('Invalid response from server');
+        }
         
         if (result.success) {
           // Hide removal modal and show success modal
@@ -826,7 +870,8 @@ $schedules = $viewer->getSchedules();
         console.error('Error removing employee:', error);
         removeEmployeeModal.hide();
         setTimeout(() => {
-          document.getElementById('errorRemoveMessage').textContent = 'Failed to connect to server. Please try again.';
+          const errorMsg = error.message || 'Failed to connect to server. Please try again.';
+          document.getElementById('errorRemoveMessage').textContent = errorMsg;
           errorRemoveModal.show();
         }, 400);
       } finally {
@@ -901,6 +946,7 @@ $schedules = $viewer->getSchedules();
    <div class="col-xl-4">
       <div class="container py-4">
           <div class="row justify-content-end">
+            <?php if (canRequestLeave($employee['roles'])): ?>
             <div class="col-xl-4 col-lg-5 col-md-6 px-2 scheduled-leave-card">
               <div class="card shadow-sm border-0">
 
@@ -915,6 +961,7 @@ $schedules = $viewer->getSchedules();
                 </div>
               </div>
             </div>
+            <?php endif; ?>
           </div>
         </div>
 
@@ -945,6 +992,10 @@ $schedules = $viewer->getSchedules();
                 
                 <label class="form-label">Reason:</label>
                 <textarea class="form-control mb-3" id="leaveReason" rows="3" placeholder="Briefly explain your reason for leave"></textarea>
+                
+                <div class="alert alert-info mb-3" id="monthlyLimitInfo" style="font-size: 0.9rem;">
+                  <i class="bi bi-info-circle"></i> <strong>Monthly Limit:</strong> <span id="monthlyLimitText">Checking...</span>
+                </div>
                 
                 <div class="form-check mb-2" id="adminOptionsDiv" style="display: none;">
                   <input class="form-check-input" type="checkbox" id="autoApprove">
@@ -1055,7 +1106,56 @@ $schedules = $viewer->getSchedules();
             if (isAdminForLeave) {
               document.getElementById('adminOptionsDiv').style.display = 'block';
             }
+            
+            // Check monthly limit when add leave modal is opened
+            const addLeaveModal = document.getElementById('addLeaveModal');
+            addLeaveModal.addEventListener('show.bs.modal', function() {
+              checkMonthlyLimit();
+            });
           });
+          
+          function checkMonthlyLimit() {
+            fetch(`api/leave_request.php?action=get_employee_requests&employee_id=${employeeIdForLeave}`)
+              .then(res => res.json())
+              .then(response => {
+                if (response.success) {
+                  const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
+                  
+                  // Check for pending requests
+                  const pendingRequests = response.data.filter(leave => leave.status === 'pending');
+                  
+                  // Count approved requests in current month
+                  const approvedThisMonth = response.data.filter(leave => {
+                    const leaveMonth = leave.start_date.slice(0, 7);
+                    return leave.status === 'approved' && leaveMonth === currentMonth;
+                  });
+                  
+                  const limitText = document.getElementById('monthlyLimitText');
+                  const limitInfo = document.getElementById('monthlyLimitInfo');
+                  
+                  // Priority check: Pending requests block new submissions
+                  if (pendingRequests.length > 0) {
+                    limitText.innerHTML = '<strong>⏳ You have a pending leave request.</strong><br>Please wait for admin approval before submitting another request.';
+                    limitInfo.className = 'alert alert-warning mb-3';
+                  } 
+                  // Check approved monthly limit
+                  else if (approvedThisMonth.length >= 2) {
+                    limitText.innerHTML = '<strong>❌ Monthly limit reached.</strong><br>You have used 2 of 2 approved leave requests this month.';
+                    limitInfo.className = 'alert alert-danger mb-3';
+                  } 
+                  // Show remaining available requests
+                  else {
+                    const remaining = 2 - approvedThisMonth.length;
+                    limitText.innerHTML = `<strong>✅ ${remaining} of 2 leave requests available</strong> this month.<br><small>Note: You can only submit one request at a time.</small>`;
+                    limitInfo.className = 'alert alert-success mb-3';
+                  }
+                }
+              })
+              .catch(error => {
+                console.error('Error checking monthly limit:', error);
+                document.getElementById('monthlyLimitText').textContent = 'Unable to check limit at this time.';
+              });
+          }
 
           function confirmLeave() {
             const leaveType = document.getElementById("leaveType").value;
@@ -1151,38 +1251,65 @@ $schedules = $viewer->getSchedules();
                 method: 'POST',
                 body: formData
               })
-              .then(res => res.json())
-              .then(response => {
-                if (response.success) {
-                  // Show success modal
-                  document.getElementById("leaveSuccessMsg").textContent = response.message || "Leave request submitted successfully!";
-                  const successModal = new bootstrap.Modal(document.getElementById('leaveSuccessModal'));
-                  successModal.show();
-
-                  // Reload leave list
-                  loadEmployeeLeaves();
-
-                  // Auto-close after 5 seconds
-                  setTimeout(() => {
-                    successModal.hide();
-                    
-                    // Clean up after success modal closes
+              .then(res => {
+                console.log('Response status:', res.status);
+                return res.text(); // Get raw text first
+              })
+              .then(text => {
+                console.log('Raw response:', text);
+                try {
+                  const response = JSON.parse(text);
+                  console.log('Parsed response:', response);
+                  
+                  if (response.success) {
+                    // Reload leave list and monthly limit immediately
                     setTimeout(() => {
-                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                      document.body.classList.remove('modal-open');
-                      document.body.style.overflow = '';
-                    }, 150);
-                  }, 5000);
-                } else {
-                  document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + response.error;
-                  const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
-                  errorModal.show();
+                      loadEmployeeLeaves();
+                      checkMonthlyLimit();
+                    }, 200);
+
+                    // Show success modal
+                    document.getElementById("leaveSuccessMsg").textContent = response.message || "Leave request submitted successfully!";
+                    const successModal = new bootstrap.Modal(document.getElementById('leaveSuccessModal'));
+                    successModal.show();
+
+                    // Auto-close after 5 seconds
+                    setTimeout(() => {
+                      successModal.hide();
+                      
+                      // Clean up after success modal closes
+                      setTimeout(() => {
+                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                      }, 150);
+                    }, 5000);
+                  } else {
+                    document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + (response.error || 'Unknown error');
+                    const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+                    errorModal.show();
                   
                   // Auto-close after 5 seconds
                   setTimeout(() => {
                     errorModal.hide();
                     
                     // Clean up after error modal closes
+                    setTimeout(() => {
+                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                      document.body.classList.remove('modal-open');
+                      document.body.style.overflow = '';
+                    }, 150);
+                  }, 5000);
+                }
+                } catch (e) {
+                  console.error('JSON parse error:', e);
+                  console.error('Response was:', text);
+                  document.getElementById("leaveValidationErrorMsg").textContent = 'Server returned invalid response: ' + text.substring(0, 100);
+                  const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
+                  errorModal.show();
+                  
+                  setTimeout(() => {
+                    errorModal.hide();
                     setTimeout(() => {
                       document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                       document.body.classList.remove('modal-open');
@@ -1283,7 +1410,8 @@ $schedules = $viewer->getSchedules();
                       }
                     } else if (leave.status === 'approved') {
                       statusBadge = '<span class="badge bg-success ms-2">Approved</span>';
-                      actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'approved')" title="Cancel Leave"><i class="bi bi-trash"></i></button>`;
+                      // Approved leaves cannot be deleted/cancelled
+                      actionButtons = '';
                     } else if (leave.status === 'rejected') {
                       statusBadge = '<span class="badge bg-danger ms-2">Rejected</span>';
                       actionButtons = `<button class="btn btn-sm btn-outline-secondary" onclick="cancelLeave(${leave.id}, 'rejected')" title="Delete"><i class="bi bi-trash"></i></button>`;
@@ -1483,7 +1611,7 @@ $schedules = $viewer->getSchedules();
             // Delete functionality can be implemented if needed
             alert('Leave cancellation requires admin approval');
           }
-          </script>
+        </script>
 
       <div class="card shadow-sm mb-3">
       <div class="card-header d-flex justify-content-between align-items-center">
@@ -2070,7 +2198,9 @@ $schedules = $viewer->getSchedules();
 
       <div class="card" style="margin-top: 0 !important;">
         <div class="card-body" style="min-height: 800px; max-height: 800px; overflow-y: auto;">
-          <button class="btn btn-success w-100 mb-3" id="exportDtrBtn" onclick="exportDTR()">Export DTR</button>
+          <?php if ($isAdmin): ?>
+          <button class="btn btn-success w-100 mb-3" id="exportDtrBtn" onclick="redirectToIndividualReport()">Export DTR</button>
+          <?php endif; ?>
 
           <div class="d-flex justify-content-between align-items-center mb-2">
             <div><small class="text-muted">Daily Time Record</small></div>
@@ -2409,7 +2539,13 @@ $schedules = $viewer->getSchedules();
           }
         });
 
-        // Export DTR function
+        // Redirect to Individual Report page
+        function redirectToIndividualReport() {
+          const employeeId = '<?php echo htmlspecialchars($employee['employee_id']); ?>';
+          window.location.href = `../attendancerep/indirep.php?id=${employeeId}`;
+        }
+
+        // Export DTR function (legacy - kept for compatibility)
         function exportDTR() {
           const rangeData = window.getSelectedDateRange();
           
@@ -3308,6 +3444,30 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                 if (file) {
                     previewImg.src = URL.createObjectURL(file);
                 }
+            });
+        }
+        
+        // Force reload images if page was updated
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('status') === 'updated') {
+            // Clear all image caches by reloading with new timestamps
+            document.querySelectorAll('img[src*="profile"]').forEach(img => {
+                const src = img.src.split('?')[0];
+                img.src = src + '?v=' + Date.now();
+            });
+            
+            // Remove the status parameter from URL without reloading
+            const newUrl = window.location.pathname + '?id=' + urlParams.get('id');
+            window.history.replaceState({}, document.title, newUrl);
+        }
+        
+        // Refresh profile image when edit modal opens
+        const editInfoModal = document.getElementById('editInfoModal');
+        if (editInfoModal && previewImg) {
+            editInfoModal.addEventListener('show.bs.modal', function() {
+                // Force reload the profile image with a new timestamp
+                const currentSrc = previewImg.src.split('?')[0];
+                previewImg.src = currentSrc + '?v=' + Date.now();
             });
         }
         

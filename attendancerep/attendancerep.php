@@ -302,7 +302,7 @@ $currentDate = date('F d, Y', strtotime($selectedDate)); // Format: November 11,
   <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
-      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
+      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
            alt="Profile" 
            class="rounded-circle mb-2" 
            width="70" 
@@ -322,7 +322,9 @@ $currentDate = date('F d, Y', strtotime($selectedDate)); // Format: November 11,
       <h2 class="fw-bold display-4 text-dark">Attendance Reports</h2>
       <div class="d-flex align-items-center gap-3">
         <span class="text-muted">Selected Date: <strong><?php echo $currentDate; ?></strong></span>
+        <?php if (isAdmin()): ?>
         <a href="exporep.php" class="btn btn-warning">Batch Export DTR</a>
+        <?php endif; ?>
       </div>
   </div>
 

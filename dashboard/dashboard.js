@@ -185,14 +185,42 @@ function setSelectedDate(date) {
   updateCalendarHighlight(date);
   
   // Display selected date info
-  const dateObj = new Date(date);
+  const dateObj = new Date(date + 'T00:00:00'); // Parse as local date
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const formattedDate = dateObj.toLocaleDateString('en-US', options);
   
   console.log('Viewing attendance for:', formattedDate);
   
-  // You can add a badge or notification here if needed
-  // For example, show a temporary toast or update a label
+  // Update attendance feed header to show selected date
+  updateDateDisplay(formattedDate);
+}
+
+// Function to update date display in attendance feed header
+function updateDateDisplay(formattedDate) {
+  const feedHeader = document.querySelector('.attendance-feed h6');
+  if (feedHeader) {
+    // Check if date badge already exists
+    let dateBadge = document.getElementById('selectedDateBadge');
+    if (!dateBadge) {
+      dateBadge = document.createElement('div');
+      dateBadge.id = 'selectedDateBadge';
+      dateBadge.className = 'badge bg-info text-dark mt-2';
+      dateBadge.style.fontSize = '0.7rem';
+      dateBadge.style.fontWeight = 'normal';
+      dateBadge.style.display = 'block';
+      feedHeader.parentElement.insertBefore(dateBadge, feedHeader.nextSibling);
+    }
+    dateBadge.textContent = `📅 ${formattedDate}`;
+    dateBadge.style.display = 'block';
+  }
+}
+
+// Function to hide date display (when viewing today)
+function hideDateDisplay() {
+  const dateBadge = document.getElementById('selectedDateBadge');
+  if (dateBadge) {
+    dateBadge.style.display = 'none';
+  }
 }
 
 // Function to update calendar highlighting
@@ -292,14 +320,29 @@ async function loadAttendanceFeed(date = null) {
   try {
     const targetDate = date || getCurrentDate();
     const url = `get_attendance_records.php?type=feed${targetDate ? '&date=' + targetDate : ''}`;
+    
+    console.log('Loading attendance feed from:', url);
+    
     const response = await fetch(url);
+    
+    // Check if response is ok
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const result = await response.json();
+    
+    console.log('Attendance feed response:', result);
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to load attendance feed');
     }
     
     const attendanceData = result.feed.data;
+    
+    // Debug logging
+    console.log('Feed debug info:', result.feed.debug);
+    console.log(`Found ${attendanceData.length} attendance records`);
     
     // Update count badge
     if (countBadge) {
@@ -358,9 +401,14 @@ async function loadAttendanceFeed(date = null) {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     
+    console.log(`Attendance feed loaded: ${attendanceData.length} records for ${targetDate}`);
+    
   } catch (error) {
     console.error('Error loading attendance feed:', error);
-    container.innerHTML = '<div class="text-center text-danger py-3"><small>Failed to load attendance feed</small></div>';
+    container.innerHTML = `<div class="text-center text-danger py-3">
+      <small><i class="bi bi-exclamation-triangle me-1"></i>Failed to load attendance feed</small>
+      <div class="text-muted mt-1" style="font-size: 0.7rem;">${error.message}</div>
+    </div>`;
   }
 }
 
@@ -374,6 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
     todayBtn.addEventListener('click', function() {
       selectedDate = null; // Reset to today
       updateCalendarHighlight(null); // Clear calendar selection
+      hideDateDisplay(); // Hide the date badge
       loadDashboardData();
       console.log('Reset to today\'s data');
     });

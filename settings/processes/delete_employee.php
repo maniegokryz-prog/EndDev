@@ -107,25 +107,66 @@ class EmployeeDeleteProcessor {
     
     private function verifyAdminPassword($password) {
         try {
+            // Get the current logged-in user from session
             $userId = $_SESSION['user_id'] ?? null;
+            $username = $_SESSION['employee_id'] ?? 'unknown';
             
             if (empty($userId)) {
                 $this->logError('Admin Verification', 'No user session found');
                 return false;
             }
             
-            $stmt = $this->db->prepare("SELECT password_hash FROM admin_users WHERE id = ? AND is_active = 1");
-            $stmt->bind_param('i', $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
+            // Check if user is system admin or employee-based admin
+            $isSystemAdmin = isset($_SESSION['is_system_admin']) && $_SESSION['is_system_admin'] === true;
             
-            if ($result->num_rows === 0) {
-                $this->logError('Admin Verification', 'Admin user not found');
-                return false;
+            if ($isSystemAdmin) {
+                // System admin from admin_users table
+                $stmt = $this->db->prepare("SELECT password_hash, username FROM admin_users WHERE id = ? AND is_active = 1");
+                $stmt->bind_param('i', $userId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                if ($result->num_rows === 0) {
+                    $this->logError('Admin Verification', "System admin not found for ID: $userId");
+                    return false;
+                }
+                
+                $admin = $result->fetch_assoc();
+                $passwordHash = $admin['password_hash'];
+                $accountName = $admin['username'];
+                
+            } else {
+                // Employee-based admin from employees table
+                $stmt = $this->db->prepare("SELECT employee_password, employee_id, first_name, last_name FROM employees WHERE id = ? AND status = 'active'");
+                $stmt->bind_param('i', $userId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                if ($result->num_rows === 0) {
+                    $this->logError('Admin Verification', "Employee admin not found for ID: $userId");
+                    return false;
+                }
+                
+                $employee = $result->fetch_assoc();
+                $passwordHash = $employee['employee_password'];
+                $accountName = $employee['first_name'] . ' ' . $employee['last_name'];
             }
             
-            $admin = $result->fetch_assoc();
-            return password_verify($password, $admin['password_hash']);
+            // Verify password against the logged-in user's own password hash
+            $isValid = password_verify($password, $passwordHash);
+            
+            if ($isValid) {
+                $accountType = $isSystemAdmin ? 'System Admin' : 'Employee Admin';
+                $this->logActivity('Password verified for deletion', "$accountType: $accountName (ID: $userId)");
+            } else {
+                $this->logSecurityEvent('Failed password verification for deletion', [
+                    'admin_name' => $accountName,
+                    'admin_id' => $userId,
+                    'is_system_admin' => $isSystemAdmin
+                ]);
+            }
+            
+            return $isValid;
             
         } catch (Exception $e) {
             $this->logError('Admin Password Verification', $e->getMessage());

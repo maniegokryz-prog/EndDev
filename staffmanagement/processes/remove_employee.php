@@ -5,6 +5,11 @@
  * Requires admin password verification
  */
 
+// Disable error display and enable error logging
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
 // Start output buffering to catch any unwanted output
 ob_start();
 
@@ -22,7 +27,15 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
-require '../../db_connection.php';
+try {
+    require '../../db_connection.php';
+} catch (Exception $e) {
+    ob_end_clean();
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
+    exit();
+}
 
 // Clear any buffered output and set JSON header
 ob_end_clean();
@@ -38,12 +51,17 @@ class EmployeeRemovalProcessor {
     
     public function handleRequest() {
         try {
+            // Log request received
+            $this->logActivity('Remove employee request received', 'Employee ID: ' . ($_POST['employee_id'] ?? 'none'));
+            
             // Verify CSRF token
             if (!$this->validateCSRFToken()) {
                 $this->logSecurityEvent('CSRF token validation failed for employee removal');
                 $this->sendErrorResponse('Invalid CSRF token.', 403);
                 return;
             }
+            
+            $this->logActivity('CSRF token validated');
             
             // Get and validate input
             $employeeId = $_POST['employee_id'] ?? '';
@@ -59,6 +77,8 @@ class EmployeeRemovalProcessor {
                 return;
             }
             
+            $this->logActivity('Input validated', 'Employee ID: ' . $employeeId);
+            
             // Verify admin password
             if (!$this->verifyAdminPassword($adminPassword)) {
                 $this->logSecurityEvent('Failed admin password verification for employee removal', [
@@ -68,11 +88,15 @@ class EmployeeRemovalProcessor {
                 return;
             }
             
+            $this->logActivity('Admin password verified');
+            
             // Check if employee exists and is active
             if (!$this->employeeExists($employeeId)) {
                 $this->sendErrorResponse('Employee not found.', 404);
                 return;
             }
+            
+            $this->logActivity('Employee exists check passed');
             
             // Change employee status to inactive
             $result = $this->deactivateEmployee($employeeId);
@@ -86,8 +110,8 @@ class EmployeeRemovalProcessor {
             }
             
         } catch (Exception $e) {
-            $this->logError('Unexpected Error', $e->getMessage());
-            $this->sendErrorResponse('An unexpected error occurred.', 500);
+            $this->logError('Unexpected Error in handleRequest', $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+            $this->sendErrorResponse('An unexpected error occurred: ' . $e->getMessage(), 500);
         }
     }
     
@@ -104,29 +128,67 @@ class EmployeeRemovalProcessor {
     
     private function verifyAdminPassword($password) {
         try {
-            // Get the current logged-in admin user from session
+            // Get the current logged-in user from session
             $userId = $_SESSION['user_id'] ?? null;
+            $userRole = $_SESSION['user_role'] ?? 'user';
+            $username = $_SESSION['employee_id'] ?? 'unknown';
             
             if (empty($userId)) {
                 $this->logError('Admin Verification', 'No user session found');
                 return false;
             }
             
-            // Get admin password hash from database
-            $stmt = $this->db->prepare("SELECT password_hash FROM admin_users WHERE id = ? AND is_active = 1");
-            $stmt->bind_param('i', $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
+            // Check if user is system admin or employee-based admin
+            $isSystemAdmin = isset($_SESSION['is_system_admin']) && $_SESSION['is_system_admin'] === true;
             
-            if ($result->num_rows === 0) {
-                $this->logError('Admin Verification', 'Admin user not found');
-                return false;
+            if ($isSystemAdmin) {
+                // System admin from admin_users table
+                $stmt = $this->db->prepare("SELECT password_hash, username FROM admin_users WHERE id = ? AND is_active = 1");
+                $stmt->bind_param('i', $userId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                if ($result->num_rows === 0) {
+                    $this->logError('Admin Verification', "System admin not found for ID: $userId");
+                    return false;
+                }
+                
+                $admin = $result->fetch_assoc();
+                $passwordHash = $admin['password_hash'];
+                $accountName = $admin['username'];
+                
+            } else {
+                // Employee-based admin from employees table
+                $stmt = $this->db->prepare("SELECT employee_password, employee_id, first_name, last_name FROM employees WHERE id = ? AND status = 'active'");
+                $stmt->bind_param('i', $userId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                if ($result->num_rows === 0) {
+                    $this->logError('Admin Verification', "Employee admin not found for ID: $userId");
+                    return false;
+                }
+                
+                $employee = $result->fetch_assoc();
+                $passwordHash = $employee['employee_password'];
+                $accountName = $employee['first_name'] . ' ' . $employee['last_name'];
             }
             
-            $admin = $result->fetch_assoc();
+            // Verify password against the logged-in user's own password hash
+            $isValid = password_verify($password, $passwordHash);
             
-            // Verify password
-            return password_verify($password, $admin['password_hash']);
+            if ($isValid) {
+                $accountType = $isSystemAdmin ? 'System Admin' : 'Employee Admin';
+                $this->logActivity('Password verified for admin', "$accountType: $accountName (ID: $userId)");
+            } else {
+                $this->logSecurityEvent('Failed password verification', [
+                    'admin_name' => $accountName,
+                    'admin_id' => $userId,
+                    'is_system_admin' => $isSystemAdmin
+                ]);
+            }
+            
+            return $isValid;
             
         } catch (Exception $e) {
             $this->logError('Admin Password Verification', $e->getMessage());
@@ -151,6 +213,7 @@ class EmployeeRemovalProcessor {
     
     private function deactivateEmployee($employeeId) {
         try {
+            $this->logActivity('Starting deactivateEmployee', 'Employee ID: ' . $employeeId);
             $this->db->begin_transaction();
             
             // First, get the internal employee ID
@@ -161,6 +224,7 @@ class EmployeeRemovalProcessor {
             
             if ($result->num_rows === 0) {
                 $this->db->rollback();
+                $this->logError('Deactivate Employee', 'Employee not found in deactivateEmployee');
                 return [
                     'success' => false,
                     'message' => 'Employee not found or already inactive.'
@@ -169,6 +233,7 @@ class EmployeeRemovalProcessor {
             
             $employee = $result->fetch_assoc();
             $internalEmployeeId = $employee['id'];
+            $this->logActivity('Got internal employee ID', 'ID: ' . $internalEmployeeId);
             
             // Update employee status to 'inactive' instead of deleting
             $stmt = $this->db->prepare("
@@ -185,11 +250,23 @@ class EmployeeRemovalProcessor {
                 throw new Exception('Failed to update employee status.');
             }
             
-            // Sync employee deactivation to cloud
-            require_once __DIR__ . '/../../db_cloud_sync.php';
-            syncToCloud('employees', [
-                'status' => 'inactive'
-            ], 'update', "id = {$internalEmployeeId}");
+            $this->logActivity('Employee status updated to inactive');
+            
+            // Sync employee deactivation to cloud (non-blocking, disabled for performance)
+            // Cloud sync temporarily disabled to prevent timeout issues
+            /*
+            try {
+                require_once __DIR__ . '/../../db_cloud_sync.php';
+                syncToCloud('employees', [
+                    'status' => 'inactive'
+                ], 'update', "id = {$internalEmployeeId}");
+            } catch (Exception $syncError) {
+                // Log but don't fail the operation
+                $this->logError('Cloud Sync', 'Failed to sync employee deactivation: ' . $syncError->getMessage());
+            }
+            */
+            
+            $this->logActivity('Cloud sync skipped (disabled)');
             
             // Deactivate employee schedules
             $stmt = $this->db->prepare("
@@ -202,11 +279,19 @@ class EmployeeRemovalProcessor {
             $stmt->bind_param('i', $internalEmployeeId);
             $stmt->execute();
             
-            // Sync employee schedules deactivation to cloud
-            syncToCloud('employee_schedules', [
-                'is_active' => 0,
-                'end_date' => date('Y-m-d')
-            ], 'update', "employee_id = {$internalEmployeeId} AND is_active = 1");
+            $this->logActivity('Employee schedules deactivated');
+            
+            // Cloud sync for schedules (disabled)
+            /*
+            try {
+                syncToCloud('employee_schedules', [
+                    'is_active' => 0,
+                    'end_date' => date('Y-m-d')
+                ], 'update', "employee_id = {$internalEmployeeId} AND is_active = 1");
+            } catch (Exception $syncError) {
+                $this->logError('Cloud Sync', 'Failed to sync schedules deactivation: ' . $syncError->getMessage());
+            }
+            */
             
             // Deactivate employee assignments
             $stmt = $this->db->prepare("
@@ -218,12 +303,21 @@ class EmployeeRemovalProcessor {
             $stmt->bind_param('i', $internalEmployeeId);
             $stmt->execute();
             
-            // Sync employee assignments deactivation to cloud
-            syncToCloud('employee_assignments', [
-                'is_active' => 0
-            ], 'update', "employee_id = {$internalEmployeeId} AND is_active = 1");
+            $this->logActivity('Employee assignments deactivated');
+            
+            // Cloud sync for assignments (disabled)
+            /*
+            try {
+                syncToCloud('employee_assignments', [
+                    'is_active' => 0
+                ], 'update', "employee_id = {$internalEmployeeId} AND is_active = 1");
+            } catch (Exception $syncError) {
+                $this->logError('Cloud Sync', 'Failed to sync assignments deactivation: ' . $syncError->getMessage());
+            }
+            */
             
             $this->db->commit();
+            $this->logActivity('Transaction committed successfully');
             
             return [
                 'success' => true,
@@ -232,6 +326,7 @@ class EmployeeRemovalProcessor {
             
         } catch (Exception $e) {
             $this->db->rollback();
+            $this->logError('Deactivate Employee Exception', $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
             return [
                 'success' => false,
                 'message' => 'Error deactivating employee: ' . $e->getMessage()

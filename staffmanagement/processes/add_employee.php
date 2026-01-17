@@ -1,5 +1,15 @@
 <?php
 require '../../db_connection.php';
+
+// Check if adding new staff is allowed
+if (!canAddNewStaff()) {
+    http_response_code(403);
+    die(json_encode([
+        'success' => false,
+        'message' => 'Adding new staff is disabled on this server'
+    ]));
+}
+
 // Set the maximum execution time to 5 minutes (300 seconds) 
 ini_set('max_execution_time', 60); 
 // You can also use this function, which does the same thing: //set_time_limit(300);

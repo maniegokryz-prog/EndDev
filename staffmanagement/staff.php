@@ -258,7 +258,7 @@ $roles = $viewer->getDistinctRoles();
   <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
-      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
+      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
            alt="Profile" 
            class="rounded-circle mb-2" 
            width="70" 
@@ -277,7 +277,13 @@ $roles = $viewer->getDistinctRoles();
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="fw-bold display-4 text-dark">Staff Management</h2>
      <div class="d-flex justify-content-end mb-3">
-      <a href="newstaff.php" class="btn btn-warning">Add New Staff</a>
+      <?php if (canAddNewStaff()): ?>
+        <a href="newstaff.php" class="btn btn-warning">Add New Staff</a>
+      <?php else: ?>
+        <button class="btn btn-secondary" disabled title="Adding new staff is disabled on this server">
+          <i class="bi bi-lock"></i> Add New Staff (Disabled)
+        </button>
+      <?php endif; ?>
     </div>
   </div>
 

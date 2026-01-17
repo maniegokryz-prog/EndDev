@@ -130,14 +130,17 @@ try {
         ];
     }
     
-    // Fetch attendance feed (recent logs)
+    // Fetch attendance feed (recent logs from daily_attendance)
     if ($type === 'all' || $type === 'feed') {
+        // Query daily_attendance table which has the actual attendance records
         $sql = "SELECT 
-                    al.id,
-                    al.employee_id,
-                    al.log_type,
-                    al.log_time,
-                    al.notes,
+                    da.id,
+                    da.employee_id,
+                    da.time_in,
+                    da.time_out,
+                    da.status,
+                    da.late_minutes,
+                    da.attendance_date,
                     e.employee_id as employee_code,
                     e.first_name,
                     e.middle_name,
@@ -145,69 +148,124 @@ try {
                     e.profile_photo,
                     e.position,
                     e.department
-                FROM attendance_logs al
-                INNER JOIN employees e ON al.employee_id = e.id
-                WHERE DATE(al.log_time) = ?
-                ORDER BY al.log_time DESC
+                FROM daily_attendance da
+                INNER JOIN employees e ON da.employee_id = e.id
+                WHERE da.attendance_date = ?
+                AND (da.time_in IS NOT NULL OR da.time_out IS NOT NULL)
+                ORDER BY da.time_in DESC
                 LIMIT ?";
         
         $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("SQL prepare failed: " . $conn->error);
+        }
+        
         $stmt->bind_param("si", $date, $limit);
-        $stmt->execute();
+        
+        if (!$stmt->execute()) {
+            throw new Exception("SQL execute failed: " . $stmt->error);
+        }
+        
         $result = $stmt->get_result();
         
         $attendance_logs = [];
         
+        // Debug: Count total rows
+        $total_rows = $result->num_rows;
+        
         while ($row = $result->fetch_assoc()) {
-            $log_time = new DateTime($row['log_time']);
-            $time_ago_data = getTimeAgo($row['log_time']);
-            
-            // Format log time for display
-            $formatted_time = $log_time->format('g:i A');
-            $formatted_date = $log_time->format('M j, Y');
-            
             // Build full name
             $full_name = trim($row['first_name'] . ' ' . $row['last_name']);
             
             // Get profile photo path
             $profile_photo = getProfilePhotoPath($row['profile_photo']);
             
-            // Format log type for display
-            $log_type_display = ($row['log_type'] === 'time_in') ? 'Time In' : 'Time Out';
-            
-            // Extract status from notes (if available)
-            $status = '';
-            if (!empty($row['notes'])) {
-                if (strpos($row['notes'], 'Time In:') !== false) {
-                    $status = str_replace('Time In: ', '', $row['notes']);
-                } elseif (strpos($row['notes'], 'Time Out:') !== false) {
-                    $status = str_replace('Time Out: ', '', $row['notes']);
+            // Process time_in if exists
+            if (!empty($row['time_in'])) {
+                $log_time = new DateTime($row['time_in']);
+                $time_ago_data = getTimeAgo($row['time_in']);
+                
+                // Format log time for display
+                $formatted_time = $log_time->format('g:i A');
+                $formatted_date = $log_time->format('M j, Y');
+                
+                // Determine status based on late_minutes
+                $status = '';
+                if ($row['late_minutes'] > 0) {
+                    $late_hours = floor($row['late_minutes'] / 60);
+                    $late_mins = $row['late_minutes'] % 60;
+                    if ($late_hours > 0) {
+                        $status = "Late ({$late_hours}h {$late_mins}m)";
+                    } else {
+                        $status = "Late ({$late_mins}m)";
+                    }
+                } else {
+                    $status = "On-time";
                 }
+                
+                $attendance_logs[] = [
+                    'id' => $row['id'] . '_in',
+                    'employee_code' => $row['employee_code'],
+                    'full_name' => $full_name,
+                    'profile_photo' => $profile_photo,
+                    'position' => $row['position'],
+                    'department' => $row['department'],
+                    'log_type' => 'time_in',
+                    'log_type_display' => 'Time In',
+                    'log_time' => $row['time_in'],
+                    'formatted_time' => $formatted_time,
+                    'formatted_date' => $formatted_date,
+                    'time_ago' => $time_ago_data['time_ago'],
+                    'detailed_time_ago' => $time_ago_data['detailed_time_ago'],
+                    'total_minutes' => $time_ago_data['total_minutes'],
+                    'status' => $status,
+                    'notes' => ''
+                ];
             }
             
-            $attendance_logs[] = [
-                'id' => $row['id'],
-                'employee_code' => $row['employee_code'],
-                'full_name' => $full_name,
-                'profile_photo' => $profile_photo,
-                'position' => $row['position'],
-                'department' => $row['department'],
-                'log_type' => $row['log_type'],
-                'log_type_display' => $log_type_display,
-                'log_time' => $row['log_time'],
-                'formatted_time' => $formatted_time,
-                'formatted_date' => $formatted_date,
-                'time_ago' => $time_ago_data['time_ago'],
-                'detailed_time_ago' => $time_ago_data['detailed_time_ago'],
-                'total_minutes' => $time_ago_data['total_minutes'],
-                'status' => $status,
-                'notes' => $row['notes']
-            ];
+            // Process time_out if exists
+            if (!empty($row['time_out'])) {
+                $log_time = new DateTime($row['time_out']);
+                $time_ago_data = getTimeAgo($row['time_out']);
+                
+                // Format log time for display
+                $formatted_time = $log_time->format('g:i A');
+                $formatted_date = $log_time->format('M j, Y');
+                
+                $attendance_logs[] = [
+                    'id' => $row['id'] . '_out',
+                    'employee_code' => $row['employee_code'],
+                    'full_name' => $full_name,
+                    'profile_photo' => $profile_photo,
+                    'position' => $row['position'],
+                    'department' => $row['department'],
+                    'log_type' => 'time_out',
+                    'log_type_display' => 'Time Out',
+                    'log_time' => $row['time_out'],
+                    'formatted_time' => $formatted_time,
+                    'formatted_date' => $formatted_date,
+                    'time_ago' => $time_ago_data['time_ago'],
+                    'detailed_time_ago' => $time_ago_data['detailed_time_ago'],
+                    'total_minutes' => $time_ago_data['total_minutes'],
+                    'status' => '',
+                    'notes' => ''
+                ];
+            }
         }
+        
+        // Sort by log_time descending (most recent first)
+        usort($attendance_logs, function($a, $b) {
+            return strtotime($b['log_time']) - strtotime($a['log_time']);
+        });
         
         $response['feed'] = [
             'count' => count($attendance_logs),
-            'data' => $attendance_logs
+            'data' => $attendance_logs,
+            'debug' => [
+                'date_queried' => $date,
+                'limit' => $limit,
+                'rows_found' => $total_rows
+            ]
         ];
     }
     

@@ -27,13 +27,16 @@ function getNavigationLinks() {
             'icon' => 'bi-people',
             'label' => 'Staff Management'
         ];
-        // Add My Profile for admin
+        // Add My Profile for admin (except for default admin account)
+        $username = $currentUser['username'] ?? '';
         $employeeId = $currentUser['employee_id'] ?? '';
-        $links[] = [
-            'url' => '../staffmanagement/staffinfo.php?id=' . urlencode($employeeId),
-            'icon' => 'bi-person-circle',
-            'label' => 'My Profile'
-        ];
+        if ($username !== 'admin') {
+            $links[] = [
+                'url' => '../staffmanagement/staffinfo.php?id=' . urlencode($employeeId),
+                'icon' => 'bi-person-circle',
+                'label' => 'My Profile'
+            ];
+        }
         $links[] = [
             'url' => '../settings/settings.php',
             'icon' => 'bi-gear',

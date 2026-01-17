@@ -6,6 +6,12 @@ require_once '../navigation.php';
 // Get current user info
 $currentUser = getCurrentUser();
 $isAdmin = isAdmin();
+
+// Generate CSRF token if not already set
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrfToken = $_SESSION['csrf_token'];
 ?>
     <!DOCTYPE html>
 <html lang="en">
@@ -29,6 +35,11 @@ $isAdmin = isAdmin();
 
   <!-- Custom CSS -->
 <link rel="stylesheet" href="settings.css">
+
+  <!-- CSRF Token for JavaScript -->
+  <script>
+    const CSRF_TOKEN = "<?php echo $csrfToken; ?>";
+  </script>
 </head>
 
 <body>
@@ -45,7 +56,7 @@ $isAdmin = isAdmin();
   <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
-      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
+      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
            alt="Profile" 
            class="rounded-circle mb-2" 
            width="70" 
@@ -258,45 +269,67 @@ $isAdmin = isAdmin();
 </div>
 
 
-  <!-- CLEAR ALL RECORDS CARD -->
+  <!-- CLEAR ALL RECORDS CARD - ADMIN ONLY -->
+<?php if ($isAdmin): ?>
 <div class="col-6 col-md-3">
-  <div class="setting-card" id="clearRecords" style="cursor:pointer;">
+  <div class="setting-card" id="clearAllRecords" style="cursor:pointer;" onclick="handleClearRecordsClick()">
     <div class="setting-icon">
       <i class="fas fa-trash"></i>
     </div>
     <h6>CLEAR ALL RECORDS</h6>
   </div>
 </div>
+<?php endif; ?>
 
 <!-- 🔹 FIRST CONFIRMATION MODAL -->
-<div class="modal fade" id="firstConfirmModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="clearAllRecordsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center p-3">
       <div class="modal-body">
         <i class="fa-solid fa-triangle-exclamation text-warning mb-3" style="font-size:3rem;"></i>
-        <h5 class="mb-3">This will delete all the attendance records (1000).</h5>
+        <h5 class="mb-3">
+          This will delete all the attendance records 
+          <span id="recordsCountDisplay">
+            (<span class="spinner-border spinner-border-sm" role="status"></span>)
+          </span>.
+        </h5>
         <p class="text-muted">Are you sure you want to continue?</p>
         <div class="d-flex justify-content-center gap-3 mt-3">
           <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-danger" id="continueBtn">Continue</button>
+          <button class="btn btn-danger" id="proceedDeleteBtn">Continue</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 🔹 SECOND CONFIRMATION MODAL -->
+<!-- 🔹 SECOND CONFIRMATION MODAL WITH PASSWORD -->
 <div class="modal fade" id="secondConfirmModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center p-3">
-      <div class="modal-body">
+    <div class="modal-content p-3">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Confirm Action</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
         <i class="fa-solid fa-triangle-exclamation text-warning mb-3" style="font-size:3rem;"></i>
         <h5 class="mb-3">You cannot undo this action.</h5>
-        <p class="text-muted">Do you wish to continue?</p>
-        <div class="d-flex justify-content-center gap-3 mt-3">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-danger" id="confirmDeleteBtn">Yes</button>
-        </div>
+        <p class="text-muted mb-3">Do you wish to continue?</p>
+        
+        <form id="clearRecordsForm">
+          <div class="mb-3 text-start">
+            <label for="clearPasswordInput" class="form-label">Admin Password <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" id="clearPasswordInput" required placeholder="Enter your password">
+            <div id="clearPasswordError" class="text-danger small mt-1" style="display: none;"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">
+          <span id="deleteBtnText">Yes, Clear All</span>
+          <span id="deleteBtnSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -316,48 +349,125 @@ $isAdmin = isAdmin();
 </div>
 
 <!-- ✅ Bootstrap JS and Script -->
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const clearBtn = document.getElementById('clearRecords');
-  const continueBtn = document.getElementById('continueBtn');
-  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-
-  const firstModal = new bootstrap.Modal(document.getElementById('firstConfirmModal'));
-  const secondModal = new bootstrap.Modal(document.getElementById('secondConfirmModal'));
-  const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-
-  // Step 1 - Click CLEAR ALL RECORDS
-  clearBtn.addEventListener('click', () => {
-    firstModal.show();
-  });
-
-  // Step 2 - Click CONTINUE in first modal
-  continueBtn.addEventListener('click', () => {
-    firstModal.hide();
-    setTimeout(() => {
-      secondModal.show();
-    }, 300);
-  });
-
-  // Step 3 - Click YES in second modal
-  confirmDeleteBtn.addEventListener('click', () => {
-    secondModal.hide();
-    setTimeout(() => {
-      successModal.show();
-
-      // Step 4 - Simulate deletion + redirect
-      setTimeout(() => {
-        window.location.href = "settings.php";
-      }, 2000);
-    }, 300);
-  });
-});
-</script>
 
 
   
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="settings.js"></script>
+<script src="settings.js"></script>
+
+<script>
+// Clear All Records functionality
+async function handleClearRecordsClick() {
+  console.log('Clear All Records clicked!');
+  
+  // Fetch the actual count of records
+  try {
+    const response = await fetch('processes/get_records_count.php');
+    const result = await response.json();
+    
+    console.log('Records count result:', result);
+    
+    if (result.success) {
+      document.getElementById('recordsCountDisplay').textContent = `(${result.count.toLocaleString()})`;
+    } else {
+      document.getElementById('recordsCountDisplay').textContent = '(unknown)';
+    }
+  } catch (error) {
+    console.error('Failed to fetch record count:', error);
+    document.getElementById('recordsCountDisplay').textContent = '(unknown)';
+  }
+  
+  const modal = new bootstrap.Modal(document.getElementById("clearAllRecordsModal"));
+  modal.show();
+}
+
+// Handle proceeding to second confirmation
+document.getElementById("proceedDeleteBtn").addEventListener("click", () => {
+  bootstrap.Modal.getInstance(document.getElementById("clearAllRecordsModal")).hide();
+  const secondModal = new bootstrap.Modal(document.getElementById("secondConfirmModal"));
+  secondModal.show();
+});
+
+// Handle final confirmation with password
+document.getElementById("confirmDeleteBtn").addEventListener("click", async function() {
+  const password = document.getElementById('clearPasswordInput').value.trim();
+  const errorDiv = document.getElementById('clearPasswordError');
+  const btnText = document.getElementById('deleteBtnText');
+  const btnSpinner = document.getElementById('deleteBtnSpinner');
+  
+  if (!password) {
+    errorDiv.textContent = 'Please enter your password';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  errorDiv.style.display = 'none';
+  this.disabled = true;
+  btnText.style.display = 'none';
+  btnSpinner.style.display = 'inline-block';
+  
+  try {
+    const formData = new FormData();
+      formData.append('admin_password', password);
+      formData.append('csrf_token', CSRF_TOKEN);
+    const response = await fetch('processes/clear_all_records.php', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Close modal
+      bootstrap.Modal.getInstance(document.getElementById("secondConfirmModal")).hide();
+      
+      // Clear password input
+      document.getElementById('clearPasswordInput').value = '';
+      
+      // Show success message with count
+      const message = result.count > 0 
+        ? `Successfully cleared ${result.count} attendance record(s)` 
+        : 'No records found to clear';
+      showPopupMessage(message);
+      
+      // Redirect after a moment
+      setTimeout(() => {
+        window.location.href = "settings.php";
+      }, 2000);
+    } else {
+      errorDiv.textContent = result.message || result.error || 'Failed to clear records';
+      errorDiv.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Clear records error:', error);
+    errorDiv.textContent = 'An error occurred. Please try again.';
+    errorDiv.style.display = 'block';
+  }
+  
+  this.disabled = false;
+  btnText.style.display = 'inline';
+  btnSpinner.style.display = 'none';
+});
+
+function showPopupMessage(message) {
+  const popup = document.createElement("div");
+  popup.textContent = message;
+  popup.style.position = "fixed";
+  popup.style.top = "50%";
+  popup.style.left = "50%";
+  popup.style.transform = "translate(-50%, -50%)";
+  popup.style.backgroundColor = "#083c34";
+  popup.style.color = "white";
+  popup.style.padding = "15px 25px";
+  popup.style.borderRadius = "10px";
+  popup.style.fontWeight = "500";
+  popup.style.boxShadow = "0 3px 10px rgba(0,0,0,0.2)";
+  popup.style.zIndex = "2000";
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1500);
+}
+</script>
+
 </body>
 </html>

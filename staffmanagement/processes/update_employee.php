@@ -1,4 +1,9 @@
 <?php
+// Start session to update user info in session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require '../../db_connection.php';
 
 class EmployeeUpdater {
@@ -54,7 +59,14 @@ class EmployeeUpdater {
             $this->db->commit();
 
             $this->logActivity('Employee updated successfully', 'Employee ID: ' . $this->validatedData['employee_id_string']);
-            header('Location: ../staffinfo.php?id=' . urlencode($this->validatedData['employee_id_string']) . '&status=updated');
+            
+            // Add cache control headers to prevent caching
+            header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+            header('Pragma: no-cache');
+            header('Expires: 0');
+            
+            // Add timestamp to force browser reload
+            header('Location: ../staffinfo.php?id=' . urlencode($this->validatedData['employee_id_string']) . '&status=updated&t=' . time());
             exit;
 
         } catch (Exception $e) {
@@ -149,6 +161,15 @@ class EmployeeUpdater {
                 throw new Exception("Failed to update profile picture path in the database.");
             }
             
+            // Update session if this is the current user's profile
+            if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $employee['id']) {
+                $_SESSION['profile_photo'] = $relativePath;
+                // Force session write to ensure it persists
+                session_write_close();
+                session_start();
+                $this->logActivity('Session profile_photo updated', "New path: {$relativePath}");
+            }
+            
             // Sync profile photo update to cloud
             require_once __DIR__ . '/../../db_cloud_sync.php';
             syncToCloud('employees', [
@@ -175,6 +196,17 @@ class EmployeeUpdater {
         );
         if (!$stmt->execute()) {
             throw new Exception("Failed to update employee details: " . $stmt->error);
+        }
+        
+        // Update session if this is the current user's profile
+        if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $employeeId) {
+            $_SESSION['user_name'] = trim($this->validatedData['first_name'] . ' ' . $this->validatedData['last_name']);
+            $_SESSION['department'] = $this->validatedData['department'];
+            $_SESSION['position'] = $this->validatedData['position'];
+            // Force session write to ensure it persists
+            session_write_close();
+            session_start();
+            $this->logActivity('Session user info updated', "Name: {$_SESSION['user_name']}");
         }
         
         // Sync employee update to cloud

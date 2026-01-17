@@ -1,9 +1,14 @@
 <?php
 /**
- * Restore Employee Process
- * Changes employee status from 'inactive' to 'active'
+ * Clear All Attendance Records
+ * Permanently deletes all attendance records from the system
  * Requires admin password verification
  */
+
+// Disable error display and enable error logging
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
 // Start output buffering
 ob_start();
@@ -22,13 +27,22 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
+// Check if user is admin
+if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+    ob_end_clean();
+    http_response_code(403);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Admin access required']);
+    exit();
+}
+
 require '../../db_connection.php';
 
 // Clear buffer and set JSON header
 ob_end_clean();
 header('Content-Type: application/json');
 
-class EmployeeRestoreProcessor {
+class ClearRecordsProcessor {
     private $db;
     
     public function __construct($database) {
@@ -39,19 +53,13 @@ class EmployeeRestoreProcessor {
         try {
             // Verify CSRF token
             if (!$this->validateCSRFToken()) {
-                $this->logSecurityEvent('CSRF token validation failed for employee restore');
+                $this->logSecurityEvent('CSRF token validation failed for clear all records');
                 $this->sendErrorResponse('Invalid CSRF token.', 403);
                 return;
             }
             
-            // Get and validate input
-            $employeeIds = $_POST['employee_ids'] ?? '';
+            // Get and validate admin password
             $adminPassword = $_POST['admin_password'] ?? '';
-            
-            if (empty($employeeIds)) {
-                $this->sendErrorResponse('Employee IDs are required.', 400);
-                return;
-            }
             
             if (empty($adminPassword)) {
                 $this->sendErrorResponse('Admin password is required.', 400);
@@ -60,37 +68,32 @@ class EmployeeRestoreProcessor {
             
             // Verify admin password
             if (!$this->verifyAdminPassword($adminPassword)) {
-                $this->logSecurityEvent('Failed admin password verification for employee restore', [
-                    'employee_ids' => $employeeIds
-                ]);
+                $this->logSecurityEvent('Failed admin password verification for clear all records');
                 $this->sendErrorResponse('Invalid admin password.', 403);
                 return;
             }
             
-            // Parse employee IDs (comma-separated)
-            $ids = explode(',', $employeeIds);
-            $ids = array_map('trim', $ids);
-            $ids = array_filter($ids);
+            // Get count before deletion
+            $count = $this->getRecordCount();
             
-            if (empty($ids)) {
-                $this->sendErrorResponse('No valid employee IDs provided.', 400);
-                return;
-            }
-            
-            // Restore employees
-            $result = $this->restoreEmployees($ids);
+            // Clear all attendance records
+            $result = $this->clearAllRecords();
             
             if ($result['success']) {
-                $this->logActivity('Employees restored successfully', 'Count: ' . $result['count']);
-                $this->sendSuccessResponse($result);
+                $this->logActivity('All attendance records cleared', "Total records deleted: $count");
+                $this->sendSuccessResponse([
+                    'success' => true,
+                    'message' => "Successfully deleted $count attendance record(s).",
+                    'count' => $count
+                ]);
             } else {
-                $this->logError('Employee Restore Failed', $result['message']);
+                $this->logError('Clear All Records Failed', $result['message']);
                 $this->sendErrorResponse($result['message'], 500);
             }
             
         } catch (Exception $e) {
-            $this->logError('Unexpected Error', $e->getMessage());
-            $this->sendErrorResponse('An unexpected error occurred.', 500);
+            $this->logError('Unexpected Error in clearAllRecords', $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+            $this->sendErrorResponse('An unexpected error occurred: ' . $e->getMessage(), 500);
         }
     }
     
@@ -157,9 +160,9 @@ class EmployeeRestoreProcessor {
             
             if ($isValid) {
                 $accountType = $isSystemAdmin ? 'System Admin' : 'Employee Admin';
-                $this->logActivity('Password verified for restore', "$accountType: $accountName (ID: $userId)");
+                $this->logActivity('Password verified for clear records', "$accountType: $accountName (ID: $userId)");
             } else {
-                $this->logSecurityEvent('Failed password verification for restore', [
+                $this->logSecurityEvent('Failed password verification for clear records', [
                     'admin_name' => $accountName,
                     'admin_id' => $userId,
                     'is_system_admin' => $isSystemAdmin
@@ -174,79 +177,42 @@ class EmployeeRestoreProcessor {
         }
     }
     
-    private function restoreEmployees($employeeIds) {
+    private function getRecordCount() {
+        try {
+            $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM daily_attendance");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            return $row['total'];
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+    
+    private function clearAllRecords() {
         try {
             $this->db->begin_transaction();
             
-            $restoredCount = 0;
-            $placeholders = implode(',', array_fill(0, count($employeeIds), '?'));
+            // Delete all daily attendance records
+            $stmt = $this->db->prepare("DELETE FROM daily_attendance");
+            $result = $stmt->execute();
             
-            // Update employee status to 'active'
-            $sql = "UPDATE employees 
-                    SET status = 'active',
-                        updated_at = CURRENT_TIMESTAMP
-                    WHERE employee_id IN ($placeholders) AND status = 'inactive'";
-            
-            $stmt = $this->db->prepare($sql);
-            $stmt->bind_param(str_repeat('s', count($employeeIds)), ...$employeeIds);
-            $stmt->execute();
-            $restoredCount = $stmt->affected_rows;
-            
-            if ($restoredCount === 0) {
-                $this->db->rollback();
-                return [
-                    'success' => false,
-                    'message' => 'No employees were restored. They may already be active.'
-                ];
-            }
-            
-            // Get internal IDs for the restored employees
-            $sql = "SELECT id FROM employees WHERE employee_id IN ($placeholders)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bind_param(str_repeat('s', count($employeeIds)), ...$employeeIds);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            $internalIds = [];
-            while ($row = $result->fetch_assoc()) {
-                $internalIds[] = $row['id'];
-            }
-            
-            // Reactivate employee schedules
-            if (!empty($internalIds)) {
-                $placeholders = implode(',', array_fill(0, count($internalIds), '?'));
-                $sql = "UPDATE employee_schedules 
-                        SET is_active = 1,
-                            end_date = NULL
-                        WHERE employee_id IN ($placeholders)";
-                
-                $stmt = $this->db->prepare($sql);
-                $stmt->bind_param(str_repeat('i', count($internalIds)), ...$internalIds);
-                $stmt->execute();
-                
-                // Reactivate employee assignments
-                $sql = "UPDATE employee_assignments 
-                        SET is_active = 1
-                        WHERE employee_id IN ($placeholders)";
-                
-                $stmt = $this->db->prepare($sql);
-                $stmt->bind_param(str_repeat('i', count($internalIds)), ...$internalIds);
-                $stmt->execute();
+            if (!$result) {
+                throw new Exception('Failed to delete attendance records.');
             }
             
             $this->db->commit();
             
             return [
                 'success' => true,
-                'count' => $restoredCount,
-                'message' => $restoredCount . ' employee(s) restored successfully.'
+                'message' => 'All attendance records cleared successfully.'
             ];
             
         } catch (Exception $e) {
             $this->db->rollback();
             return [
                 'success' => false,
-                'message' => 'Error restoring employees: ' . $e->getMessage()
+                'message' => 'Error clearing records: ' . $e->getMessage()
             ];
         }
     }
@@ -256,7 +222,7 @@ class EmployeeRestoreProcessor {
         if ($reference) $log_entry .= " - " . $reference;
         $log_entry .= PHP_EOL;
         
-        $log_dir = dirname(__DIR__) . '/logs/';
+        $log_dir = dirname(__DIR__) . '/../staffmanagement/logs/';
         if (!file_exists($log_dir)) {
             mkdir($log_dir, 0755, true);
         }
@@ -267,7 +233,7 @@ class EmployeeRestoreProcessor {
     private function logError($context, $message) {
         $log_entry = "[" . date('Y-m-d H:i:s') . "] [ERROR] Context: " . $context . " - Message: " . $message . PHP_EOL;
         
-        $log_dir = dirname(__DIR__) . '/logs/';
+        $log_dir = dirname(__DIR__) . '/../staffmanagement/logs/';
         if (!file_exists($log_dir)) {
             mkdir($log_dir, 0755, true);
         }
@@ -276,26 +242,22 @@ class EmployeeRestoreProcessor {
     }
     
     private function logSecurityEvent($event, $data = []) {
+        $log_dir = dirname(__DIR__) . '/../staffmanagement/logs/';
+        if (!file_exists($log_dir)) {
+            mkdir($log_dir, 0755, true);
+        }
+        
         $timestamp = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
         $data_str = !empty($data) ? json_encode($data) : 'No additional data';
         
         $log_entry = "[{$timestamp}] [SECURITY] [IP: {$ip}] {$event} - {$data_str}" . PHP_EOL;
         
-        $log_dir = dirname(__DIR__) . '/logs/';
-        if (!file_exists($log_dir)) {
-            mkdir($log_dir, 0755, true);
-        }
-        
         file_put_contents($log_dir . 'system.log', $log_entry, FILE_APPEND | LOCK_EX);
     }
     
     private function sendSuccessResponse($data) {
-        echo json_encode([
-            'success' => true,
-            'message' => $data['message'],
-            'count' => $data['count']
-        ]);
+        echo json_encode($data);
         exit;
     }
     
@@ -311,7 +273,7 @@ class EmployeeRestoreProcessor {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $processor = new EmployeeRestoreProcessor($conn);
+        $processor = new ClearRecordsProcessor($conn);
         $processor->handleRequest();
     } catch (Exception $e) {
         http_response_code(500);

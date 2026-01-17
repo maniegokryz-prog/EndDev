@@ -387,6 +387,8 @@
   border-radius: 50%;
   border: 3px solid #ddd;
   margin-top: -20% !important;
+  aspect-ratio: 1 / 1;
+  display: block;
 }
 
 /* device 500-576*/
@@ -423,6 +425,8 @@
     border: 3px solid #ddd;
     margin-top: -60px !important;
     margin-left: 40px; /* middle ground between 60px (500) and 20px (576) */
+    aspect-ratio: 1 / 1;
+    display: block;
   }
 
   .text-lg-start {
@@ -494,6 +498,8 @@
     border: 3px solid #ddd;
     margin-top: -50px !important;
     margin-left: 20px !important;
+    aspect-ratio: 1 / 1;
+    display: block;
   }
 
   .text-lg-start {
@@ -570,6 +576,8 @@
     border: 3px solid #ddd;
     margin-top: -40px !important;
     margin-left: 0px !important;
+    aspect-ratio: 1 / 1;
+    display: block;
   }
 
   .text-lg-start {

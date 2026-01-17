@@ -87,6 +87,19 @@ function submitLeaveRequest($conn) {
         throw new Exception('Missing required fields');
     }
     
+    // Check employee role - Faculty members cannot request leave
+    $stmt_role = $conn->prepare("SELECT roles FROM employees WHERE id = ?");
+    $stmt_role->bind_param("i", $employee_id);
+    $stmt_role->execute();
+    $role_result = $stmt_role->get_result()->fetch_assoc();
+    
+    if ($role_result) {
+        $roles = strtolower($role_result['roles']);
+        if (stripos($roles, 'faculty') !== false) {
+            throw new Exception('Faculty members are not allowed to request leave through this system. Please contact HR directly.');
+        }
+    }
+    
     // Validate dates
     $start = new DateTime($start_date);
     $end = new DateTime($end_date);
@@ -95,7 +108,36 @@ function submitLeaveRequest($conn) {
         throw new Exception('End date cannot be before start date');
     }
     
-    // Check for overlapping leave requests
+    // RULE 1: Check if employee has any PENDING requests (must wait for approval)
+    $sql_pending = "SELECT id FROM employee_leaves 
+                    WHERE employee_id = ? 
+                    AND status = 'pending'";
+    $stmt_pending = $conn->prepare($sql_pending);
+    $stmt_pending->bind_param("i", $employee_id);
+    $stmt_pending->execute();
+    $pending_result = $stmt_pending->get_result();
+    
+    if ($pending_result->num_rows > 0) {
+        throw new Exception('You already have a pending leave request. Please wait for admin approval before submitting another request.');
+    }
+    
+    // RULE 2: Check monthly APPROVED leave request limit (2 approved per month)
+    $request_month = $start->format('Y-m');
+    $sql_count = "SELECT COUNT(*) as request_count 
+                  FROM employee_leaves 
+                  WHERE employee_id = ? 
+                  AND status = 'approved'
+                  AND (DATE_FORMAT(start_date, '%Y-%m') = ? OR DATE_FORMAT(end_date, '%Y-%m') = ?)";
+    $stmt_count = $conn->prepare($sql_count);
+    $stmt_count->bind_param("iss", $employee_id, $request_month, $request_month);
+    $stmt_count->execute();
+    $count_result = $stmt_count->get_result()->fetch_assoc();
+    
+    if ($count_result['request_count'] >= 2) {
+        throw new Exception('Monthly leave limit reached. You have already used 2 approved leave requests this month.');
+    }
+    
+    // RULE 3: Check for overlapping/duplicate leave dates
     $sql = "SELECT id FROM employee_leaves 
             WHERE employee_id = ? 
             AND status IN ('pending', 'approved')
@@ -110,7 +152,7 @@ function submitLeaveRequest($conn) {
     $result = $stmt->get_result();
     
     if ($result->num_rows > 0) {
-        throw new Exception('There is already a leave request for this date range');
+        throw new Exception('You cannot request leave for the same or overlapping dates. Please choose different dates.');
     }
     
     // Get or create leave type

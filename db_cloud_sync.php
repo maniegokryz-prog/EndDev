@@ -260,6 +260,12 @@ class CloudSync {
      * Make API request to cloud endpoint
      */
     private static function apiRequest($action, $table, $data = [], $whereCondition = '') {
+        // Check if cURL is available
+        if (!function_exists('curl_init')) {
+            self::log("⚠️ cURL not available - skipping cloud sync");
+            return true; // Return true to not block the operation
+        }
+        
         $apiUrl = self::$cloudConfig['api_url'];
         $apiKey = self::$cloudConfig['api_key'];
         
@@ -284,8 +290,10 @@ class CloudSync {
                 'X-API-KEY: ' . $apiKey,
                 'Content-Type: application/x-www-form-urlencoded'
             ],
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_SSL_VERIFYPEER => true
+            CURLOPT_TIMEOUT => 5,  // Reduced from 30 to 5 seconds
+            CURLOPT_CONNECTTIMEOUT => 3,  // Connection timeout
+            CURLOPT_SSL_VERIFYPEER => false,  // Disable SSL verification for localhost testing
+            CURLOPT_SSL_VERIFYHOST => false
         ]);
         
         $response = curl_exec($ch);
@@ -389,6 +397,12 @@ function syncToCloud($table, $data, $action = 'insert', $whereCondition = '') {
  * Used for tables that have foreign key references that need mapping
  */
 function syncToCloudWithLookup($table, $data) {
+    // Check if cURL is available
+    if (!function_exists('curl_init')) {
+        error_log("⚠️ cURL not available - skipping cloud sync with lookup");
+        return true; // Return true to not block the operation
+    }
+    
     $apiUrl = 'http://bpcfaceid.com/api/sync_endpoint.php';
     $apiKey = 'lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo';
     
@@ -455,6 +469,12 @@ function syncToCloudWithLookup($table, $data) {
  * @return bool Success status
  */
 function syncDeleteWithLookup($table, $data) {
+    // Check if cURL is available
+    if (!function_exists('curl_init')) {
+        error_log("⚠️ cURL not available - skipping cloud delete with lookup");
+        return true; // Return true to not block the operation
+    }
+    
     $apiUrl = 'http://bpcfaceid.com/api/sync_endpoint.php';
     $apiKey = 'lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo';
     

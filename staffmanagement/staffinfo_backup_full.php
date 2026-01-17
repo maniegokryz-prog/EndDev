@@ -7,6 +7,9 @@ require '../db_connection.php';
 // Get current user info
 $currentUser = getCurrentUser();
 
+// Check if current user is admin
+$isAdmin = isset($currentUser['role']) && $currentUser['role'] === 'admin';
+
 class EmployeeEditor {
     private $db;
     private $employee = null;
@@ -500,7 +503,7 @@ $schedules = $viewer->getSchedules();
   <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
-      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
+      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
            alt="Profile" 
            class="rounded-circle mb-2" 
            width="70" 
@@ -635,10 +638,10 @@ $schedules = $viewer->getSchedules();
                 <div class="form-group">
                     <label>Profile Picture</label>
                     <img id="profile-preview" 
-                         src="<?php echo $employee['profile_photo'] !== 'N/A' ? htmlspecialchars($employee['profile_photo']) : 'profile_pic/user.png'; ?>" 
+                         src="<?php echo $employee['profile_photo'] !== 'N/A' ? '../' . htmlspecialchars($employee['profile_photo']) . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
                          alt="Profile Preview" 
                          style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block; margin-bottom: 10px;"
-                         onerror="this.src='profile_pic/user.png'">
+                         onerror="this.src='../assets/profile_pic/user.png'">
                     <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
                     <small>Select a new image to update the profile picture. Leave blank to keep the current one.</small>
                 </div>
@@ -2512,9 +2515,11 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   }); // End DOMContentLoaded
 </script>
 
+          <?php if ($isAdmin): ?>
           <button class="btn btn-outline-primary w-100" id="exportDtrBtn" onclick="exportDTR()">
             <i class="bi bi-download me-2"></i>Export DTR
           </button>
+          <?php endif; ?>
         </div>
       </div>
       
@@ -3830,6 +3835,16 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                 if (file) {
                     previewImg.src = URL.createObjectURL(file);
                 }
+            });
+        }
+        
+        // Refresh profile image when edit modal opens
+        const editInfoModal = document.getElementById('editInfoModal');
+        if (editInfoModal && previewImg) {
+            editInfoModal.addEventListener('show.bs.modal', function() {
+                // Force reload the profile image with a new timestamp
+                const currentSrc = previewImg.src.split('?')[0];
+                previewImg.src = currentSrc + '?v=' + Date.now();
             });
         }
       });

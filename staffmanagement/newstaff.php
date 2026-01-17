@@ -3,6 +3,12 @@ require_once '../auth_guard.php';
 require_once '../navigation.php';
 require '../db_connection.php';
 
+// Check if adding new staff is allowed
+if (!canAddNewStaff()) {
+    header('Location: staff.php?error=' . urlencode('Adding new staff is disabled on this server'));
+    exit();
+}
+
 // Get current user info
 $currentUser = getCurrentUser();
 
@@ -131,7 +137,7 @@ try {
           $currentUser = getCurrentUser();
       }
       ?>
-      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') : '../assets/profile_pic/user.png'; ?>" 
+      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
            alt="Profile" 
            class="rounded-circle mb-2" 
            width="70" 

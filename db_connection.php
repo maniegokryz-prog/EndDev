@@ -59,6 +59,23 @@ $conn->set_charset("utf8mb4");
 // Set MySQL timezone to match PHP timezone
 $conn->query("SET time_zone = '+08:00'");
 
+/**
+ * SYSTEM CONFIGURATION
+ * Control features for live server deployment
+ */
+
+// Set to FALSE when deploying to live server to disable adding new staff
+// Set to TRUE for development/local environment to allow adding new staff
+define('ALLOW_ADD_NEW_STAFF', true);
+
+/**
+ * Helper function to check if adding new staff is allowed
+ * @return bool
+ */
+function canAddNewStaff() {
+    return defined('ALLOW_ADD_NEW_STAFF') && ALLOW_ADD_NEW_STAFF === true;
+}
+
 // Optional: You can uncomment this for debugging during development
 // echo "Connected successfully to database";
 ?>

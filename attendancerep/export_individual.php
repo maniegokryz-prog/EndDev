@@ -67,22 +67,22 @@ $types = "i";
 
 // Apply filters
 if ($startDate && $endDate) {
-    $query .= " AND date BETWEEN ? AND ?";
+    $query .= " AND attendance_date BETWEEN ? AND ?";
     $params[] = $startDate;
     $params[] = $endDate;
     $types .= "ss";
 } elseif ($month && $year) {
-    $query .= " AND MONTH(date) = ? AND YEAR(date) = ?";
+    $query .= " AND MONTH(attendance_date) = ? AND YEAR(attendance_date) = ?";
     $params[] = $month;
     $params[] = $year;
     $types .= "ii";
 } elseif ($year) {
-    $query .= " AND YEAR(date) = ?";
+    $query .= " AND YEAR(attendance_date) = ?";
     $params[] = $year;
     $types .= "i";
 }
 
-$query .= " ORDER BY date DESC";
+$query .= " ORDER BY attendance_date DESC";
 
 $stmt = $conn->prepare($query);
 $stmt->bind_param($types, ...$params);
