@@ -30,10 +30,7 @@ $currentUser = getCurrentUser();
   <div class="menu-toggle">
     <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
   </div>
-  
-  <div class="notification">
-    <i class="bi bi-bell-fill fs-4 text-warning icon-btn"></i>
-  </div>
+  <?php include '../includes/notification_bell.php'; ?>
 </div>
 
   <!-- Sidebar -->
@@ -108,15 +105,18 @@ $currentUser = getCurrentUser();
 
     <div class="col-xl-3 col-lg-4 col-md-4 mt-2 mt-md-0">
       <div class="attendance-feed shadow-sm p-3 bg-white rounded h-100">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="fw-bold mb-0">
-            <i class="bi bi-clock-history me-2"></i>Attendance Feed
-            <span class="badge bg-secondary ms-2" id="feedCount" style="font-size: 0.65rem;">0</span>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0 d-flex align-items-center">
+            <i class="bi bi-clock-history me-2"></i>
+            <span>Attendance Feed</span>
+            <span class="badge bg-secondary ms-2" id="feedCount" style="font-size: 0.65rem; vertical-align: middle;">0</span>
           </h6>
           <button id="todayBtn" class="btn btn-sm btn-outline-primary" style="font-size: 0.75rem; padding: 2px 8px;">
             <i class="bi bi-calendar-day me-1"></i>Today
           </button>
         </div>
+        <!-- Selected Date Badge -->
+        <div id="selectedDateBadge" style="display: none;"></div>
         <div id="attendanceList">
           <!-- Loading state -->
           <div class="text-center py-3">
@@ -249,13 +249,8 @@ $currentUser = getCurrentUser();
   </div> <!-- content -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="dashboard.js"></script>
-
-
-
-
-
-
+  <script src="dashboard.js?v=<?php echo time(); ?>"></script>
 
 </body>
 </html>
+

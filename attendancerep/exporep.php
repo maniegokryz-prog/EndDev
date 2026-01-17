@@ -58,9 +58,7 @@ $result = $conn->query($sql);
   <div class="menu-toggle">
     <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
   </div>
-  <div class="notification">
-    <i class="bi bi-bell-fill fs-4 text-warning icon-btn"></i>
-  </div>
+  <?php include '../includes/notification_bell.php'; ?>
 </div>
 
   <!-- Sidebar -->

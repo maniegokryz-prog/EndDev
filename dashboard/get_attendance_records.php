@@ -97,7 +97,11 @@ try {
         
         // Format time ago string (simplified)
         if ($interval->days > 0) {
-            $time_ago = $interval->days . 'd ago';
+            if ($interval->days == 1) {
+                $time_ago = '1 day ago';
+            } else {
+                $time_ago = $interval->days . ' days ago';
+            }
         } elseif ($interval->h > 0) {
             $time_ago = $interval->h . 'h ago';
         } elseif ($interval->i > 0) {
@@ -182,8 +186,10 @@ try {
             
             // Process time_in if exists
             if (!empty($row['time_in'])) {
-                $log_time = new DateTime($row['time_in']);
-                $time_ago_data = getTimeAgo($row['time_in']);
+                // Combine attendance_date with time_in to get full datetime
+                $full_datetime = $row['attendance_date'] . ' ' . $row['time_in'];
+                $log_time = new DateTime($full_datetime);
+                $time_ago_data = getTimeAgo($full_datetime);
                 
                 // Format log time for display
                 $formatted_time = $log_time->format('g:i A');
@@ -225,8 +231,10 @@ try {
             
             // Process time_out if exists
             if (!empty($row['time_out'])) {
-                $log_time = new DateTime($row['time_out']);
-                $time_ago_data = getTimeAgo($row['time_out']);
+                // Combine attendance_date with time_out to get full datetime
+                $full_datetime = $row['attendance_date'] . ' ' . $row['time_out'];
+                $log_time = new DateTime($full_datetime);
+                $time_ago_data = getTimeAgo($full_datetime);
                 
                 // Format log time for display
                 $formatted_time = $log_time->format('g:i A');

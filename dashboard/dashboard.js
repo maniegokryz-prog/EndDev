@@ -197,20 +197,10 @@ function setSelectedDate(date) {
 
 // Function to update date display in attendance feed header
 function updateDateDisplay(formattedDate) {
-  const feedHeader = document.querySelector('.attendance-feed h6');
-  if (feedHeader) {
-    // Check if date badge already exists
-    let dateBadge = document.getElementById('selectedDateBadge');
-    if (!dateBadge) {
-      dateBadge = document.createElement('div');
-      dateBadge.id = 'selectedDateBadge';
-      dateBadge.className = 'badge bg-info text-dark mt-2';
-      dateBadge.style.fontSize = '0.7rem';
-      dateBadge.style.fontWeight = 'normal';
-      dateBadge.style.display = 'block';
-      feedHeader.parentElement.insertBefore(dateBadge, feedHeader.nextSibling);
-    }
-    dateBadge.textContent = `📅 ${formattedDate}`;
+  const dateBadge = document.getElementById('selectedDateBadge');
+  
+  if (dateBadge) {
+    dateBadge.innerHTML = `<span class="badge" style="display: inline-block; padding: 6px 12px; background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white; border-radius: 6px; font-size: 0.7rem; font-weight: 500; box-shadow: 0 2px 4px rgba(23, 162, 184, 0.2);">📅 ${formattedDate}</span>`;
     dateBadge.style.display = 'block';
   }
 }
@@ -220,6 +210,7 @@ function hideDateDisplay() {
   const dateBadge = document.getElementById('selectedDateBadge');
   if (dateBadge) {
     dateBadge.style.display = 'none';
+    dateBadge.innerHTML = ''; // Clear content to ensure clean state
   }
 }
 
@@ -414,6 +405,9 @@ async function loadAttendanceFeed(date = null) {
 
 // Load attendance feed on page load
 document.addEventListener('DOMContentLoaded', function() {
+  // Initially hide date badge since we're viewing today's data
+  hideDateDisplay();
+  
   loadDashboardData();
   
   // Today button functionality

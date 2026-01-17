@@ -1056,6 +1056,10 @@ body {
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
   border-radius: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
 }
 
 .leave-entry .btn-delete {

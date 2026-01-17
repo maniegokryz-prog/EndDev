@@ -302,6 +302,8 @@ class AttendanceLogger:
                         return "Time In: On-time"
                     else:
                         minutes_late = int(time_diff)
+                        # Send late notification
+                        self._send_late_notification(employee_db_id, minutes_late)
                         return f"Time In: Late by {minutes_late} minute{'s' if minutes_late != 1 else ''}"
                 else:  # time_out
                     # For time_out: positive diff = overtime, negative = undertime
@@ -795,6 +797,87 @@ class AttendanceLogger:
         except Exception as e:
             print(f"❌ Error fetching employee by ID: {e}")
             return None
+    
+    def _send_late_notification(self, employee_db_id, minutes_late):
+        """
+        Send a notification to the employee when they are late.
+        Connects to MySQL server to insert notification.
+        
+        Args:
+            employee_db_id (int): The database ID of the employee (SQLite local ID)
+            minutes_late (int): Number of minutes the employee is late
+        """
+        try:
+            import mysql.connector
+            
+            # Get employee info from local SQLite
+            emp_info = self.get_employee_by_db_id(employee_db_id)
+            if not emp_info:
+                print(f"⚠️  Cannot send late notification: Employee not found (DB ID: {employee_db_id})")
+                return
+            
+            employee_code = emp_info['employee_id']
+            employee_name = emp_info['full_name']
+            
+            # Connect to MySQL server
+            mysql_conn = mysql.connector.connect(
+                host='localhost',
+                user='root',
+                password='Confirmp@ssword123',
+                database='database_records'
+            )
+            mysql_cursor = mysql_conn.cursor()
+            
+            # Get the MySQL employee ID (different from SQLite ID)
+            mysql_cursor.execute("SELECT id FROM employees WHERE employee_id = %s", (employee_code,))
+            result = mysql_cursor.fetchone()
+            
+            if not result:
+                print(f"⚠️  Cannot send late notification: Employee not found in MySQL (Code: {employee_code})")
+                mysql_conn.close()
+                return
+            
+            mysql_employee_id = result[0]
+            
+            # Check if notifications table exists
+            mysql_cursor.execute("SHOW TABLES LIKE 'notifications'")
+            if mysql_cursor.fetchone() is None:
+                print(f"⚠️  Cannot send late notification: notifications table doesn't exist")
+                mysql_conn.close()
+                return
+            
+            # Create late notification message
+            if minutes_late >= 60:
+                hours = minutes_late // 60
+                mins = minutes_late % 60
+                if mins > 0:
+                    time_desc = f"{hours}h {mins}m"
+                else:
+                    time_desc = f"{hours}h"
+            else:
+                time_desc = f"{minutes_late}m"
+            
+            message = f"{employee_name}, You are late by {time_desc}"
+            
+            # Link to profile page
+            link = "/EndDev/staffmanagement/staffinfo.php"
+            
+            # Insert notification
+            mysql_cursor.execute("""
+                INSERT INTO notifications (employee_id, type, message, link, target, is_read)
+                VALUES (%s, 'late_attendance', %s, %s, 'employee', 0)
+            """, (mysql_employee_id, message, link))
+            
+            mysql_conn.commit()
+            mysql_conn.close()
+            
+            print(f"📬 Late notification sent: {employee_name} ({employee_code}) - Late by {time_desc}")
+            log_attendance_event(employee_code, employee_name, "late_notification", f"Late by {time_desc}")
+            
+        except Exception as e:
+            print(f"⚠️  Error sending late notification: {e}")
+            log_error("send_late_notification", f"Failed to send notification: {str(e)}", 
+                     emp_info['employee_id'] if emp_info else str(employee_db_id), e)
 
 # Singleton instance for easy importing
 _logger_instance = None

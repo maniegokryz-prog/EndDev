@@ -2,24 +2,37 @@
 /**
  * Leave Request Management API
  * Handles employee leave requests, approvals, and notifications
- * 
- * Actions:
- * - submit_request: Submit a new leave request
- * - get_pending_requests: Get all pending requests (admin)
- * - approve_request: Approve a leave request (admin)
- * - reject_request: Reject a leave request (admin)
- * - get_employee_requests: Get requests for specific employee
- * - get_notifications: Get admin notifications
  */
 
-date_default_timezone_set('Asia/Manila');
-header('Content-Type: application/json');
-
-require '../../db_connection.php';
-
-// Enable error reporting for debugging
-error_reporting(E_ALL);
+// Disable all output buffering and error display
+error_reporting(0);
 ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
+// Start output buffering to catch any unwanted output
+ob_start();
+
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    @session_start();
+}
+
+date_default_timezone_set('Asia/Manila');
+
+// Mark error settings as configured before including db_connection
+$GLOBALS['error_reporting_configured'] = true;
+
+// Include database connection
+require_once '../../db_connection.php';
+
+// Clear any output that might have been generated
+ob_end_clean();
+
+// Start fresh output buffer
+ob_start();
+
+// Set JSON header
+header('Content-Type: application/json; charset=utf-8');
 
 try {
     $action = $_GET['action'] ?? $_POST['action'] ?? '';
@@ -62,11 +75,17 @@ try {
     }
     
 } catch (Exception $e) {
+    // Clear any error output
+    if (ob_get_length()) ob_end_clean();
+    
     http_response_code(400);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage()
+        'error' => $e->getMessage(),
+        'file' => basename($e->getFile()),
+        'line' => $e->getLine()
     ]);
+    exit;
 }
 
 $conn->close();
@@ -85,6 +104,12 @@ function submitLeaveRequest($conn) {
     
     if (!$employee_id || !$leave_type || !$start_date || !$end_date) {
         throw new Exception('Missing required fields');
+    }
+    
+    // Handle file attachment
+    $attachment_path = null;
+    if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+        $attachment_path = handleFileUpload($_FILES['attachment'], $employee_id);
     }
     
     // Check employee role - Faculty members cannot request leave
@@ -161,15 +186,27 @@ function submitLeaveRequest($conn) {
     // Determine initial status
     $initial_status = ($is_admin && $auto_approve) ? 'approved' : 'pending';
     
-    // Insert leave request
-    $sql = "INSERT INTO employee_leaves 
-            (employee_id, leave_type_id, start_date, end_date, reason, status) 
-            VALUES (?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iissss", $employee_id, $leave_type_id, $start_date, $end_date, $reason, $initial_status);
+    // Check if attachment column exists
+    $check_column = $conn->query("SHOW COLUMNS FROM employee_leaves LIKE 'attachment'");
+    $has_attachment_column = $check_column->num_rows > 0;
+    
+    // Insert leave request (with or without attachment column)
+    if ($has_attachment_column && $attachment_path) {
+        $sql = "INSERT INTO employee_leaves 
+                (employee_id, leave_type_id, start_date, end_date, reason, status, attachment) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iisssss", $employee_id, $leave_type_id, $start_date, $end_date, $reason, $initial_status, $attachment_path);
+    } else {
+        $sql = "INSERT INTO employee_leaves 
+                (employee_id, leave_type_id, start_date, end_date, reason, status) 
+                VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iissss", $employee_id, $leave_type_id, $start_date, $end_date, $reason, $initial_status);
+    }
     
     if (!$stmt->execute()) {
-        throw new Exception('Failed to submit leave request');
+        throw new Exception('Failed to submit leave request: ' . $stmt->error);
     }
     
     $leave_id = $conn->insert_id;
@@ -200,6 +237,8 @@ function submitLeaveRequest($conn) {
             createAdminNotification($conn, $employee_id, $leave_id, 'new_request');
         } else {
             createAdminNotification($conn, $employee_id, $leave_id, 'admin_request');
+            // Also notify the admin requestor as an employee
+            createEmployeeNotification($conn, $employee_id, $leave_id, 'pending');
         }
         
         logActivity($conn, 'Leave request submitted', "Employee ID: $employee_id, Leave ID: $leave_id, Requested by: " . ($is_admin ? 'Admin' : 'Employee'));
@@ -228,6 +267,7 @@ function getPendingRequests($conn) {
                 el.end_date,
                 el.reason,
                 el.status,
+                el.attachment,
                 el.created_at,
                 e.employee_id as employee_code,
                 e.first_name,
@@ -259,6 +299,7 @@ function getPendingRequests($conn) {
             'end_date' => $row['end_date'],
             'reason' => $row['reason'],
             'status' => $row['status'],
+            'attachment' => $row['attachment'],
             'created_at' => $row['created_at'],
             'formatted_dates' => formatDateRange($row['start_date'], $row['end_date'])
         ];
@@ -463,6 +504,10 @@ function getEmployeeRequests($conn) {
     $stmt->execute();
     $result = $stmt->get_result();
     
+    // Check if attachment column exists
+    $check_column = $conn->query("SHOW COLUMNS FROM employee_leaves LIKE 'attachment'");
+    $has_attachment_column = $check_column->num_rows > 0;
+    
     $requests = [];
     while ($row = $result->fetch_assoc()) {
         $requests[] = [
@@ -472,6 +517,7 @@ function getEmployeeRequests($conn) {
             'end_date' => $row['end_date'],
             'reason' => $row['reason'],
             'status' => $row['status'],
+            'attachment' => $has_attachment_column ? ($row['attachment'] ?? null) : null,
             'created_at' => $row['created_at'],
             'formatted_dates' => formatDateRange($row['start_date'], $row['end_date'])
         ];
@@ -488,26 +534,74 @@ function getEmployeeRequests($conn) {
  * Get admin notifications
  */
 function getAdminNotifications($conn) {
-    $sql = "SELECT 
-                n.id,
-                n.type,
-                n.message,
-                n.is_read,
-                n.created_at,
-                n.leave_id,
-                el.start_date,
-                el.end_date,
-                e.first_name,
-                e.last_name,
-                e.employee_id as employee_code
-            FROM notifications n
-            LEFT JOIN employee_leaves el ON n.leave_id = el.id
-            LEFT JOIN employees e ON n.employee_id = e.id
-            WHERE n.target = 'admin'
-            ORDER BY n.is_read ASC, n.created_at DESC
-            LIMIT 50";
+    // Session already started at top of file
+    $user_id = $_SESSION['user_id'] ?? null;
+    $user_role = $_SESSION['user_role'] ?? 'employee';
     
-    $result = $conn->query($sql);
+    if (!$user_id) {
+        echo json_encode([
+            'success' => false,
+            'error' => 'User not logged in',
+            'data' => []
+        ]);
+        return;
+    }
+    
+    // Ensure notifications table exists
+    ensureNotificationsTable($conn);
+    
+    // Admin sees all admin-targeted notifications
+    // Employees see their own employee-targeted notifications
+    if ($user_role === 'admin') {
+        $sql = "SELECT 
+                    n.id,
+                    n.type,
+                    n.message,
+                    n.is_read,
+                    n.created_at,
+                    n.leave_id,
+                    el.start_date,
+                    el.end_date,
+                    e.first_name,
+                    e.last_name,
+                    e.employee_id as employee_code
+                FROM notifications n
+                LEFT JOIN employee_leaves el ON n.leave_id = el.id
+                LEFT JOIN employees e ON n.employee_id = e.id
+                WHERE n.target = 'admin' OR (n.target = 'employee' AND e.id = ?)
+                ORDER BY n.is_read ASC, n.created_at DESC
+                LIMIT 50";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $sql = "SELECT 
+                    n.id,
+                    n.type,
+                    n.message,
+                    n.is_read,
+                    n.created_at,
+                    n.leave_id,
+                    el.start_date,
+                    el.end_date,
+                    e.first_name,
+                    e.last_name,
+                    e.employee_id as employee_code
+                FROM notifications n
+                LEFT JOIN employee_leaves el ON n.leave_id = el.id
+                LEFT JOIN employees e ON n.employee_id = e.id
+                WHERE n.target = 'employee' AND e.id = ?
+                ORDER BY n.is_read ASC, n.created_at DESC
+                LIMIT 50";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    }
+    
     $notifications = [];
     
     while ($row = $result->fetch_assoc()) {
@@ -596,9 +690,9 @@ function createAdminNotification($conn, $employee_id, $leave_id, $type) {
     $employee_name = trim($emp['first_name'] . ' ' . $emp['last_name']);
     
     if ($type === 'admin_request') {
-        $message = "Admin has submitted a leave request for $employee_name (pending approval)";
+        $message = "$employee_name has submitted a leave request (Pending for approval)";
     } else {
-        $message = "$employee_name has submitted a new leave request";
+        $message = "$employee_name has submitted a leave request (Pending for approval)";
     }
     
     // Create notification table if not exists
@@ -615,7 +709,24 @@ function createAdminNotification($conn, $employee_id, $leave_id, $type) {
  * Helper function: Create employee notification
  */
 function createEmployeeNotification($conn, $employee_id, $leave_id, $status) {
-    $message = "Your leave request has been " . $status;
+    // Get employee name
+    $sql = "SELECT first_name, last_name FROM employees WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $employee_id);
+    $stmt->execute();
+    $emp = $stmt->get_result()->fetch_assoc();
+    
+    $employee_name = trim($emp['first_name'] . ' ' . $emp['last_name']);
+    
+    if ($status === 'approved') {
+        $message = "$employee_name, Your leave request has been Approved";
+    } else if ($status === 'rejected') {
+        $message = "$employee_name, Your leave request has been Rejected";
+    } else if ($status === 'pending') {
+        $message = "$employee_name, Your leave request has been submitted (Pending for approval)";
+    } else {
+        $message = "$employee_name, Your leave request has been " . ucfirst($status);
+    }
     
     ensureNotificationsTable($conn);
     
@@ -678,19 +789,31 @@ function markDatesAsLeave($conn, $employee_id, $start_date, $end_date) {
  * Helper function: Ensure notifications table exists
  */
 function ensureNotificationsTable($conn) {
-    $sql = "CREATE TABLE IF NOT EXISTS notifications (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        employee_id INT,
-        leave_id INT,
-        type VARCHAR(50),
-        message TEXT,
-        target ENUM('admin', 'employee') DEFAULT 'admin',
-        is_read BOOLEAN DEFAULT 0,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
-        FOREIGN KEY (leave_id) REFERENCES employee_leaves(id) ON DELETE CASCADE
-    )";
-    $conn->query($sql);
+    try {
+        $sql = "CREATE TABLE IF NOT EXISTS notifications (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            employee_id INT,
+            leave_id INT,
+            type VARCHAR(50),
+            message TEXT,
+            target ENUM('admin', 'employee') DEFAULT 'admin',
+            is_read BOOLEAN DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_target (target),
+            INDEX idx_employee (employee_id),
+            INDEX idx_read (is_read)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+        
+        @$conn->query($sql);
+        
+        // Add foreign keys separately if they don't exist
+        @$conn->query("ALTER TABLE notifications ADD CONSTRAINT fk_notif_employee 
+            FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE");
+        @$conn->query("ALTER TABLE notifications ADD CONSTRAINT fk_notif_leave 
+            FOREIGN KEY (leave_id) REFERENCES employee_leaves(id) ON DELETE CASCADE");
+    } catch (Exception $e) {
+        // Silently fail - table might already exist
+    }
 }
 
 /**
@@ -705,6 +828,42 @@ function formatDateRange($start_date, $end_date) {
     }
     
     return $start->format('M j') . ' - ' . $end->format('M j, Y');
+}
+
+/**
+ * Helper function: Handle file upload
+ */
+function handleFileUpload($file, $employee_id) {
+    // Validate file
+    $allowed_types = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    $max_size = 5 * 1024 * 1024; // 5MB
+    
+    if (!in_array($file['type'], $allowed_types)) {
+        throw new Exception('Invalid file type. Allowed: PDF, JPG, PNG, DOC, DOCX');
+    }
+    
+    if ($file['size'] > $max_size) {
+        throw new Exception('File size exceeds 5MB limit');
+    }
+    
+    // Create upload directory
+    $upload_dir = __DIR__ . '/../leave_attachments/';
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+    
+    // Generate unique filename
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $filename = 'leave_' . $employee_id . '_' . time() . '_' . uniqid() . '.' . $extension;
+    $filepath = $upload_dir . $filename;
+    
+    // Move uploaded file
+    if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+        throw new Exception('Failed to upload file');
+    }
+    
+    // Return relative path
+    return 'staffmanagement/leave_attachments/' . $filename;
 }
 
 /**

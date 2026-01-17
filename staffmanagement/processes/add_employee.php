@@ -923,6 +923,47 @@ class EmployeeProcessor{
                 }
             }
         }
+        
+        // Create notification for employee about their new schedule
+        $this->createScheduleNotification($employeeId);
+    }
+    
+    private function createScheduleNotification($employeeId) {
+        try {
+            // Check if notifications table exists
+            $check_table = $this->db->query("SHOW TABLES LIKE 'notifications'");
+            if ($check_table->num_rows == 0) {
+                return;
+            }
+            
+            // Get employee details
+            $stmt = $this->db->prepare("SELECT first_name, last_name FROM employees WHERE id = ?");
+            $stmt->bind_param("i", $employeeId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $employee = $result->fetch_assoc();
+            
+            if ($employee) {
+                $emp_name = $employee['first_name'] . ' ' . $employee['last_name'];
+                $message = $emp_name . ", Your schedule has been created";
+                $link = "/EndDev/staffmanagement/staffinfo.php";
+                
+                // Check if link column exists
+                $check_column = $this->db->query("SHOW COLUMNS FROM notifications LIKE 'link'");
+                if ($check_column->num_rows > 0) {
+                    $stmt = $this->db->prepare("INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'schedule_created', ?, ?, 'employee', 0)");
+                    $stmt->bind_param("iss", $employeeId, $message, $link);
+                } else {
+                    $stmt = $this->db->prepare("INSERT INTO notifications (employee_id, type, message, target, is_read) VALUES (?, 'schedule_created', ?, 'employee', 0)");
+                    $stmt->bind_param("is", $employeeId, $message);
+                }
+                $stmt->execute();
+                
+                $this->logActivity('Schedule creation notification sent', "Employee ID: {$employeeId}");
+            }
+        } catch (Exception $e) {
+            $this->logError('Notification Creation Failed', $e->getMessage());
+        }
     }
 
     private function sendErrorResponse($message, $code = 400, $errors = []) {

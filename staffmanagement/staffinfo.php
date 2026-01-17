@@ -522,9 +522,7 @@ $schedules = $viewer->getSchedules();
   <div class="menu-toggle">
     <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
   </div>
-  <div class="notification">
-    <i class="bi bi-bell-fill fs-4 text-warning icon-btn"></i>
-  </div>
+  <?php include '../includes/notification_bell.php'; ?>
 </div>
 
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
@@ -993,6 +991,15 @@ $schedules = $viewer->getSchedules();
                 <label class="form-label">Reason:</label>
                 <textarea class="form-control mb-3" id="leaveReason" rows="3" placeholder="Briefly explain your reason for leave"></textarea>
                 
+                <label class="form-label">Attachment (Optional):</label>
+                <input type="file" class="form-control mb-2" id="leaveAttachment" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                <small class="text-muted d-block mb-1">
+                  <i class="bi bi-info-circle"></i> You can attach medical certificates, documents, etc. (Max 5MB, PDF/JPG/PNG/DOC/DOCX)
+                </small>
+                <div class="alert alert-danger mb-3" id="fileSizeWarning" style="display: none; font-size: 0.85rem;">
+                  <i class="bi bi-exclamation-triangle"></i> File size exceeds 5MB limit. Please choose a smaller file.
+                </div>
+                
                 <div class="alert alert-info mb-3" id="monthlyLimitInfo" style="font-size: 0.9rem;">
                   <i class="bi bi-info-circle"></i> <strong>Monthly Limit:</strong> <span id="monthlyLimitText">Checking...</span>
                 </div>
@@ -1006,7 +1013,7 @@ $schedules = $viewer->getSchedules();
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="redirectToStaffInfo()">Cancel</button>
+                <button class="btn btn-secondary" onclick="cancelLeaveRequest()" data-bs-dismiss="modal">Cancel</button>
                 <button class="btn btn-success" onclick="confirmLeave()">Submit Request</button>
               </div>
             </div>
@@ -1068,10 +1075,55 @@ $schedules = $viewer->getSchedules();
           </div>
         </div>
 
+        <!-- Leave Details Modal -->
+        <div class="modal fade" id="leaveDetailsViewModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Leave Request Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="fw-bold">Type:</label>
+                  <div id="viewLeaveType" class="ms-2"></div>
+                </div>
+                <div class="mb-3">
+                  <label class="fw-bold">Status:</label>
+                  <div id="viewLeaveStatus" class="ms-2"></div>
+                </div>
+                <div class="mb-3">
+                  <label class="fw-bold">Duration:</label>
+                  <div id="viewLeaveDates" class="ms-2"></div>
+                </div>
+                <div class="mb-3">
+                  <label class="fw-bold">Reason:</label>
+                  <div id="viewLeaveReason" class="ms-2 text-muted"></div>
+                </div>
+                <div class="mb-3" id="viewLeaveAttachmentContainer" style="display: none;">
+                  <label class="fw-bold">Attachment:</label>
+                  <div class="ms-2">
+                    <a href="#" id="viewLeaveAttachment" target="_blank" class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-paperclip"></i> View Attachment
+                    </a>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="fw-bold">Submitted:</label>
+                  <div id="viewLeaveCreated" class="ms-2 text-muted"></div>
+                </div>
+              </div>
+              <div class="modal-footer" id="viewLeaveActions">
+                <!-- Action buttons will be inserted here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="modal fade" id="leaveDeleteConfirmModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
-              <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
+              <h5 class="fw-bold mb-3 text-danger" id="leaveDeleteConfirmTitle">Confirm Delete</h5>
               <p id="leaveDeleteConfirmMsg"></p>
               <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
@@ -1107,6 +1159,27 @@ $schedules = $viewer->getSchedules();
               document.getElementById('adminOptionsDiv').style.display = 'block';
             }
             
+            // Add file size validation
+            const fileInput = document.getElementById('leaveAttachment');
+            if (fileInput) {
+              fileInput.addEventListener('change', function() {
+                const warningDiv = document.getElementById('fileSizeWarning');
+                const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+                
+                if (this.files.length > 0) {
+                  const file = this.files[0];
+                  if (file.size > maxSize) {
+                    warningDiv.style.display = 'block';
+                    this.value = ''; // Clear the file input
+                  } else {
+                    warningDiv.style.display = 'none';
+                  }
+                } else {
+                  warningDiv.style.display = 'none';
+                }
+              });
+            }
+            
             // Check monthly limit when add leave modal is opened
             const addLeaveModal = document.getElementById('addLeaveModal');
             addLeaveModal.addEventListener('show.bs.modal', function() {
@@ -1115,7 +1188,7 @@ $schedules = $viewer->getSchedules();
           });
           
           function checkMonthlyLimit() {
-            fetch(`api/leave_request.php?action=get_employee_requests&employee_id=${employeeIdForLeave}`)
+            fetch(`api/leave_request_clean.php?action=get_employee_requests&employee_id=${employeeIdForLeave}`)
               .then(res => res.json())
               .then(response => {
                 if (response.success) {
@@ -1245,9 +1318,15 @@ $schedules = $viewer->getSchedules();
             formData.append('reason', leaveReason);
             formData.append('is_admin', isAdmin ? '1' : '0');
             formData.append('auto_approve', autoApprove ? '1' : '0');
+            
+            // Add file attachment if selected
+            const fileInput = document.getElementById('leaveAttachment');
+            if (fileInput && fileInput.files.length > 0) {
+              formData.append('attachment', fileInput.files[0]);
+            }
 
             setTimeout(() => {
-              fetch('api/leave_request.php', {
+              fetch('api/leave_request_clean.php', {
                 method: 'POST',
                 body: formData
               })
@@ -1257,6 +1336,13 @@ $schedules = $viewer->getSchedules();
               })
               .then(text => {
                 console.log('Raw response:', text);
+                console.log('Response length:', text.length);
+                
+                // Check if response is HTML (error page)
+                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                  throw new Error('Server returned an error page instead of JSON');
+                }
+                
                 try {
                   const response = JSON.parse(text);
                   console.log('Parsed response:', response);
@@ -1285,7 +1371,17 @@ $schedules = $viewer->getSchedules();
                       }, 150);
                     }, 5000);
                   } else {
-                    document.getElementById("leaveValidationErrorMsg").textContent = 'Error: ' + (response.error || 'Unknown error');
+                    // Show detailed error message
+                    let errorMsg = 'Error: ' + (response.error || 'Unknown error');
+                    if (response.file) {
+                      errorMsg += '\nFile: ' + response.file;
+                    }
+                    if (response.line) {
+                      errorMsg += ' (Line ' + response.line + ')';
+                    }
+                    console.error('Leave request error:', errorMsg);
+                    
+                    document.getElementById("leaveValidationErrorMsg").textContent = errorMsg;
                     const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
                     errorModal.show();
                   
@@ -1320,7 +1416,7 @@ $schedules = $viewer->getSchedules();
               })
               .catch(error => {
                 console.error('Error submitting leave request:', error);
-                document.getElementById("leaveValidationErrorMsg").textContent = 'Failed to submit leave request. Please try again.';
+                document.getElementById("leaveValidationErrorMsg").textContent = 'Failed to submit leave request: ' + error.message;
                 const errorModal = new bootstrap.Modal(document.getElementById("leaveValidationErrorModal"));
                 errorModal.show();
                 
@@ -1360,6 +1456,29 @@ $schedules = $viewer->getSchedules();
           function redirectToStaffInfo() {
             window.location.href = "staffinfo.php";
           }
+          
+          function cancelLeaveRequest() {
+            // Clear form fields
+            document.getElementById('leaveType').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('leaveReason').value = '';
+            document.getElementById('leaveAttachment').value = '';
+            
+            // Hide file size warning
+            const fileSizeWarning = document.getElementById('fileSizeWarning');
+            if (fileSizeWarning) {
+              fileSizeWarning.style.display = 'none';
+            }
+            
+            // Uncheck auto-approve if visible
+            const autoApprove = document.getElementById('autoApprove');
+            if (autoApprove) {
+              autoApprove.checked = false;
+            }
+            
+            // Modal will close automatically due to data-bs-dismiss="modal"
+          }
 
           function formatDate(dateStr) {
             const date = new Date(dateStr);
@@ -1371,9 +1490,21 @@ $schedules = $viewer->getSchedules();
           }
 
           function loadEmployeeLeaves() {
-            fetch(`api/leave_request.php?action=get_employee_requests&employee_id=${employeeIdForLeave}`)
-              .then(res => res.json())
-              .then(response => {
+            console.log('Loading employee leaves for ID:', employeeIdForLeave);
+            fetch(`api/leave_request_clean.php?action=get_employee_requests&employee_id=${employeeIdForLeave}`)
+              .then(res => {
+                console.log('Leave request response status:', res.status);
+                console.log('Content-Type:', res.headers.get('content-type'));
+                if (!res.ok) {
+                  throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.text();
+              })
+              .then(text => {
+                console.log('Raw response:', text);
+                try {
+                  const response = JSON.parse(text);
+                  console.log('Parsed response:', response);
                 if (response.success) {
                   const leaveList = document.getElementById("leaveList");
                   leaveList.innerHTML = '';
@@ -1384,8 +1515,16 @@ $schedules = $viewer->getSchedules();
                   }
 
                   response.data.forEach(leave => {
+                    console.log('Processing leave:', leave);
                     const entry = document.createElement("div");
-                    entry.className = "leave-entry d-flex justify-content-between align-items-start";
+                    entry.className = "leave-entry d-flex justify-content-between align-items-center";
+                    entry.style.cursor = "pointer";
+                    entry.onclick = function(e) {
+                      // Don't trigger if clicking on buttons
+                      if (!e.target.closest('button, a')) {
+                        viewLeaveDetails(leave);
+                      }
+                    };
                     
                     let statusBadge = '';
                     let actionButtons = '';
@@ -1393,45 +1532,149 @@ $schedules = $viewer->getSchedules();
                     if (leave.status === 'pending') {
                       statusBadge = '<span class="badge bg-warning text-dark ms-2">Pending</span>';
                       
-                      // Show approve button for admin
+                      // Show approve and reject buttons for admin
                       if (isAdmin) {
                         actionButtons = `
-                          <div class="d-flex gap-1">
-                            <button class="btn btn-sm btn-success" onclick="approveLeave(${leave.id})" title="Approve Leave">
-                              <i class="bi bi-check-circle"></i>
+                          <div style="display: flex; gap: 4px; align-items: center;">
+                            ${(leave.attachment && leave.attachment.trim() !== '') ? `<a href="../${leave.attachment}" target="_blank" class="btn btn-sm btn-outline-primary" title="View Attachment" style="padding: 0.25rem 0.5rem; margin: 0;"><i class="bi bi-paperclip"></i></a>` : ''}
+                            <button class="btn btn-sm btn-success" onclick="approveLeave(${leave.id})" title="Approve Leave" style="padding: 0.25rem 0.5rem; margin: 0;">
+                              <i class="bi bi-check-circle"></i> Approve
                             </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'pending')" title="Reject Request">
-                              <i class="bi bi-x-circle"></i>
+                            <button class="btn btn-sm btn-danger" onclick="rejectLeave(${leave.id})" title="Reject Request" style="padding: 0.25rem 0.5rem; margin: 0;">
+                              <i class="bi bi-x-circle"></i> Reject
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="cancelLeave(${leave.id}, 'pending')" title="Delete Request" style="padding: 0.25rem 0.5rem; margin: 0;">
+                              <i class="bi bi-trash"></i> Cancel
                             </button>
                           </div>
                         `;
                       } else {
-                        actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelLeave(${leave.id}, 'pending')" title="Cancel Request"><i class="bi bi-x-circle"></i></button>`;
+                        // Show only cancel button for regular users
+                        actionButtons = `
+                          <div style="display: flex; gap: 4px; align-items: center;">
+                            ${(leave.attachment && leave.attachment.trim() !== '') ? `<a href="../${leave.attachment}" target="_blank" class="btn btn-sm btn-outline-primary" title="View Attachment" style="padding: 0.25rem 0.5rem; margin: 0;"><i class="bi bi-paperclip"></i></a>` : ''}
+                            <button class="btn btn-sm btn-warning" onclick="cancelLeave(${leave.id}, 'pending')" title="Cancel Request" style="padding: 0.25rem 0.5rem; margin: 0;"><i class="bi bi-x-circle"></i> Cancel</button>
+                          </div>
+                        `;
                       }
                     } else if (leave.status === 'approved') {
                       statusBadge = '<span class="badge bg-success ms-2">Approved</span>';
-                      // Approved leaves cannot be deleted/cancelled
-                      actionButtons = '';
+                      // Approved leaves - show attachment if exists
+                      actionButtons = (leave.attachment && leave.attachment.trim() !== '') ? `<a href="../${leave.attachment}" target="_blank" class="btn btn-sm btn-outline-primary" title="View Attachment" style="padding: 0.25rem 0.5rem; margin: 0;"><i class="bi bi-paperclip"></i></a>` : '';
                     } else if (leave.status === 'rejected') {
                       statusBadge = '<span class="badge bg-danger ms-2">Rejected</span>';
-                      actionButtons = `<button class="btn btn-sm btn-outline-secondary" onclick="cancelLeave(${leave.id}, 'rejected')" title="Delete"><i class="bi bi-trash"></i></button>`;
+                      actionButtons = `
+                        <div style="display: flex; gap: 4px; align-items: center;">
+                          ${(leave.attachment && leave.attachment.trim() !== '') ? `<a href="../${leave.attachment}" target="_blank" class="btn btn-sm btn-outline-primary" title="View Attachment" style="padding: 0.25rem 0.5rem; margin: 0;"><i class="bi bi-paperclip"></i></a>` : ''}
+                          <button class="btn btn-sm btn-outline-secondary" onclick="cancelLeave(${leave.id}, 'rejected')" title="Delete" style="padding: 0.25rem 0.5rem; margin: 0;"><i class="bi bi-trash"></i></button>
+                        </div>
+                      `;
                     }
-
+                    
                     entry.innerHTML = `
-                      <div>
+                      <div class="flex-grow-1">
                         <strong>${leave.leave_type}</strong> ${statusBadge}<br>
                         <small>${leave.formatted_dates}</small>
                       </div>
-                      <div>${actionButtons}</div>
+                      ${actionButtons}
                     `;
 
                     leaveList.appendChild(entry);
                   });
+                } else {
+                  console.error('Failed to load leaves:', response.error);
+                  document.getElementById("leaveList").innerHTML = '<p class="text-danger small text-center">Error loading leaves</p>';
+                }
+                } catch (e) {
+                  console.error('JSON parse error:', e);
+                  console.error('Response text:', text);
+                  document.getElementById("leaveList").innerHTML = `<p class="text-danger small text-center">Parse error: ${e.message}</p>`;
                 }
               })
               .catch(error => {
                 console.error('Error loading leaves:', error);
+                document.getElementById("leaveList").innerHTML = `<p class="text-danger small text-center">Network error: ${error.message}</p>`;
               });
+          }
+
+          // View leave details in modal
+          function viewLeaveDetails(leave) {
+            document.getElementById('viewLeaveType').textContent = leave.leave_type;
+            
+            let statusBadgeHTML = '';
+            if (leave.status === 'pending') {
+              statusBadgeHTML = '<span class="badge bg-warning text-dark">Pending</span>';
+            } else if (leave.status === 'approved') {
+              statusBadgeHTML = '<span class="badge bg-success">Approved</span>';
+            } else if (leave.status === 'rejected') {
+              statusBadgeHTML = '<span class="badge bg-danger">Rejected</span>';
+            }
+            document.getElementById('viewLeaveStatus').innerHTML = statusBadgeHTML;
+            
+            document.getElementById('viewLeaveDates').textContent = leave.formatted_dates;
+            document.getElementById('viewLeaveReason').textContent = leave.reason || 'No reason provided';
+            document.getElementById('viewLeaveCreated').textContent = new Date(leave.created_at).toLocaleString();
+            
+            // Handle attachment
+            if (leave.attachment && leave.attachment.trim() !== '') {
+              document.getElementById('viewLeaveAttachmentContainer').style.display = 'block';
+              document.getElementById('viewLeaveAttachment').href = '../' + leave.attachment;
+            } else {
+              document.getElementById('viewLeaveAttachmentContainer').style.display = 'none';
+            }
+            
+            // Add action buttons based on status and role
+            let actionsHTML = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+            
+            if (leave.status === 'pending' && isAdmin) {
+              actionsHTML = `
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="approveLeaveFromModal(${leave.id})">
+                  <i class="bi bi-check-circle"></i> Approve
+                </button>
+                <button type="button" class="btn btn-danger" onclick="rejectLeaveFromModal(${leave.id})">
+                  <i class="bi bi-x-circle"></i> Reject
+                </button>
+              `;
+            } else if (leave.status === 'pending' && !isAdmin) {
+              actionsHTML = `
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" onclick="cancelLeaveFromModal(${leave.id}, 'pending')">
+                  <i class="bi bi-x-circle"></i> Cancel Request
+                </button>
+              `;
+            } else if (leave.status === 'rejected') {
+              actionsHTML = `
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="cancelLeaveFromModal(${leave.id}, 'rejected')">
+                  <i class="bi bi-trash"></i> Delete
+                </button>
+              `;
+            }
+            
+            document.getElementById('viewLeaveActions').innerHTML = actionsHTML;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('leaveDetailsViewModal'));
+            modal.show();
+          }
+
+          // Approve from details modal
+          function approveLeaveFromModal(leaveId) {
+            bootstrap.Modal.getInstance(document.getElementById('leaveDetailsViewModal')).hide();
+            approveLeave(leaveId);
+          }
+
+          // Reject from details modal
+          function rejectLeaveFromModal(leaveId) {
+            bootstrap.Modal.getInstance(document.getElementById('leaveDetailsViewModal')).hide();
+            rejectLeave(leaveId);
+          }
+
+          // Cancel from details modal
+          function cancelLeaveFromModal(leaveId, status) {
+            bootstrap.Modal.getInstance(document.getElementById('leaveDetailsViewModal')).hide();
+            cancelLeave(leaveId, status);
           }
 
           let pendingLeaveDelete = { leaveId: null, status: null };
@@ -1457,7 +1700,7 @@ $schedules = $viewer->getSchedules();
               formData.append('leave_id', leaveId);
               formData.append('approved_by', 'admin');
               
-              const response = await fetch('api/leave_request.php?action=approve_request', {
+              const response = await fetch('api/leave_request_clean.php?action=approve_request', {
                 method: 'POST',
                 body: formData
               });
@@ -1516,13 +1759,32 @@ $schedules = $viewer->getSchedules();
             }
           });
 
+          async function rejectLeave(leaveId) {
+            // Store the leave ID for rejection
+            pendingLeaveDelete = { leaveId, status: 'reject' };
+            
+            // Update modal title and button for reject action
+            document.getElementById("leaveDeleteConfirmTitle").textContent = 'Confirm Reject';
+            document.getElementById("leaveDeleteConfirmBtn").textContent = 'Yes, Reject';
+            document.getElementById("leaveDeleteConfirmMsg").textContent = 'Are you sure you want to reject this leave request? The employee will be notified.';
+            
+            const confirmModal = new bootstrap.Modal(document.getElementById("leaveDeleteConfirmModal"));
+            confirmModal.show();
+          }
+
           async function cancelLeave(leaveId, status) {
             let confirmMessage = '';
+            let modalTitle = 'Confirm Delete';
+            let buttonText = 'Yes, Delete';
             
             if (status === 'pending') {
               confirmMessage = 'Are you sure you want to cancel this pending leave request?';
+              modalTitle = 'Confirm Cancel';
+              buttonText = 'Yes, Cancel';
             } else if (status === 'approved') {
               confirmMessage = 'This leave has been approved. Cancelling will remove it from the attendance records. Continue?';
+              modalTitle = 'Confirm Cancel';
+              buttonText = 'Yes, Cancel';
             } else {
               confirmMessage = 'Are you sure you want to delete this rejected leave request?';
             }
@@ -1530,8 +1792,11 @@ $schedules = $viewer->getSchedules();
             // Store the pending delete info
             pendingLeaveDelete = { leaveId, status };
             
-            // Show confirmation modal
+            // Update modal title and button
+            document.getElementById("leaveDeleteConfirmTitle").textContent = modalTitle;
+            document.getElementById("leaveDeleteConfirmBtn").textContent = buttonText;
             document.getElementById("leaveDeleteConfirmMsg").textContent = confirmMessage;
+            
             const confirmModal = new bootstrap.Modal(document.getElementById("leaveDeleteConfirmModal"));
             confirmModal.show();
           }
@@ -1543,9 +1808,21 @@ $schedules = $viewer->getSchedules();
             try {
               const formData = new FormData();
               formData.append('leave_id', leaveId);
-              formData.append('cancelled_by', 'admin'); // or 'employee' based on user role
               
-              const response = await fetch('api/leave_request.php?action=cancel_request', {
+              let actionUrl = '';
+              
+              // Check if this is a reject action (admin rejecting) or cancel/delete action
+              if (status === 'reject') {
+                formData.append('action', 'reject_request');
+                formData.append('rejected_by', 'admin');
+                formData.append('rejection_reason', 'Request rejected by admin');
+                actionUrl = 'api/leave_request_clean.php';
+              } else {
+                formData.append('cancelled_by', isAdmin ? 'admin' : 'employee');
+                actionUrl = 'api/leave_request_clean.php?action=cancel_request';
+              }
+              
+              const response = await fetch(actionUrl, {
                 method: 'POST',
                 body: formData
               });

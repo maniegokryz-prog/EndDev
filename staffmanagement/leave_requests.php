@@ -174,9 +174,15 @@ function loadPendingRequests() {
                 
                 ${request.reason ? `<p class="small text-muted mb-3">${request.reason}</p>` : ''}
                 
-                <small class="text-muted">Requested: ${new Date(request.created_at).toLocaleString()}</small>
+                <small class="text-muted d-block mb-3">Requested: ${new Date(request.created_at).toLocaleString()}</small>
                 
-                <div class="d-flex gap-2 mt-3">
+                ${request.attachment ? `
+                  <button class="btn btn-outline-primary btn-sm w-100 mb-2" onclick="window.open('../${request.attachment}', '_blank')">
+                    <i class="bi bi-paperclip"></i> View Attached File
+                  </button>
+                ` : ''}
+                
+                <div class="d-flex gap-2 mt-2">
                   <button class="btn btn-success btn-sm flex-fill" onclick="showApproveModal(${request.id}, '${request.employee_name}', '${request.formatted_dates}')">
                     <i class="bi bi-check-lg"></i> Approve
                   </button>
