@@ -181,6 +181,7 @@ $sql_employee_leaves = "CREATE TABLE IF NOT EXISTS employee_leaves (
     end_date DATE NOT NULL,
     reason TEXT,
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    attachment VARCHAR(255) DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
@@ -216,6 +217,23 @@ $sql_employee_assignments = "CREATE TABLE IF NOT EXISTS employee_assignments (
     UNIQUE(employee_id, schedule_period_id)
 )";
 createTable($conn, $sql_employee_assignments, "employee_assignments");
+
+//Notifications table
+$sql_notifications = "CREATE TABLE IF NOT EXISTS notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT,
+    leave_id INT,
+    type VARCHAR(50),
+    message TEXT,
+    link VARCHAR(255),
+    target ENUM('admin', 'employee') DEFAULT 'admin',
+    is_read BOOLEAN DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX (employee_id),
+    INDEX (target),
+    INDEX (is_read)
+)";
+createTable($conn, $sql_notifications, "notifications");
 
 //Face embeddings table (MUST be after employees table due to foreign key)
 $sql_face_embeddings = "CREATE TABLE IF NOT EXISTS face_embeddings (

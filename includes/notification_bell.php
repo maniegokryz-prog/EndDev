@@ -91,7 +91,7 @@
       try {
         notificationBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div></div>';
         
-        const response = await fetch('../staffmanagement/api/leave_request_clean.php?action=get_notifications');
+        const response = await fetch('../staffmanagement/api/leave_request.php?action=get_notifications');
         const result = await response.json();
         
         if (!result.success) {
@@ -175,7 +175,7 @@
         formData.append('action', 'mark_notification_read');
         formData.append('notification_id', notificationId);
         
-        const response = await fetch('../staffmanagement/api/leave_request_clean.php', {
+        const response = await fetch('../staffmanagement/api/leave_request.php', {
           method: 'POST',
           body: formData
         });
@@ -199,7 +199,7 @@
       formData.append('action', 'mark_notification_read');
       formData.append('notification_id', notificationId);
       
-      fetch('../staffmanagement/api/leave_request_clean.php', {
+      fetch('../staffmanagement/api/leave_request.php', {
         method: 'POST',
         body: formData
       }).then(() => {
