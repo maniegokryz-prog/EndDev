@@ -183,8 +183,8 @@ def process_employee_photos(employee_id, db_employee_id, db_config):
     
     # Find all face photos for this employee in the uploads folder
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    # Script is now in root, so uploads folder is directly accessible
-    uploads_dir = os.path.join(script_dir, "uploads")
+    # Script is in staffmanagement, uploads is in root
+    uploads_dir = os.path.join(script_dir, "..", "uploads")
     
     # Pattern: employeeID_firstname_lastname_*.jpg or *.png
     # We'll search for any file starting with the employee_id
