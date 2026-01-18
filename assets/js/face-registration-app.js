@@ -65,7 +65,7 @@ class FaceRegistrationApp {
             orientationStatus: document.getElementById('orientation-status'),
             lightingStatus: document.getElementById('lighting-status'),
             guidanceMessage: document.getElementById('guidance-message'),
-            submitBtn: document.getElementById('submit-btn')
+            submitBtn: document.getElementById('save-faces-btn')
         };
     }
 
