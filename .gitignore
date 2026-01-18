@@ -10,11 +10,12 @@ wheels/
 .venv
 
 # folders
-uploads/
-logs/
+uploads/*
+logs/*
 faceid/database/*
 !faceid/database/init_local_db.py
+!faceid/database/user_profile/user.png
 faceid/__pycache__ 
-profile_pic/
-assets/profile_pic
-staffmanagement/logs/
+assets/profile_pic/*
+!assets/profile_pic/user.png
+staffmanagement/logs/*
