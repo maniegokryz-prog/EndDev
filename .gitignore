@@ -19,3 +19,4 @@ faceid/__pycache__
 assets/profile_pic/*
 !assets/profile_pic/user.png
 staffmanagement/logs/*
+staffmanagement/leave_attachments/*

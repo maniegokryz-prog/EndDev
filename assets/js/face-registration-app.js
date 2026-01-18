@@ -11,7 +11,7 @@ class FaceRegistrationApp {
         this.currentStep = 0;
         this.currentFaceData = null;
         this.faceDetectionInterval = null;
-        
+
         // Face capture angles
         this.angles = [
             { angle: 'front', title: 'Face Forward', instruction: 'Look directly at the camera with a neutral expression' },
@@ -20,7 +20,7 @@ class FaceRegistrationApp {
             { angle: 'up', title: 'Look Up', instruction: 'Tilt your head slightly upward' },
             { angle: 'down', title: 'Look Down', instruction: 'Tilt your head slightly downward' }
         ];
-        
+
         // UI elements
         this.elements = {};
     }
@@ -28,11 +28,11 @@ class FaceRegistrationApp {
     async initialize() {
         this.initializeElements();
         this.bindEvents();
-        
+
         try {
             // Initialize camera first
             await this.camera.initialize();
-            
+
             // Initialize face detection after camera is ready
             if (typeof faceapi !== 'undefined') {
                 await this.faceDetection.initialize();
@@ -41,10 +41,10 @@ class FaceRegistrationApp {
                 this.updateStatus('⚠️ Using basic face detection');
                 this.faceDetection.setupDetectionCanvas();
             }
-            
+
             this.startFaceDetection();
             this.updateAngleGuide();
-            
+
         } catch (error) {
             console.error('Initialization failed:', error);
             this.updateStatus('❌ System initialization failed');
@@ -72,19 +72,20 @@ class FaceRegistrationApp {
     bindEvents() {
         this.elements.captureBtn.addEventListener('click', () => this.capturePhoto());
         this.elements.skipBtn.addEventListener('click', () => this.skipPhoto());
-        
+
         // Form submission validation
-        document.querySelector('form').addEventListener('submit', (e) => this.handleFormSubmit(e));
+        // This interferes with Step 1 and other forms. Submitting face data is handled via specific button onclick.
+        // document.querySelector('form').addEventListener('submit', (e) => this.handleFormSubmit(e));
     }
 
     startFaceDetection() {
         console.log('Starting face detection...');
-        
+
         // Clear any existing interval
         if (this.faceDetectionInterval) {
             clearInterval(this.faceDetectionInterval);
         }
-        
+
         if (this.faceDetection.faceApiLoaded) {
             this.updateStatus('🤖 AI-Enhanced face detection active');
             this.faceDetectionInterval = setInterval(() => this.detectFaceWithAI(), 200);
@@ -97,15 +98,15 @@ class FaceRegistrationApp {
     async detectFaceWithAI() {
         try {
             const detection = await this.faceDetection.detectFaceWithFaceAPI(this.elements.video);
-            
+
             if (detection) {
                 this.currentFaceData = detection;
                 this.faceDetection.drawFaceDetectionWithLandmarks(detection);
-                
+
                 const analysis = this.faceDetection.analyzeFaceOrientation(detection.landmarks);
                 this.updateFaceStatus(detection, analysis);
                 this.updateGuidance(detection, analysis);
-                
+
             } else {
                 this.currentFaceData = null;
                 this.faceDetection.clearDetectionOverlay();
@@ -122,7 +123,7 @@ class FaceRegistrationApp {
 
     detectFaceBasic() {
         const faceRegion = this.faceDetection.detectFaceBasic(this.elements.video, this.elements.canvas);
-        
+
         if (faceRegion) {
             this.currentFaceData = { box: faceRegion, confidence: faceRegion.confidence };
             this.faceDetection.drawBasicFaceDetection(faceRegion);
@@ -155,7 +156,7 @@ class FaceRegistrationApp {
 
         const targetAngle = this.angles[this.currentStep].angle;
         const detectedAngle = analysis.angle;
-        
+
         if (this.checkAngleMatch(detectedAngle, targetAngle)) {
             this.elements.guidanceMessage.innerHTML = `✅ <strong>Perfect! Ready to capture ${targetAngle} angle</strong>`;
             this.elements.guidanceMessage.style.color = 'green';
@@ -199,7 +200,7 @@ class FaceRegistrationApp {
 
     processSuccessfulCapture(dataURL) {
         console.log('Processing successful capture...');
-        
+
         if (this.currentStep < this.angles.length) {
             // Add new photo
             this.capturedPhotos.push({
@@ -207,7 +208,7 @@ class FaceRegistrationApp {
                 angle: this.angles[this.currentStep].angle,
                 step: this.currentStep + 1
             });
-            
+
             this.createThumbnail(this.angles[this.currentStep].angle, this.currentStep + 1);
             this.currentStep++;
         } else {
@@ -278,13 +279,13 @@ class FaceRegistrationApp {
         if (detectedAngle === targetAngle) {
             return true;
         }
-        
+
         // For up and down angles, front view is also acceptable
         // (vertical angles are harder to detect precisely)
         if ((targetAngle === 'up' || targetAngle === 'down') && detectedAngle === 'front') {
             return true;
         }
-        
+
         return false;
     }
 
@@ -319,7 +320,8 @@ class FaceRegistrationApp {
 }
 
 // Initialize application when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     window.faceApp = new FaceRegistrationApp();
-    window.faceApp.initialize().catch(console.error);
+    // Do NOT auto-initialize. We wait for the tab to be active.
+    // window.faceApp.initialize().catch(console.error);
 });
