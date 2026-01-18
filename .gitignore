@@ -12,7 +12,8 @@ wheels/
 # folders
 uploads/
 logs/
-faceid/database/
+faceid/database/*
+!faceid/database/init_local_db.py
 faceid/__pycache__ 
 profile_pic/
 assets/profile_pic
