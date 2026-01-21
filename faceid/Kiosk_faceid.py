@@ -529,7 +529,7 @@ def run_app():
              
              # --- Strict Gates ---
              is_frontal = is_frontal_face(kps, fw_v, fh_v)
-             is_close, _ = is_face_close_enough(face[0:4], fw_v, fh_v)
+             is_close, dist_status = is_face_close_enough(face[0:4], fw_v, fh_v)
              
              # Visual Feedback: Green if ready, Red if not
              # READY CONDITION: Frontal + Close + High Confidence
@@ -537,6 +537,28 @@ def run_app():
              
              col = (0, 255, 0) if is_ready else (0, 0, 255)
              cv2.rectangle(canvas, (mcx, mcy), (mcx+mcw, mcy+mch), col, 2)
+
+             # Guidance Text
+             guidance_text = ""
+             if not is_frontal:
+                 guidance_text = "Look at Camera"
+             elif dist_status == "too_far":
+                 guidance_text = "Please Stand Closer"
+             elif dist_status == "too_close":
+                 guidance_text = "Move Back"
+             
+             if guidance_text:
+                 # Calculate text size to center it or place it well
+                 g_scale = 1.0
+                 g_thick = 2
+                 g_size = cv2.getTextSize(guidance_text, cv2.FONT_HERSHEY_SIMPLEX, g_scale, g_thick)[0]
+                 g_x = mcx + (mcw - g_size[0]) // 2
+                 g_y = mcy - 10
+                 if g_y < 30: g_y = mcy + mch + 30 # Move below if too close to top
+                 
+                 # Draw text with outline/background for visibility
+                 cv2.putText(canvas, guidance_text, (g_x, g_y), cv2.FONT_HERSHEY_SIMPLEX, g_scale, (0,0,0), g_thick+2)
+                 cv2.putText(canvas, guidance_text, (g_x, g_y), cv2.FONT_HERSHEY_SIMPLEX, g_scale, (0,255,255), g_thick)
              
              if is_ready:
                  is_cd = False
