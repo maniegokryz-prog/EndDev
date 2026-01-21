@@ -220,37 +220,112 @@ class ManualLoginDialog:
         self.attendance_logger = attendance_logger
         self.employee_data = None
         
+        # Colors
+        self.COLOR_BG = "#FFFFFF"
+        self.COLOR_PRIMARY = "#1b4d3e" # Dark Green
+        self.COLOR_TEXT = "#333333"
+        self.COLOR_WHITE = "#FFFFFF"
+        
+        # Setup Window
         self.root = tk.Tk()
         self.root.title("Manual Verification")
+        self.root.configure(bg=self.COLOR_BG)
+        self.root.attributes('-fullscreen', True)
         
-        w, h = 500, 400
+        # Get screen dims
         sw = self.root.winfo_screenwidth()
         sh = self.root.winfo_screenheight()
-        x = (sw - w) // 2
-        y = (sh - h) // 2
-        self.root.geometry(f"{w}x{h}+{x}+{y}")
-        self.root.configure(bg='white')
         
-        tk.Label(self.root, text="Too many attempts please log in manually", fg="#dc3545", bg="white", font=("Segoe UI", 12)).pack(pady=20)
+        # --- HEADER ---
+        header_frame = tk.Frame(self.root, bg=self.COLOR_PRIMARY, height=int(sh*0.12))
+        header_frame.pack(side="top", fill="x")
+        header_frame.pack_propagate(False) # Force height
         
-        tk.Label(self.root, text="ID Number", bg="white", font=("Segoe UI", 10, "bold")).pack(fill="x", padx=40)
-        self.entry_id = tk.Entry(self.root, font=("Segoe UI", 12))
-        self.entry_id.pack(fill="x", padx=40, pady=(0, 15))
+        # Logo & Title Container
+        title_container = tk.Frame(header_frame, bg=self.COLOR_PRIMARY)
+        title_container.place(relx=0.5, rely=0.5, anchor="center")
         
-        tk.Label(self.root, text="Password", bg="white", font=("Segoe UI", 10, "bold")).pack(fill="x", padx=40)
-        self.entry_pass = tk.Entry(self.root, font=("Segoe UI", 12), show="*")
-        self.entry_pass.pack(fill="x", padx=40, pady=(0, 20))
+        # Logo (Try load)
+        logo_path = os.path.join(script_dir, "bpc-logo.png")
+        if os.path.exists(logo_path):
+            try:
+                pil_img = Image.open(logo_path)
+                # Resize to ~80px height
+                h = int(sh*0.12 * 0.8)
+                w = int(pil_img.width * (h / pil_img.height))
+                pil_img = pil_img.resize((w, h), Image.Resampling.LANCZOS)
+                self.logo_photo = ImageTk.PhotoImage(pil_img)
+                tk.Label(title_container, image=self.logo_photo, bg=self.COLOR_PRIMARY).pack(side="left", padx=10)
+            except: pass
+            
+        tk.Label(title_container, text="Automated Face Recognition Attendance System", 
+                fg="white", bg=self.COLOR_PRIMARY, font=("Segoe UI", 24, "bold")).pack(side="left", padx=10)
         
-        self.btn = tk.Button(self.root, text="Log In", bg="#198754", fg="white", font=("Segoe UI", 12, "bold"), command=self.verify)
-        self.btn.pack(fill="x", padx=40, ipady=5)
+        # --- FOOTER ---
+        footer_frame = tk.Frame(self.root, bg=self.COLOR_PRIMARY, height=int(sh*0.08))
+        footer_frame.pack(side="bottom", fill="x")
+        footer_frame.pack_propagate(False)
         
+        self.time_label = tk.Label(footer_frame, text="", fg="white", bg=self.COLOR_PRIMARY, font=("Segoe UI", 16))
+        self.time_label.place(relx=0.5, rely=0.5, anchor="center")
+        self.update_clock()
+        
+        # --- MAIN CONTENT (Login Form) ---
+        content_frame = tk.Frame(self.root, bg=self.COLOR_BG)
+        content_frame.pack(side="top", expand=True, fill="both")
+        
+        # Center Box
+        form_frame = tk.Frame(content_frame, bg=self.COLOR_BG)
+        form_frame.place(relx=0.5, rely=0.5, anchor="center")
+        
+        tk.Label(form_frame, text="Manual Verification", fg=self.COLOR_PRIMARY, bg=self.COLOR_BG, 
+                font=("Segoe UI", 28, "bold")).pack(pady=(0, 10))
+                
+        tk.Label(form_frame, text="Please log in with your credentials", fg="#666", bg=self.COLOR_BG, 
+                font=("Segoe UI", 14)).pack(pady=(0, 40))
+        
+        # ID Input
+        tk.Label(form_frame, text="Employee ID", fg=self.COLOR_TEXT, bg=self.COLOR_BG, 
+                font=("Segoe UI", 12, "bold")).pack(anchor="w", fill="x", padx=20)
+        self.entry_id = tk.Entry(form_frame, font=("Segoe UI", 16), bd=2, relief="solid", justify="center")
+        self.entry_id.pack(fill="x", padx=20, pady=(5, 20), ipady=5)
+        
+        # Pass Input
+        tk.Label(form_frame, text="Password", fg=self.COLOR_TEXT, bg=self.COLOR_BG, 
+                font=("Segoe UI", 12, "bold")).pack(anchor="w", fill="x", padx=20)
+        self.entry_pass = tk.Entry(form_frame, font=("Segoe UI", 16), bd=2, relief="solid", show="*", justify="center")
+        self.entry_pass.pack(fill="x", padx=20, pady=(5, 30), ipady=5)
+        
+        # Buttons
+        btn_frame = tk.Frame(form_frame, bg=self.COLOR_BG)
+        btn_frame.pack(fill="x", padx=20)
+        
+        self.btn_login = tk.Button(btn_frame, text="Log In", bg="#198754", fg="white", 
+                                 font=("Segoe UI", 14, "bold"), relief="flat", cursor="hand2", 
+                                 command=self.verify)
+        self.btn_login.pack(fill="x", ipady=10)
+        
+        tk.Button(form_frame, text="Cancel", bg=self.COLOR_BG, fg="#dc3545", bd=0, 
+                 font=("Segoe UI", 12, "underline"), cursor="hand2", 
+                 command=self.root.destroy).pack(pady=20)
+
+        # Hotkeys
         self.root.bind('<Return>', lambda e: self.verify())
+        self.root.bind('<Escape>', lambda e: self.root.destroy())
+        
         self.entry_id.focus()
         
         self.root.lift()
-        self.root.attributes('-topmost',True)
-        self.root.after_idle(self.root.attributes,'-topmost',False)
+        self.root.attributes('-topmost', True)
+        self.root.after_idle(self.root.attributes, '-topmost', False)
         self.root.mainloop()
+
+    def update_clock(self):
+        try:
+            now = datetime.now().strftime("%B %d, %Y %A | %I:%M:%S %p")
+            self.time_label.config(text=now)
+            self.root.after(1000, self.update_clock)
+        except: pass
 
     def verify(self):
         emp_id = self.entry_id.get().strip()
