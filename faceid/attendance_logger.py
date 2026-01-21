@@ -51,7 +51,7 @@ class AttendanceLogger:
             from init_local_db import create_database
             create_database()
     
-    def log_attendance(self, employee_db_id, log_type=None, notes=None):
+    def log_attendance(self, employee_db_id, log_type=None, notes=None, source='webcam'):
         """
         Log an attendance event for an employee.
         
@@ -60,6 +60,8 @@ class AttendanceLogger:
             log_type (str, optional): Type of log ('time_in' or 'time_out'). 
                                      If None, will auto-determine based on last log.
             notes (str, optional): Additional notes for this log entry
+            source (str, optional): Source of the log ('webcam', 'manual login', 'kiosk'). 
+                                   Defaults to 'webcam'.
         
         Returns:
             dict: Result containing success status, log_id, log_type, and message
@@ -108,14 +110,14 @@ class AttendanceLogger:
                 else:
                     notes = self._calculate_attendance_status(employee_db_id, log_type, now, conn)
             
-            print(f"  📝 Inserting attendance log: {log_type} at {log_time}")
+            print(f"  📝 Inserting attendance log: {log_type} at {log_time} (Source: {source})")
             
             # Insert attendance log
             cursor.execute("""
                 INSERT INTO attendance_logs 
                 (employee_id, log_date, log_type, log_time, source, notes, synced)
-                VALUES (?, ?, ?, ?, 'kiosk', ?, 0)
-            """, (employee_db_id, log_date, log_type, log_time, notes))
+                VALUES (?, ?, ?, ?, ?, ?, 0)
+            """, (employee_db_id, log_date, log_type, log_time, source, notes))
             
             log_id = cursor.lastrowid
             print(f"  ✓ Attendance log inserted with ID: {log_id}")

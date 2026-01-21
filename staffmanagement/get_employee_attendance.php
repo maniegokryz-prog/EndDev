@@ -238,6 +238,93 @@ try {
     }
     
     $stmt->close();
+
+    // --- NEW: Fetch VISIT logs from attendance_logs ---
+    // We want to verify visits within the same period
+    
+    $visit_sql = "";
+    $visit_params = [];
+    $visit_types = "";
+    
+    if ($use_limit_mode) {
+        // If limit mode, we just fetch the last N visits to be safe
+        $visit_sql = "SELECT id, log_date, log_time, notes 
+                      FROM attendance_logs 
+                      WHERE employee_id = ? AND log_type = 'visit' 
+                      ORDER BY log_time DESC LIMIT ?";
+        $visit_params = [$employee_id, $limit];
+        $visit_types = "ii";
+    } else {
+        // Date range mode
+        $visit_sql = "SELECT id, log_date, log_time, notes 
+                      FROM attendance_logs 
+                      WHERE employee_id = ? AND log_type = 'visit' 
+                      AND log_date BETWEEN ? AND ?
+                      ORDER BY log_time DESC";
+        $visit_params = [$employee_id, $start_date, $end_date];
+        $visit_types = "iss";
+    }
+    
+    $stmt_visit = $conn->prepare($visit_sql);
+    if ($stmt_visit) {
+        $stmt_visit->bind_param($visit_types, ...$visit_params);
+        if ($stmt_visit->execute()) {
+            $visit_result = $stmt_visit->get_result();
+            while ($v_row = $visit_result->fetch_assoc()) {
+                
+                // Format visit time
+                $visit_datetime = new DateTime($v_row['log_time']);
+                $visit_time_formatted = $visit_datetime->format('g:i A');
+                $visit_date_formatted = $visit_datetime->format('l, F j, Y');
+                $visit_day = $visit_datetime->format('l');
+                
+                // Construct visit record matching the structure
+                $visit_info = [
+                    'status' => 'visit',
+                    'badge_class' => 'visit',
+                    'badge_text' => 'Visit',
+                    'icon_class' => 'bg-purple', // Custom class, but handled by JS colors
+                    'icon' => 'bi-person-badge-fill'
+                ];
+                
+                $attendance_records[] = [
+                    'id' => 'visit_' . $v_row['id'], // Prefix to avoid ID collision
+                    'attendance_date' => $v_row['log_date'],
+                    'formatted_date' => $visit_date_formatted,
+                    'day_of_week' => $visit_day,
+                    'time_in' => $visit_datetime->format('H:i:s'), // Treat visit time as time_in
+                    'time_in_formatted' => $visit_time_formatted,
+                    'time_out' => null,
+                    'time_out_formatted' => null,
+                    'late_minutes' => 0,
+                    'overtime_minutes' => 0,
+                    'actual_hours' => null,
+                    'hours_worked' => null,
+                    'status' => 'visit',
+                    'status_info' => $visit_info,
+                    'notes' => $v_row['notes'] ?? 'Unscheduled Visit',
+                    'is_visit' => true,
+                    // For sorting
+                    'sort_time' => $v_row['log_time'] 
+                ];
+            }
+        }
+        $stmt_visit->close();
+    }
+
+    // Sort all records by date/time descending
+    usort($attendance_records, function($a, $b) {
+        // Use sort_time if available (for visits), else construct from date + time_in
+        $t1 = isset($a['sort_time']) ? $a['sort_time'] : ($a['attendance_date'] . ' ' . ($a['time_in'] ?? '00:00:00'));
+        $t2 = isset($b['sort_time']) ? $b['sort_time'] : ($b['attendance_date'] . ' ' . ($b['time_in'] ?? '00:00:00'));
+        return strtotime($t2) - strtotime($t1);
+    });
+
+    // If using limit mode, re-slice to respect the limit after merging
+    if ($use_limit_mode && count($attendance_records) > $limit) {
+        $attendance_records = array_slice($attendance_records, 0, $limit);
+    }
+
     
     // Calculate summary statistics
     $summary = [

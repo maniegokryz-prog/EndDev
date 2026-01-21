@@ -2641,7 +2641,8 @@ $schedules = $viewer->getSchedules();
             'danger': { iconBg: '#f44336', badgeBg: '#f44336', badgeText: '#ffffff' },       // Red for Absent
             'warning text-dark': { iconBg: '#ffc107', badgeBg: '#ffc107', badgeText: '#333333' }, // Yellow for Incomplete
             'warning': { iconBg: '#ffc107', badgeBg: '#ffc107', badgeText: '#333333' },      // Yellow variant
-            'manual': { iconBg: '#a8d5ba', badgeBg: '#a8d5ba', badgeText: '#2d5f3f' }       // Muted green for Manual
+            'manual': { iconBg: '#a8d5ba', badgeBg: '#a8d5ba', badgeText: '#2d5f3f' },       // Muted green for Manual
+            'visit': { iconBg: '#6f42c1', badgeBg: '#6f42c1', badgeText: '#ffffff' }        // Purple for Visit
           };
           
           console.log('=== DTR RECORDS DEBUG v' + Date.now() + ' ===');
@@ -2681,6 +2682,12 @@ $schedules = $viewer->getSchedules();
             console.log(`  Full Icon Class: bi ${statusInfo.icon}`);
             console.log(`  Show Edit: ${showEditButton}`);
 
+            // Custom time text for visits
+            let timeDisplay = `Time In: ${timeIn} — Time Out: ${timeOut}`;
+            if (record.is_visit) {
+                 timeDisplay = `Visit Time: ${timeIn}`;
+            }
+
             html += `
               <div class="dtr-item d-flex align-items-start mb-3" style="background-color: #f8f9fa; padding: 10px; border-radius: 8px;">
                 <div style="background: ${colors.iconBg}; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; margin-right: 1rem;">
@@ -2692,7 +2699,7 @@ $schedules = $viewer->getSchedules();
                     <span style="background: ${colors.badgeBg}; color: ${colors.badgeText}; padding: 0.35em 0.8em; border-radius: 0.3rem; font-weight: 600; display: inline-block; margin-left: 0.5rem; font-size: 0.9rem;">${statusInfo.badge_text}</span>
                   </div>
                   <div style="font-size: 0.875rem; color: #6c757d; margin-top: 0.25rem;">
-                    Time In: ${timeIn} — Time Out: ${timeOut}
+                    ${timeDisplay}
                   </div>
                   ${hoursWorked !== 'N/A' ? `<div style="font-size: 0.875rem; color: #6c757d;">Hours: ${hoursWorked}</div>` : ''}
                   ${showEditButton ? `
