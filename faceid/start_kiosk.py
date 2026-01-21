@@ -151,6 +151,74 @@ def main():
     print("Kiosk Face ID System - Starting...", flush=True)
     print("=" * 70, flush=True)
     
+    # Step 0: Organize and Download Models
+    print("\n[0/6] Verifying models...", flush=True)
+    try:
+        models_dir = os.path.join(script_dir, "models")
+        if not os.path.exists(models_dir):
+            os.makedirs(models_dir)
+            print("  Created models directory")
+
+        # 0.1: YuNet
+        yunet_dir = os.path.join(models_dir, "openCV_YuNet")
+        if not os.path.exists(yunet_dir):
+            os.makedirs(yunet_dir)
+            print("  Created openCV_YuNet directory")
+
+        yunet_filename = "face_detection_yunet_2023mar.onnx"
+        yunet_src_legacy = os.path.join(script_dir, yunet_filename)
+        yunet_src_models = os.path.join(models_dir, yunet_filename)
+        yunet_dst = os.path.join(yunet_dir, yunet_filename)
+        
+        # Cleanup: Remove strict duplicate in models/ if exists
+        if os.path.exists(yunet_src_models) and os.path.abspath(yunet_src_models) != os.path.abspath(yunet_dst):
+             try:
+                 os.remove(yunet_src_models)
+                 print(f"  Cleaned up {yunet_filename} from models root")
+             except: pass
+
+        # Move if in root script dir
+        if os.path.exists(yunet_src_legacy):
+            try:
+                import shutil
+                shutil.move(yunet_src_legacy, yunet_dst)
+                print(f"  Moved {yunet_filename} to models/openCV_YuNet/")
+            except Exception as e:
+                print(f"  Failed to move {yunet_filename}: {e}")
+        
+        # Download if missing
+        if not os.path.exists(yunet_dst):
+            print(f"  {yunet_filename} not found in openCV_YuNet. Downloading...")
+            yunet_url = "https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
+            try:
+                import urllib.request
+                urllib.request.urlretrieve(yunet_url, yunet_dst)
+                print("  ✓ YuNet model downloaded")
+            except Exception as e:
+                print(f"  ❌ Failed to download YuNet: {e}")
+        else:
+             print("  ✓ YuNet model present")
+
+        # 0.2: InsightFace/AuraFace
+        # We run a quick check to force download if needed
+        print("  Checking AuraFace models (this may take a moment)...")
+        try:
+            # We import here to avoid slowing down script start if not needed, 
+            # but for this step we need to verify.
+            from insightface.app import FaceAnalysis
+            # Initialize with root=script_dir (because FaceAnalysis appends 'models')
+            # This results in script_dir/models/auraface
+            app = FaceAnalysis(name='auraface', root=script_dir, providers=['CPUExecutionProvider'])
+            # .prepare() triggers the download/check
+            app.prepare(ctx_id=0, det_size=(640, 640))
+            print("  ✓ AuraFace models verified")
+        except Exception as e:
+            print(f"  ⚠️  Warning: Issue verifying AuraFace models: {e}")
+            print("     (They might download when Kiosk starts)")
+
+    except Exception as e:
+        print(f"⚠️  Warning during model verification: {e}")
+
     # Step 1: Initialize local database
     print("\n[1/6] Initializing local SQLite database...")
     try:

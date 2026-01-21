@@ -290,7 +290,10 @@ def run_app():
     print("Loading Models...")
     
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    yunet_path = os.path.join(script_dir, "face_detection_yunet_2023mar.onnx")
+    models_dir = os.path.join(script_dir, "models")
+    
+    # YuNet
+    yunet_path = os.path.join(models_dir, "openCV_YuNet", "face_detection_yunet_2023mar.onnx")
     detector_yunet = None
     if os.path.exists(yunet_path):
         detector_yunet = cv2.FaceDetectorYN.create(
@@ -299,11 +302,14 @@ def run_app():
         )
     
     try:
+        # Use AuraFace if available
+        # root=script_dir because InsightFace appends 'models' automatically
+        # resulting in script_dir/models/auraface
         face_app = FaceAnalysis(name='auraface', root=script_dir, providers=['CPUExecutionProvider'])
         face_app.prepare(ctx_id=0, det_size=(640, 640))
     except:
         print("Fallback to buffalo_l")
-        face_app = FaceAnalysis(name='buffalo_l', providers=['CPUExecutionProvider'])
+        face_app = FaceAnalysis(name='buffalo_l', root=script_dir, providers=['CPUExecutionProvider'])
         face_app.prepare(ctx_id=0, det_size=(640, 640))
         
     all_embeddings = None
