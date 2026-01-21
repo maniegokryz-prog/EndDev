@@ -268,11 +268,11 @@ async function loadSummary(date = null) {
     if (result.success && result.summary) {
       const summary = result.summary;
 
-      // Update percentage cards
-      document.getElementById('presentPercentage').textContent = Math.round(summary.present.percentage) + '%';
-      document.getElementById('absentPercentage').textContent = Math.round(summary.absent.percentage) + '%';
-      document.getElementById('onTimePercentage').textContent = Math.round(summary.on_time.percentage) + '%';
-      document.getElementById('latePercentage').textContent = Math.round(summary.late.percentage) + '%';
+      // Update percentage cards (now showing Actual Numbers)
+      document.getElementById('presentPercentage').textContent = summary.present.count;
+      document.getElementById('absentPercentage').textContent = summary.absent.count;
+      document.getElementById('onTimePercentage').textContent = summary.on_time.count;
+      document.getElementById('latePercentage').textContent = summary.late.count;
 
       console.log('Summary loaded:', {
         date: result.date,
@@ -284,19 +284,19 @@ async function loadSummary(date = null) {
       });
     } else {
       console.error('Failed to load summary:', result.error || 'Unknown error');
-      // Set to 0% on error
-      document.getElementById('presentPercentage').textContent = '0%';
-      document.getElementById('absentPercentage').textContent = '0%';
-      document.getElementById('onTimePercentage').textContent = '0%';
-      document.getElementById('latePercentage').textContent = '0%';
+      // Set to 0 on error
+      document.getElementById('presentPercentage').textContent = '0';
+      document.getElementById('absentPercentage').textContent = '0';
+      document.getElementById('onTimePercentage').textContent = '0';
+      document.getElementById('latePercentage').textContent = '0';
     }
   } catch (error) {
     console.error('Error loading summary:', error);
-    // Set to 0% on error
-    document.getElementById('presentPercentage').textContent = '0%';
-    document.getElementById('absentPercentage').textContent = '0%';
-    document.getElementById('onTimePercentage').textContent = '0%';
-    document.getElementById('latePercentage').textContent = '0%';
+    // Set to 0 on error
+    document.getElementById('presentPercentage').textContent = '0';
+    document.getElementById('absentPercentage').textContent = '0';
+    document.getElementById('onTimePercentage').textContent = '0';
+    document.getElementById('latePercentage').textContent = '0';
   }
 }
 

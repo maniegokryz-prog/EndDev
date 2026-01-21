@@ -3038,8 +3038,8 @@ $schedules = $viewer->getSchedules();
         <div class="metric-box p-3">
           <canvas id="chartPresent" width="150" height="150"></canvas>
           <div class="mt-2 fw-semibold">Present</div>
-          <div class="text-muted small" id="presentValue">0%</div>
-          <div class="text-muted" style="font-size: 0.7rem;" id="presentCount">0 days</div>
+          <div class="text-muted small" id="presentValue">0</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="presentCount">0%</div>
         </div>
       </div>
 
@@ -3047,8 +3047,8 @@ $schedules = $viewer->getSchedules();
         <div class="metric-box p-3">
           <canvas id="chartAbsent" width="150" height="150"></canvas>
           <div class="mt-2 fw-semibold">Absent</div>
-          <div class="text-muted small" id="absentValue">0%</div>
-          <div class="text-muted" style="font-size: 0.7rem;" id="absentCount">0 days</div>
+          <div class="text-muted small" id="absentValue">0</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="absentCount">0%</div>
         </div>
       </div>
 
@@ -3056,8 +3056,8 @@ $schedules = $viewer->getSchedules();
         <div class="metric-box p-3">
           <canvas id="chartOntime" width="150" height="150"></canvas>
           <div class="mt-2 fw-semibold">On Time</div>
-          <div class="text-muted small" id="ontimeValue">0%</div>
-          <div class="text-muted" style="font-size: 0.7rem;" id="ontimeCount">0 days</div>
+          <div class="text-muted small" id="ontimeValue">0</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="ontimeCount">0%</div>
         </div>
       </div>
 
@@ -3065,8 +3065,8 @@ $schedules = $viewer->getSchedules();
         <div class="metric-box p-3">
           <canvas id="chartLate" width="150" height="150"></canvas>
           <div class="mt-2 fw-semibold">Late</div>
-          <div class="text-muted small" id="lateValue">0%</div>
-          <div class="text-muted" style="font-size: 0.7rem;" id="lateCount">0 days</div>
+          <div class="text-muted small" id="lateValue">0</div>
+          <div class="text-muted" style="font-size: 0.7rem;" id="lateCount">0%</div>
         </div>
       </div>
     </div>
@@ -3157,23 +3157,23 @@ async function loadPerformanceMetrics() {
     
     // Present (Green)
     metricsCharts.present = createDonutChart('chartPresent', metrics.present.percentage, '#28a745');
-    document.getElementById('presentValue').textContent = metrics.present.percentage + '%';
-    document.getElementById('presentCount').textContent = metrics.present.count + ' days';
+    document.getElementById('presentValue').textContent = metrics.present.count;
+    document.getElementById('presentCount').textContent = metrics.present.percentage + '%';
     
     // Absent (Red)
     metricsCharts.absent = createDonutChart('chartAbsent', metrics.absent.percentage, '#dc3545');
-    document.getElementById('absentValue').textContent = metrics.absent.percentage + '%';
-    document.getElementById('absentCount').textContent = metrics.absent.count + ' days';
+    document.getElementById('absentValue').textContent = metrics.absent.count;
+    document.getElementById('absentCount').textContent = metrics.absent.percentage + '%';
     
     // On Time (Blue)
     metricsCharts.ontime = createDonutChart('chartOntime', metrics.onTime.percentage, '#0d6efd');
-    document.getElementById('ontimeValue').textContent = metrics.onTime.percentage + '%';
-    document.getElementById('ontimeCount').textContent = metrics.onTime.count + ' days';
+    document.getElementById('ontimeValue').textContent = metrics.onTime.count;
+    document.getElementById('ontimeCount').textContent = metrics.onTime.percentage + '%';
     
     // Late (Orange)
     metricsCharts.late = createDonutChart('chartLate', metrics.late.percentage, '#fd7e14');
-    document.getElementById('lateValue').textContent = metrics.late.percentage + '%';
-    document.getElementById('lateCount').textContent = metrics.late.count + ' days';
+    document.getElementById('lateValue').textContent = metrics.late.count;
+    document.getElementById('lateCount').textContent = metrics.late.percentage + '%';
     
     // Show content
     document.getElementById('metricsLoading').style.display = 'none';
