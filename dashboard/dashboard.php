@@ -62,7 +62,7 @@ $currentUser = getCurrentUser();
     <div class="container-fluid">
 
 <div class="d-flex align-items-center justify-content-between">
-  <h2 class="mb-4 display-4 text-dark">Welcome!</h2>
+  <!-- <h2 class="mb-4 display-4 text-dark">Welcome!</h2> -->
   <button id="calendar-toggle-btn" class="btn btn-success d-sm-none d-block" style="display: none;"></button>
 </div>
 

@@ -262,7 +262,44 @@ $loadSuccess = $viewer->loadTodayAttendance($filters);
 $attendanceRecords = $viewer->getAttendanceRecords();
 $selectedDate = $filters['date'];
 $currentDate = date('F d, Y', strtotime($selectedDate)); // Format: November 11, 2025
-?>
+
+// Handle AJAX Request
+if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
+    if (empty($attendanceRecords)) {
+        echo '<tr>
+          <td colspan="7" class="text-center py-4 text-muted">
+            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+            No attendance records found for ' . $currentDate . '
+          </td>
+        </tr>';
+    } else {
+        foreach ($attendanceRecords as $record) {
+            echo '<tr data-id="' . $record['employee_id'] . '">
+              <td>
+                <div class="d-flex align-items-center">
+                  <img src="../' . $record['profile_photo'] . '" 
+                       onerror="this.src=\'../assets/profile_pic/user.png\';" 
+                       class="employee-img rounded-circle me-2" 
+                       width="40" 
+                       height="40"
+                       alt="Profile">
+                  <div>
+                    <span class="fw-semibold">' . $record['full_name'] . '</span><br>
+                    <small class="text-muted">' . $record['role'] . '</small>
+                  </div>
+                </div>
+              </td>
+              <td>' . date('Y-m-d', strtotime($record['attendance_date'])) . '</td>
+              <td>' . $record['time_in'] . '</td>
+              <td>' . $record['time_out'] . '</td>
+              <td>' . number_format($record['scheduled_hours'], 1) . ' hr</td>
+              <td>' . number_format($record['actual_hours'], 1) . ' hr</td>
+              <td><span class="status-dot ' . $record['status_class'] . '"></span> ' . $record['status_display'] . '</td>
+            </tr>';
+        }
+    }
+    exit; // Stop further execution for AJAX requests
+}?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
