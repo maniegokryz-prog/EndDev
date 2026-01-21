@@ -435,6 +435,24 @@ def run_app():
             
             if dlg.result:
                 manual_login_user = dlg.employee_data
+                
+                # Normalize keys: DB uses employee_id (e.g. EMP001), but drawing logic expects employee_code
+                if manual_login_user and 'employee_id' in manual_login_user and 'employee_code' not in manual_login_user:
+                     manual_login_user['employee_code'] = manual_login_user['employee_id']
+                
+                # Ensure profile picture is loaded for this user (in case they weren't in authorized_embeddings)
+                emp_code = manual_login_user.get('employee_code')
+                if emp_code and emp_code not in profile_pics:
+                    user_profile_dir = os.path.join(script_dir, "database", "user_profile")
+                    for ext in ['.jpg', '.png', '.jpeg']:
+                        p = os.path.join(user_profile_dir, f"{emp_code}{ext}")
+                        if os.path.exists(p):
+                            img = cv2.imread(p)
+                            if img is not None:
+                                profile_pics[emp_code] = img
+                                print(f"Loaded profile pic for {emp_code} on-the-fly")
+                            break
+                
                 consecutive_failures = 0
                 print(f"Manual Login Success: {manual_login_user.get('full_name')}")
                 
