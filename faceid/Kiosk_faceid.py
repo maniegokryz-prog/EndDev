@@ -21,15 +21,15 @@ from datetime import datetime
 # Import Helper Modules
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(script_dir)
-try:
-    from attendance_logger import AttendanceLogger
-    from database.init_local_db import init_local_db
-except ImportError:
-    pass 
+from attendance_logger import AttendanceLogger
+# init_local_db not needed/doesn't exist as function. get_db_connection used locally if needed.
+from liveness_detector import LivenessDetector 
 
 # Constants
 AUTHORIZED_EMBEDDINGS_PATH = os.path.join(script_dir, "database", "authorized_embeddings.npy")
 ATTENDANCE_LOGGING_ENABLED = True
+ENABLE_LIVENESS_CHECK = True
+LIVENESS_THRESHOLD = 0.5
 ENABLE_LOGOUT_RESTRICTION = True
 ENABLE_LOGIN_COOLDOWN = True
 LOGIN_COOLDOWN_MINUTES = 5
@@ -104,7 +104,7 @@ def is_face_close_enough(box, frame_w, frame_h):
     w = box[2]
     ratio = w / frame_w
     
-    min_ratio = 0.32 
+    min_ratio = 0.30 
     max_ratio = 0.45
     
     if ratio < min_ratio: return False, "too_far"
@@ -376,6 +376,19 @@ def run_app():
             score_threshold=0.8, nms_threshold=0.3, top_k=5000
         )
     
+    # Liveness Detector
+    liveness_detector = None
+    minifasnet_path = os.path.join(models_dir, "miniFastnet", "MiniFASNetV2_TEST.onnx")
+    if not os.path.exists(minifasnet_path):
+        # Fallback to standard name
+        minifasnet_path = os.path.join(models_dir, "miniFastnet", "MiniFASNetV2.onnx")
+        
+    if os.path.exists(minifasnet_path):
+        print(f"Initializing Liveness Detector ({os.path.basename(minifasnet_path)})...")
+        liveness_detector = LivenessDetector(minifasnet_path, threshold=LIVENESS_THRESHOLD)
+    else:
+        print("⚠️ Liveness model not found (waiting for download)")
+    
     try:
         # Use AuraFace if available
         # root=script_dir because InsightFace appends 'models' automatically
@@ -531,16 +544,27 @@ def run_app():
              is_frontal = is_frontal_face(kps, fw_v, fh_v)
              is_close, dist_status = is_face_close_enough(face[0:4], fw_v, fh_v)
              
+             # --- Liveness Check ---
+             is_real = True
+             liveness_score = 0.0
+             if liveness_detector and ENABLE_LIVENESS_CHECK:
+                  liveness_score, is_real = liveness_detector.check(frame, face[0:4].astype(int))
+                  # Visual debug: Show score (Commented out for production)
+                  # score_color = (0, 255, 0) if is_real else (0, 0, 255)
+                  # cv2.putText(canvas, f"Live: {liveness_score:.2f}", (mcx, mcy-35), cv2.FONT_HERSHEY_SIMPLEX, 0.6, score_color, 2)
+
              # Visual Feedback: Green if ready, Red if not
-             # READY CONDITION: Frontal + Close + High Confidence
-             is_ready = is_frontal and is_close and (conf > 0.8)
+             # READY CONDITION: Frontal + Close + High Confidence + Real
+             is_ready = is_frontal and is_close and (conf > 0.8) and is_real
              
              col = (0, 255, 0) if is_ready else (0, 0, 255)
              cv2.rectangle(canvas, (mcx, mcy), (mcx+mcw, mcy+mch), col, 2)
 
              # Guidance Text
              guidance_text = ""
-             if not is_frontal:
+             if not is_real:
+                 guidance_text = "FAKE FACE DETECTED"
+             elif not is_frontal:
                  guidance_text = "Look at Camera"
              elif dist_status == "too_far":
                  guidance_text = "Please Stand Closer"
@@ -558,7 +582,9 @@ def run_app():
                  
                  # Draw text with outline/background for visibility
                  cv2.putText(canvas, guidance_text, (g_x, g_y), cv2.FONT_HERSHEY_SIMPLEX, g_scale, (0,0,0), g_thick+2)
-                 cv2.putText(canvas, guidance_text, (g_x, g_y), cv2.FONT_HERSHEY_SIMPLEX, g_scale, (0,255,255), g_thick)
+                 g_color = (0, 255, 255) # Yellow default
+                 if not is_real: g_color = (0, 0, 255) # Red for fake
+                 cv2.putText(canvas, guidance_text, (g_x, g_y), cv2.FONT_HERSHEY_SIMPLEX, g_scale, g_color, g_thick)
              
              if is_ready:
                  is_cd = False

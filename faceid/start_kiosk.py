@@ -216,6 +216,24 @@ def main():
             print(f"  ⚠️  Warning: Issue verifying AuraFace models: {e}")
             print("     (They might download when Kiosk starts)")
 
+        # 0.3: MiniFASNetV2 (Liveness/Anti-Spoofing)
+        minifasnet_dir = os.path.join(models_dir, "miniFastnet")
+        if not os.path.exists(minifasnet_dir):
+            os.makedirs(minifasnet_dir)
+            print("  Created miniFastnet directory")
+        
+        minifasnet_filename = "MiniFASNetV2.onnx"
+        minifasnet_path = os.path.join(minifasnet_dir, minifasnet_filename)
+        
+        if not os.path.exists(minifasnet_path):
+            print(f"  {minifasnet_filename} not found.")
+            print(f"  [ACTION REQUIRED] Please manually download the model.")
+            print(f"  1. Download 'best_model.onnx' or 'best_model_quantized.onnx'")
+            print(f"  2. Rename it to '{minifasnet_filename}'")
+            print(f"  3. Place it in: {minifasnet_dir}")
+        else:
+             print("  ✓ MiniFASNetV2 model present")
+
     except Exception as e:
         print(f"⚠️  Warning during model verification: {e}")
 
