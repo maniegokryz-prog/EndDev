@@ -1122,6 +1122,7 @@ def run_verification():
                                         # --- ATTENDANCE LOGIC COPY START ---
                                         can_log_attendance = True
                                         restriction_message = ""
+                                        manual_log_type = None
                                         
                                         if ATTENDANCE_LOGGING_ENABLED and attendance_logger:
                                             try:
@@ -1129,35 +1130,38 @@ def run_verification():
                                                 if employee_db_id:
                                                     has_schedule = check_employee_schedule(employee_db_id)
                                                     if not has_schedule:
-                                                        can_log_attendance = False
-                                                        restriction_message = "no_schedule"
-                                                        verification_color = (0, 165, 255)
+                                                        # Instead of restricting, treat as VISIT
+                                                        manual_log_type = 'visit'
+                                                        verification_color = (255, 0, 255) # Magenta/Purple for Visit
+                                                        print(f"  ℹ️  No schedule found. Logging as VISIT.")
                                                     
-                                                    if ENABLE_LOGOUT_RESTRICTION and can_log_attendance:
-                                                        today_logs = attendance_logger.get_today_logs(employee_db_id)
-                                                        has_logout = any(log['log_type'] == 'time_out' for log in today_logs)
-                                                        if has_logout:
-                                                            can_log_attendance = False
-                                                            restriction_message = "logout"
-                                                            verification_color = (0, 165, 255)
-
-                                                    if ENABLE_LOGIN_COOLDOWN and can_log_attendance:
-                                                        if 'today_logs' not in locals():
+                                                    # Only check usual restrictions if it's NOT a visit
+                                                    if manual_log_type != 'visit':
+                                                        if ENABLE_LOGOUT_RESTRICTION and can_log_attendance:
                                                             today_logs = attendance_logger.get_today_logs(employee_db_id)
-                                                        last_login = None
-                                                        for log in reversed(today_logs):
-                                                            if log['log_type'] == 'time_in':
-                                                                last_login = log
-                                                                break
-                                                        if last_login:
-                                                            from datetime import datetime, timedelta
-                                                            last_login_time = datetime.strptime(last_login['log_time'], '%Y-%m-%d %H:%M:%S')
-                                                            time_since_login = (datetime.now() - last_login_time).total_seconds() / 60
-                                                            if time_since_login < LOGIN_COOLDOWN_MINUTES:
+                                                            has_logout = any(log['log_type'] == 'time_out' for log in today_logs)
+                                                            if has_logout:
                                                                 can_log_attendance = False
-                                                                cooldown_end_time = last_login_time + timedelta(minutes=LOGIN_COOLDOWN_MINUTES)
-                                                                restriction_message = cooldown_end_time.strftime('%I:%M %p')
-                                                                verification_color = (0, 200, 200)
+                                                                restriction_message = "logout"
+                                                                verification_color = (0, 165, 255)
+
+                                                        if ENABLE_LOGIN_COOLDOWN and can_log_attendance:
+                                                            if 'today_logs' not in locals():
+                                                                today_logs = attendance_logger.get_today_logs(employee_db_id)
+                                                            last_login = None
+                                                            for log in reversed(today_logs):
+                                                                if log['log_type'] == 'time_in':
+                                                                    last_login = log
+                                                                    break
+                                                            if last_login:
+                                                                from datetime import datetime, timedelta
+                                                                last_login_time = datetime.strptime(last_login['log_time'], '%Y-%m-%d %H:%M:%S')
+                                                                time_since_login = (datetime.now() - last_login_time).total_seconds() / 60
+                                                                if time_since_login < LOGIN_COOLDOWN_MINUTES:
+                                                                    can_log_attendance = False
+                                                                    cooldown_end_time = last_login_time + timedelta(minutes=LOGIN_COOLDOWN_MINUTES)
+                                                                    restriction_message = cooldown_end_time.strftime('%I:%M %p')
+                                                                    verification_color = (0, 200, 200)
 
                                             except Exception as e:
                                                 print(f"Error checking restrictions: {e}")
@@ -1167,33 +1171,56 @@ def run_verification():
                                                 employee_db_id = matched_employee.get('db_id')
                                                 if 'today_logs' not in locals(): today_logs = attendance_logger.get_today_logs(employee_db_id)
                                                 
-                                                if len(today_logs) == 0: next_log_type = 'time_in'
-                                                else: next_log_type = 'time_out' if today_logs[-1]['log_type'] == 'time_in' else 'time_in'
+                                                # Determine next log type if not already set (i.e. not 'visit')
+                                                if manual_log_type:
+                                                    next_log_type = manual_log_type
+                                                else:
+                                                    if len(today_logs) == 0: next_log_type = 'time_in'
+                                                    else: next_log_type = 'time_out' if today_logs[-1]['log_type'] == 'time_in' else 'time_in'
                                                 
                                                 proceed_with_logging = True
+                                                
+                                                # Optional: Confirm undertime for Time Out (skipped in Kiosk for flow)
                                                 if next_log_type == 'time_out':
-                                                     # Since we're in full screen GUI, we should probably auto-log or skip blocking dialog
-                                                     # For Kiosk mode, let's assume auto-log or minimal blocking
-                                                     # But the check_undertime_and_confirm creates a popup.
-                                                     # We'll call it, but it might minimize the fullscreen window.
-                                                     # Ideally user experience dictates no popups in kiosk.
-                                                     # Let's simple check and log.
                                                      # user_confirmed = check_undertime_and_confirm(employee_db_id)
                                                      pass
 
                                                 if proceed_with_logging:
-                                                    log_result = attendance_logger.log_attendance(employee_db_id=employee_db_id)
+                                                    # LOG THE ATTENDANCE
+                                                    log_result = attendance_logger.log_attendance(employee_db_id=employee_db_id, log_type=manual_log_type)
+                                                    
                                                     if log_result['success']:
                                                         log_datetime = datetime.strptime(log_result['log_time'], '%Y-%m-%d %H:%M:%S')
                                                         log_time_formatted = log_datetime.strftime('%I:%M %p')
-                                                        log_type_display = "Login" if log_result['log_type'] == 'time_in' else "Logout"
+                                                        
+                                                        # Set display strings
+                                                        raw_log_type = log_result['log_type']
+                                                        if raw_log_type == 'time_in':
+                                                            log_type_display = "Time in"
+                                                            verification_color = (50, 205, 50) # Green
+                                                        elif raw_log_type == 'time_out':
+                                                            log_type_display = "Time out"
+                                                            verification_color = (0, 140, 255) # Orange/Gold-ish
+                                                        elif raw_log_type == 'visit':
+                                                            log_type_display = "Visit"
+                                                            verification_color = (255, 0, 255) # Magenta
+                                                        else:
+                                                            log_type_display = raw_log_type.title()
+                                                        
                                                         attendance_log_info = {
                                                             'type': log_type_display,
                                                             'time': log_time_formatted,
-                                                            'log_type': log_result['log_type']
+                                                            'log_type': raw_log_type
                                                         }
+                                                        
+                                                        # Update critical status text for the UI
+                                                        verification_status = f"Verified - {log_type_display}"
                                                     else:
                                                         attendance_log_info = None
+                                            except Exception as e:
+                                                print(f"Logging error: {e}")
+                                                attendance_log_info = None
+
                                             except Exception:
                                                 attendance_log_info = None
                                         elif not can_log_attendance:
@@ -1317,8 +1344,14 @@ def run_verification():
                         # Restriction/Log Status (if any)
                         if attendance_log_info:
                              status_text = f"{attendance_log_info['type']}: {attendance_log_info['time']}"
-                             color_s = (0, 150, 0) if attendance_log_info['log_type'] == 'time_in' else (0, 100, 200)
-                             if attendance_log_info['log_type'] == 'restricted': color_s = (0, 0, 255)
+                             
+                             # Color mapping based on log type
+                             l_type = attendance_log_info['log_type']
+                             if l_type == 'time_in': color_s = (0, 150, 0)       # Green
+                             elif l_type == 'time_out': color_s = (0, 100, 200)  # Orange
+                             elif l_type == 'visit': color_s = (200, 0, 200)     # Purple
+                             elif l_type == 'restricted': color_s = (0, 0, 255)  # Red
+                             else: color_s = (100, 100, 100)                     # Gray
                              
                              cv2.putText(canvas, status_text, (text_x_start, text_y_center + 50),
                                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, color_s, 1)

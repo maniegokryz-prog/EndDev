@@ -134,29 +134,29 @@ try {
         ];
     }
     
-    // Fetch attendance feed (recent logs from daily_attendance)
+    // Fetch attendance feed (recent logs from attendance_logs table to include visits)
     if ($type === 'all' || $type === 'feed') {
-        // Query daily_attendance table which has the actual attendance records
+        // Query attendance_logs table which has ALL scans (including visits)
+        // We LEFT JOIN with daily_attendance to get late status/stats if applicable
         $sql = "SELECT 
-                    da.id,
-                    da.employee_id,
-                    da.time_in,
-                    da.time_out,
-                    da.status,
-                    da.late_minutes,
-                    da.attendance_date,
+                    al.id,
+                    al.log_type,
+                    al.log_time,
+                    al.notes,
                     e.employee_id as employee_code,
                     e.first_name,
                     e.middle_name,
                     e.last_name,
                     e.profile_photo,
                     e.position,
-                    e.department
-                FROM daily_attendance da
-                INNER JOIN employees e ON da.employee_id = e.id
-                WHERE da.attendance_date = ?
-                AND (da.time_in IS NOT NULL OR da.time_out IS NOT NULL)
-                ORDER BY da.time_in DESC
+                    e.department,
+                    da.late_minutes,
+                    da.status as daily_status
+                FROM attendance_logs al
+                INNER JOIN employees e ON al.employee_id = e.id
+                LEFT JOIN daily_attendance da ON (al.employee_id = da.employee_id AND al.log_date = da.attendance_date)
+                WHERE al.log_date = ?
+                ORDER BY al.log_time DESC
                 LIMIT ?";
         
         $stmt = $conn->prepare($sql);
@@ -184,20 +184,24 @@ try {
             // Get profile photo path
             $profile_photo = getProfilePhotoPath($row['profile_photo']);
             
-            // Process time_in if exists
-            if (!empty($row['time_in'])) {
-                // Combine attendance_date with time_in to get full datetime
-                $full_datetime = $row['attendance_date'] . ' ' . $row['time_in'];
-                $log_time = new DateTime($full_datetime);
-                $time_ago_data = getTimeAgo($full_datetime);
-                
-                // Format log time for display
-                $formatted_time = $log_time->format('g:i A');
-                $formatted_date = $log_time->format('M j, Y');
-                
-                // Determine status based on late_minutes
-                $status = '';
-                if ($row['late_minutes'] > 0) {
+            // Format time
+            $log_time_obj = new DateTime($row['log_time']);
+            $formatted_time = $log_time_obj->format('g:i A');
+            $formatted_date = $log_time_obj->format('M j, Y');
+            $time_ago_data = getTimeAgo($row['log_time']);
+            
+            // Determine display text and status
+            $log_type = $row['log_type'];
+            $log_type_display = ucfirst(str_replace('_', ' ', $log_type));
+            
+            // Status logic
+            $status = '';
+            
+            if ($log_type === 'visit') {
+                 $status = 'Visitor';
+            } elseif ($log_type === 'time_in') {
+                // For time_in, check late minutes from linked daily_attendance
+                if (!empty($row['late_minutes']) && $row['late_minutes'] > 0) {
                     $late_hours = floor($row['late_minutes'] / 60);
                     $late_mins = $row['late_minutes'] % 60;
                     if ($late_hours > 0) {
@@ -208,63 +212,30 @@ try {
                 } else {
                     $status = "On-time";
                 }
-                
-                $attendance_logs[] = [
-                    'id' => $row['id'] . '_in',
-                    'employee_code' => $row['employee_code'],
-                    'full_name' => $full_name,
-                    'profile_photo' => $profile_photo,
-                    'position' => $row['position'],
-                    'department' => $row['department'],
-                    'log_type' => 'time_in',
-                    'log_type_display' => 'Time In',
-                    'log_time' => $row['time_in'],
-                    'formatted_time' => $formatted_time,
-                    'formatted_date' => $formatted_date,
-                    'time_ago' => $time_ago_data['time_ago'],
-                    'detailed_time_ago' => $time_ago_data['detailed_time_ago'],
-                    'total_minutes' => $time_ago_data['total_minutes'],
-                    'status' => $status,
-                    'notes' => ''
-                ];
+            } elseif ($log_type === 'time_out') {
+                // For time_out, we can show status from daily record or just generic
+               $status = 'Logged out';
             }
             
-            // Process time_out if exists
-            if (!empty($row['time_out'])) {
-                // Combine attendance_date with time_out to get full datetime
-                $full_datetime = $row['attendance_date'] . ' ' . $row['time_out'];
-                $log_time = new DateTime($full_datetime);
-                $time_ago_data = getTimeAgo($full_datetime);
-                
-                // Format log time for display
-                $formatted_time = $log_time->format('g:i A');
-                $formatted_date = $log_time->format('M j, Y');
-                
-                $attendance_logs[] = [
-                    'id' => $row['id'] . '_out',
-                    'employee_code' => $row['employee_code'],
-                    'full_name' => $full_name,
-                    'profile_photo' => $profile_photo,
-                    'position' => $row['position'],
-                    'department' => $row['department'],
-                    'log_type' => 'time_out',
-                    'log_type_display' => 'Time Out',
-                    'log_time' => $row['time_out'],
-                    'formatted_time' => $formatted_time,
-                    'formatted_date' => $formatted_date,
-                    'time_ago' => $time_ago_data['time_ago'],
-                    'detailed_time_ago' => $time_ago_data['detailed_time_ago'],
-                    'total_minutes' => $time_ago_data['total_minutes'],
-                    'status' => '',
-                    'notes' => ''
-                ];
-            }
+            $attendance_logs[] = [
+                'id' => $row['id'],
+                'employee_code' => $row['employee_code'],
+                'full_name' => $full_name,
+                'profile_photo' => $profile_photo,
+                'position' => $row['position'],
+                'department' => $row['department'],
+                'log_type' => $log_type,
+                'log_type_display' => $log_type_display,
+                'log_time' => $log_time_obj->format('H:i:s'), // 24hr format for sorting/reference
+                'formatted_time' => $formatted_time,
+                'formatted_date' => $formatted_date,
+                'time_ago' => $time_ago_data['time_ago'],
+                'detailed_time_ago' => $time_ago_data['detailed_time_ago'],
+                'total_minutes' => $time_ago_data['total_minutes'],
+                'status' => $status,
+                'notes' => $row['notes']
+            ];
         }
-        
-        // Sort by log_time descending (most recent first)
-        usort($attendance_logs, function($a, $b) {
-            return strtotime($b['log_time']) - strtotime($a['log_time']);
-        });
         
         $response['feed'] = [
             'count' => count($attendance_logs),
@@ -272,7 +243,8 @@ try {
             'debug' => [
                 'date_queried' => $date,
                 'limit' => $limit,
-                'rows_found' => $total_rows
+                'rows_found' => $total_rows,
+                'source' => 'attendance_logs table'
             ]
         ];
     }

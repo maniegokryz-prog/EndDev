@@ -93,8 +93,8 @@ class AttendanceLogger:
                 print(f"  ℹ️  Auto-determined log type: {log_type}")
             
             # Validate log_type
-            if log_type not in ['time_in', 'time_out']:
-                error_msg = f'Invalid log_type: {log_type}. Must be "time_in" or "time_out".'
+            if log_type not in ['time_in', 'time_out', 'visit']:
+                error_msg = f'Invalid log_type: {log_type}. Must be "time_in", "time_out", or "visit".'
                 log_error("log_attendance", error_msg, employee_code)
                 return {
                     'success': False,
@@ -103,7 +103,10 @@ class AttendanceLogger:
             
             # Calculate status-based notes if not manually provided
             if notes is None:
-                notes = self._calculate_attendance_status(employee_db_id, log_type, now, conn)
+                if log_type == 'visit':
+                    notes = "Visit"
+                else:
+                    notes = self._calculate_attendance_status(employee_db_id, log_type, now, conn)
             
             print(f"  📝 Inserting attendance log: {log_type} at {log_time}")
             
@@ -117,10 +120,13 @@ class AttendanceLogger:
             log_id = cursor.lastrowid
             print(f"  ✓ Attendance log inserted with ID: {log_id}")
             
-            # Update or create daily_attendance record
-            print(f"  📊 Updating daily_attendance table...")
-            self._update_daily_attendance(employee_db_id, log_type, now, conn)
-            print(f"  ✓ Daily attendance updated")
+            # Update or create daily_attendance record (Skip for visits)
+            if log_type != 'visit':
+                print(f"  📊 Updating daily_attendance table...")
+                self._update_daily_attendance(employee_db_id, log_type, now, conn)
+                print(f"  ✓ Daily attendance updated")
+            else:
+                print(f"  ℹ️  'Visit' log - skipping daily_attendance update")
             
             # Commit all changes
             print(f"  💾 Committing transaction...")

@@ -29,7 +29,7 @@ menuBtn.addEventListener('click', () => {
 });
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------//
-  // Show live clock and date
+// Show live clock and date
 function updateClock() {
   const now = new Date();
 
@@ -95,7 +95,7 @@ updateClock();
 
     const cells = [];
 
-    const prevMonthLastDate = new Date(year, month, 0).getDate(); 
+    const prevMonthLastDate = new Date(year, month, 0).getDate();
     for (let i = 0; i < firstDayIndex; i++) {
       const dayNum = prevMonthLastDate - firstDayIndex + 1 + i;
       const dObj = new Date(year, month - 1, dayNum);
@@ -180,17 +180,17 @@ let selectedDate = null;
 // Function to set and display selected date
 function setSelectedDate(date) {
   selectedDate = date;
-  
+
   // Update visual indicator in calendar
   updateCalendarHighlight(date);
-  
+
   // Display selected date info
   const dateObj = new Date(date + 'T00:00:00'); // Parse as local date
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const formattedDate = dateObj.toLocaleDateString('en-US', options);
-  
+
   console.log('Viewing attendance for:', formattedDate);
-  
+
   // Update attendance feed header to show selected date
   updateDateDisplay(formattedDate);
 }
@@ -198,7 +198,7 @@ function setSelectedDate(date) {
 // Function to update date display in attendance feed header
 function updateDateDisplay(formattedDate) {
   const dateBadge = document.getElementById('selectedDateBadge');
-  
+
   if (dateBadge) {
     dateBadge.innerHTML = `<span class="badge" style="display: inline-block; padding: 6px 12px; background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white; border-radius: 6px; font-size: 0.7rem; font-weight: 500; box-shadow: 0 2px 4px rgba(23, 162, 184, 0.2);">📅 ${formattedDate}</span>`;
     dateBadge.style.display = 'block';
@@ -220,7 +220,7 @@ function updateCalendarHighlight(dateStr) {
   document.querySelectorAll('.calendar-day.selected').forEach(el => {
     el.classList.remove('selected');
   });
-  
+
   // Add highlight to selected date
   const links = document.querySelectorAll('.calendar-day');
   links.forEach(link => {
@@ -234,15 +234,15 @@ function updateCalendarHighlight(dateStr) {
 // Uses Philippine timezone (UTC+8) to match server
 function getCurrentDate() {
   if (selectedDate) return selectedDate;
-  
+
   // Get current date in Philippine timezone (UTC+8)
   const now = new Date();
   const phTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
-  
+
   const year = phTime.getFullYear();
   const month = String(phTime.getMonth() + 1).padStart(2, '0');
   const day = String(phTime.getDate()).padStart(2, '0');
-  
+
   return `${year}-${month}-${day}`;
 }
 
@@ -260,20 +260,20 @@ async function loadDashboardData(date = null) {
 // Function to load summary statistics (present, absent, on time, late percentages)
 async function loadSummary(date = null) {
   const targetDate = date || getCurrentDate();
-  
+
   try {
     const response = await fetch(`get_attendance_records.php?type=summary&date=${targetDate}`);
     const result = await response.json();
-    
+
     if (result.success && result.summary) {
       const summary = result.summary;
-      
+
       // Update percentage cards
       document.getElementById('presentPercentage').textContent = Math.round(summary.present.percentage) + '%';
       document.getElementById('absentPercentage').textContent = Math.round(summary.absent.percentage) + '%';
       document.getElementById('onTimePercentage').textContent = Math.round(summary.on_time.percentage) + '%';
       document.getElementById('latePercentage').textContent = Math.round(summary.late.percentage) + '%';
-      
+
       console.log('Summary loaded:', {
         date: result.date,
         total_scheduled: summary.total_scheduled,
@@ -304,59 +304,73 @@ async function loadSummary(date = null) {
 async function loadAttendanceFeed(date = null) {
   const container = document.getElementById("attendanceList");
   const countBadge = document.getElementById("feedCount");
-  
+
   // Show loading state
   container.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
-  
+
   try {
     const targetDate = date || getCurrentDate();
     const url = `get_attendance_records.php?type=feed${targetDate ? '&date=' + targetDate : ''}`;
-    
+
     console.log('Loading attendance feed from:', url);
-    
+
     const response = await fetch(url);
-    
+
     // Check if response is ok
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     const result = await response.json();
-    
+
     console.log('Attendance feed response:', result);
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Failed to load attendance feed');
     }
-    
+
     const attendanceData = result.feed.data;
-    
+
     // Debug logging
     console.log('Feed debug info:', result.feed.debug);
     console.log(`Found ${attendanceData.length} attendance records`);
-    
+
     // Update count badge
     if (countBadge) {
       countBadge.textContent = attendanceData.length;
     }
-    
+
     // Clear container
     container.innerHTML = '';
-    
+
     if (attendanceData.length === 0) {
       container.innerHTML = '<div class="text-center text-muted py-3"><small>No attendance records yet</small></div>';
       return;
     }
-    
+
     // Populate feed items
     attendanceData.forEach(record => {
       const item = document.createElement("div");
       item.classList.add("feed-item");
-      
+
       // Determine badge color based on log type
-      const badgeClass = record.log_type === 'time_in' ? 'bg-success' : 'bg-info';
+      let badgeClass = 'bg-secondary';
+      if (record.log_type === 'time_in') {
+        badgeClass = 'bg-success';
+      } else if (record.log_type === 'time_out') {
+        badgeClass = 'bg-primary';
+      } else if (record.log_type === 'visit') {
+        // Custom purple style or just use a standard class if available. 
+        // Bootstap doesn't have bg-purple by default, so we might need inline style or a custom class.
+        // Let's use a utility class and inject style or just use inline for now to be safe.
+        badgeClass = 'bg-purple';
+      }
+
       const badgeText = record.log_type_display;
-      
+
+      // Inline style for purple if needed, or rely on CSS
+      const badgeStyle = record.log_type === 'visit' ? 'background-color: #6f42c1 !important; color: white;' : 'font-size: 0.65rem;';
+
       // Determine status color
       let statusClass = 'text-muted';
       if (record.status) {
@@ -368,14 +382,14 @@ async function loadAttendanceFeed(date = null) {
           statusClass = 'text-primary';
         }
       }
-      
+
       // Create tooltip text
       const tooltipText = `${record.formatted_date} at ${record.formatted_time}\n${record.detailed_time_ago}`;
-      
+
       item.innerHTML = `
         <img src="${record.profile_photo}" alt="${record.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
         <div class="feed-info">
-          <h6>${record.full_name} <span class="badge ${badgeClass} ms-1" style="font-size: 0.65rem;">${badgeText}</span></h6>
+          <h6>${record.full_name} <span class="badge ${badgeClass} ms-1" style="${badgeStyle}">${badgeText}</span></h6>
           <small class="${statusClass}">${record.formatted_time}</small>
         </div>
         <small class="text-muted time-ago-badge" 
@@ -384,16 +398,16 @@ async function loadAttendanceFeed(date = null) {
                data-bs-html="true"
                title="${tooltipText.replace(/\n/g, '<br>')}">${record.time_ago}</small>
       `;
-      
+
       container.appendChild(item);
     });
-    
+
     // Initialize Bootstrap tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-    
+
     console.log(`Attendance feed loaded: ${attendanceData.length} records for ${targetDate}`);
-    
+
   } catch (error) {
     console.error('Error loading attendance feed:', error);
     container.innerHTML = `<div class="text-center text-danger py-3">
@@ -404,16 +418,16 @@ async function loadAttendanceFeed(date = null) {
 }
 
 // Load attendance feed on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Initially hide date badge since we're viewing today's data
   hideDateDisplay();
-  
+
   loadDashboardData();
-  
+
   // Today button functionality
   const todayBtn = document.getElementById('todayBtn');
   if (todayBtn) {
-    todayBtn.addEventListener('click', function() {
+    todayBtn.addEventListener('click', function () {
       selectedDate = null; // Reset to today
       updateCalendarHighlight(null); // Clear calendar selection
       hideDateDisplay(); // Hide the date badge
@@ -421,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('Reset to today\'s data');
     });
   }
-  
+
   // Auto-refresh every 30 seconds (only if viewing today's data)
   setInterval(() => {
     if (!selectedDate) {
@@ -433,34 +447,34 @@ document.addEventListener('DOMContentLoaded', function() {
 //late today
 async function loadLateToday(date = null) {
   const container = document.querySelector(".late-list");
-  
+
   if (!container) return;
-  
+
   try {
     const targetDate = date || getCurrentDate();
     const url = `get_attendance_records.php?type=late${targetDate ? '&date=' + targetDate : ''}`;
     const response = await fetch(url);
     const result = await response.json();
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Failed to load late employees');
     }
-    
+
     const lateEmployees = result.late.data;
-    
+
     // Clear container
     container.innerHTML = '';
-    
+
     if (lateEmployees.length === 0) {
       container.innerHTML = '<div class="text-center text-muted py-3"><small>No late employees today</small></div>';
       return;
     }
-    
+
     // Populate late employees using the same template structure
     lateEmployees.forEach(employee => {
       const item = document.createElement("div");
       item.classList.add("d-flex", "align-items-center", "border-bottom", "py-2");
-      
+
       item.innerHTML = `
         <img src="${employee.profile_photo}" class="profile-img me-3" alt="${employee.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
         <div>
@@ -468,10 +482,10 @@ async function loadLateToday(date = null) {
           <small>${employee.position} - ${employee.time_in} (${employee.late_display})</small>
         </div>
       `;
-      
+
       container.appendChild(item);
     });
-    
+
   } catch (error) {
     console.error('Error loading late employees:', error);
     container.innerHTML = '<div class="text-center text-danger py-3"><small>Failed to load late employees</small></div>';
@@ -481,34 +495,34 @@ async function loadLateToday(date = null) {
 //on leave
 async function loadOnLeave(date = null) {
   const container = document.querySelector(".on-leave-list");
-  
+
   if (!container) return;
-  
+
   try {
     const targetDate = date || getCurrentDate();
     const url = `get_attendance_records.php?type=on_leave${targetDate ? '&date=' + targetDate : ''}`;
     const response = await fetch(url);
     const result = await response.json();
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Failed to load employees on leave');
     }
-    
+
     const onLeaveEmployees = result.on_leave.data;
-    
+
     // Clear container
     container.innerHTML = '';
-    
+
     if (onLeaveEmployees.length === 0) {
       container.innerHTML = '<div class="text-center text-muted py-3"><small>No employees on leave today</small></div>';
       return;
     }
-    
+
     // Populate on leave employees using the same template structure
     onLeaveEmployees.forEach(employee => {
       const item = document.createElement("div");
       item.classList.add("d-flex", "align-items-center", "border-bottom", "py-2");
-      
+
       item.innerHTML = `
         <img src="${employee.profile_photo}" class="profile-img me-3" alt="${employee.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
         <div>
@@ -516,17 +530,17 @@ async function loadOnLeave(date = null) {
           <small>${employee.position} - ${employee.date_range}</small>
         </div>
       `;
-      
+
       container.appendChild(item);
     });
-    
+
   } catch (error) {
     console.error('Error loading employees on leave:', error);
     container.innerHTML = '<div class="text-center text-danger py-3"><small>Failed to load employees on leave</small></div>';
   }
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------//
- 
+
 
 
 
