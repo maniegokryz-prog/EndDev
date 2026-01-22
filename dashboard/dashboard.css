@@ -293,9 +293,9 @@
 }
 
 .attendance-feed {
-  min-height: 100%;
+  height: auto;
+  min-height: 720px;
   overflow-y: auto;
-  max-height: 430px;
 }
 
 /* Selected date badge */
@@ -441,7 +441,8 @@
 
 /* 🔧 Attendance feed scroll only */
 .attendance-feed {
-  max-height: 550px;
+  min-height: 820px;
+  height: auto;
   overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 1rem;
@@ -493,8 +494,8 @@
   }
 
   .attendance-feed {
-    max-height: 400px;
-    height: 100% !important;
+    min-height: 720px;
+    height: auto !important;
     overflow-y: auto;
     margin-top: 1.5rem !important;
   }
@@ -536,8 +537,8 @@
   }
 
   .attendance-feed {
-    max-height: 380px;
-    height: 100% !important;
+    min-height: 720px;
+    height: auto !important;
     overflow-y: auto;
     margin-top: 2rem !important;
   }
@@ -595,6 +596,7 @@
     box-sizing: border-box;
     margin-left: 13px !important;
     margin-right: 0 !important;
+    min-height: 720px;
   }
 
   .col-xl-9 {
@@ -622,6 +624,7 @@
   padding: 2.5rem 4rem;
   width: 73.5%;
   margin-left: 15px;
+  margin-top: -34%;
   border: 1px solid #ddd;
   border-radius: 1rem;
   box-shadow: none;
@@ -731,9 +734,11 @@
   /* ... Original styles ... */
   /* Kinailangang i-override ito sa Media Query para mag-center */
   width: 73.5% !important;
+  height: 230% !important;
   margin-left: -25% !important; 
   padding: 0.5rem !important;
   transition: all 0.3s ease-in-out;
+  margin-top: -34% !important;
 }
 
 /* Calendar Button Styling */
@@ -841,13 +846,12 @@
     }
 
     .attendance-feed {
-        /* Panatilihin ang 100% width para punuin ang column space (ibinukod na sa taas) */
-        width: 100% !important; 
+      /* Panatilihin ang 100% width para punuin ang column space (ibinukod na sa taas) */
+      width: 100% !important; 
         
-        /* FIX: Inikli ang taas sa 200px at nagdagdag ng scrollbar */
-        max-height: 460px; 
-        overflow-y: auto; 
-        overflow-x: hidden;
+      min-height: 720px; 
+      overflow-y: auto; 
+      overflow-x: hidden;
         
         position: relative; 
         z-index: 1; 

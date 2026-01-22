@@ -484,8 +484,7 @@ $schedules = $viewer->getSchedules();
         flex-direction: column;
         justify-content: center;
         align-items: center;
-    }
-
+    
     .metric-box:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -1890,7 +1889,7 @@ $schedules = $viewer->getSchedules();
           }
         </script>
 
-      <div class="card shadow-sm mb-3">
+      <div id="calendarCard" class="card shadow-sm mb-3">
       <div class="card-header d-flex justify-content-between align-items-center">
         <button class="btn btn-sm btn-outline-secondary" id="prevMonth"><i class="bi bi-chevron-left"></i></button>
         <h5 class="mb-0" id="calendarTitle">Month Year</h5>

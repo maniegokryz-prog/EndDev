@@ -365,11 +365,9 @@
 
 .staff-card {
   max-width: 99%;
-  height: 35%;
+  height: 100%;
   background: #fff;
   border-radius: 10px;
-  margin-top: 20px;
-  margin-bottom: 20% !important; /* mas maliit ang gap */
 }
 
 .profile-wrapper {
@@ -627,7 +625,7 @@
 
 .metrics-card { 
   margin-bottom: 30px !important; 
-  margin-top: -620px !important; /* alisin extra space sa taas */ 
+  margin-top: 1rem !important; /* proper spacing from staff info */ 
   width: 64%!important;
 }
   
@@ -635,6 +633,7 @@
 .metrics-card, .schedule-card {
   width: 64% !important; /* keep schedule and metrics the same width */
   margin-left: 20px !important;
+  margin-top: 110px !important; /* at least 10px gap from staff info */
 }
 
 .metric-box {
@@ -813,18 +812,29 @@ body {
 }
 
 #calendarCard {
-  z-index: 10;
-  margin-top: 24px !important; /* dagdag na space sa taas para hindi dikit */
+  position: relative;
+  z-index: auto;
+  margin-top: 16px !important;
   margin-bottom: 20px;
   background: #ffffff;
   border-radius: 8px;
   padding: 8px;
-  box-shadow: 0 6px 18px rgba(16, 57, 50, 0.06);
+  box-shadow: 0 6px 18px rgba(113, 170, 161, 0.06);
+}
+
+/* Force gap between scheduled leave and calendar */
+.card#calendarCard {
+  margin-top: 16px !important;
+}
+
+div#calendarCard.card {
+  margin-top: 16px !important;
 }
 
 /* Make calendar sit nicely inside its card and avoid overlaps with adjacent cards */
 .calendar-wrapper {
   padding: 5px!important;
+  margin-top: 10px !important;
 }
 
 @media (max-width: 500px) {
@@ -859,7 +869,7 @@ body {
 
 @media (min-width: 992px) and (max-width: 1199px) {
   #calendarCard {
-    margin-top: 12px !important;
+    margin-top: 16px !important;
   }
 }
 
@@ -969,14 +979,16 @@ body {
 /*add leave*/
 /* Align with calendar and lower slightly */
 .col-xl-4 {
-  margin-top: 3.5rem; /* adjust as needed to match calendar height */
-  margin-bottom: 10px !important;
+  margin-top: 3.7rem; /* adjust as needed to match calendar height */
 }
 
 .scheduled-leave-card {
-  margin-top: 3.5rem; /* give scheduled leave more top separation */
-  margin-bottom: 30px !important; /* increased bottom gap to separate from calendar */
+  margin-top: 2rem; /* give scheduled leave more top separation */
+  margin-bottom: 2rem !important; /* small gap to keep metrics container in place */
   width: 100%; /* or set a fixed width like 360px if needed */
+  min-height: 130px; /* fixed minimum height to reserve space even when empty */
+  max-height: 130px; /* fixed max height to prevent expanding */
+  overflow: visible; /* allow content to show */
 }
 
 /* Title styling */
@@ -1020,19 +1032,29 @@ body {
 
 /* Target only the leave list container */
 #leaveList {
-  max-height: 180px; /* allow multiple leave entries to display without immediate scroll */
+  max-height: 120px; /* show scrollbar when 3+ leaves are added */
   overflow-y: auto;
-  padding-right: 6px;
+  overflow-x: hidden;
+  padding-right: 8px;
 }
 
 /* Optional: smooth scrollbar appearance */
 #leaveList::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+}
+
+#leaveList::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 4px;
 }
 
 #leaveList::-webkit-scrollbar-thumb {
-  background-color: #ccc;
+  background-color: #888;
   border-radius: 4px;
+}
+
+#leaveList::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }
 
 .leave-list-container {
