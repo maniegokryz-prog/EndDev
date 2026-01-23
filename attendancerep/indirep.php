@@ -541,6 +541,7 @@ function showLogoutModal() {
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
         <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
+          <input type="hidden" name="confirm_logout" value="1">
           <button type="submit" class="btn btn-danger">Yes, Log out</button>
         </form>
       </div>

@@ -395,7 +395,35 @@ $result = $conn->query($sql);
     // TODO: Implement actual export logic here
     // You can create a form and submit it to a PHP script that generates PDF/Excel
   }
+
+  // Logout modal function
+  function showLogoutModal() {
+    var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+    logoutModal.show();
+  }
 </script>
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to logout?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="logout.php" style="display: inline;">
+          <input type="hidden" name="confirm_logout" value="1">
+          <button type="submit" class="btn btn-danger">Yes, Log out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Custom JS -->
 <script src="attendancerep.js"></script>

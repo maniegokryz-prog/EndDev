@@ -80,9 +80,9 @@ function renderNavigation($currentPage = '') {
     // Inject minimal CSS so active indicator is visible on all pages
     // without requiring each page to include the dashboard stylesheet.
     echo "<style>\n";
-    echo ".sidebar .nav-link{display:flex;align-items:center;padding:10px 12px;color:#fff;text-decoration:none;}\n";
-    echo ".sidebar .nav-link i{min-width:30px;}\n";
-    echo ".sidebar .nav-link.active{background-color:#d8af35;color:#103932;font-weight:700;border-radius:8px;margin:4px 0;padding:10px 12px;}\n";
+    echo ".sidebar .nav-link{display:flex !important;align-items:center !important;padding:10px 12px !important;color:#fff !important;text-decoration:none !important;margin:4px 0 !important;white-space:nowrap !important;font-family:Arial,sans-serif !important;font-weight:normal !important;font-size:15px !important;line-height:1.5 !important;box-sizing:border-box !important;border:1px solid transparent !important;letter-spacing:normal !important;}\n";
+    echo ".sidebar .nav-link i{width:30px !important;min-width:30px !important;font-size:18px !important;margin-right:10px !important;text-align:center !important;display:inline-block !important;}\n";
+    echo ".sidebar .nav-link.active{background-color:#d8af35 !important;color:#103932 !important;font-weight:normal !important;border-radius:8px !important;margin:4px 0 !important;padding:10px 12px !important;}\n";
     echo "</style>\n";
 
     // Determine current script filename (basename) for URL-based matching
@@ -118,7 +118,7 @@ function renderNavigation($currentPage = '') {
         $onclickAttr = isset($link['onclick']) ? 'onclick="' . htmlspecialchars($link['onclick'], ENT_QUOTES, 'UTF-8') . '"' : '';
         
         echo '<a class="nav-link ' . $activeClass . '" href="' . htmlspecialchars($link['url'], ENT_QUOTES, 'UTF-8') . '" ' . $onclickAttr . '>';
-        echo '<i class="bi ' . $link['icon'] . ' me-2"></i> ' . htmlspecialchars($link['label'], ENT_QUOTES, 'UTF-8');
+        echo '<i class="bi ' . $link['icon'] . '"></i> ' . htmlspecialchars($link['label'], ENT_QUOTES, 'UTF-8');
         echo '</a>' . "\n";
     }
 }

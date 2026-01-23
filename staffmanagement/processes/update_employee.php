@@ -23,6 +23,9 @@ class EmployeeUpdater {
 
         try {
             $this->logActivity('Employee update request started');
+            
+            // Check if current user is admin
+            $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
 
             // Basic validation and data collection
             $this->validatedData['employee_id_string'] = $_POST['employee_id'] ?? '';
@@ -31,9 +34,24 @@ class EmployeeUpdater {
             $this->validatedData['last_name'] = $_POST['last_name'] ?? '';
             $this->validatedData['email'] = $_POST['email'] ?? '';
             $this->validatedData['phone'] = $_POST['phone'] ?? '';
-            $this->validatedData['roles'] = $_POST['roles'] ?? '';
-            $this->validatedData['department'] = $_POST['department'] ?? '';
-            $this->validatedData['position'] = $_POST['position'] ?? '';
+            
+            // Only allow admin to update role, department, and position
+            if ($isAdmin) {
+                $this->validatedData['roles'] = $_POST['roles'] ?? '';
+                $this->validatedData['department'] = $_POST['department'] ?? '';
+                $this->validatedData['position'] = $_POST['position'] ?? '';
+            } else {
+                // For non-admin users, fetch current values from database to prevent changes
+                $currentEmployee = $this->getEmployeeByStringId($_POST['employee_id'] ?? '');
+                if ($currentEmployee) {
+                    $fullEmployee = $this->getFullEmployeeData($currentEmployee['id']);
+                    $this->validatedData['roles'] = $fullEmployee['roles'] ?? '';
+                    $this->validatedData['department'] = $fullEmployee['department'] ?? '';
+                    $this->validatedData['position'] = $fullEmployee['position'] ?? '';
+                    $this->logActivity('Non-admin user attempted to update - role/dept/position preserved', 'Employee ID: ' . $this->validatedData['employee_id_string']);
+                }
+            }
+            
             $this->validatedData['hire_date'] = $_POST['hire_date'] ?? '';
             $this->validatedData['status'] = $_POST['status'] ?? 'Active';
 
@@ -82,6 +100,14 @@ class EmployeeUpdater {
     private function getEmployeeByStringId($employeeIdString) {
         $stmt = $this->db->prepare("SELECT id, profile_photo FROM employees WHERE employee_id = ?");
         $stmt->bind_param('s', $employeeIdString);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+    
+    private function getFullEmployeeData($employeeId) {
+        $stmt = $this->db->prepare("SELECT roles, department, position FROM employees WHERE id = ?");
+        $stmt->bind_param('i', $employeeId);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_assoc();
