@@ -65,9 +65,10 @@ function getNavigationLinks() {
     
     // Logout link (same for everyone)
     $links[] = [
-        'url' => 'logout.php',
+        'url' => '#',
         'icon' => 'bi-box-arrow-left',
-        'label' => 'Logout'
+        'label' => 'Logout',
+        'onclick' => 'event.preventDefault(); showLogoutModal();'
     ];
     
     return $links;
@@ -94,10 +95,13 @@ function renderNavigation($currentPage = '') {
         $activeClass = '';
 
         // 1) Try filename-based matching (most robust)
-        if (!empty($link['url'])) {
-            $linkFile = basename(parse_url($link['url'], PHP_URL_PATH));
-            if ($linkFile !== '' && $currentScript !== '' && strcasecmp($linkFile, $currentScript) === 0) {
-                $activeClass = 'active';
+        if (!empty($link['url']) && $link['url'] !== '#') {
+            $parsedUrl = parse_url($link['url'], PHP_URL_PATH);
+            if ($parsedUrl !== null) {
+                $linkFile = basename($parsedUrl);
+                if ($linkFile !== '' && $currentScript !== '' && strcasecmp($linkFile, $currentScript) === 0) {
+                    $activeClass = 'active';
+                }
             }
         }
 
@@ -110,7 +114,10 @@ function renderNavigation($currentPage = '') {
             }
         }
 
-        echo '<a class="nav-link ' . $activeClass . '" href="' . htmlspecialchars($link['url'], ENT_QUOTES, 'UTF-8') . '">';
+        // Check if link has onclick attribute
+        $onclickAttr = isset($link['onclick']) ? 'onclick="' . htmlspecialchars($link['onclick'], ENT_QUOTES, 'UTF-8') . '"' : '';
+        
+        echo '<a class="nav-link ' . $activeClass . '" href="' . htmlspecialchars($link['url'], ENT_QUOTES, 'UTF-8') . '" ' . $onclickAttr . '>';
         echo '<i class="bi ' . $link['icon'] . ' me-2"></i> ' . htmlspecialchars($link['label'], ENT_QUOTES, 'UTF-8');
         echo '</a>' . "\n";
     }

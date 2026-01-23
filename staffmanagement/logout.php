@@ -5,10 +5,10 @@
  * If confirmed (POST), destroys the session and redirects to login.
  */
 
+session_start();
+
 // If the form was submitted (confirm logout), perform logout
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_logout'])) {
-        session_start();
-
         // Destroy all session data
         session_unset();
         session_destroy();
@@ -33,18 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_logout'])) {
     <title>Confirm Logout</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body style="background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
 
 <!-- Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
             <div class="modal-body">
-                Are you sure you want to log out?
+                <h5 class="mb-3">Confirm Logout</h5>
+                <p class="mb-0">Are you sure you want to log out?</p>
             </div>
             <div class="modal-footer">
                 <a href="staff.php" class="btn btn-secondary">No</a>

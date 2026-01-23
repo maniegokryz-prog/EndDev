@@ -77,6 +77,7 @@ class AttendanceReportViewer {
                 $types .= 'sss';
             }
             
+            
             // Add additional WHERE conditions
             if (!empty($whereConditions)) {
                 $query .= " AND " . implode(" AND ", $whereConditions);
@@ -386,7 +387,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
           <?php endforeach; ?>
         </select>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <label for="deptFilter" class="form-label small text-muted">Department</label>
       <select class="form-select" id="deptFilter">
         <option value="">All</option>
@@ -397,6 +398,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
           </option>
         <?php endforeach; ?>
       </select>
+    </div>
+    <div class="col-md-auto d-flex align-items-end">
+      <button id="filterToggleBtn" class="btn btn-sm btn-outline-secondary" title="Toggle advanced filters">
+        <i class="bi bi-funnel"></i>
+      </button>
     </div>
     <div class="col-md-3">
       <label for="searchBox" class="form-label small text-muted">Search</label>
@@ -461,7 +467,32 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
   </div>
 
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="mb-3">Confirm Logout</h5>
+        <p class="mb-0">Are you sure you want to log out?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
+          <button type="submit" class="btn btn-danger">Yes, Log out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
  <script src="attendancerep.js?v=<?php echo time(); ?>"></script>
+ <script>
+   function showLogoutModal() {
+     var modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+     modal.show();
+   }
+ </script>
 </body>
 </html>

@@ -47,6 +47,14 @@
   z-index: 1100;
   transition: margin-left 0.3s ease; /* para gumalaw kapag nag-toggle */
 }
+
+/* Welcome Message Styling */
+.top-navbar .welcome-message h5 {
+  color: #ffc107;
+  font-weight: 500;
+  font-size: 1.5rem;
+}
+
 .top-navbar .notification i {
   color: #ffc107; /* yellow notif bell */
   cursor: pointer;

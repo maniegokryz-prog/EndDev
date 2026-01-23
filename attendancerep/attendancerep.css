@@ -359,3 +359,75 @@
     background-color: #0d6efd;
     color: white;
   }
+
+  /* Advanced Filter Styles */
+  #filterToggleBtn {
+    border: 1px solid #dee2e6;
+    color: #495057;
+    transition: all 0.3s ease;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  #filterToggleBtn:hover {
+    background-color: #103932;
+    color: #ffc107;
+    border-color: #103932;
+  }
+
+  #filterToggleBtn.active {
+    background-color: #103932;
+    color: #ffc107;
+    border-color: #103932;
+  }
+
+  #advancedFilterPanel {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  #advancedFilterPanel .form-label {
+    font-weight: 500;
+    color: #495057;
+  }
+
+  #advancedFilterPanel .form-select,
+  #advancedFilterPanel .form-control {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+  }
+
+  #applyFiltersBtn {
+    background-color: #103932;
+    border-color: #103932;
+    color: white;
+  }
+
+  #applyFiltersBtn:hover {
+    background-color: #082824;
+    border-color: #082824;
+    color: #ffc107;
+  }
+
+  #clearFiltersBtn {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+  }
+
+  #clearFiltersBtn:hover {
+    background-color: #5a6268;
+    border-color: #5a6268;
+  }

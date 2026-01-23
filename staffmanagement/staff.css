@@ -625,7 +625,7 @@
 
 .metrics-card { 
   margin-bottom: 30px !important; 
-  margin-top: 1rem !important; /* proper spacing from staff info */ 
+  margin-top: 280px !important; /* ensure gap from staff info even without scheduled leave */ 
   width: 64%!important;
 }
   
@@ -633,7 +633,10 @@
 .metrics-card, .schedule-card {
   width: 64% !important; /* keep schedule and metrics the same width */
   margin-left: 20px !important;
-  margin-top: 110px !important; /* at least 10px gap from staff info */
+}
+
+.schedule-card {
+  margin-top: 110px !important; /* gap below scheduled leave */
 }
 
 .metric-box {
