@@ -521,5 +521,32 @@ $(document).ready(function() {
   });
 });
 </script>
+
+<script>
+// Logout modal function
+function showLogoutModal() {
+  var modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+  modal.show();
+}
+</script>
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="mb-3">Confirm Logout</h5>
+        <p class="mb-0">Are you sure you want to log out?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
+          <button type="submit" class="btn btn-danger">Yes, Log out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

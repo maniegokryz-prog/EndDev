@@ -3699,6 +3699,24 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="mb-3">Confirm Logout</h5>
+        <p class="mb-0">Are you sure you want to log out?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
+          <button type="submit" class="btn btn-danger">Yes, Log out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3714,6 +3732,12 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 <script>
     // --- JS: Populate calendar with existing schedules for the edit modal ---
     window.existingSchedules = <?php echo json_encode($existingSchedules); ?>;
+    
+    // Logout modal function
+    function showLogoutModal() {
+        var modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+        modal.show();
+    }
 </script>
 <script src="../assets/js/edit_employee.js"></script>
 <script>
