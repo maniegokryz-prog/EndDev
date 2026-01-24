@@ -463,6 +463,15 @@ window.selectEmployeeFromList = function (type, emp) {
         // Also potentially pre-fill hidden ID inputs if any
     } else {
         window.currentSchedEmployeeId = emp.employee_id;
+        
+        // Check for Faculty Role to enable fields
+        if (typeof toggleFacultyFields === 'function') {
+            // Check intersection with any known faculty role strings
+            const role = (emp.role || '').toLowerCase();
+            const isFaculty = role.includes('faculty');
+            toggleFacultyFields(isFaculty);
+        }
+
         // If Schedule step has specific loaded data requirements (like fetching existing schedule to show conflicts?), 
         // we might need to clear previous schedule data.
         // Clear previous schedule data without prompt

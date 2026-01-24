@@ -397,9 +397,16 @@ function syncToCloud($table, $data, $action = 'insert', $whereCondition = '') {
  * Used for tables that have foreign key references that need mapping
  */
 function syncToCloudWithLookup($table, $data) {
+    // Simple logging setup
+    $logFile = __DIR__ . '/logs/cloud_sync.log';
+    $logDir = dirname($logFile);
+    if (!file_exists($logDir)) {
+        @mkdir($logDir, 0755, true);
+    }
+
     // Check if cURL is available
     if (!function_exists('curl_init')) {
-        error_log("⚠️ cURL not available - skipping cloud sync with lookup");
+        file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] ⚠️ cURL not available - skipping cloud sync with lookup\n", FILE_APPEND);
         return true; // Return true to not block the operation
     }
     
@@ -469,9 +476,16 @@ function syncToCloudWithLookup($table, $data) {
  * @return bool Success status
  */
 function syncDeleteWithLookup($table, $data) {
+    // Simple logging setup
+    $logFile = __DIR__ . '/logs/cloud_sync.log';
+    $logDir = dirname($logFile);
+    if (!file_exists($logDir)) {
+        @mkdir($logDir, 0755, true);
+    }
+
     // Check if cURL is available
     if (!function_exists('curl_init')) {
-        error_log("⚠️ cURL not available - skipping cloud delete with lookup");
+        file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] ⚠️ cURL not available - skipping cloud delete with lookup\n", FILE_APPEND);
         return true; // Return true to not block the operation
     }
     
