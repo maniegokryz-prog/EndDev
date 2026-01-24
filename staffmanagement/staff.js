@@ -1,4 +1,4 @@
-   // Sidebar Toggle
+// Sidebar Toggle
 const menuBtn = document.getElementById("menu-btn");
 const sidebar = document.getElementById("sidebar");
 const content = document.getElementById("content");
@@ -59,7 +59,7 @@ function renderStaffList() {
   }
 
   staffData.forEach(staff => {
-      const row = `
+    const row = `
         <tr>
           <td>
             <div class="d-flex align-items-center">
@@ -88,8 +88,8 @@ function renderStaffList() {
           </td>
         </tr>
       `;
-      tbody.innerHTML += row;
-    });
+    tbody.innerHTML += row;
+  });
 }
 
 // Show error message
@@ -118,21 +118,35 @@ document.addEventListener("click", function (e) {
 
 
 // Filters
-document.getElementById("roleFilter").addEventListener("change", applyFilters);
-document.getElementById("departmentFilter").addEventListener("change", applyFilters);
-document.getElementById("searchInput").addEventListener("input", applyFilters);
-
-function applyFilters() {
-  const role = document.getElementById("roleFilter").value;
-  const dept = document.getElementById("departmentFilter").value;
-  const search = document.getElementById("searchInput").value;
-  fetchEmployees(role, dept, search);
-}
-
 // Initial load - fetch employees when page loads
 document.addEventListener('DOMContentLoaded', () => {
-  fetchEmployees();
+  // Attach filter listeners if elements exist
+  const roleFilter = document.getElementById("roleFilter");
+  if (roleFilter) roleFilter.addEventListener("change", applyFilters);
+
+  const deptFilter = document.getElementById("departmentFilter");
+  if (deptFilter) deptFilter.addEventListener("change", applyFilters);
+
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) searchInput.addEventListener("input", applyFilters);
+
+  // Only fetch employees if we are on a page that needs it (e.g. has the table)
+  if (document.getElementById("staffTable")) {
+    fetchEmployees();
+  }
 });
+
+function applyFilters() {
+  const roleFilter = document.getElementById("roleFilter");
+  const deptFilter = document.getElementById("departmentFilter");
+  const searchInput = document.getElementById("searchInput");
+
+  const role = roleFilter ? roleFilter.value : "All Roles";
+  const dept = deptFilter ? deptFilter.value : "All Departments";
+  const search = searchInput ? searchInput.value : "";
+
+  fetchEmployees(role, dept, search);
+}
 
 
 

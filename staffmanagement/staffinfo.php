@@ -98,7 +98,7 @@ class EmployeeEditor {
 $employee_id = $_GET['id'] ?? '';
 
 if (empty($employee_id)) {
-    header('Location: showRecord.php?error=no_id_to_edit');
+    header('Location: staff.php?error=no_id_to_edit');
     exit;
 }
 
@@ -346,7 +346,7 @@ class EmployeeDetailViewer {
 $employee_id = $_GET['id'] ?? '';
 
 if (empty($employee_id)) {
-    header('Location: showRecord.php?error=no_id');
+    header('Location: staff.php?error=no_id');
     exit;
 }
 

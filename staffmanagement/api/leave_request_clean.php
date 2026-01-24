@@ -186,21 +186,24 @@ function submitLeaveRequest($conn) {
         
         // Create notification for admin (only if not auto-approved)
         if ($initial_status === 'pending') {
-            // Get employee name
-            $stmt_emp = $conn->prepare("SELECT first_name, last_name FROM employees WHERE id = ?");
+            // Get employee name and code
+            $stmt_emp = $conn->prepare("SELECT first_name, last_name, employee_id FROM employees WHERE id = ?");
             $stmt_emp->bind_param("i", $employee_id);
             $stmt_emp->execute();
             $emp_result = $stmt_emp->get_result();
             $emp_name = "Employee";
+            $emp_code = "";
+            
             if ($emp_row = $emp_result->fetch_assoc()) {
                 $emp_name = $emp_row['first_name'] . ' ' . $emp_row['last_name'];
+                $emp_code = $emp_row['employee_id'];
             }
             
             // Check if notifications table exists
             $check_table = $conn->query("SHOW TABLES LIKE 'notifications'");
             if ($check_table->num_rows > 0) {
                 $message = $emp_name . " has submitted a leave request (Pending for approval)";
-                $link = "/EndDev/staffmanagement/staffinfo.php";
+                $link = "/EndDev/staffmanagement/staffinfo.php?id=" . $emp_code;
                 
                 // Check if link column exists
                 $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
@@ -303,7 +306,7 @@ function approveLeaveRequest($conn) {
         }
         
         // Get leave details and employee info
-        $sql = "SELECT el.employee_id, e.first_name, e.last_name 
+        $sql = "SELECT el.employee_id, e.first_name, e.last_name, e.employee_id as emp_code 
                 FROM employee_leaves el
                 JOIN employees e ON el.employee_id = e.id
                 WHERE el.id = ?";
@@ -332,7 +335,7 @@ function approveLeaveRequest($conn) {
             if ($check_table->num_rows > 0) {
                 $emp_name = $leave['first_name'] . ' ' . $leave['last_name'];
                 $message = $emp_name . ", Your leave request has been Approved";
-                $link = "/EndDev/staffmanagement/staffinfo.php";
+                $link = "/EndDev/staffmanagement/staffinfo.php?id=" . $leave['emp_code'];
                 
                 // Check if link column exists
                 $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
@@ -379,7 +382,7 @@ function rejectLeaveRequest($conn) {
         }
         
         // Get leave details and employee info
-        $sql = "SELECT el.employee_id, e.first_name, e.last_name 
+        $sql = "SELECT el.employee_id, e.first_name, e.last_name, e.employee_id as emp_code
                 FROM employee_leaves el
                 JOIN employees e ON el.employee_id = e.id
                 WHERE el.id = ?";
@@ -408,7 +411,7 @@ function rejectLeaveRequest($conn) {
             if ($check_table->num_rows > 0) {
                 $emp_name = $leave['first_name'] . ' ' . $leave['last_name'];
                 $message = $emp_name . ", Your leave request has been Rejected";
-                $link = "/EndDev/staffmanagement/staffinfo.php";
+                $link = "/EndDev/staffmanagement/staffinfo.php?id=" . $leave['emp_code'];
                 
                 // Check if link column exists
                 $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");

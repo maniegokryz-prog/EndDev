@@ -573,7 +573,8 @@ function getAdminNotifications($conn) {
                     el.end_date,
                     e.first_name,
                     e.last_name,
-                    e.employee_id as employee_code
+                    e.employee_id as employee_code,
+                    n.link
                 FROM notifications n
                 LEFT JOIN employee_leaves el ON n.leave_id = el.id
                 LEFT JOIN employees e ON n.employee_id = e.id
@@ -598,7 +599,8 @@ function getAdminNotifications($conn) {
                     el.end_date,
                     e.first_name,
                     e.last_name,
-                    e.employee_id as employee_code
+                    e.employee_id as employee_code,
+                    n.link
                 FROM notifications n
                 LEFT JOIN employee_leaves el ON n.leave_id = el.id
                 LEFT JOIN employees e ON n.employee_id = e.id
@@ -623,7 +625,8 @@ function getAdminNotifications($conn) {
             'created_at' => $row['created_at'],
             'employee_name' => trim($row['first_name'] . ' ' . $row['last_name']),
             'employee_code' => $row['employee_code'],
-            'leave_id' => $row['leave_id']
+            'leave_id' => $row['leave_id'],
+            'link' => $row['link']
         ];
     }
     
@@ -761,14 +764,17 @@ function getOrCreateLeaveType($conn, $leave_type_name) {
  * Helper function: Create admin notification
  */
 function createAdminNotification($conn, $employee_id, $leave_id, $type) {
-    // Get employee name
-    $sql = "SELECT first_name, last_name FROM employees WHERE id = ?";
+    // Get employee name and code
+    $sql = "SELECT first_name, last_name, employee_id as code FROM employees WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $employee_id);
     $stmt->execute();
     $emp = $stmt->get_result()->fetch_assoc();
     
     $employee_name = trim($emp['first_name'] . ' ' . $emp['last_name']);
+    
+    // Create link to employee profile
+    $link = "../staffmanagement/staffinfo.php?id=" . $emp['code'];
     
     if ($type === 'admin_request') {
         $message = "$employee_name has submitted a leave request (Pending for approval)";
@@ -779,10 +785,10 @@ function createAdminNotification($conn, $employee_id, $leave_id, $type) {
     // Create notification table if not exists
     ensureNotificationsTable($conn);
     
-    $sql = "INSERT INTO notifications (employee_id, leave_id, type, message, target, is_read) 
-            VALUES (?, ?, ?, ?, 'admin', 0)";
+    $sql = "INSERT INTO notifications (employee_id, leave_id, type, message, target, is_read, link) 
+            VALUES (?, ?, ?, ?, 'admin', 0, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iiss", $employee_id, $leave_id, $type, $message);
+    $stmt->bind_param("iissss", $employee_id, $leave_id, $type, $message, $link);
     $stmt->execute();
 }
 
