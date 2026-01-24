@@ -1510,6 +1510,8 @@ $schedules = $viewer->getSchedules();
                   console.log('Parsed response:', response);
                 if (response.success) {
                   const leaveList = document.getElementById("leaveList");
+                  if (!leaveList) return; 
+
                   leaveList.innerHTML = '';
 
                   if (response.count === 0) {
@@ -1589,19 +1591,22 @@ $schedules = $viewer->getSchedules();
                   adjustMetricsMargin();
                 } else {
                   console.error('Failed to load leaves:', response.error);
-                  document.getElementById("leaveList").innerHTML = '<p class="text-danger small text-center">Error loading leaves</p>';
+                  const list = document.getElementById("leaveList");
+                  if (list) list.innerHTML = '<p class="text-danger small text-center">Error loading leaves</p>';
                   adjustMetricsMargin();
                 }
                 } catch (e) {
                   console.error('JSON parse error:', e);
                   console.error('Response text:', text);
-                  document.getElementById("leaveList").innerHTML = `<p class="text-danger small text-center">Parse error: ${e.message}</p>`;
+                  const list = document.getElementById("leaveList");
+                  if (list) list.innerHTML = `<p class="text-danger small text-center">Parse error: ${e.message}</p>`;
                   adjustMetricsMargin();
                 }
               })
               .catch(error => {
                 console.error('Error loading leaves:', error);
-                document.getElementById("leaveList").innerHTML = `<p class="text-danger small text-center">Network error: ${error.message}</p>`;
+                const list = document.getElementById("leaveList");
+                if (list) list.innerHTML = `<p class="text-danger small text-center">Network error: ${error.message}</p>`;
                 adjustMetricsMargin();
               });
           }
@@ -1648,7 +1653,12 @@ $schedules = $viewer->getSchedules();
 
           // View leave details in modal
           function viewLeaveDetails(leave) {
-            document.getElementById('viewLeaveType').textContent = leave.leave_type;
+            const safeText = (id, text) => { const el = document.getElementById(id); if(el) el.textContent = text; };
+            const safeHTML = (id, html) => { const el = document.getElementById(id); if(el) el.innerHTML = html; };
+            const safeDisplay = (id, display) => { const el = document.getElementById(id); if(el) el.style.display = display; };
+            const safeHref = (id, href) => { const el = document.getElementById(id); if(el) el.href = href; };
+
+            safeText('viewLeaveType', leave.leave_type);
             
             let statusBadgeHTML = '';
             if (leave.status === 'pending') {
@@ -1658,18 +1668,18 @@ $schedules = $viewer->getSchedules();
             } else if (leave.status === 'rejected') {
               statusBadgeHTML = '<span class="badge bg-danger">Rejected</span>';
             }
-            document.getElementById('viewLeaveStatus').innerHTML = statusBadgeHTML;
+            safeHTML('viewLeaveStatus', statusBadgeHTML);
             
-            document.getElementById('viewLeaveDates').textContent = leave.formatted_dates;
-            document.getElementById('viewLeaveReason').textContent = leave.reason || 'No reason provided';
-            document.getElementById('viewLeaveCreated').textContent = new Date(leave.created_at).toLocaleString();
+            safeText('viewLeaveDates', leave.formatted_dates);
+            safeText('viewLeaveReason', leave.reason || 'No reason provided');
+            safeText('viewLeaveCreated', new Date(leave.created_at).toLocaleString());
             
             // Handle attachment
             if (leave.attachment && leave.attachment.trim() !== '') {
-              document.getElementById('viewLeaveAttachmentContainer').style.display = 'block';
-              document.getElementById('viewLeaveAttachment').href = '../' + leave.attachment;
+              safeDisplay('viewLeaveAttachmentContainer', 'block');
+              safeHref('viewLeaveAttachment', '../' + leave.attachment);
             } else {
-              document.getElementById('viewLeaveAttachmentContainer').style.display = 'none';
+              safeDisplay('viewLeaveAttachmentContainer', 'none');
             }
             
             // Add action buttons based on status and role
@@ -1701,7 +1711,7 @@ $schedules = $viewer->getSchedules();
               `;
             }
             
-            document.getElementById('viewLeaveActions').innerHTML = actionsHTML;
+            safeHTML('viewLeaveActions', actionsHTML);
             
             // Show modal
             const modal = new bootstrap.Modal(document.getElementById('leaveDetailsViewModal'));

@@ -201,6 +201,11 @@ try {
             $status_info['badge_text'] = 'Present';
             $status_info['icon_class'] = 'bg-success';
             $status_info['icon'] = 'bi-check-lg';
+        } elseif ($status_lower === 'visit') {
+            $status_info['badge_class'] = 'info text-dark';
+            $status_info['badge_text'] = 'Visit';
+            $status_info['icon_class'] = 'bg-info text-dark';
+            $status_info['icon'] = 'bi-person-badge';
         } elseif ($status_lower === 'incomplete') {
             $status_info['badge_class'] = 'warning text-dark';
             $status_info['badge_text'] = 'Incomplete';
@@ -240,8 +245,8 @@ try {
     $stmt->close();
 
     // --- NEW: Fetch VISIT logs from attendance_logs ---
-    // We want to verify visits within the same period
-    
+    // DISABLED: We now store visits in daily_attendance to prevent clutter
+    /*
     $visit_sql = "";
     $visit_params = [];
     $visit_types = "";
@@ -264,6 +269,7 @@ try {
         $visit_params = [$employee_id, $start_date, $end_date];
         $visit_types = "iss";
     }
+    
     
     $stmt_visit = $conn->prepare($visit_sql);
     if ($stmt_visit) {
@@ -311,6 +317,7 @@ try {
         }
         $stmt_visit->close();
     }
+    */
 
     // Sort all records by date/time descending
     usort($attendance_records, function($a, $b) {

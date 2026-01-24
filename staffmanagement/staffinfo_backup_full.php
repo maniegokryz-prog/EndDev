@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Protect this page - require authentication
 require_once '../auth_guard.php';
 
@@ -723,7 +723,7 @@ $schedules = $viewer->getSchedules();
      </div>
    </div>
 
-   <!-- 🔹 Confirm Removal Modal -->
+   <!-- ðŸ”¹ Confirm Removal Modal -->
 <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4">
@@ -747,7 +747,7 @@ $schedules = $viewer->getSchedules();
   </div>
 </div>
 
-<!-- 🔹 Success Remove Modal -->
+<!-- ðŸ”¹ Success Remove Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -759,7 +759,7 @@ $schedules = $viewer->getSchedules();
   </div>
 </div>
 
-<!-- 🔹 Error Remove Modal -->
+<!-- ðŸ”¹ Error Remove Modal -->
 <div class="modal fade" id="errorRemoveModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -2122,7 +2122,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
             <i class="bi bi-plus-square me-2"></i>Add Manual Attendance
           </button>
 
-         <!-- 🔹 Manual Attendance Modal -->
+         <!-- ðŸ”¹ Manual Attendance Modal -->
         <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content p-3">
@@ -2148,7 +2148,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                       <input type="time" class="form-control">
                     </div>
                     <div class="col-md-3">
-                      <button class="btn btn-danger removeRow" style="display:none; margin-top: 32px;">−</button>
+                      <button class="btn btn-danger removeRow" style="display:none; margin-top: 32px;">âˆ’</button>
                     </div>
                   </div>
                 </div>
@@ -2180,7 +2180,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 
     const attendanceModal = new bootstrap.Modal(attendanceModalEl);
 
-    // 🔹 Function to fetch and populate schedule times for a date
+    // ðŸ”¹ Function to fetch and populate schedule times for a date
     async function populateScheduleTimes(dateInput, timeInInput, timeOutInput) {
       const selectedDate = dateInput.value;
       
@@ -2274,7 +2274,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 
 
 
-    // 🔹 Function to attach date change listener to a row
+    // ðŸ”¹ Function to attach date change listener to a row
     function attachDateListener(row) {
       const dateInput = row.querySelector('input[type="date"]');
       const timeInputs = row.querySelectorAll('input[type="time"]');
@@ -2298,7 +2298,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
       }
     }
 
-    // 🔹 Step 1: Open Manual Attendance and setup listeners
+    // ðŸ”¹ Step 1: Open Manual Attendance and setup listeners
     openAttendanceBtn.addEventListener('click', () => {
       attendanceModal.show();
       
@@ -2309,7 +2309,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
       }
     });
 
-    // 🔹 Step 2: Add another day
+    // ðŸ”¹ Step 2: Add another day
     addDayBtn.addEventListener('click', () => {
       const newRow = document.createElement('div');
       newRow.classList.add('attendance-row', 'row', 'mb-3', 'align-items-start');
@@ -2330,7 +2330,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
           <input type="time" class="form-control">
         </div>
         <div class="col-md-3">
-          <button class="btn btn-danger removeRow" style="margin-top: 32px;">−</button>
+          <button class="btn btn-danger removeRow" style="margin-top: 32px;">âˆ’</button>
         </div>`;
       attendanceContainer.appendChild(newRow);
       
@@ -2338,14 +2338,14 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
       attachDateListener(newRow);
     });
 
-    // 🔹 Step 3: Remove a day row
+    // ðŸ”¹ Step 3: Remove a day row
     attendanceContainer.addEventListener('click', (e) => {
       if (e.target.classList.contains('removeRow')) {
         e.target.closest('.attendance-row').remove();
       }
     });
 
-    // 🔹 Step 4: Save attendance records
+    // ðŸ”¹ Step 4: Save attendance records
     saveBtn.addEventListener('click', async () => {
       const rows = attendanceContainer.querySelectorAll('.attendance-row');
       const records = [];
@@ -2746,7 +2746,7 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
                     <span style="background: ${colors.badgeBg}; color: ${colors.badgeText}; padding: 0.35em 0.8em; border-radius: 0.3rem; font-weight: 600; display: inline-block; margin-left: 0.5rem; font-size: 0.9rem;">${statusInfo.badge_text}</span>
                   </div>
                   <div style="font-size: 0.875rem; color: #6c757d; margin-top: 0.25rem;">
-                    Time In: ${timeIn} — Time Out: ${timeOut}
+                    Time In: ${timeIn} â€” Time Out: ${timeOut}
                   </div>
                   ${hoursWorked !== 'N/A' ? `<div style="font-size: 0.875rem; color: #6c757d;">Hours: ${hoursWorked}</div>` : ''}
                   ${showEditButton ? `
@@ -3037,834 +3037,6 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
-</script>
-</body>
-</html>
-          <div class="row align-items-center">
-            <div class="col-12 col-md-6">
-              <h5 class="mb-0 fw-bold text-dark">
-                <i class="bi bi-graph-up me-2"></i>Performance Metrics
-              </h5>
-            </div>
-            <div class="col-12 col-md-6">
-              <div class="d-flex gap-2 justify-content-md-end mt-2 mt-md-0">
-                <select class="form-select form-select-sm" id="selectMonth" style="max-width: 140px;">
-                  <option value="">All Months</option>
-                  <option value="1">January</option>
-                  <option value="2">February</option>
-                  <option value="3">March</option>
-                  <option value="4">April</option>
-                  <option value="5">May</option>
-                  <option value="6">June</option>
-                  <option value="7">July</option>
-                  <option value="8">August</option>
-                  <option value="9">September</option>
-                  <option value="10">October</option>
-                  <option value="11" <?= date('n') == 11 ? 'selected' : '' ?>>November</option>
-                  <option value="12">December</option>
-                </select>
-                <select class="form-select form-select-sm" id="selectYear" style="max-width: 100px;">
-                  <?php
-                    $currentYear = date('Y');
-                    $hireYear = !empty($employee['hire_date']) ? date('Y', strtotime($employee['hire_date'])) : $currentYear;
-                    for ($y = $hireYear; $y <= $currentYear; $y++) {
-                      $selected = $y == $currentYear ? 'selected' : '';
-                      echo "<option value='$y' $selected>$y</option>";
-                    }
-                  ?>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-  <div class="card-body">
-    <div id="metricsLoading" class="text-center py-4">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <p class="mt-2 text-muted">Loading performance metrics...</p>
-    </div>
-    
-        <div id="metricsContent" class="row g-3" style="display: none;">
-          <div class="col-6 col-lg-3">
-            <div class="metric-box p-3 h-100 d-flex flex-column align-items-center justify-content-center">
-              <canvas id="chartPresent" width="120" height="120"></canvas>
-              <div class="mt-2 fw-semibold text-success">Present</div>
-              <div class="text-muted small" id="presentValue">0%</div>
-              <div class="text-muted" style="font-size: 0.7rem;" id="presentCount">0 days</div>
-            </div>
-          </div>
-
-          <div class="col-6 col-lg-3">
-            <div class="metric-box p-3 h-100 d-flex flex-column align-items-center justify-content-center">
-              <canvas id="chartAbsent" width="120" height="120"></canvas>
-              <div class="mt-2 fw-semibold text-danger">Absent</div>
-              <div class="text-muted small" id="absentValue">0%</div>
-              <div class="text-muted" style="font-size: 0.7rem;" id="absentCount">0 days</div>
-            </div>
-          </div>
-
-          <div class="col-6 col-lg-3">
-            <div class="metric-box p-3 h-100 d-flex flex-column align-items-center justify-content-center">
-              <canvas id="chartOntime" width="120" height="120"></canvas>
-              <div class="mt-2 fw-semibold text-primary">On Time</div>
-              <div class="text-muted small" id="ontimeValue">0%</div>
-              <div class="text-muted" style="font-size: 0.7rem;" id="ontimeCount">0 days</div>
-            </div>
-          </div>
-
-          <div class="col-6 col-lg-3">
-            <div class="metric-box p-3 h-100 d-flex flex-column align-items-center justify-content-center">
-              <canvas id="chartLate" width="120" height="120"></canvas>
-              <div class="mt-2 fw-semibold text-warning">Late</div>
-              <div class="text-muted small" id="lateValue">0%</div>
-              <div class="text-muted" style="font-size: 0.7rem;" id="lateCount">0 days</div>
-            </div>
-          </div>
-        </div>
-    
-    <div id="metricsError" class="text-center py-4 text-danger" style="display: none;">
-      <i class="bi bi-exclamation-triangle fs-1"></i>
-      <p class="mt-2">Error loading metrics. Please try again.</p>
-    </div>
-  </div>
-</div>
-
-<script>
-// Performance Metrics Chart Implementation
-const employeeId = '<?= $employee_id ?>';
-let metricsCharts = {
-  present: null,
-  absent: null,
-  ontime: null,
-  late: null
-};
-
-// Create donut chart
-function createDonutChart(canvasId, percentage, color) {
-  const ctx = document.getElementById(canvasId);
-  if (!ctx) return null;
-  
-  // Destroy existing chart if it exists
-  if (metricsCharts[canvasId.replace('chart', '').toLowerCase()]) {
-    metricsCharts[canvasId.replace('chart', '').toLowerCase()].destroy();
-  }
-  
-  const chart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      datasets: [{
-        data: [percentage, 100 - percentage],
-        backgroundColor: [color, '#e9ecef'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      cutout: '75%',
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          enabled: false
-        }
-      }
-    }
-  });
-  
-  return chart;
-}
-
-// Fetch and display metrics
-async function loadPerformanceMetrics() {
-  const month = document.getElementById('selectMonth').value;
-  const year = document.getElementById('selectYear').value;
-  
-  // Show loading
-  document.getElementById('metricsLoading').style.display = 'block';
-  document.getElementById('metricsContent').style.display = 'none';
-  document.getElementById('metricsError').style.display = 'none';
-  
-  try {
-    const params = new URLSearchParams({
-      employee_id: employeeId,
-      year: year
-    });
-    
-    if (month) {
-      params.append('month', month);
-    }
-    
-    const response = await fetch(`get_performance_metrics.php?${params.toString()}`);
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to load metrics');
-    }
-    
-    // Update charts and values
-    const metrics = data.metrics;
-    
-    // Present (Green)
-    metricsCharts.present = createDonutChart('chartPresent', metrics.present.percentage, '#28a745');
-    document.getElementById('presentValue').textContent = metrics.present.percentage + '%';
-    document.getElementById('presentCount').textContent = metrics.present.count + ' days';
-    
-    // Absent (Red)
-    metricsCharts.absent = createDonutChart('chartAbsent', metrics.absent.percentage, '#dc3545');
-    document.getElementById('absentValue').textContent = metrics.absent.percentage + '%';
-    document.getElementById('absentCount').textContent = metrics.absent.count + ' days';
-    
-    // On Time (Blue)
-    metricsCharts.ontime = createDonutChart('chartOntime', metrics.onTime.percentage, '#0d6efd');
-    document.getElementById('ontimeValue').textContent = metrics.onTime.percentage + '%';
-    document.getElementById('ontimeCount').textContent = metrics.onTime.count + ' days';
-    
-    // Late (Orange)
-    metricsCharts.late = createDonutChart('chartLate', metrics.late.percentage, '#fd7e14');
-    document.getElementById('lateValue').textContent = metrics.late.percentage + '%';
-    document.getElementById('lateCount').textContent = metrics.late.count + ' days';
-    
-    // Show content
-    document.getElementById('metricsLoading').style.display = 'none';
-    document.getElementById('metricsContent').style.display = 'flex';
-    
-  } catch (error) {
-    console.error('Error loading metrics:', error);
-    document.getElementById('metricsLoading').style.display = 'none';
-    document.getElementById('metricsError').style.display = 'block';
-  }
-}
-
-// Event listeners for month/year change
-document.getElementById('selectMonth').addEventListener('change', loadPerformanceMetrics);
-document.getElementById('selectYear').addEventListener('change', loadPerformanceMetrics);
-
-// Load metrics on page load
-document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
-</script>
-
-    </div>
-
-</div>
-</main>
-
-</body>
-</html>
-              <h5 class="mb-0 fw-bold text-dark">
-                <i class="bi bi-calendar3 me-2"></i>Schedule
-              </h5>
-            </div>
-            <div class="col-12 col-md-6">
-              <div class="text-md-end mt-2 mt-md-0">
-                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editScheduleModal">
-                  <i class="bi bi-pencil me-1"></i>Edit Schedule
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="info-section">
-            <?php if (!empty($schedules)): ?>
-                <div class="calendar-wrapper">
-                    <div class="schedule-calendar" id="employee-schedule-calendar">
-                        <!-- Time slots header -->
-                        <div class="time-header"></div>
-                        
-                        <!-- Day headers -->
-                        <div class="day-header" data-day="Monday">Mon</div>
-                        <div class="day-header" data-day="Tuesday">Tue</div>
-                        <div class="day-header" data-day="Wednesday">Wed</div>
-                        <div class="day-header" data-day="Thursday">Thu</div>
-                        <div class="day-header" data-day="Friday">Fri</div>
-                        <div class="day-header" data-day="Saturday">Sat</div>
-                        <div class="day-header" data-day="Sunday">Sun</div>
-                        
-                        <!-- Calendar grid will be populated by JavaScript -->
-                    </div>
-                </div>
-        <?php if (!empty($schedules)): ?>
-                <div class="calendar-wrapper">
-                    <div class="schedule-calendar" id="employee-schedule-calendar">
-                        <!-- Time slots header -->
-                        <div class="time-header"></div>
-                        
-                        <!-- Day headers -->
-                        <div class="day-header" data-day="Monday">Mon</div>
-                        <div class="day-header" data-day="Tuesday">Tue</div>
-                        <div class="day-header" data-day="Wednesday">Wed</div>
-                        <div class="day-header" data-day="Thursday">Thu</div>
-                        <div class="day-header" data-day="Friday">Fri</div>
-                        <div class="day-header" data-day="Saturday">Sat</div>
-                        <div class="day-header" data-day="Sunday">Sun</div>
-                        
-                        <!-- Calendar grid will be populated by JavaScript -->
-                    </div>
-                </div>
-            <script>
-                // Schedule data from PHP - convert to format matching index.php
-                const employeeSchedulesRaw = <?php echo json_encode($schedules); ?>;
-                
-                console.log('Raw employee schedules from database:', employeeSchedulesRaw);
-                
-                // Predefined color palette matching index.php
-                const scheduleColors = [
-                    '#4a7c59', '#8b4a6b', '#b85450', '#5b9bd5', '#ffc000',
-                    '#c55a11', '#7030a0', '#0070c0', '#00b050', '#ff6b6b'
-                ];
-                
-                // Convert database schedules to the format used in index.php
-                function convertSchedulesToDisplayFormat() {
-                    // IMPORTANT: day_of_week is 0-6 (Monday=0, Sunday=6) to match Python's datetime.weekday()
-                    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                    const scheduleGroups = {};
-                    
-                    employeeSchedulesRaw.forEach(schedule => {
-                        // Create a unique key for grouping schedules with same time/subject/class
-                        const key = `${schedule.start_time}-${schedule.end_time}-${schedule.subject_code}-${schedule.designate_class}`;
-                        
-                        if (!scheduleGroups[key]) {
-                            scheduleGroups[key] = {
-                                startTime: schedule.start_time.substring(0, 5), // Convert HH:MM:SS to HH:MM
-                                endTime: schedule.end_time.substring(0, 5),
-                                subject: schedule.subject_code,
-                                class: schedule.designate_class,
-                                room_num: schedule.room_num,
-                                days: [],
-                                color: scheduleColors[Object.keys(scheduleGroups).length % scheduleColors.length]
-                            };
-                        }
-                        
-                        // day_of_week is already 0-6, so use directly as array index
-                        const dayName = dayNames[parseInt(schedule.day_of_week)];
-                        if (!scheduleGroups[key].days.includes(dayName)) {
-                            scheduleGroups[key].days.push(dayName);
-                        }
-                    });
-                    
-                    return Object.values(scheduleGroups);
-                }
-                
-                const addedSchedules = convertSchedulesToDisplayFormat();
-                console.log('Converted schedules for display:', addedSchedules);
-                
-                // Copy exact functions from add_employee.js
-                function parseTime(timeString) {
-                    const [hours, minutes] = timeString.split(':').map(Number);
-                    return hours * 60 + minutes;
-                }
-                
-                function formatTimeSlot(minutes) {
-                    const hours = Math.floor(minutes / 60);
-                    const mins = minutes % 60;
-                    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-                }
-                
-                function formatTime(timeSlot) {
-                    const [hours, minutes] = timeSlot.split(':').map(Number);
-                    const period = hours >= 12 ? 'PM' : 'AM';
-                    const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
-                    return `${displayHours}:${minutes.toString().padStart(2, '0')}${period}`;
-                }
-                
-                function generateTimeSlots(startTime, endTime, intervalMinutes) {
-                    const slots = [];
-                    const start = parseTime(startTime);
-                    const end = parseTime(endTime);
-                    
-                    let current = start;
-                    while (current < end) {
-                        slots.push(formatTimeSlot(current));
-                        current += intervalMinutes;
-                    }
-                    
-                    return slots;
-                }
-                
-                function getRandomScheduleColor() {
-                    return scheduleColors[Math.floor(Math.random() * scheduleColors.length)];
-                }
-                
-                function initializeDisplayCalendar() {
-                    const calendar = document.getElementById('employee-schedule-calendar');
-                    if (!calendar) {
-                        console.error('Display calendar element not found!');
-                        return;
-                    }
-                    
-                    console.log('Display calendar element found:', calendar);
-                    const timeSlots = generateTimeSlots('07:00', '24:00', 30);
-                    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                    
-                    // Clear existing grid content (keep headers)
-                    const existingCells = calendar.querySelectorAll('.time-slot, .calendar-cell');
-                    existingCells.forEach(cell => cell.remove());
-                    
-                    // Set up grid rows (header + time slots)
-                    calendar.style.gridTemplateRows = `40px repeat(${timeSlots.length}, 40px)`;
-                    
-                    // Create time slots and calendar cells
-                    timeSlots.forEach((timeSlot, timeIndex) => {
-                        // Time slot label
-                        const timeLabel = document.createElement('div');
-                        timeLabel.className = 'time-slot';
-                        timeLabel.textContent = formatTime(timeSlot);
-                        timeLabel.style.gridColumn = '1';
-                        timeLabel.style.gridRow = `${timeIndex + 2}`;
-                        calendar.appendChild(timeLabel);
-                        
-                        // Calendar cells for each day
-                        days.forEach((day, dayIndex) => {
-                            const cell = document.createElement('div');
-                            cell.className = 'calendar-cell';
-                            cell.dataset.day = day;
-                            cell.dataset.timeSlot = timeSlot;
-                            cell.dataset.timeIndex = timeIndex;
-                            cell.style.gridColumn = `${dayIndex + 2}`;
-                            cell.style.gridRow = `${timeIndex + 2}`;
-                            calendar.appendChild(cell);
-                        });
-                    });
-                    
-                    console.log('Calendar grid created with', timeSlots.length, 'time slots');
-                    
-                    // Render schedules
-                    renderDisplaySchedules();
-                }
-                
-                function renderDisplaySchedules() {
-                    // Get the display calendar
-                    const displayCalendar = document.getElementById('employee-schedule-calendar');
-                    if (!displayCalendar) {
-                        console.error('Display calendar not found!');
-                        return;
-                    }
-                    
-                    // Clear existing schedule blocks only from display calendar
-                    displayCalendar.querySelectorAll('.schedule-block').forEach(block => block.remove());
-                    
-                    console.log('Rendering', addedSchedules.length, 'schedule(s) for display calendar');
-                    
-                    // Re-render all schedules
-                    addedSchedules.forEach((schedule, index) => {
-                        renderDisplayScheduleBlock(schedule, index);
-                    });
-                }
-                
-                function renderDisplayScheduleBlock(schedule, scheduleIndex) {
-                    const startTimeMinutes = parseTime(schedule.startTime);
-                    const endTimeMinutes = parseTime(schedule.endTime);
-                    const baseTimeMinutes = 420; // 7:00 AM in minutes
-                    const slotDuration = 30; // 30-minute slots
-                    const slotHeight = 40; // 40px per slot
-                    
-                    // Calculate slot positions
-                    const startSlotIndex = Math.floor((startTimeMinutes - baseTimeMinutes) / slotDuration);
-                    const endSlotIndex = Math.ceil((endTimeMinutes - baseTimeMinutes) / slotDuration);
-                    const slotsSpanned = endSlotIndex - startSlotIndex;
-                    
-                    console.log(`Schedule ${scheduleIndex}: ${schedule.startTime}-${schedule.endTime}, slots ${startSlotIndex}-${endSlotIndex}, span ${slotsSpanned}`);
-                    
-                    // Get the visual schedule calendar specifically
-                    const displayCalendar = document.getElementById('employee-schedule-calendar');
-                    if (!displayCalendar) {
-                        console.error('Display calendar not found!');
-                        return;
-                    }
-                    
-                    schedule.days.forEach(day => {
-                        const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(day);
-                        
-                        if (startSlotIndex >= 0 && endSlotIndex <= 34) { // Within 7AM-12AM range
-                            // Find the target cell within the display calendar only
-                            const targetCell = displayCalendar.querySelector(`[data-day="${day}"][data-time-index="${startSlotIndex}"]`);
-                            
-                            if (targetCell) {
-                                const scheduleBlock = document.createElement('div');
-                                const isFacultySchedule = schedule.class !== 'N/A' && schedule.subject !== 'GENERAL' && schedule.room_num !== 'TBD';
-                                scheduleBlock.className = isFacultySchedule ? 'schedule-block faculty-schedule' : 'schedule-block non-faculty-schedule';
-                                
-                                // Add unique identifier
-                                scheduleBlock.dataset.scheduleId = scheduleIndex;
-                                scheduleBlock.dataset.day = day;
-                                scheduleBlock.dataset.startTime = schedule.startTime;
-                                scheduleBlock.dataset.endTime = schedule.endTime;
-                                
-                                // Apply the schedule's assigned color
-                                scheduleBlock.style.background = schedule.color || getRandomScheduleColor();
-                                
-                                // Calculate exact height
-                                const exactHeight = slotsSpanned * slotHeight;
-                                scheduleBlock.style.height = `${exactHeight}px`;
-                                
-                                // Generate content based on available information
-                                let scheduleContent = '';
-                                
-                                if (isFacultySchedule) {
-                                    // Faculty schedule with full information
-                                    scheduleContent = `
-                                        <div class="class-subject">${schedule.class}<br>${schedule.subject}</div>
-                                        <div class="room-info">Room: ${schedule.room_num}</div>
-                                        <div class="time-range">${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}</div>
-                                    `;
-                                } else {
-                                    // Non-faculty or minimal schedule - only show time
-                                    scheduleContent = `
-                                        <div class="time-range-only">${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}</div>
-                                        <div class="schedule-type">Work Schedule</div>
-                                    `;
-                                }
-                                
-                                scheduleBlock.innerHTML = `
-                                    <div class="schedule-info">
-                                        ${scheduleContent}
-                                    </div>
-                                `;
-                                
-                                targetCell.appendChild(scheduleBlock);
-                                console.log(`Added schedule block to ${day} at slot ${startSlotIndex}`);
-                            } else {
-                                console.warn(`Could not find target cell for ${day} at slot ${startSlotIndex}`);
-                            }
-                        } else {
-                            console.warn(`Schedule time out of range: ${schedule.startTime}-${schedule.endTime}`);
-                        }
-                    });
-                }
-                
-                // Initialize calendar when page loads
-                document.addEventListener('DOMContentLoaded', function() {
-                    console.log('DOM loaded, initializing display calendar...');
-                    initializeDisplayCalendar();
-                });
-            </script>
-        <?php else: ?>
-            <p>No schedule assigned to this employee.</p>
-        <?php endif; ?>
-        </div>
-
-
-</div>
-
-<!-- Edit Schedule Modal -->
-<div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered edit-schedule-modal-dialog">
-    <div class="modal-content border-0 shadow-sm">
-      <div class="modal-header">
-        <h4 class="modal-title fw-semibold" id="editScheduleModalLabel">Edit Schedule</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <div class="modal-body">
-        <form id="editScheduleForm" action="processes/update_employee_schedule.php" method="POST">
-            <!-- Hidden fields for employee identification -->
-            <input type="hidden" name="employee_id" value="<?php echo htmlspecialchars($employee['employee_id']); ?>">
-            <input type="hidden" name="first_name" value="<?php echo htmlspecialchars($employee['first_name']); ?>">
-            <input type="hidden" name="last_name" value="<?php echo htmlspecialchars($employee['last_name']); ?>">
-            <div class="schedule-section">
-                <div class="form-group">
-                    <label>Select Working Days:</label>
-                    <p class="helper-text">Selected days appear dimmed</p>
-                    <div class="day-buttons">
-                        <button type="button" class="day-btn" data-day="Monday" onclick="toggleDay(this)">Mon</button>
-                        <button type="button" class="day-btn" data-day="Tuesday" onclick="toggleDay(this)">Tue</button>
-                        <button type="button" class="day-btn" data-day="Wednesday" onclick="toggleDay(this)">Wed</button>
-                        <button type="button" class="day-btn" data-day="Thursday" onclick="toggleDay(this)">Thu</button>
-                        <button type="button" class="day-btn" data-day="Friday" onclick="toggleDay(this)">Fri</button>
-                        <button type="button" class="day-btn" data-day="Saturday" onclick="toggleDay(this)">Sat</button>
-                        <button type="button" class="day-btn" data-day="Sunday" onclick="toggleDay(this)">Sun</button>
-                    </div>
-                    <input type="hidden" name="work_days" id="work_days" value="">
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="shift_start">Shift Start Time:</label>
-                        <input type="time" id="shift_start" name="shift_start">
-                    </div>
-                    <div class="form-group">
-                        <label for="shift_end">Shift End Time:</label>
-                        <input type="time" id="shift_end" name="shift_end">
-                    </div>
-                </div>
-                <div class="form-row" id="faculty-fields">
-                    <div class="form-group">
-                        <label for="designate_class">Designate Class <span style="color: #999;">(Faculty Only)</span></label>
-                        <input type="text" id="designate_class" name="designate_class" 
-                               placeholder="Available for Faculty Members only" 
-                               autocomplete="off" style="text-transform: uppercase;" disabled>
-                        <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing classes</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="designate_subject">Subject <span style="color: #999;">(Faculty Only)</span></label>
-                        <input type="text" id="designate_subject" name="designate_subject" 
-                               placeholder="Available for Faculty Members only" 
-                               autocomplete="off" style="text-transform: uppercase;" disabled>
-                        <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing subjects</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="room-number">Room Number <span style="color: #999;">(Faculty Only)</span></label>
-                        <input type="text" id="room-number" name="room-number" 
-                               placeholder="Available for Faculty Members only" 
-                               autocomplete="off" style="text-transform: uppercase;" disabled>
-                        <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing rooms</small>
-                     </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group" style="display: flex; gap: 10px;">
-                        <button type="button" class="add-schedule-btn" onclick="addSchedule()">Add Schedule</button>
-                        <button type="button" id="edit-schedule-btn" class="edit-schedule-btn" onclick="editSchedule()" disabled>Update Selected Schedule</button>
-                        <button type="button" class="btn-cancel" onclick="clearScheduleForm()">Cancel</button>
-                    </div>
-                </div>
-
-                <!-- Weekly Schedule Calendar -->
-                <div class="schedule-calendar-section">
-                    <div class="schedule-header">
-                        <h3>Schedule</h3>
-                        <button type="button" class="clear-schedules-btn" onclick="clearAllSchedules()">
-                            Clear All Schedules
-                        </button>
-                    </div>
-                    <div class="calendar-wrapper">
-                        <div class="schedule-calendar" id="edit-schedule-calendar">
-                            <!-- Time slots header -->
-                            <div class="time-header"></div>
-                            
-                            <!-- Day headers -->
-                            <div class="day-header" data-day="Monday">Mon</div>
-                            <div class="day-header" data-day="Tuesday">Tue</div>
-                            <div class="day-header" data-day="Wednesday">Wed</div>
-                            <div class="day-header" data-day="Thursday">Thu</div>
-                            <div class="day-header" data-day="Friday">Fri</div>
-                            <div class="day-header" data-day="Saturday">Sat</div>
-                            <div class="day-header" data-day="Sunday">Sun</div>
-                            
-                            <!-- Time slots and schedule cells -->
-                            <div id="calendar-grid"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Hidden input for schedule data -->
-                <input type="hidden" name="schedule_data" id="schedule_data">
-                
-            </div>
-
-            <div class="form-actions">
-                <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn-save">Save Changes</button>
-            </div>
-        </form>
-    </div>
-
-    <?php
-    // --- PHP: Query employee schedules and output as JSON (with assignments) ---
-    $emp_id = $employee['id'] ?? null;
-    $existingSchedules = [];
-    if ($emp_id) {
-        $sql = "SELECT es.*, sp.day_of_week, sp.start_time, sp.end_time, sp.period_name,
-                       ea.designate_class, ea.subject_code, ea.room_num
-                FROM employee_schedules es
-                JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
-                LEFT JOIN employee_assignments ea ON es.employee_id = ea.employee_id AND sp.id = ea.schedule_period_id
-                WHERE es.employee_id = ? AND es.is_active = 1";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $employee['id']);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $scheduleMap = [];
-        while ($row = $result->fetch_assoc()) {
-            $key = $row['schedule_id'] . '_' . $row['start_time'] . '_' . $row['end_time'] . '_' . ($row['designate_class'] ?? '') . '_' . ($row['subject_code'] ?? '') . '_' . ($row['room_num'] ?? '');
-            if (!isset($scheduleMap[$key])) {
-                $scheduleMap[$key] = [
-                    'days' => [],
-                    'startTime' => $row['start_time'],
-                    'endTime' => $row['end_time'],
-                    'class' => $row['designate_class'] ?? $row['period_name'] ?? '',
-                    'subject' => $row['subject_code'] ?? '',
-                    'room_num' => $row['room_num'] ?? '',
-                ];
-            }
-            // IMPORTANT: Use 0-6 format (Monday=0, Sunday=6) to match Python's datetime.weekday()
-            $daysOfWeek = [0=>'Monday',1=>'Tuesday',2=>'Wednesday',3=>'Thursday',4=>'Friday',5=>'Saturday',6=>'Sunday'];
-            $dayStr = $daysOfWeek[$row['day_of_week']] ?? '';
-            if ($dayStr && !in_array($dayStr, $scheduleMap[$key]['days'])) {
-                $scheduleMap[$key]['days'][] = $dayStr;
-            }
-        }
-        $existingSchedules = array_values($scheduleMap);
-        $stmt->close();
-    }
-    ?>
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-<!-- Edit Schedule Notification Modals -->
-<!-- 1. No Working Day Selected Modal -->
-<div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
-      <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
-    </div>
-  </div>
-</div>
-
-<!-- 2. Schedule Missing Time Modal -->
-<div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
-      <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
-    </div>
-  </div>
-</div>
-
-<!-- 3. Invalid Time Order Modal -->
-<div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
-      <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
-    </div>
-  </div>
-</div>
-
-<!-- 4. Faculty Missing Fields Modal -->
-<div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-warning">Required Fields</h5>
-      <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for schedules!</p>
-    </div>
-  </div>
-</div>
-
-<!-- 5. Schedule Added Success Modal -->
-<div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
-      <p id="scheduleAddedSuccessMsg">Your schedule has been added.</p>
-    </div>
-  </div>
-</div>
-
-<!-- 6. Schedule Updated Success Modal -->
-<div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
-      <p id="scheduleUpdatedSuccessMsg">Your schedule has been updated.</p>
-    </div>
-  </div>
-</div>
-
-<!-- 7. Clear All Schedules Confirm Modal -->
-<div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-warning">Confirm Clear All</h5>
-      <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
-      <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-        <button type="button" class="btn btn-danger" id="scheduleClearConfirmBtn">Yes, Clear All</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 8. Clear All Schedules Success Modal (No OK button, auto-close) -->
-<div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
-      <p id="scheduleClearedSuccessMsg">All schedules have been cleared!</p>
-    </div>
-  </div>
-</div>
-
-<!-- 9. Schedule Saved Success Modal -->
-<div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
-      <p id="scheduleSavedSuccessMsg">Schedule updated successfully!</p>
-    </div>
-  </div>
-</div>
-
-<!-- 10. Schedule No Data Modal -->
-<div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
-      <p id="scheduleNoDataMsg">No schedules to clear!</p>
-    </div>
-  </div>
-</div>
-
-<!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-<!-- Bootstrap JS (Local - Works Offline) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom Scripts -->
-<script src="staff.js"></script>
-<script>
-    // --- JS: Populate calendar with existing schedules for the edit modal ---
-    window.existingSchedules = <?php echo json_encode($existingSchedules); ?>;
-</script>
-<script src="../assets/js/edit_employee.js"></script>
-<script>
-    // --- JS: Live preview for profile picture ---
-    document.addEventListener('DOMContentLoaded', function() {
-        const photoInput = document.getElementById('profile_photo');
-        const previewImg = document.getElementById('profile-preview');
-        if (photoInput && previewImg) {
-            photoInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    previewImg.src = URL.createObjectURL(file);
-                }
-            });
-        }
-        
-        // Refresh profile image when edit modal opens
-        const editInfoModal = document.getElementById('editInfoModal');
-        if (editInfoModal && previewImg) {
-            editInfoModal.addEventListener('show.bs.modal', function() {
-                // Force reload the profile image with a new timestamp
-                const currentSrc = previewImg.src.split('?')[0];
-                previewImg.src = currentSrc + '?v=' + Date.now();
-            });
-        }
-      });
-        // Initialize the edit schedule modal calendar when modal is shown
-        const editScheduleModal = document.getElementById('editScheduleModal');
-        if (editScheduleModal) {
-            editScheduleModal.addEventListener('shown.bs.modal', function () {
-
-                console.log('Edit schedule modal opened, initializing calendar...');
-                // The initializeCalendar function from edit_employee.js should be available
-                if (typeof initializeCalendar === 'function') {
-                    initializeCalendar();
-                }
-                // Re-render schedules after calendar initialization
-                if (typeof renderSchedules === 'function') {
-                    console.log('Re-rendering schedules. Total schedules:', window.editAddedSchedules?.length || 0);
-                    renderSchedules();
-                }
-            });
-        }
 </script>
 </body>
 </html>

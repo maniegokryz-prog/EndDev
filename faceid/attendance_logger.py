@@ -122,13 +122,10 @@ class AttendanceLogger:
             log_id = cursor.lastrowid
             print(f"  ✓ Attendance log inserted with ID: {log_id}")
             
-            # Update or create daily_attendance record (Skip for visits)
-            if log_type != 'visit':
-                print(f"  📊 Updating daily_attendance table...")
-                self._update_daily_attendance(employee_db_id, log_type, now, conn)
-                print(f"  ✓ Daily attendance updated")
-            else:
-                print(f"  ℹ️  'Visit' log - skipping daily_attendance update")
+            # Update or create daily_attendance record
+            print(f"  📊 Updating daily_attendance table...")
+            self._update_daily_attendance(employee_db_id, log_type, now, conn)
+            print(f"  ✓ Daily attendance updated")
             
             # Commit all changes
             print(f"  💾 Committing transaction...")
@@ -389,6 +386,46 @@ class AttendanceLogger:
             """, (employee_db_id, day_of_week, log_date))
             
             schedule_periods = cursor.fetchall()
+
+            if log_type == 'visit':
+                # Handle VISIT
+                if not existing_record:
+                    # New visit - Time In (Start Time)
+                    print(f"     📝 Creating new daily_attendance record for VISIT...")
+                    cursor.execute("""
+                        INSERT INTO daily_attendance
+                        (employee_id, attendance_date, time_in, status, calculated_at)
+                        VALUES (?, ?, ?, 'visit', ?)
+                    """, (employee_db_id, log_date, log_time_only, log_time_str))
+                    
+                    print(f"     ✓ Created new visit record")
+                    log_daily_attendance_update(employee_code, employee_name, "visit started", 
+                                              {"time_in": log_time_only})
+                else:
+                    # Existing visit - Update Time Out (End Time)
+                    print(f"     📝 Updating daily_attendance record for VISIT (Time Out)...")
+                    
+                    # Calculate duration
+                    time_in_str = existing_record[1]
+                    actual_minutes = 0
+                    if time_in_str:
+                         try:
+                             time_in_parts = list(map(int, time_in_str.split(':')))
+                             time_in_dt = log_datetime.replace(hour=time_in_parts[0], minute=time_in_parts[1], second=time_in_parts[2] if len(time_in_parts)>2 else 0, microsecond=0)
+                             actual_minutes = int((log_datetime - time_in_dt).total_seconds() / 60)
+                         except: pass
+
+                    cursor.execute("""
+                        UPDATE daily_attendance
+                        SET time_out = ?, actual_hours = ?, status = 'visit', calculated_at = ?
+                        WHERE id = ?
+                    """, (log_time_only, actual_minutes, log_time_str, existing_record[0]))
+                    
+                    print(f"     ✓ Updated visit record (Duration: {actual_minutes} min)")
+                    log_daily_attendance_update(employee_code, employee_name, "visit update", 
+                                              {"time_out": log_time_only, "duration": f"{actual_minutes}min"})
+                
+                return
             
             if log_type == 'time_in':
                 # Handle TIME IN
