@@ -269,17 +269,47 @@ function renderScheduleBlock(schedule, index) {
 
     schedule.days.forEach(day => {
         if (startSlotIndex >= 0 && endSlotIndex <= 34) {
+            // Updated selector to match grid rows which now start at 2 (1 is header)
+            // But wait, the previous logic was: `calendar.style.gridTemplateRows = 40px repeat(...)` 
+            // The original logic had 40px as first row?
+            // Let's check initializeCalendar below. 
+            // It says: `gridTemplateRows = "40px repeat(${slots.length}, 40px)"`. 
+            // Slots start at row 2. Header is row 1.
+            // My previous code in initializeCalendar logic below (lines 306) ALREADY set a 40px first row but didn't fill it with text names?
+            // Actually, line 306 in original file: `calendar.style.gridTemplateRows = '40px repeat(${slots.length}, 40px)';`
+            // And loop for labels starts `label.style.gridRow = ${i + 2};`.
+            // So row 1 is empty or just spacing.
+            // I will target the cells.
+
             const targetCell = document.querySelector(`[data-day="${day}"][data-time-index="${startSlotIndex}"]`);
             if (targetCell) {
                 const block = document.createElement('div');
                 block.className = 'schedule-block';
                 block.style.background = schedule.color || '#4a7c59';
                 block.style.height = `${slotsSpanned * slotHeight}px`;
-                block.innerHTML = `<span onclick="deleteSchedule(${index}, '${day}')" style="cursor:pointer;float:right;margin-right:2px;font-weight:bold;">&times;</span>
-                                   <div style="font-size:0.75rem;padding:2px;">
-                                     <strong>${schedule.class !== 'N/A' ? schedule.class : 'Work'}</strong><br>
-                                     ${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}
-                                   </div>`;
+
+                // Detailed Content
+                let content = ``;
+                if (schedule.class !== 'N/A') {
+                    // Faculty Schedule
+                    content = `
+                        <div class="schedule-info">
+                            <div class="class-subject">${schedule.class}</div>
+                            <div class="room-info">${schedule.subject} | ${schedule.room_num}</div>
+                            <div class="time-range">${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}</div>
+                        </div>
+                     `;
+                } else {
+                    // Non-Faculty
+                    content = `
+                        <div class="schedule-info" style="justify-content:center; text-align:center;">
+                             <div style="font-weight:bold; font-size:12px;">Work</div>
+                             <div class="time-range">${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}</div>
+                        </div>
+                     `;
+                }
+
+                block.innerHTML = `<span onclick="deleteSchedule(${index}, '${day}')" class="schedule-delete-btn">&times;</span>${content}`;
                 targetCell.appendChild(block);
             }
         }
@@ -302,17 +332,54 @@ window.initializeCalendar = function () {
     const slots = [];
     for (let m = 420; m < 1440; m += 30) slots.push(m);
 
-    // Rows: Header + Slots
+    // Rows: Header (40px) + Slots
     calendar.style.gridTemplateRows = `40px repeat(${slots.length}, 40px)`;
+    // Columns: Time Label (60px) + 7 Days
+    // Ensure CSS supports this, or inline it here for safety
+    calendar.style.display = 'grid';
+    calendar.style.gridTemplateColumns = '60px repeat(7, 1fr)';
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-    // Clear old but keep headers if any? My CSS grid might need explicit placement
-    // Actually, safer to clear all dynamic cells but keep headers
-    document.querySelectorAll('.time-slot, .calendar-cell').forEach(e => e.remove());
+    // Clear old
+    calendar.innerHTML = ''; // Safer to just clear innerHTML than querySelectorAll remove
 
+    // --- 1. Header Row (Time + Days) ---
+    // Time Header (Top-Left)
+    const timeHeader = document.createElement('div');
+    timeHeader.className = 'time-header';
+    timeHeader.textContent = 'Time';
+    timeHeader.style.gridColumn = '1';
+    timeHeader.style.gridRow = '1';
+    timeHeader.style.display = 'flex';
+    timeHeader.style.alignItems = 'center';
+    timeHeader.style.justifyContent = 'center';
+    timeHeader.style.fontWeight = 'bold';
+    timeHeader.style.borderBottom = '1px solid #ddd';
+    timeHeader.style.borderRight = '1px solid #ddd';
+    timeHeader.style.background = '#f5f5f5';
+    calendar.appendChild(timeHeader);
+
+    // Day Headers
+    days.forEach((day, i) => {
+        const dh = document.createElement('div');
+        dh.className = 'day-header';
+        dh.textContent = day.substring(0, 3); // Mon, Tue...
+        dh.style.gridColumn = `${i + 2}`;
+        dh.style.gridRow = '1';
+        dh.style.display = 'flex';
+        dh.style.alignItems = 'center';
+        dh.style.justifyContent = 'center';
+        dh.style.fontWeight = 'bold';
+        dh.style.borderBottom = '1px solid #ddd';
+        dh.style.borderRight = '1px solid #ddd';
+        dh.style.background = '#f5f5f5';
+        calendar.appendChild(dh);
+    });
+
+    // --- 2. Time Slots & Cells ---
     slots.forEach((m, i) => {
-        // Time Label
+        // Time Label (Column 1)
         const label = document.createElement('div');
         label.className = 'time-slot';
         label.textContent = formatTime(`${Math.floor(m / 60)}:${(m % 60).toString().padStart(2, '0')}`);
@@ -320,7 +387,7 @@ window.initializeCalendar = function () {
         label.style.gridRow = `${i + 2}`;
         calendar.appendChild(label);
 
-        // Cells
+        // Cells for each day
         days.forEach((day, di) => {
             const cell = document.createElement('div');
             cell.className = 'calendar-cell';
@@ -463,7 +530,7 @@ window.selectEmployeeFromList = function (type, emp) {
         // Also potentially pre-fill hidden ID inputs if any
     } else {
         window.currentSchedEmployeeId = emp.employee_id;
-        
+
         // Check for Faculty Role to enable fields
         if (typeof toggleFacultyFields === 'function') {
             // Check intersection with any known faculty role strings
