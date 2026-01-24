@@ -378,7 +378,7 @@ $schedules = $viewer->getSchedules();
   <link rel="stylesheet" href="../assets/css/styles.css?v=<?php echo time(); ?>">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
@@ -652,6 +652,7 @@ $schedules = $viewer->getSchedules();
                     <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($employee['phone']); ?>">
                 </div>
 
+                <?php if ($isAdmin): ?>
                 <div class="form-group">
                     <label for="roles">Role</label>
                     <input type="text" id="roles" name="roles" value="<?php echo htmlspecialchars($employee['roles']); ?>">
@@ -666,6 +667,7 @@ $schedules = $viewer->getSchedules();
                     <label for="position">Position</label>
                     <input type="text" id="position" name="position" value="<?php echo htmlspecialchars($employee['position']); ?>">
                 </div>
+                <?php endif; ?>
 
                 <div class="form-group" hidden  >
                     <label for="hire_date">Hire Date</label>
@@ -699,6 +701,7 @@ $schedules = $viewer->getSchedules();
        <div class="modal-content p-4 text-center">
          <h5 class="fw-bold mb-3 text-success">Save Successful</h5>
          <p>Your changes have been saved successfully.</p>
+         <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button>
        </div>
      </div>
    </div>
@@ -941,9 +944,9 @@ $schedules = $viewer->getSchedules();
 </script>
 
    <div class="col-xl-4">
+      <?php if (canRequestLeave($employee['roles'])): ?>
       <div class="container py-4">
           <div class="row justify-content-end">
-            <?php if (canRequestLeave($employee['roles'])): ?>
             <div class="col-xl-4 col-lg-5 col-md-6 px-2 scheduled-leave-card">
               <div class="card shadow-sm border-0">
 
@@ -958,9 +961,9 @@ $schedules = $viewer->getSchedules();
                 </div>
               </div>
             </div>
-            <?php endif; ?>
           </div>
         </div>
+      <?php endif; ?>
 
         <div class="modal fade" id="addLeaveModal" tabindex="-1" aria-labelledby="addLeaveLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
@@ -1070,6 +1073,7 @@ $schedules = $viewer->getSchedules();
               </div>
               <h5 class="fw-bold mb-3 text-success">Success</h5>
               <p id="leaveSuccessMsg"></p>
+              <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button>
             </div>
           </div>
         </div>
@@ -1889,7 +1893,7 @@ $schedules = $viewer->getSchedules();
           }
         </script>
 
-      <div id="calendarCard" class="card shadow-sm mb-3">
+      <div id="calendarCard" class="card shadow-sm mb-3" style="<?php if (!canRequestLeave($employee['roles'])) echo 'margin-top: -60px !important;'; ?>">
       <div class="card-header d-flex justify-content-between align-items-center">
         <button class="btn btn-sm btn-outline-secondary" id="prevMonth"><i class="bi bi-chevron-left"></i></button>
         <h5 class="mb-0" id="calendarTitle">Month Year</h5>
@@ -2992,7 +2996,19 @@ $schedules = $viewer->getSchedules();
   </div>
 </div> 
 
-<div class="card mb-3 metrics-card" style="margin-top: <?php echo $isAdmin ? '-1100px' : '-1000px'; ?> !important;">
+<div class="card mb-3 metrics-card" style="margin-top: <?php 
+  // Check if viewing own profile vs viewing another user's profile
+  $isOwnProfile = ($currentUser['employee_id'] === $employee['employee_id']);
+  $showsScheduledLeave = canRequestLeave($employee['roles']);
+  
+  if ($isOwnProfile) {
+    // Original spacing for own profile
+    echo $showsScheduledLeave ? '-1130px' : '-805px';
+  } else {
+    // Adjusted spacing when viewing others' profiles
+    echo $showsScheduledLeave ? '-1100px' : '-875px';
+  }
+?> !important;">
   <div class="card-header d-flex align-items-center justify-content-between flex-wrap">
     <strong>Performance Metrics</strong>
     <div class="d-flex gap-2 mt-2 mt-sm-0">
@@ -3699,6 +3715,25 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="mb-3">Confirm Logout</h5>
+        <p class="mb-0">Are you sure you want to log out?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
+          <input type="hidden" name="confirm_logout" value="1">
+          <button type="submit" class="btn btn-danger">Yes, Log out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
@@ -3714,6 +3749,12 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
 <script>
     // --- JS: Populate calendar with existing schedules for the edit modal ---
     window.existingSchedules = <?php echo json_encode($existingSchedules); ?>;
+    
+    // Logout modal function
+    function showLogoutModal() {
+        var modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+        modal.show();
+    }
 </script>
 <script src="../assets/js/edit_employee.js"></script>
 <script>

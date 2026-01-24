@@ -14,10 +14,14 @@ menuBtn.addEventListener('click', () => {
 });
 //----------------------------------------------------------------------------------------------//
 
-document.getElementById("employeeArchive").addEventListener("click", function() {
+// Employee Archive - only for admin users
+const employeeArchiveBtn = document.getElementById("employeeArchive");
+if (employeeArchiveBtn) {
+  employeeArchiveBtn.addEventListener("click", function() {
     // Redirect to emploarc.php when card is clicked
     window.location.href = "emploarc.php";
   });
+}
 
 //changepass - OTP-based Password Change Flow
 let changeEmployeeIdGlobal = '';

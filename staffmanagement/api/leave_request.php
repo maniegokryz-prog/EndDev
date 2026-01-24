@@ -66,6 +66,14 @@ try {
             markNotificationRead($conn);
             break;
             
+        case 'delete_notification':
+            deleteNotification($conn);
+            break;
+            
+        case 'delete_all_notifications':
+            deleteAllNotifications($conn);
+            break;
+            
         case 'cancel_request':
             cancelLeaveRequest($conn);
             break;
@@ -550,8 +558,9 @@ function getAdminNotifications($conn) {
     // Ensure notifications table exists
     ensureNotificationsTable($conn);
     
-    // Admin sees all admin-targeted notifications
-    // Employees see their own employee-targeted notifications
+    // Admin sees all admin-targeted notifications (leave requests from others)
+    // AND their own employee-targeted notifications (their leave request status)
+    // Employees see only their own employee-targeted notifications
     if ($user_role === 'admin') {
         $sql = "SELECT 
                     n.id,
@@ -568,7 +577,8 @@ function getAdminNotifications($conn) {
                 FROM notifications n
                 LEFT JOIN employee_leaves el ON n.leave_id = el.id
                 LEFT JOIN employees e ON n.employee_id = e.id
-                WHERE n.target = 'admin' OR (n.target = 'employee' AND e.id = ?)
+                WHERE n.target = 'admin' 
+                   OR (n.target = 'employee' AND n.employee_id = ?)
                 ORDER BY n.is_read ASC, n.created_at DESC
                 LIMIT 50";
         
@@ -648,6 +658,77 @@ function markNotificationRead($conn) {
     echo json_encode([
         'success' => true,
         'message' => 'Notification marked as read'
+    ]);
+}
+
+/**
+ * Delete a single notification
+ */
+function deleteNotification($conn) {
+    $notification_id = $_POST['notification_id'] ?? 0;
+    $user_id = $_SESSION['user_id'] ?? null;
+    
+    if (!$notification_id) {
+        throw new Exception('Notification ID is required');
+    }
+    
+    if (!$user_id) {
+        throw new Exception('User not logged in');
+    }
+    
+    // Only allow deletion of own notifications
+    $sql = "DELETE FROM notifications WHERE id = ? AND employee_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $notification_id, $user_id);
+    
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to delete notification');
+    }
+    
+    if ($stmt->affected_rows === 0) {
+        throw new Exception('Notification not found or access denied');
+    }
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Notification deleted successfully'
+    ]);
+}
+
+/**
+ * Delete all notifications for current user
+ */
+function deleteAllNotifications($conn) {
+    $user_id = $_SESSION['user_id'] ?? null;
+    $user_role = $_SESSION['user_role'] ?? 'employee';
+    
+    if (!$user_id) {
+        throw new Exception('User not logged in');
+    }
+    
+    // Delete based on user role and notification target
+    if ($user_role === 'admin') {
+        // Delete all admin notifications and admin's own employee notifications
+        $sql = "DELETE FROM notifications WHERE target = 'admin' OR (target = 'employee' AND employee_id = ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+    } else {
+        // Delete only employee's own notifications
+        $sql = "DELETE FROM notifications WHERE target = 'employee' AND employee_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+    }
+    
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to delete notifications');
+    }
+    
+    $deleted_count = $stmt->affected_rows;
+    
+    echo json_encode([
+        'success' => true,
+        'message' => "Deleted {$deleted_count} notification(s)",
+        'deleted_count' => $deleted_count
     ]);
 }
 

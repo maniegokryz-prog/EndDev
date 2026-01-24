@@ -24,8 +24,8 @@ $currentUser = getCurrentUser();
  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-  <!-- ✅ FONT AWESOME (official CDN – works on localhost) -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- ✅ FONT AWESOME (jsDelivr CDN – matches CSP) -->
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Custom CSS -->
@@ -587,8 +587,35 @@ function showError(message) {
     </tr>
   `;
 }
+
+// Logout modal function
+function showLogoutModal() {
+  var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+  logoutModal.show();
+}
 </script>
 
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to logout?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="logout.php" style="display: inline;">
+          <input type="hidden" name="confirm_logout" value="1">
+          <button type="submit" class="btn btn-danger">Yes, Log out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
   
 <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

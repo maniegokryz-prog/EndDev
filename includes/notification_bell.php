@@ -25,7 +25,83 @@
       </div>
     </div>
     <div class="notification-footer text-center p-2 border-top" style="background: #f8f9fa; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
-      <a href="/EndDev/staffmanagement/staffinfo.php" class="small text-primary text-decoration-none">View all notifications</a>
+      <a href="#" onclick="event.preventDefault(); openAllNotificationsModal();" class="small text-primary text-decoration-none">View all notifications</a>
+    </div>
+  </div>
+</div>
+
+<!-- All Notifications Modal -->
+<div class="modal fade" id="allNotificationsModal" tabindex="-1" aria-labelledby="allNotificationsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="allNotificationsModalLabel">
+          <i class="bi bi-bell-fill text-warning me-2"></i>All Notifications
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+        <div id="allNotificationsBody">
+          <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted mt-2">Loading all notifications...</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-outline-danger" id="deleteAllNotifications">
+          <i class="bi bi-trash"></i> Delete All
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Notification Confirmation Modal -->
+<div class="modal fade" id="deleteNotificationModal" tabindex="-1" aria-labelledby="deleteNotificationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="deleteNotificationModalLabel">
+          <i class="bi bi-exclamation-triangle text-warning me-2"></i>Delete Notification
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">Are you sure you want to delete this notification? This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteNotification">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete All Notifications Confirmation Modal -->
+<div class="modal fade" id="deleteAllNotificationsModal" tabindex="-1" aria-labelledby="deleteAllNotificationsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="deleteAllNotificationsModalLabel">
+          <i class="bi bi-exclamation-triangle text-danger me-2"></i>Delete All Notifications
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0"><strong>Warning:</strong> This will permanently delete ALL your notifications. This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteAllNotifications">
+          <i class="bi bi-trash"></i> Delete All
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -117,15 +193,15 @@
       
       notificationBody.innerHTML = notifications.map(notif => {
         // Determine icon based on notification type
-        let icon = '📝'; // Default for leave_request
+        let iconHtml = '<i class="bi bi-file-earmark-text" style="color: #0d6832;"></i>'; // Default for leave_request
         if (notif.type.includes('approved')) {
-          icon = '✅';
+          iconHtml = '<i class="bi bi-check-circle-fill" style="color: #0d6832;"></i>';
         } else if (notif.type.includes('rejected')) {
-          icon = '❌';
+          iconHtml = '<i class="bi bi-x-circle-fill" style="color: #0d6832;"></i>';
         } else if (notif.type.includes('schedule')) {
-          icon = '📅';
+          iconHtml = '<i class="bi bi-calendar-check" style="color: #0d6832;"></i>';
         } else if (notif.type.includes('late')) {
-          icon = '⏰';
+          iconHtml = '<i class="bi bi-clock-history" style="color: #0d6832;"></i>';
         }
         
         const unreadClass = notif.is_read === '0' || notif.is_read === 0 ? 'unread' : '';
@@ -136,7 +212,7 @@
           <div class="notification-item ${unreadClass}" data-notif-id="${notifId}" data-notif-link="${notifLink}" style="cursor: pointer;">
             <div class="d-flex align-items-start">
               <div class="me-3 flex-shrink-0" style="font-size: 1.5rem;">
-                ${icon}
+                ${iconHtml}
               </div>
               <div class="flex-grow-1">
                 <p class="mb-1 small">${notif.message}</p>
@@ -257,6 +333,212 @@
     // Load notifications on page load and refresh every 30 seconds
     loadNotifications();
     setInterval(loadNotifications, 30000);
+  }
+  
+  // Open all notifications modal
+  window.openAllNotificationsModal = function() {
+    // Close the notification dropdown first for cleaner look
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    if (notificationDropdown) {
+      notificationDropdown.style.display = 'none';
+    }
+    
+    const modal = new bootstrap.Modal(document.getElementById('allNotificationsModal'));
+    modal.show();
+    loadAllNotifications();
+  };
+  
+  // Load all notifications in modal
+  async function loadAllNotifications() {
+    const allNotificationsBody = document.getElementById('allNotificationsBody');
+    
+    try {
+      allNotificationsBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+      
+      const response = await fetch('../staffmanagement/api/leave_request.php?action=get_notifications');
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to load notifications');
+      }
+      
+      const notifications = result.data || [];
+      
+      if (notifications.length === 0) {
+        allNotificationsBody.innerHTML = `
+          <div class="text-center py-5 text-muted">
+            <i class="bi bi-bell-slash" style="font-size: 3rem;"></i>
+            <p class="mt-3">No notifications</p>
+          </div>
+        `;
+        return;
+      }
+      
+      allNotificationsBody.innerHTML = notifications.map(notif => {
+        let iconHtml = '<i class="bi bi-file-earmark-text" style="color: #0d6832;"></i>';
+        if (notif.type.includes('approved')) iconHtml = '<i class="bi bi-check-circle-fill" style="color: #0d6832;"></i>';
+        else if (notif.type.includes('rejected')) iconHtml = '<i class="bi bi-x-circle-fill" style="color: #0d6832;"></i>';
+        else if (notif.type.includes('schedule')) iconHtml = '<i class="bi bi-calendar-check" style="color: #0d6832;"></i>';
+        else if (notif.type.includes('late')) iconHtml = '<i class="bi bi-clock-history" style="color: #0d6832;"></i>';
+        
+        const unreadBadge = notif.is_read === '0' || notif.is_read === 0 
+          ? '<span class="badge bg-primary ms-2">New</span>' 
+          : '';
+        
+        return `
+          <div class="card mb-2" id="notif-${notif.id}">
+            <div class="card-body p-3">
+              <div class="d-flex align-items-start">
+                <div class="flex-shrink-0 me-3" style="font-size: 2rem;">
+                  ${iconHtml}
+                </div>
+                <div class="flex-grow-1">
+                  <p class="mb-1">${notif.message}${unreadBadge}</p>
+                  <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i>${formatTimeAgo(notif.created_at)}
+                  </small>
+                </div>
+                <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteNotification(${notif.id})" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+    } catch (error) {
+      console.error('Error loading all notifications:', error);
+      allNotificationsBody.innerHTML = `
+        <div class="text-center py-4 text-danger">
+          <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+          <p class="mt-2">Failed to load notifications</p>
+          <small>${error.message}</small>
+        </div>
+      `;
+    }
+  }
+  
+  // Delete single notification
+  let notificationIdToDelete = null;
+  
+  window.deleteNotification = function(notificationId) {
+    notificationIdToDelete = notificationId;
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteNotificationModal'));
+    deleteModal.show();
+  };
+  
+  // Confirm delete single notification
+  document.getElementById('confirmDeleteNotification')?.addEventListener('click', async function() {
+    if (!notificationIdToDelete) return;
+    
+    const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteNotificationModal'));
+    deleteModal.hide();
+    
+    try {
+      const formData = new FormData();
+      formData.append('action', 'delete_notification');
+      formData.append('notification_id', notificationIdToDelete);
+      
+      const response = await fetch('../staffmanagement/api/leave_request.php', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Remove from UI with animation
+        const notifElement = document.getElementById('notif-' + notificationIdToDelete);
+        if (notifElement) {
+          notifElement.style.transition = 'opacity 0.3s';
+          notifElement.style.opacity = '0';
+          setTimeout(() => notifElement.remove(), 300);
+        }
+        
+        // Reload notifications in bell dropdown
+        if (typeof initNotifications !== 'undefined') {
+          setTimeout(() => {
+            const notificationBtn = document.getElementById('notificationBtn');
+            if (notificationBtn) {
+              notificationBtn.click();
+              setTimeout(() => notificationBtn.click(), 100);
+            }
+          }, 500);
+        }
+      } else {
+        alert('Failed to delete notification: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      alert('Failed to delete notification');
+    } finally {
+      notificationIdToDelete = null;
+    }
+  });
+  
+  // Delete all notifications
+  document.getElementById('deleteAllNotifications')?.addEventListener('click', function() {
+    const deleteAllModal = new bootstrap.Modal(document.getElementById('deleteAllNotificationsModal'));
+    deleteAllModal.show();
+  });
+  
+  // Confirm delete all notifications
+  document.getElementById('confirmDeleteAllNotifications')?.addEventListener('click', async function() {
+    const deleteAllModal = bootstrap.Modal.getInstance(document.getElementById('deleteAllNotificationsModal'));
+    deleteAllModal.hide();
+    
+    try {
+      const formData = new FormData();
+      formData.append('action', 'delete_all_notifications');
+      
+      const response = await fetch('../staffmanagement/api/leave_request.php', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        loadAllNotifications();
+        // Reload notifications in bell dropdown
+        setTimeout(() => {
+          const notificationBtn = document.getElementById('notificationBtn');
+          if (notificationBtn) {
+            notificationBtn.click();
+            setTimeout(() => notificationBtn.click(), 100);
+          }
+        }, 500);
+        
+        // Show success message
+        const allNotificationsBody = document.getElementById('allNotificationsBody');
+        if (allNotificationsBody) {
+          allNotificationsBody.innerHTML = `
+            <div class="text-center py-5 text-success">
+              <i class="bi bi-check-circle" style="font-size: 3rem;"></i>
+              <p class="mt-3">${result.message || 'All notifications deleted successfully'}</p>
+            </div>
+          `;
+        }
+      } else {
+        alert('Failed to delete notifications: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error deleting all notifications:', error);
+      alert('Failed to delete all notifications');
+    }
+  });
+  
+  function formatTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+    return date.toLocaleDateString();
   }
 })();
 </script>
