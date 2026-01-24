@@ -23,7 +23,7 @@ class LivenessDetector:
         try:
             import onnxruntime as ort
             # Use CUDA if available, else CPU
-            providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
+            providers = ['CPUExecutionProvider']
             self.ort_session = ort.InferenceSession(self.model_path, providers=providers)
             self.input_name = self.ort_session.get_inputs()[0].name
             print(f"[Liveness] Model loaded from {self.model_path} using onnxruntime")

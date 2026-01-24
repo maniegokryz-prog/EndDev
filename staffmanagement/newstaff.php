@@ -614,17 +614,17 @@ try {
                 try {
                     const json = JSON.parse(text);
                     if (!json.success) {
-                         showError(json.message);
+                         showWizardError(json.message);
                     }
                 } catch(e) {
-                    showError('Unexpected response from server. Check logs.');
+                    showWizardError('Unexpected response from server. Check logs.');
                     console.error('Server response:', text);
                 }
             }
         })
         .catch(err => {
             hideLoading();
-            showError('Network error occurred.');
+            showWizardError('Network error occurred.');
             console.error(err);
         });
     });
@@ -635,7 +635,7 @@ try {
         const empId = document.getElementById(inputId).value.trim();
         
         if (!empId) {
-            showError('Please enter an Employee ID.');
+            showWizardError('Please enter an Employee ID.');
             return;
         }
         
@@ -683,12 +683,12 @@ try {
                 }
                 
             } else {
-                showError('Employee not found.');
+                showWizardError('Employee not found.');
             }
         })
         .catch(err => {
             hideLoading();
-            showError('Error fetching employee data.');
+            showWizardError('Error fetching employee data.');
             console.error(err);
         });
     }
@@ -699,7 +699,7 @@ try {
         
         const facePhotos = document.getElementById('face_photos').value;
         if (!facePhotos || facePhotos === '[]') {
-            showError('Please capture face photos first.');
+            showWizardError('Please capture face photos first.');
             return;
         }
         
@@ -723,12 +723,12 @@ try {
                    lookupEmployee('sched');
                 });
             } else {
-                showError(data.message);
+                showWizardError(data.message);
             }
         })
         .catch(err => {
             hideLoading();
-            showError('Server error.');
+            showWizardError('Server error.');
             console.error(err);
         });
     }
@@ -817,12 +817,12 @@ try {
                     window.location.href = 'staff.php';
                 });
             } else {
-                showError(data.message);
+                showWizardError(data.message);
             }
         })
         .catch(err => {
             hideLoading();
-            showError('Server error.');
+            showWizardError('Server error.');
             console.error(err);
         });
     }
@@ -837,7 +837,7 @@ try {
         document.getElementById('loadingOverlay').style.display = 'none';
     }
     
-    function showError(msg) {
+    function showWizardError(msg) {
         document.getElementById('errorMessage').textContent = msg;
         new bootstrap.Modal(document.getElementById('errorModal')).show();
     }
