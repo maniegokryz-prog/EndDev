@@ -601,7 +601,7 @@ try {
                     `Employee <strong>${empId}</strong> created successfully!`, 
                     () => {
                         // Switch to Tab 2
-                        document.getElementById('face-tab').click();
+                        document.getElementById('step2-tab').click();
                         // Pre-fill Step 2 search
                         document.getElementById('face_search_id').value = empId;
                         lookupEmployee('face');
@@ -815,7 +815,7 @@ try {
             if (data.success) {
                 showWizardSuccess('Schedule updated successfully!', () => {
                     window.location.href = 'staff.php';
-                });
+                }, 'Go to Staff Management');
             } else {
                 showWizardError(data.message);
             }
@@ -842,19 +842,23 @@ try {
         new bootstrap.Modal(document.getElementById('errorModal')).show();
     }
     
-    function showWizardSuccess(msg, nextAction) {
+    function showWizardSuccess(msg, nextAction, btnText = 'Proceed to Next Step') {
         document.getElementById('wizardSuccessMessage').innerHTML = msg;
         const btn = document.getElementById('wizardNextBtn');
+        const modalEl = document.getElementById('wizardSuccessModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+        btn.textContent = btnText;
         if (nextAction) {
             btn.style.display = 'inline-block';
             btn.onclick = function() {
+                modal.hide();
                 nextAction();
-                bootstrap.Modal.getInstance(document.getElementById('wizardSuccessModal')).hide();
             };
         } else {
             btn.style.display = 'none';
         }
-        new bootstrap.Modal(document.getElementById('wizardSuccessModal')).show();
+        modal.show();
     }
     
     // Toggle Password visibility
