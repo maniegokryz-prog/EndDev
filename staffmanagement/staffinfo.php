@@ -1584,20 +1584,66 @@ $schedules = $viewer->getSchedules();
 
                     leaveList.appendChild(entry);
                   });
+                  
+                  // Adjust Performance Metrics margin if leaves are displayed
+                  adjustMetricsMargin();
                 } else {
                   console.error('Failed to load leaves:', response.error);
                   document.getElementById("leaveList").innerHTML = '<p class="text-danger small text-center">Error loading leaves</p>';
+                  adjustMetricsMargin();
                 }
                 } catch (e) {
                   console.error('JSON parse error:', e);
                   console.error('Response text:', text);
                   document.getElementById("leaveList").innerHTML = `<p class="text-danger small text-center">Parse error: ${e.message}</p>`;
+                  adjustMetricsMargin();
                 }
               })
               .catch(error => {
                 console.error('Error loading leaves:', error);
                 document.getElementById("leaveList").innerHTML = `<p class="text-danger small text-center">Network error: ${error.message}</p>`;
+                adjustMetricsMargin();
               });
+          }
+          
+          // Function to adjust Performance Metrics margin based on Scheduled Leave content
+          function adjustMetricsMargin() {
+            const metricsCard = document.querySelector('.metrics-card');
+            const scheduledLeaveCard = document.querySelector('.scheduled-leave-card');
+            
+            if (metricsCard && scheduledLeaveCard) {
+              const leaveList = document.getElementById('leaveList');
+              const hasLeaves = leaveList && leaveList.children.length > 0 && 
+                               !leaveList.textContent.includes('No scheduled leaves');
+              
+              // Calculate additional margin based on number of leave entries
+              const leaveCount = hasLeaves ? leaveList.children.length : 0;
+              const additionalMargin = leaveCount * 80; // Approximately 80px per leave entry
+              
+              const isOwnProfile = <?php echo ($currentUser['employee_id'] === $employee['employee_id']) ? 'true' : 'false'; ?>;
+              const showsScheduledLeave = <?php echo canRequestLeave($employee['roles']) ? 'true' : 'false'; ?>;
+              
+              // Check the VIEWED employee's role, not the current user's role
+              const viewedEmployeeRole = '<?php echo $employee['roles'] ?? ''; ?>';
+              const isViewedAdmin = viewedEmployeeRole.toLowerCase().includes('admin') || viewedEmployeeRole.toLowerCase().includes('administrator');
+              const isViewedNonTeaching = viewedEmployeeRole.toLowerCase().includes('non-teaching');
+              
+              console.log('DEBUG: viewedEmployeeRole=', viewedEmployeeRole, 'isViewedAdmin=', isViewedAdmin, 'isViewedNonTeaching=', isViewedNonTeaching);
+              
+              let baseMargin;
+              if (isViewedAdmin) {
+                baseMargin = -1195; // Viewing admin profile
+              } else if (isViewedNonTeaching) {
+                baseMargin = -1195; // Viewing non-teaching staff profile
+              } else {
+                baseMargin = -810; // Viewing normal user/Faculty profile
+              }
+              
+              console.log('DEBUG: baseMargin=', baseMargin);
+              
+              const finalMargin = baseMargin - additionalMargin;
+              metricsCard.style.marginTop = `${finalMargin}px`;
+            }
           }
 
           // View leave details in modal
@@ -2996,17 +3042,42 @@ $schedules = $viewer->getSchedules();
   </div>
 </div> 
 
-<div class="card mb-3 metrics-card" style="margin-top: <?php 
+<style>
+  #performanceMetricsCard {
+    margin-top: <?php 
+      $isOwnProfile = ($currentUser['employee_id'] === $employee['employee_id']);
+      $showsScheduledLeave = canRequestLeave($employee['roles']);
+      // Check the VIEWED employee's role, not the current user's role
+      $viewedEmployeeRole = $employee['roles'] ?? '';
+      
+      // Debug output
+      echo "/* DEBUG: currentUserIsAdmin={$isAdmin}, viewedEmployeeRole={$viewedEmployeeRole} */ ";
+      
+      // Check if viewed employee is admin or non-teaching
+      if (stripos($viewedEmployeeRole, 'admin') !== false || stripos($viewedEmployeeRole, 'administrator') !== false) {
+        echo '-1195px'; // Viewing admin profile
+      } elseif (stripos($viewedEmployeeRole, 'non-teaching') !== false) {
+        echo '-1195px'; // Viewing non-teaching staff profile
+      } else {
+        echo '-810px'; // Viewing normal user/Faculty profile
+      }
+    ?> !important;
+  }
+</style>
+<div class="card mb-3 metrics-card" id="performanceMetricsCard" style="margin-top: <?php 
   // Check if viewing own profile vs viewing another user's profile
   $isOwnProfile = ($currentUser['employee_id'] === $employee['employee_id']);
   $showsScheduledLeave = canRequestLeave($employee['roles']);
+  // Check the VIEWED employee's role, not the current user's role
+  $viewedEmployeeRole = $employee['roles'] ?? '';
   
-  if ($isOwnProfile) {
-    // Original spacing for own profile
-    echo $showsScheduledLeave ? '-1130px' : '-805px';
+  // Check if viewed employee is admin or non-teaching
+  if (stripos($viewedEmployeeRole, 'admin') !== false || stripos($viewedEmployeeRole, 'administrator') !== false) {
+    echo '-1195px'; // Viewing admin profile
+  } elseif (stripos($viewedEmployeeRole, 'non-teaching') !== false) {
+    echo '-1195px'; // Viewing non-teaching staff profile
   } else {
-    // Adjusted spacing when viewing others' profiles
-    echo $showsScheduledLeave ? '-1100px' : '-875px';
+    echo '-810px'; // Viewing normal user/Faculty profile
   }
 ?> !important;">
   <div class="card-header d-flex align-items-center justify-content-between flex-wrap">

@@ -677,7 +677,6 @@
 
    .metrics-card {
      margin-bottom: 30px !important;
-     margin-top: -620px !important;
      /* alisin extra space sa taas */
      width: 64% !important;
    }
@@ -719,7 +718,6 @@
        width: 95% !important;
        margin-left: auto !important;
        margin-right: auto !important;
-       margin-top: -15px !important;
      }
 
      .metrics-card .card-body .row>div {
@@ -744,7 +742,6 @@
        width: 94% !important;
        margin-left: auto !important;
        margin-right: auto !important;
-       margin-top: -20px !important;
      }
 
      .metrics-card .card-body .row>div {
@@ -1097,7 +1094,7 @@
 
    /* Target only the leave list container */
    #leaveList {
-     max-height: 180px;
+     max-height: 130px;
      /* allow multiple leave entries to display without immediate scroll */
      overflow-y: auto;
      padding-right: 6px;
@@ -1114,7 +1111,7 @@
    }
 
    .leave-list-container {
-     max-height: 200px;
+     max-height: 130px;
      overflow-y: auto;
    }
 
@@ -1216,16 +1213,17 @@
      margin: 0;
      line-height: 1.5;
    }
-/* Readonly field styling for non-admin users */
-input[readonly] {
-  background-color: #e9ecef !important;
-  cursor: not-allowed !important;
-  opacity: 0.7;
-}
 
-.form-group small.text-muted {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.875rem;
-  font-style: italic;
-}
+   /* Readonly field styling for non-admin users */
+   input[readonly] {
+     background-color: #e9ecef !important;
+     cursor: not-allowed !important;
+     opacity: 0.7;
+   }
+
+   .form-group small.text-muted {
+     display: block;
+     margin-top: 4px;
+     font-size: 0.875rem;
+     font-style: italic;
+   }
