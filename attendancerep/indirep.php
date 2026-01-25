@@ -68,7 +68,7 @@ if ($id) {
                     overtime_minutes,
                     status 
                   FROM daily_attendance 
-                  WHERE employee_id = ?";
+                  WHERE employee_id = ? AND status != 'visit'";
         
         $params = [$employeeInternalId];
         $types = "i";

@@ -388,12 +388,44 @@ $result = $conn->query($sql);
       dateTo = selectedDateRange.end;
     }
     
-    console.log(`Exporting as ${type}...`);
-    console.log('Selected employee IDs:', employeeIds);
-    console.log('Date range:', dateFrom, 'to', dateTo);
+    // Create logic to submit form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'export_batch.php';
+    form.target = '_blank'; // Open in new tab
     
-    // TODO: Implement actual export logic here
-    // You can create a form and submit it to a PHP script that generates PDF/Excel
+    // Add Export Type
+    const typeInput = document.createElement('input');
+    typeInput.type = 'hidden';
+    typeInput.name = 'export_type';
+    typeInput.value = type.toLowerCase();
+    form.appendChild(typeInput);
+    
+    // Add Employee IDs
+    const idsInput = document.createElement('input');
+    idsInput.type = 'hidden';
+    idsInput.name = 'employee_ids';
+    idsInput.value = JSON.stringify(employeeIds);
+    form.appendChild(idsInput);
+    
+    // Add Date Range if exists
+    if (dateFrom && dateTo) {
+        const startInput = document.createElement('input');
+        startInput.type = 'hidden';
+        startInput.name = 'start_date';
+        startInput.value = dateFrom;
+        form.appendChild(startInput);
+        
+        const endInput = document.createElement('input');
+        endInput.type = 'hidden';
+        endInput.name = 'end_date';
+        endInput.value = dateTo;
+        form.appendChild(endInput);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   }
 
   // Logout modal function
