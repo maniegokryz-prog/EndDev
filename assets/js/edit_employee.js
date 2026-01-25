@@ -817,6 +817,59 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Handle Delete Schedule confirmation
+    const scheduleDeleteConfirmBtn = document.getElementById('scheduleDeleteConfirmBtn');
+    if (scheduleDeleteConfirmBtn) {
+        scheduleDeleteConfirmBtn.addEventListener('click', function() {
+            // Hide the confirm modal
+            try { 
+                const confirmModal = bootstrap.Modal.getInstance(document.getElementById('scheduleDeleteConfirmModal'));
+                if (confirmModal) confirmModal.hide();
+            } catch (e) {}
+            
+            // Get the pending delete data
+            if (window.pendingScheduleDelete) {
+                const { scheduleIndex, day } = window.pendingScheduleDelete;
+                const schedule = editAddedSchedules[scheduleIndex];
+                
+                // If schedule is only on this day, remove it completely
+                if (schedule.days.length === 1) {
+                    editAddedSchedules.splice(scheduleIndex, 1);
+                } else {
+                    // Remove just this day from the schedule
+                    schedule.days = schedule.days.filter(d => d !== day);
+                }
+                
+                window.editAddedSchedules = editAddedSchedules;
+                renderSchedules();
+                console.log('Schedule deleted');
+                
+                // Clear the pending data
+                window.pendingScheduleDelete = null;
+                
+                // Show success modal (optional - auto-close)
+                const msgEl = document.getElementById('scheduleUpdatedSuccessMsg');
+                if (msgEl) msgEl.textContent = 'Schedule deleted successfully!';
+                const modalEl = document.getElementById('scheduleUpdatedSuccessModal');
+                if (modalEl) {
+                  document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                  document.body.classList.remove('modal-open');
+                  modalEl.style.zIndex = 20000;
+                  setTimeout(() => {
+                    const m = new bootstrap.Modal(modalEl);
+                    m.show();
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+                  }, 40);
+                  setTimeout(() => {
+                    try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
+                  }, 3000);
+                }
+            }
+        });
+    }
+    
     // --- Load existing schedules from PHP into the JS array ---
     if (window.existingSchedules && Array.isArray(window.existingSchedules) && window.existingSchedules.length > 0) {
         console.log('Loading existing schedules from PHP:', window.existingSchedules);
@@ -1812,7 +1865,25 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
 
 // Delete individual schedule
 function deleteSchedule(scheduleIndex, day) {
-    if (confirm('Are you sure you want to delete this schedule?')) {
+    // Show confirmation modal
+    const msgEl = document.getElementById('scheduleDeleteConfirmMsg');
+    if (msgEl) msgEl.textContent = 'Are you sure you want to delete this schedule block?';
+    const modalEl = document.getElementById('scheduleDeleteConfirmModal');
+    if (modalEl) {
+      // Store the data we need for confirmation
+      window.pendingScheduleDelete = { scheduleIndex, day };
+      
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+      document.body.classList.remove('modal-open');
+      modalEl.style.zIndex = 20000;
+      setTimeout(() => {
+        const m = new bootstrap.Modal(modalEl);
+        m.show();
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+      }, 40);
+    } else {
+      // Fallback to native confirm if modal not found
+      if (window.confirm('Are you sure you want to delete this schedule?')) {
         const schedule = editAddedSchedules[scheduleIndex];
         
         // If schedule is only on this day, remove it completely
@@ -1826,5 +1897,6 @@ function deleteSchedule(scheduleIndex, day) {
         window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
         renderSchedules();
         console.log('Schedule deleted');
+      }
     }
 }

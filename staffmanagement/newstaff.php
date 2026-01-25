@@ -495,6 +495,41 @@ try {
     </div>
   </div>
 
+    <!-- App Info Modal (system-styled, used by face registration JS) -->
+    <div class="modal fade" id="appInfoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title w-100 text-center" data-app-info-title>Notice</h5>
+                </div>
+                <div class="modal-body text-center" data-app-info-message>
+                    <!-- Message injected via JS -->
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Confirm Modal (reusable) -->
+    <div class="modal fade" id="systemConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title w-100 text-center" data-confirm-title>Confirm</h5>
+                </div>
+                <div class="modal-body text-center" data-confirm-message>
+                    <!-- Message injected via JS -->
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-confirm-cancel>Cancel</button>
+                    <button type="button" class="btn btn-primary" data-confirm-ok>OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
   <!-- Loading Overlay -->
   <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; color:white; flex-direction:column;">
       <div class="spinner-border text-light mb-3" role="status"></div>
@@ -535,6 +570,42 @@ try {
                 </div>
             </div>
         </div>
+  </div>
+
+  <!-- System Alert Modal (appAlertModal) -->
+  <div class="modal fade" id="appAlertModal" tabindex="-1" aria-labelledby="appAlertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title w-100 text-center" id="appAlertModalLabel">Notice</h5>
+        </div>
+        <div class="modal-body text-center">
+          <i id="appAlertModalIcon" class="bi bi-info-circle-fill text-primary fs-1 mb-2"></i>
+          <p id="appAlertModalMessage" class="mb-0"></p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Confirm Modal (appConfirmModal) -->
+  <div class="modal fade" id="appConfirmModal" tabindex="-1" aria-labelledby="appConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title w-100 text-center" id="appConfirmModalLabel">Confirm</h5>
+        </div>
+        <div class="modal-body text-center">
+          <p id="appConfirmModalMessage" class="mb-0"></p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" id="appConfirmCancel">Cancel</button>
+          <button type="button" class="btn btn-primary" id="appConfirmOk">OK</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Scripts -->
@@ -785,13 +856,56 @@ try {
         }
     }
     
+    // Small helper to show a system-styled confirmation modal
+    function systemConfirm(message, options = {}) {
+        const modalEl = document.getElementById('systemConfirmModal');
+        return new Promise((resolve) => {
+            const title = options.title || 'Confirm';
+            const okText = options.okText || 'OK';
+            const cancelText = options.cancelText || 'Cancel';
+            const okClass = options.okClass || 'btn-primary';
+
+            modalEl.querySelector('[data-confirm-title]').textContent = title;
+            modalEl.querySelector('[data-confirm-message]').textContent = message;
+
+            const okBtn = modalEl.querySelector('[data-confirm-ok]');
+            const cancelBtn = modalEl.querySelector('[data-confirm-cancel]');
+            okBtn.textContent = okText;
+            cancelBtn.textContent = cancelText;
+            okBtn.className = 'btn ' + okClass;
+
+            const bsModal = new bootstrap.Modal(modalEl);
+
+            const cleanup = () => {
+                okBtn.removeEventListener('click', onOk);
+                cancelBtn.removeEventListener('click', onCancel);
+                modalEl.removeEventListener('hidden.bs.modal', onCancel);
+            };
+
+            const onOk = () => { cleanup(); bsModal.hide(); resolve(true); };
+            const onCancel = () => { cleanup(); resolve(false); };
+
+            okBtn.addEventListener('click', onOk, { once: true });
+            cancelBtn.addEventListener('click', () => { bsModal.hide(); }, { once: true });
+            modalEl.addEventListener('hidden.bs.modal', onCancel, { once: true });
+
+            bsModal.show();
+        });
+    }
+
     // --- Step 3: Schedule Submission ---
-    window.submitSchedule = function() {
+    window.submitSchedule = async function() {
         if (!window.currentSchedEmployeeId) return;
         
         const scheduleData = document.getElementById('schedule_data').value;
         if (!scheduleData || scheduleData === '[]') {
-            if(!confirm('No schedule added. Save empty schedule?')) return;
+            // Show warning modal
+            const modalEl = document.getElementById('appInfoModal');
+            modalEl.querySelector('[data-app-info-title]').textContent = 'Warning';
+            modalEl.querySelector('[data-app-info-message]').textContent = 'No schedule added. Please add at least one schedule entry before saving.';
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+            return;
         }
         
         showLoading('Saving Schedule...');

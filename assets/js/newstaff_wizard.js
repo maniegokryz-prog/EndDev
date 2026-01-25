@@ -229,25 +229,27 @@ function clearScheduleForm() {
 }
 
 window.deleteSchedule = function (index, day) {
-    if (!confirm('Delete this schedule block?')) return;
-    const schedule = addedSchedules[index];
-    if (schedule.days.length === 1) {
-        addedSchedules.splice(index, 1);
-    } else {
-        schedule.days = schedule.days.filter(d => d !== day);
-    }
-    window.addedSchedules = addedSchedules;
-    document.getElementById('schedule_data').value = JSON.stringify(addedSchedules);
-    renderSchedules();
+    showConfirmModal('Are you sure you want to delete this schedule block?', 'Confirm Delete', function() {
+        const schedule = addedSchedules[index];
+        if (schedule.days.length === 1) {
+            addedSchedules.splice(index, 1);
+        } else {
+            schedule.days = schedule.days.filter(d => d !== day);
+        }
+        window.addedSchedules = addedSchedules;
+        document.getElementById('schedule_data').value = JSON.stringify(addedSchedules);
+        renderSchedules();
+    });
 }
 
 window.clearAllSchedules = async function () {
     if (addedSchedules.length === 0) return;
-    if (!confirm('Clear all schedules?')) return;
-    addedSchedules = [];
-    window.addedSchedules = [];
-    document.getElementById('schedule_data').value = '[]';
-    renderSchedules();
+    showConfirmModal(`Are you sure you want to clear all ${addedSchedules.length} schedule(s)?`, 'Confirm Clear', function() {
+        addedSchedules = [];
+        window.addedSchedules = [];
+        document.getElementById('schedule_data').value = '[]';
+        renderSchedules();
+    });
 }
 
 /* Visualization */
@@ -322,6 +324,57 @@ function formatTime(t) {
     const period = h >= 12 ? 'PM' : 'AM';
     const displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h);
     return `${displayH}:${m.toString().padStart(2, '0')}${period}`;
+}
+
+// Show confirmation modal
+function showConfirmModal(message, title = 'Confirm', onConfirm = null) {
+    const modalEl = document.getElementById('appConfirmModal');
+    const msgEl = document.getElementById('appConfirmModalMessage');
+    const titleEl = document.getElementById('appConfirmModalLabel');
+    const okBtn = document.getElementById('appConfirmOk');
+    const cancelBtn = document.getElementById('appConfirmCancel');
+    
+    if (!modalEl || !okBtn) {
+        // Fallback to native confirm
+        if (window.confirm(message)) {
+            if (onConfirm) onConfirm();
+        }
+        return;
+    }
+    
+    if (msgEl) msgEl.textContent = message;
+    if (titleEl) titleEl.textContent = title;
+    
+    const bsModal = new bootstrap.Modal(modalEl);
+    
+    function cleanup() {
+        okBtn.removeEventListener('click', onOk);
+        if (cancelBtn) cancelBtn.removeEventListener('click', onCancel);
+        modalEl.removeEventListener('hidden.bs.modal', onHidden);
+    }
+    
+    function onOk(e) {
+        e && e.preventDefault();
+        cleanup();
+        bsModal.hide();
+        if (onConfirm) onConfirm();
+    }
+    
+    function onCancel(e) {
+        e && e.preventDefault();
+        cleanup();
+        bsModal.hide();
+    }
+    
+    function onHidden() {
+        cleanup();
+    }
+    
+    okBtn.addEventListener('click', onOk);
+    if (cancelBtn) cancelBtn.addEventListener('click', onCancel);
+    modalEl.addEventListener('hidden.bs.modal', onHidden);
+    
+    bsModal.show();
 }
 
 window.initializeCalendar = function () {

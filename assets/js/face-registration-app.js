@@ -25,6 +25,22 @@ class FaceRegistrationApp {
         this.elements = {};
     }
 
+    // Show a system-styled modal message instead of browser alert
+    showInfoModal(message, title = 'Notice') {
+        const modalEl = document.getElementById('appInfoModal');
+        if (!modalEl) {
+            // Fallback to alert if modal is not present
+            alert(message);
+            return;
+        }
+        const titleEl = modalEl.querySelector('[data-app-info-title]');
+        const msgEl = modalEl.querySelector('[data-app-info-message]');
+        if (titleEl) titleEl.textContent = title;
+        if (msgEl) msgEl.textContent = message;
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+
     async initialize() {
         this.initializeElements();
         this.bindEvents();
@@ -185,7 +201,7 @@ class FaceRegistrationApp {
     async capturePhoto() {
         // Check if face detection conditions are good
         if (!this.currentFaceData) {
-            alert('No face detected. Please position your face in the camera view.');
+            this.showInfoModal('No face detected. Please position your face in the camera view.', 'Face Detection');
             return;
         }
 
@@ -194,7 +210,7 @@ class FaceRegistrationApp {
             this.processSuccessfulCapture(dataURL);
         } catch (error) {
             console.error('Photo capture failed:', error);
-            alert('Photo capture failed: ' + error.message);
+            this.showInfoModal('Photo capture failed: ' + error.message, 'Capture Error');
         }
     }
 
@@ -313,7 +329,7 @@ class FaceRegistrationApp {
     handleFormSubmit(e) {
         if (this.capturedPhotos.length === 0) {
             e.preventDefault();
-            alert('Please capture at least one face photo before submitting.');
+            this.showInfoModal('Please capture at least one face photo before submitting.', 'Validation');
             return false;
         }
     }

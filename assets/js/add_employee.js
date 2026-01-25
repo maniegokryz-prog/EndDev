@@ -1144,25 +1144,13 @@ function showAppAlert(message, title = 'Notice', type = 'info') {
                 iconEl.className = '';
                 if (type === 'success') {
                     iconEl.classList.add('bi', 'bi-check-circle-fill', 'text-success', 'fs-1', 'mb-2');
-                } else if (type === 'error') {
-                    iconEl.classList.add('bi', 'bi-exclamation-circle-fill', 'text-danger', 'fs-1', 'mb-2');
+                } else if (type === 'error' || type === 'warning') {
+                    iconEl.classList.add('bi', 'bi-exclamation-circle-fill', 'text-warning', 'fs-1', 'mb-2');
                 } else {
                     iconEl.classList.add('bi', 'bi-info-circle-fill', 'text-primary', 'fs-1', 'mb-2');
                 }
             }
 
-            // update title color classes
-            if (titleEl) {
-                titleEl.classList.remove('text-success', 'text-danger', 'text-primary');
-                if (type === 'success') titleEl.classList.add('text-success');
-                else if (type === 'error') titleEl.classList.add('text-danger');
-                else titleEl.classList.add('text-primary');
-            }
-
-            // Ensure modal sits above any custom sidebar z-index
-            modalEl.style.zIndex = '22000';
-            const dialog = modalEl.querySelector('.modal-dialog');
-            if (dialog) dialog.style.zIndex = '22001';
             if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
                 const modal = new bootstrap.Modal(modalEl);
                 modal.show();
@@ -1716,11 +1704,6 @@ function showAppConfirm(message, title = 'Confirm') {
 
             if (msgEl) msgEl.textContent = message;
             if (titleEl) titleEl.textContent = title;
-
-            // Ensure modal sits above sidebar
-            modalEl.style.zIndex = '22000';
-            const dialog = modalEl.querySelector('.modal-dialog');
-            if (dialog) dialog.style.zIndex = '22001';
 
             const bsModal = new bootstrap.Modal(modalEl);
 

@@ -3778,6 +3778,19 @@ document.addEventListener('DOMContentLoaded', loadPerformanceMetrics);
   </div>
 </div>
 
+<div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
+      <p id="scheduleDeleteConfirmMsg">Are you sure you want to delete this schedule?</p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 text-center">
