@@ -344,11 +344,11 @@ $roles = $viewer->getDistinctRoles();
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-body">
+        <div class="modal-body text-center">
           <h5 class="mb-3">Confirm Logout</h5>
           <p class="mb-0">Are you sure you want to log out?</p>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer justify-content-center">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
           <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
             <input type="hidden" name="confirm_logout" value="1">
