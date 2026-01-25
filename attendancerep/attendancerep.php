@@ -49,7 +49,7 @@ class AttendanceReportViewer {
                         e.profile_photo
                       FROM daily_attendance da
                       INNER JOIN employees e ON da.employee_id = e.id
-                      WHERE da.attendance_date = ?";
+                      WHERE da.attendance_date = ? AND da.status != 'visit'";
             
             $whereConditions = [];
             $params = [$currentDate];
