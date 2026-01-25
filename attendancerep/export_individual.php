@@ -81,7 +81,7 @@ foreach ($periods as $key => $period) {
     $y = $period['year'];
     $m = $period['month'];
     
-    $sql = "SELECT attendance_date, time_in, time_out, actual_hours FROM daily_attendance 
+    $sql = "SELECT attendance_date, time_in, time_out, actual_hours, status, notes FROM daily_attendance 
             WHERE employee_id = ? AND MONTH(attendance_date) = ? AND YEAR(attendance_date) = ? AND status != 'visit'";
     
     $stmt = $conn->prepare($sql);
@@ -157,19 +157,35 @@ function exportToPDF($employee, $renderData) {
 
 function exportToExcel($employee, $renderData) {
     header('Content-Type: application/vnd.ms-excel');
-    header('Content-Disposition: attachment;filename="DTR_' . $employee['employee_id'] . '.xls"');
+    header('Content-Disposition: attachment;filename="Attendance_History_' . $employee['employee_id'] . '.xls"');
     header('Cache-Control: max-age=0');
     
     echo '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
     echo '<head>';
     echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-    echo getDTRStyles(true); // From util
+    echo '<style>
+            body { font-family: Arial, sans-serif; font-size: 10pt; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid #000; padding: 5px; }
+          </style>';
     echo '</head><body>';
     
-    foreach ($renderData as $data) {
-        renderDTRForm($employee, $data, true); // From util
-        echo '<br><br>';
+    // Flatten the month-based chunks into a single list of records
+    $allRecords = [];
+    foreach ($renderData as $monthData) {
+        if (!empty($monthData['attendance'])) {
+            // $monthData['attendance'] is keyed by DAY (1..31)
+            // We want to sort by date.
+            foreach ($monthData['attendance'] as $day => $record) {
+                // Key it by full date for sorting if needed, or just append
+                $allRecords[$record['attendance_date']] = $record;
+            }
+        }
     }
+    // Sort by date
+    ksort($allRecords);
+
+    renderExcelHistoryTable($employee, $allRecords);
     
     echo '</body></html>';
 }

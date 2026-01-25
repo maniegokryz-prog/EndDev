@@ -115,7 +115,7 @@ foreach ($employeeIds as $empId) {
         $m = $period['month'];
         
         // Fetch Attendance
-        $sql = "SELECT attendance_date, time_in, time_out, actual_hours FROM daily_attendance 
+        $sql = "SELECT attendance_date, time_in, time_out, actual_hours, status, notes FROM daily_attendance 
                 WHERE employee_id = ? AND MONTH(attendance_date) = ? AND YEAR(attendance_date) = ? AND status != 'visit'";
         
         $stmt = $conn->prepare($sql);
@@ -141,10 +141,19 @@ foreach ($employeeIds as $empId) {
     
     // Output Logic
     if ($exportType === 'excel') {
-        foreach ($employeeRenderData as $data) {
-            renderDTRForm($employee, $data, true);
-            echo '<br><br>'; // Spacing between sheets
+        // Flatten for Excel History Table
+        $allRecords = [];
+        foreach ($employeeRenderData as $monthData) {
+            if (!empty($monthData['attendance'])) {
+                foreach ($monthData['attendance'] as $day => $record) {
+                    $allRecords[$record['attendance_date']] = $record;
+                }
+            }
         }
+        ksort($allRecords);
+        
+        renderExcelHistoryTable($employee, $allRecords);
+        echo '<br><br>'; // Spacing between employees
     } else {
         // PDF / Print - Chunk by 2
         $chunks = array_chunk($employeeRenderData, 2);

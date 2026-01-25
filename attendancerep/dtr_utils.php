@@ -298,4 +298,63 @@ function renderDTRForm($employee, $data, $isExcel = false) {
         }
     }
 }
-?>
+
+function renderExcelHistoryTable($employee, $attendanceRecords) {
+    // Header Info
+    echo '<table border="1">';
+    echo '<tr><td colspan="5" style="font-weight: bold; font-size: 14pt; text-align: center;">ATTENDANCE HISTORY</td></tr>';
+    echo '<tr><td colspan="5" style="font-weight: bold; text-align: center;">' . htmlspecialchars($employee['name']) . '</td></tr>';
+    echo '<tr><td colspan="5" style="text-align: center;">' . htmlspecialchars($employee['role']) . '</td></tr>';
+    echo '<tr><td colspan="5" style="height: 10px;"></td></tr>'; // Spacer
+
+    // Table Header
+    echo '<tr style="background-color: #f0f0f0; font-weight: bold;">
+            <th style="width: 150px; text-align: center;">Date</th>
+            <th style="width: 100px; text-align: center;">Time In</th>
+            <th style="width: 100px; text-align: center;">Time Out</th>
+            <th style="width: 100px; text-align: center;">Total Hours</th>
+            <th style="width: 150px; text-align: center;">Notes / Status</th>
+          </tr>';
+
+    // Data Rows
+    if (empty($attendanceRecords)) {
+        echo '<tr><td colspan="5" style="text-align: center;">No records found.</td></tr>';
+    } else {
+        foreach ($attendanceRecords as $date => $data) {
+            $dateStr = $data['attendance_date'];
+            $timeIn = $data['time_in'] ? date('h:i A', strtotime($data['time_in'])) : '';
+            $timeOut = $data['time_out'] ? date('h:i A', strtotime($data['time_out'])) : '';
+            
+            // Hours
+            $hours = '';
+            if ($data['actual_hours']) {
+                 $h = floor($data['actual_hours'] / 60);
+                 $m = $data['actual_hours'] % 60;
+                 $hours = sprintf('%dh %dm', $h, $m);
+            }
+
+            // Notes / Status
+            $status = ucfirst($data['status']);
+            if ($data['status'] === 'manual') {
+                $notes = 'Manual Entry';
+            } elseif ($data['status'] === 'visit') {
+                $notes = 'Visit';
+            } else {
+                $notes = 'Biometric Scan'; // Default assumption
+            }
+            if (!empty($data['notes'])) {
+                $notes .= ' - ' . $data['notes'];
+            }
+
+            echo '<tr>
+                    <td style="text-align: center;">' . date('F j, Y', strtotime($dateStr)) . '</td>
+                    <td style="text-align: center;">' . $timeIn . '</td>
+                    <td style="text-align: center;">' . $timeOut . '</td>
+                    <td style="text-align: center;">' . $hours . '</td>
+                    <td style="text-align: center;">' . htmlspecialchars($notes) . '</td>
+                  </tr>';
+        }
+    }
+    echo '</table>';
+}
+
