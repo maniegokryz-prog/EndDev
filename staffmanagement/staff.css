@@ -409,11 +409,11 @@
 
    .staff-card {
      max-width: 99%;
-     height: 35%;
+     height: 23%;
      background: #fff;
      border-radius: 10px;
      margin-top: 20px;
-     margin-bottom: 20% !important;
+     margin-bottom: 25% !important;
      /* mas maliit ang gap */
    }
 
@@ -677,8 +677,8 @@
 
    .metrics-card {
      margin-bottom: 30px !important;
-     /* alisin extra space sa taas */
-     width: 64% !important;
+    width: 64% !important;
+    margin-top: -70% !important;
    }
 
 
@@ -1045,9 +1045,9 @@
    }
 
    .scheduled-leave-card {
-     margin-top: 3.5rem;
+     margin-top: 2rem;
      /* give scheduled leave more top separation */
-     margin-bottom: 30px !important;
+     margin-bottom: 20px !important;
      /* increased bottom gap to separate from calendar */
      width: 100%;
      /* or set a fixed width like 360px if needed */
@@ -1093,11 +1093,11 @@
    }
 
    /* Target only the leave list container */
-   #leaveList {
-     max-height: 130px;
-     /* allow multiple leave entries to display without immediate scroll */
-     overflow-y: auto;
-     padding-right: 6px;
+  #leaveList {
+    max-height: 55px;
+    /* allow ~1 leave entry before scroll */
+    overflow-y: auto;
+    padding-right: 6px;
    }
 
    /* Optional: smooth scrollbar appearance */
@@ -1111,7 +1111,7 @@
    }
 
    .leave-list-container {
-     max-height: 130px;
+     max-height: 55px;
      overflow-y: auto;
    }
 
