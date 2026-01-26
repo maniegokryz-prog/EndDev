@@ -621,7 +621,7 @@ function checkMonthlyLimit() {
     const limitInfo = document.getElementById('monthlyLimitInfo');
     if (!limitInfo) return;
 
-    fetch(`api/leave_request_clean.php?action=get_employee_requests&employee_id=${window.employeeInternalIdEncoded || window.employeeIdEncoded}`)
+    fetch(`api/leave_request_clean.php?action=get_employee_requests&employee_id=${window.employeeInternalId}`)
         .then(res => res.json())
         .then(response => {
             if (response.success) {
@@ -648,7 +648,7 @@ function loadEmployeeLeaves() {
     const list = document.getElementById('leaveList');
     if (!list) return;
 
-    fetch(`api/leave_request_clean.php?action=get_employee_requests&employee_id=${window.employeeInternalIdEncoded || window.employeeIdEncoded}`)
+    fetch(`api/leave_request_clean.php?action=get_employee_requests&employee_id=${window.employeeInternalId}`)
         .then(res => res.json())
         .then(response => {
             if (!response.success) return;
@@ -724,13 +724,14 @@ function submitLeaveRequest() {
     const autoApprove = document.getElementById('autoApprove') ? document.getElementById('autoApprove').checked : false;
 
     if (!type || !from || !to) {
-        alert("Please fill required fields.");
+        document.getElementById("leaveValidationErrorMsg").textContent = "Please fill all required fields.";
+        new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
         return;
     }
 
     const formData = new FormData();
     formData.append('action', 'submit_request');
-    formData.append('employee_id', window.employeeInternalIdEncoded || window.employeeIdEncoded);
+    formData.append('employee_id', window.employeeInternalId);
     formData.append('leave_type', type);
     formData.append('start_date', from);
     formData.append('end_date', to);

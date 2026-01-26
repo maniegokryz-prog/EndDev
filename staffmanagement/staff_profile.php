@@ -163,6 +163,10 @@ $loadSuccess = $viewer->loadEmployeeDetails($employee_id);
 $employee = $viewer->getEmployee();
 $schedules = $viewer->getSchedules();
 
+// Initialize Editor for Modals
+$editor = new EmployeeEditor($conn);
+$editor->loadEmployee($employee_id);
+
 // Prepare Schedule Data for JS
 $scheduleColors = ['#4a7c59', '#8b4a6b', '#b85450', '#5b9bd5', '#ffc000', '#c55a11', '#7030a0', '#0070c0', '#00b050', '#ff6b6b'];
 $processedSchedules = [];
@@ -437,270 +441,226 @@ $profilePhoto .= '?v=' . time();
         </div>
     </div>
 
-    <!-- Includes for Modals (Reusing existing modals from staffinfo.php but stripped down or included) -->
-    <!-- I will copy the critical modal structures here to ensure they exist -->
-    
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Leave Management Modals -->
-    <div class="modal fade" id="addLeaveModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title">Add Scheduled Leave</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- ========================= MODALS ========================= -->
+
+    <!-- Edit Info Modal (Ported) -->
+    <div class="modal fade" id="editInfoModal" tabindex="-1" aria-labelledby="editInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content p-4">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                <label class="form-label">Type:</label>
-                <select class="form-control mb-3" id="leaveType">
-                    <option value="">Select leave type...</option>
-                    <option value="Sick">Sick Leave</option>
-                    <option value="Vacation">Vacation Leave</option>
-                    <option value="Maternity">Maternity Leave</option>
-                    <option value="Paternity">Paternity Leave</option>
-                    <option value="Emergency">Emergency Leave</option>
-                    <option value="Other">Other</option>
-                </select>
+                    <div class="container">
+                        <h1>Edit Employee Details</h1>
+                        <?php if ($editor->hasErrors()): ?>
+                            <div class="alert alert-danger">
+                                <strong>Errors:</strong>
+                                <ul><?php foreach ($editor->getErrors() as $error): ?><li><?php echo $error; ?></li><?php endforeach; ?></ul>
+                            </div>
+                        <?php endif; ?>
 
-                <div class="row">
-              <div class="col-md-6">
-                <label class="form-label">FROM:</label>
-                <input type="date" class="form-control mb-2" id="leaveFrom">
-                <input type="time" class="form-control mb-3" id="leaveStartTime" disabled>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">TO:</label>
-                <input type="date" class="form-control mb-2" id="leaveTo">
-                <input type="time" class="form-control mb-3" id="leaveEndTime" disabled>
-              </div>
-            </div>
-                
-                <label class="form-label">Reason:</label>
-                <textarea class="form-control mb-3" id="leaveReason" rows="3" placeholder="Briefly explain your reason for leave"></textarea>
-                
-                <label class="form-label">Attachment (Optional):</label>
-                <input type="file" class="form-control mb-2" id="leaveAttachment" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
-                
-                <div class="alert alert-info mb-3" id="monthlyLimitInfo" style="font-size: 0.9rem;">
-                    <strong>Checking limits...</strong>
-                </div>
-                
-                <?php if ($isAdmin): ?>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="autoApprove">
-                    <label class="form-check-label" for="autoApprove">
-                    <strong>Auto-approve this request</strong> (Admin only)
-                    </label>
-                </div>
-                <?php endif; ?>
-                </div>
-                <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-success" id="btnSubmitLeave">Submit Request</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Leave Details Modal (View) -->
-    <div class="modal fade" id="leaveDetailsViewModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title">Leave Request Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                <div class="mb-2"><strong class="me-2">Type:</strong> <span id="viewLeaveType"></span></div>
-                <div class="mb-2"><strong class="me-2">Status:</strong> <span id="viewLeaveStatus"></span></div>
-                <div class="mb-2"><strong class="me-2">Dates:</strong> <span id="viewLeaveDates"></span></div>
-                <div class="mb-2"><strong class="me-2">Reason:</strong> <div id="viewLeaveReason" class="text-muted p-2 bg-light rounded mt-1"></div></div>
-                <div id="viewLeaveAttachmentContainer" class="mt-3" style="display:none;">
-                    <a href="#" id="viewLeaveAttachment" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-paperclip"></i> View Attachment</a>
-                </div>
-                </div>
-                <div class="modal-footer" id="viewLeaveActions">
-                    <!-- Dynamic buttons -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Generic Success Modal -->
-    <div class="modal fade" id="leaveSuccessModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <div class="mb-3 text-success"><i class="bi bi-check-circle fs-1"></i></div>
-                <h5 class="fw-bold mb-3 success-title">Success</h5>
-                <p id="leaveSuccessMsg"></p>
-                <button class="btn btn-primary" data-bs-dismiss="modal">OK</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Generic Error Modal -->
-    <div class="modal fade" id="leaveErrorModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <div class="mb-3 text-danger"><i class="bi bi-exclamation-circle fs-1"></i></div>
-                <h5 class="fw-bold mb-3 text-danger">Error</h5>
-                <p id="leaveErrorMsg"></p>
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Confirm Action Modal -->
-    <div class="modal fade" id="leaveConfirmModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3" id="leaveConfirmTitle">Confirm Action</h5>
-                <p id="leaveConfirmMsg"></p>
-                <div class="d-flex justify-content-center gap-2 mt-3">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <button class="btn btn-primary" id="btnConfirmAction">Yes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Remove Employee Modal -->
-    <div class="modal fade" id="removeEmployeeModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <i class="bi bi-exclamation-circle text-danger fs-1"></i>
-                <h5 class="mt-3">Remove Employee?</h5>
-                <p class="text-muted">This action cannot be undone easily. Please enter admin password.</p>
-                <form id="removeEmployeeForm">
-                    <input type="password" class="form-control mb-3" id="adminPasswordInput" placeholder="Admin Password" required>
-                    <div id="passwordError" class="text-danger small mb-2" style="display:none;"></div>
-                    <button type="submit" class="btn btn-danger" id="confirmRemoveBtn">Confirm Removal</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================= HELPER MODALS (Moved to end for Z-Index) ========================= -->
-    
-    <!-- Validation/Error Modal -->
-    <div class="modal fade" id="leaveValidationErrorModal" tabindex="-1" style="z-index: 1060;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <div class="mb-3"><i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i></div>
-                <h5 class="fw-bold mb-3 text-danger">Attention</h5>
-                <p id="leaveValidationErrorMsg"></p>
-                <button type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pre-Submit Confirmation Modal (Leave Request) -->
-    <div class="modal fade" id="leaveDetailsModal" tabindex="-1" style="z-index: 1060;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-center p-4">
-                <div class="modal-body">
-                    <h5 class="mb-3">Start Leave Request?</h5>
-                    <p id="leaveDetailsText" class="mb-4 text-muted"></p>
-                    <div class="d-flex justify-content-center gap-3">
-                        <button class="btn btn-outline-dark" onclick="goBackToForm()">Edit</button>
-                        <button class="btn btn-success" onclick="finalizeLeave()">Confirm & Submit</button>
+                        <?php if ($loadSuccess && $employee): ?>
+                            <form action="processes/update_employee.php" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="employee_id" value="<?php echo htmlspecialchars($employee['employee_id']); ?>">
+                                <div class="form-group mb-3">
+                                    <label>Profile Picture</label>
+                                    <img id="profile-preview" src="<?php echo $employee['profile_photo'] !== 'N/A' ? '../' . htmlspecialchars($employee['profile_photo']) . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" alt="Profile Preview" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block; margin-bottom: 10px;" onerror="this.src='../assets/profile_pic/user.png'">
+                                    <input type="file" id="profile_photo" name="profile_photo" accept="image/*" class="form-control">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3"><label>First Name</label><input type="text" name="first_name" class="form-control" value="<?php echo htmlspecialchars($employee['first_name']); ?>" required></div>
+                                    <div class="col-md-4 mb-3"><label>Middle Name</label><input type="text" name="middle_name" class="form-control" value="<?php echo htmlspecialchars($employee['middle_name']); ?>"></div>
+                                    <div class="col-md-4 mb-3"><label>Last Name</label><input type="text" name="last_name" class="form-control" value="<?php echo htmlspecialchars($employee['last_name']); ?>" required></div>
+                                </div>
+                                <div class="mb-3"><label>Email</label><input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($employee['email']); ?>" required></div>
+                                <div class="mb-3"><label>Phone</label><input type="text" name="phone" class="form-control" value="<?php echo htmlspecialchars($employee['phone']); ?>"></div>
+                                <?php if ($isAdmin): ?>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3"><label>Role</label><input type="text" name="roles" class="form-control" value="<?php echo htmlspecialchars($employee['roles']); ?>"></div>
+                                        <div class="col-md-4 mb-3"><label>Department</label><input type="text" name="department" class="form-control" value="<?php echo htmlspecialchars($employee['department']); ?>"></div>
+                                        <div class="col-md-4 mb-3"><label>Position</label><input type="text" name="position" class="form-control" value="<?php echo htmlspecialchars($employee['position']); ?>"></div>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="text-end mt-4">
+                                    <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        <?php else: ?>
+                            <p>Could not load data.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Approve Confirmation Modal (Admin) -->
-    <div class="modal fade" id="leaveApproveConfirmModal" tabindex="-1" style="z-index: 1060;">
+    <div class="modal fade" id="saveSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Approve Request</h5>
-                <p id="leaveApproveConfirmMsg"></p>
-                <div class="d-flex justify-content-center gap-3 mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success" id="leaveApproveConfirmBtn">Yes, Approve</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete/Reject Confirmation Modal -->
-    <div class="modal fade" id="leaveDeleteConfirmModal" tabindex="-1" style="z-index: 1060;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-danger" id="leaveDeleteConfirmTitle">Confirm Action</h5>
-                <p id="leaveDeleteConfirmMsg"></p>
-                <div class="d-flex justify-content-center gap-3 mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-danger" id="leaveDeleteConfirmBtn">Confirm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Attendance Success Modal -->
-    <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" style="z-index: 1060;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Attendance Saved</h5>
-                <p id="attendanceSuccessMessage">Records saved successfully.</p>
+                <h5 class="fw-bold mb-3 text-success">Save Successful</h5>
+                <p>Your changes have been saved successfully.</p>
                 <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
     </div>
 
-    <!-- Manual Attendance Modal (Copied from staffinfo.php) -->
-    <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content p-3">
-            <div class="modal-header">
-            <h5 class="modal-title">Manual Attendance Record</h5>
-            </div>
-            <div class="modal-body">
-            <div id="attendanceContainer">
-                <div class="attendance-row row mb-3 align-items-start">
-                <div class="col-md-3">
-                    <label>Date:</label>
-                    <input type="date" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label>Time In:</label>
-                    <input type="time" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label>Time Out:</label>
-                    <input type="time" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-danger removeRow" style="display:none; margin-top: 32px;">−</button>
-                </div>
-                </div>
-            </div>
-            <button id="addDayBtn" class="btn btn-warning mt-2">+ Add Another Day</button>
-            </div>
-            <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button class="btn btn-success" id="saveBtn">Save Records</button>
+    <!-- Remove Employee Modal -->
+    <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4">
+                <h5 class="fw-bold mb-3 text-danger text-center">Confirm Employee Removal</h5>
+                <p class="text-center">This will move the employee to the archive. Enter your admin password to confirm.</p>
+                <form id="removeEmployeeForm">
+                    <div class="mb-3">
+                        <label class="form-label">Admin Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="adminPasswordInput" name="admin_password" required placeholder="Enter password">
+                        <div id="passwordError" class="text-danger small mt-1" style="display: none;"></div>
+                    </div>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger" id="confirmRemoveBtn">
+                            <span id="removeBtnText">Remove Employee</span>
+                            <span id="removeBtnSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
+    
+    <div class="modal fade" id="removeSuccessModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 class="text-success">Employee Archived</h5><p>Redirecting...</p></div></div></div>
+    <div class="modal fade" id="errorRemoveModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 class="text-danger">Failed</h5><p id="errorRemoveMessage"></p><button class="btn btn-primary" data-bs-dismiss="modal">Close</button></div></div></div>
+
+    <!-- LEAVE REQUEST MODALS -->
+    
+    <!-- Add Leave Modal -->
+    <div class="modal fade" id="addLeaveModal" tabindex="-1" aria-labelledby="addLeaveLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Scheduled Leave</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Type:</label>
+                    <select class="form-control mb-3" id="leaveType">
+                        <option value="">Select leave type...</option>
+                        <option value="Sick">Sick Leave</option>
+                        <option value="Vacation">Vacation Leave</option>
+                        <option value="Maternity">Maternity Leave</option>
+                        <option value="Paternity">Paternity Leave</option>
+                        <option value="Emergency">Emergency Leave</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <label class="form-label">FROM:</label>
+                    <input type="date" class="form-control mb-3" id="leaveFrom">
+                    <label class="form-label">TO:</label>
+                    <input type="date" class="form-control mb-3" id="leaveTo">
+                    
+                    <label class="form-label">Reason:</label>
+                    <textarea class="form-control mb-3" id="leaveReason" rows="3" placeholder="Explain reason"></textarea>
+                    
+                    <label class="form-label">Attachment (Optional):</label>
+                    <input type="file" class="form-control mb-2" id="leaveAttachment" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                    <div class="alert alert-danger mb-3" id="fileSizeWarning" style="display: none; font-size: 0.85rem;">File size exceeds 5MB.</div>
+                    
+                    <div class="alert alert-info mb-3" id="monthlyLimitInfo" style="font-size: 0.9rem;"><i class="bi bi-info-circle"></i> <strong>Monthly Limit:</strong> <span id="monthlyLimitText">Checking...</span></div>
+                    
+                    <div class="form-check mb-2" id="adminOptionsDiv" style="display: none;">
+                        <input class="form-check-input" type="checkbox" id="autoApprove">
+                        <label class="form-check-label" for="autoApprove"><strong>Auto-approve</strong> (Admin)</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="cancelLeaveRequest ? cancelLeaveRequest() : null" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" onclick="confirmLeave ? confirmLeave() : null" id="btnSubmitLeave">Submit Request</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Edit Schedule Modal (Simplified Placeholder - Full implementation requires copying a lot of logic) -->
-    <!-- Ideally, we should include the full modal from staffinfo.php, but for now I'll provide a link or simple placeholder as the logic is very complex -->
+    <!-- Pre-Submit Confirmation -->
+    <div class="modal fade" id="leaveDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center p-4">
+                <div class="modal-body">
+                    <h5 class="mb-3">Schedule a Leave for this Person?</h5>
+                    <p id="leaveDetailsText" class="mb-4"></p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-outline-dark" onclick="goBackToForm ? goBackToForm() : null">Change</button>
+                        <button class="btn btn-success" onclick="finalizeLeave ? finalizeLeave() : null">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div class="modal fade" id="leaveDetailsViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Leave Request Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="fw-bold">Type:</label><div id="viewLeaveType" class="ms-2"></div></div>
+                    <div class="mb-3"><label class="fw-bold">Status:</label><div id="viewLeaveStatus" class="ms-2"></div></div>
+                    <div class="mb-3"><label class="fw-bold">Duration:</label><div id="viewLeaveDates" class="ms-2"></div></div>
+                    <div class="mb-3"><label class="fw-bold">Reason:</label><div id="viewLeaveReason" class="ms-2 text-muted"></div></div>
+                    <div class="mb-3" id="viewLeaveAttachmentContainer" style="display: none;">
+                        <label class="fw-bold">Attachment:</label>
+                        <div class="ms-2"><a href="#" id="viewLeaveAttachment" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-paperclip"></i> View</a></div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="viewLeaveActions"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts/Confirmations -->
+    <div class="modal fade" id="leaveValidationErrorModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><i class="bi bi-exclamation-circle text-danger fs-1"></i><h5 class="text-danger mt-3">Validation Error</h5><p id="leaveValidationErrorMsg"></p></div></div></div>
+    
+    <div class="modal fade" id="leaveSuccessModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><i class="bi bi-check-circle text-success fs-1"></i><h5 class="text-success mt-3">Success</h5><p id="leaveSuccessMsg"></p><button class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button></div></div></div>
+    
+    <div class="modal fade" id="leaveDeleteConfirmModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 class="text-danger">Confirm Delete</h5><p id="leaveDeleteConfirmMsg"></p><div class="mt-3"><button class="btn btn-secondary me-2" data-bs-dismiss="modal">No</button><button class="btn btn-danger" id="leaveDeleteConfirmBtn">Yes, Delete</button></div></div></div></div>
+    
+    <div class="modal fade" id="leaveApproveConfirmModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 class="text-success">Approve Request</h5><p id="leaveApproveConfirmMsg"></p><div class="mt-3"><button class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button><button class="btn btn-success" id="leaveApproveConfirmBtn">Yes, Approve</button></div></div></div></div>
+    
+    <!-- Generic Confirm for JS usage -->
+    <div class="modal fade" id="leaveConfirmModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 id="leaveConfirmTitle">Confirm</h5><p id="leaveConfirmMsg"></p><div class="mt-3"><button class="btn btn-secondary me-2" data-bs-dismiss="modal">No</button><button class="btn btn-primary" id="btnConfirmAction">Yes</button></div></div></div></div>
+
+    <!-- Attendance Manual Modal -->
+    <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content p-3">
+                <div class="modal-header"><h5 class="modal-title">Manual Attendance Record</h5></div>
+                <div class="modal-body">
+                    <div id="attendanceContainer">
+                        <div class="attendance-row row mb-3 align-items-start">
+                            <div class="col-md-3"><label>Date:</label><input type="date" class="form-control"></div>
+                            <div class="col-md-3"><label>Time In:</label><input type="time" class="form-control"></div>
+                            <div class="col-md-3"><label>Time Out:</label><input type="time" class="form-control"></div>
+                            <div class="col-md-3"><button class="btn btn-danger removeRow" style="display:none; margin-top: 32px;">−</button></div>
+                        </div>
+                    </div>
+                    <button id="addDayBtn" class="btn btn-warning mt-2">+ Add Another Day</button>
+                </div>
+                <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-success" id="saveBtn">Save Records</button></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 class="text-success">Attendance Saved</h5><p id="attendanceSuccessMessage">Records saved successfully.</p><button class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button></div></div></div>
+    <div class="modal fade" id="attendanceErrorModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 class="text-danger">Save Failed</h5><p id="attendanceErrorMessage"></p></div></div></div>
+
+    <!-- Edit Schedule Placeholder -->
     <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5>Edit Schedule</h5>
                 <p>To edit the schedule, please use the legacy interface or contact the system administrator.</p>
-                <a href="staffinfo.php?id=<?php echo $employee_id; ?>" class="btn btn-primary">Go to Legacy Editor</a>
+                <a href="staffinfo.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="btn btn-primary">Go to Legacy Editor</a>
             </div>
         </div>
     </div>
@@ -746,14 +706,17 @@ $profilePhoto .= '?v=' . time();
                     try { result = JSON.parse(txt); } catch(e) { console.error('Invalid JSON', txt); throw new Error('Server error'); }
                     
                     if(result.success) {
-                        alert('Employee removed.');
-                        window.location.href = 'staff.php';
+                        // Show success modal
+                        const successModal = new bootstrap.Modal(document.getElementById('removeSuccessModal'));
+                        successModal.show();
+                        setTimeout(() => { window.location.href = 'staff.php'; }, 2000);
                     } else {
                         document.getElementById('passwordError').textContent = result.message;
                         document.getElementById('passwordError').style.display = 'block';
                     }
                 } catch(err) {
-                    alert('Error removing employee.');
+                    document.getElementById('errorRemoveMessage').textContent = 'An error occurred while communicating with the server.';
+                    new bootstrap.Modal(document.getElementById('errorRemoveModal')).show();
                 }
             });
         }

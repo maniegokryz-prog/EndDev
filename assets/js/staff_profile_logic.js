@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 } else {
                     // No schedule found
-                    alert('No schedule found for this date. You can only request leave for scheduled working days.');
+                    showErrorModal('No schedule found for this date. You can only request leave for scheduled working days.');
                     this.value = ''; // Clear the invalid date
                     if (leaveToInput && leaveToInput.value === date) leaveToInput.value = '';
 
@@ -479,7 +479,7 @@ function approveLeave(id) {
         fetch('api/leave_request_clean.php?action=approve_request', { method: 'POST', body: fd })
             .then(r => r.json()).then(d => {
                 if (d.success) { location.reload(); }
-                else alert(d.error);
+                else showErrorModal(d.error);
             });
     }
 }
