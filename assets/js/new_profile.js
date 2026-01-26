@@ -138,10 +138,28 @@ function initCalendarWidget() {
     const clearBtn = document.getElementById("clearDatesBtn");
 
     if (trigger && popup) {
+        // Add info text if not present
+        if (!popup.querySelector('.calendar-info-text')) {
+            const info = document.createElement('div');
+            info.className = 'calendar-info-text text-muted small text-center pb-2 border-bottom mb-2';
+            info.style.fontSize = '0.75rem';
+            info.textContent = `You can select up to ${MAX_DAYS} days range.`;
+            const header = popup.querySelector('.calendar-header');
+            if (header) header.insertAdjacentElement('afterend', info);
+        }
         // Toggle Popup
         trigger.addEventListener("click", (e) => {
             e.stopPropagation();
-            popup.style.display = popup.style.display === "block" ? "none" : "block";
+            const isHidden = popup.style.display === "none" || popup.style.display === "";
+            popup.style.display = isHidden ? "block" : "none";
+
+            if (isHidden) {
+                // Reset selection on open to prevent sticky range issues
+                selectedDates = [];
+                startDate = null; endDate = null;
+                updateDateInput();
+                generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            }
         });
 
         // Close on outside click
@@ -150,6 +168,7 @@ function initCalendarWidget() {
                 popup.style.display = "none";
             }
         });
+
 
         // Prevent closing when clicking inside popup
         popup.addEventListener("click", (e) => {
@@ -236,7 +255,7 @@ function generateCalendar(year, month) {
         dateDiv.textContent = day;
         dateDiv.classList.add("calendar-day");
 
-        const currentDateStr = formatDate(year, month, day);
+        const currentDateStr = formatDateISO(year, month, day);
         const dateObj = new Date(year, month, day);
         dateObj.setHours(0, 0, 0, 0);
 
@@ -260,7 +279,7 @@ function generateCalendar(year, month) {
 }
 
 function handleDateClick(year, month, day) {
-    const clickedDate = formatDate(year, month, day);
+    const clickedDate = formatDateISO(year, month, day);
     const clickedDateObj = new Date(year, month, day);
 
     if (selectedDates.length === 0) {
@@ -278,14 +297,15 @@ function handleDateClick(year, month, day) {
 
         const daysDiff = Math.round(Math.abs((startDate - endDate) / (1000 * 60 * 60 * 24))) + 1;
         if (daysDiff > MAX_DAYS) {
-            alert(`You can only select up to ${MAX_DAYS} days.`);
-            selectedDates = [];
-            startDate = null; endDate = null;
+            // Instead of clearing, assume user wants to start a NEW selection
+            selectedDates = [clickedDate];
+            startDate = clickedDateObj;
+            endDate = null;
         } else {
             selectedDates = [];
             let curr = new Date(startDate);
             while (curr <= endDate) {
-                selectedDates.push(formatDate(curr.getFullYear(), curr.getMonth(), curr.getDate()));
+                selectedDates.push(formatDateISO(curr.getFullYear(), curr.getMonth(), curr.getDate()));
                 curr.setDate(curr.getDate() + 1);
             }
         }
@@ -300,7 +320,7 @@ function handleDateClick(year, month, day) {
     loadDTRForSelectedRange();
 }
 
-function formatDate(year, month, day) {
+function formatDateISO(year, month, day) {
     return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
@@ -320,8 +340,8 @@ function initDTR() {
             let url = `../attendancerep/indirep.php?id=${employeeIdEncoded}`;
 
             if (startDate && endDate) {
-                const startStr = formatDate(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-                const endStr = formatDate(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                const startStr = formatDateISO(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                const endStr = formatDateISO(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
                 url += `&start_date=${startStr}&end_date=${endStr}`;
             }
 

@@ -355,8 +355,9 @@ $profilePhoto .= '?v=' . time();
                             <h4 class="card-title mb-0">Daily Time Record</h4>
                             <!-- Popup Date Picker Trigger -->
                             <div class="position-relative">
-                                 <button class="btn btn-sm btn-outline-secondary" id="dateRangeTrigger" title="Select Dates">
-                                    <i class="bi bi-calendar3"></i>
+                                 <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" id="dateRangeTrigger" title="Select Dates">
+                                    <i class="bi bi-calendar3"></i> 
+                                    <span>Filter Dates</span>
                                  </button>
                                  <!-- Calendar Popup Dropdown -->
                                  <div id="calendarPopup" class="calendar-popup shadow-lg" style="display: none;">
@@ -384,7 +385,7 @@ $profilePhoto .= '?v=' . time();
                             </button>
                             <?php endif; ?>
                             <button class="btn btn-sm btn-outline-primary flex-grow-1" id="exportDtrBtn">
-                                 <i class="bi bi-box-arrow-up-right"></i> Details
+                                 <i class="bi bi-box-arrow-up-right"></i> Details / Export
                             </button>
                         </div>
 
