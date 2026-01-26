@@ -1,0 +1,712 @@
+/* Modern Staff Profile Styles */
+:root {
+    --primary-color: #103932;
+    --secondary-color: #ffc107;
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --success: #48bb78;
+    --danger: #f56565;
+    --warning: #ed8936;
+    --info: #4299e1;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition: all 0.3s ease;
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+}
+
+/* override staff.css content margin if needed */
+.content {
+    padding: 2rem;
+}
+
+/* Sticky Sidebar is handled by existing staff.css/styles.css, 
+   but we ensure the main content area is correct */
+
+/* Main Layout Grid (Bottom Section) */
+.profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 450px;
+    /* Increased right column width */
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (max-width: 1200px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+        /* Stack on smaller screens */
+    }
+}
+
+/* Schedule Calendar Styling */
+.schedule-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    max-height: 600px;
+    /* Constrain height to make it scrollable */
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    width: 100%;
+    /* Ensure it fits container */
+    max-width: 100%;
+    /* Force scroll on overflow */
+    display: block;
+    /* reset display */
+}
+
+.visual-schedule {
+    display: grid;
+    /* Columns: Time Label (85px) + 7 Days */
+    grid-template-columns: 85px repeat(7, minmax(100px, 1fr));
+    background: white;
+    min-width: 800px;
+    border: none;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem !important;
+    }
+
+    .profile-card {
+        padding: 1rem;
+    }
+
+    .staff-info-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-avatar-container {
+        margin: 0 auto;
+    }
+
+    .action-buttons {
+        justify-content: center;
+    }
+
+    .metrics-row {
+        gap: 0.5rem;
+    }
+}
+
+/* Constrain Visual Schedule Height to prevent "Long Space" */
+.visual-schedule .schedule-grid-cell,
+.visual-schedule .time-slot-label {
+    height: 32px;
+    /* Fixed slot height - reduced to save space */
+}
+
+/* Custom Scrollbar for schedule */
+.schedule-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.schedule-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.schedule-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+.schedule-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Calendar Popup */
+.calendar-popup {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    width: 320px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin-top: 0.5rem;
+}
+
+/* DTR List Horizontal */
+.dtr-list-horizontal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.dtr-item {
+    flex: 1 1 300px;
+    /* Responsive flex items */
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 4px solid transparent;
+}
+
+.dtr-item.present {
+    border-left-color: var(--success);
+}
+
+.dtr-item.absent {
+    border-left-color: var(--danger);
+}
+
+.dtr-item.late {
+    border-left-color: var(--warning);
+}
+
+.dtr-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+}
+
+.dtr-info {
+    flex-grow: 1;
+}
+
+.dtr-date {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.dtr-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.dtr-status {
+    font-size: 0.7rem;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: #edf2f7;
+    color: var(--text-secondary);
+    display: inline-block;
+    margin-left: 0.5rem;
+}
+
+/* Top Section Grid */
+.top-section-grid {
+    display: grid;
+    grid-template-columns: 550px minmax(0, 1fr);
+    /* Widened from 450px */
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    align-items: stretch;
+    /* Make them same height */
+}
+
+@media (max-width: 1200px) {
+    .top-section-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Split Grid */
+.profile-split-grid {
+    display: grid;
+    grid-template-columns: 450px minmax(0, 1fr);
+    /* Widened from 400px */
+    gap: 1.5rem;
+    /* align-items: start; Removed to allow stretch (equal height) */
+}
+
+.left-column-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+    .profile-split-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* DTR Vertical List inside Split Grid (default) */
+.dtr-list-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.dtr-list-vertical .dtr-item {
+    flex: 0 0 auto;
+    /* Reset flex basis so it doesn't stretch to 300px height */
+    width: 100%;
+}
+
+/* Compact DTR items for the side column */
+.dtr-section-card .dtr-item {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+}
+
+.dtr-section-card .dtr-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+}
+
+.dtr-section-card .dtr-date {
+    font-size: 0.8rem;
+}
+
+
+/* Profile Card Generic Styles */
+.profile-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    height: 100%;
+    /* Ensure equal height in grid */
+    transition: var(--transition);
+    border: none;
+}
+
+.profile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.card-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+/* Staff Info Specifics */
+.staff-info-container {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    height: 100%;
+}
+
+.profile-avatar-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--bg-color);
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.staff-details h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--primary-color);
+}
+
+.staff-id {
+    font-family: monospace;
+    background: #edf2f7;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.staff-role {
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+.contact-info {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.contact-info div {
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.action-buttons {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 576px) {
+    .staff-info-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .contact-info div {
+        justify-content: center;
+    }
+
+    .action-buttons {
+        justify-content: center;
+    }
+}
+
+/* Performance Metrics Specifics */
+/* Performance Metrics Specifics */
+.metrics-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+}
+
+/* Removed specific media query for 1400px since auto-fit handles it */
+
+.metric-item {
+    background: #f8fafc;
+    border-radius: var(--border-radius);
+    padding: 0.75rem;
+    text-align: center;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.metric-item:hover {
+    transform: scale(1.05);
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.metric-canvas-container {
+    position: relative;
+    height: 80px;
+    width: 80px;
+    margin-bottom: 0.25rem;
+}
+
+.metric-label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.metric-percentage {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Schedule Calendar */
+.schedule-container {
+    overflow-x: auto;
+}
+
+.visual-schedule {
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
+    /* rows will be generated dynamically */
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    min-width: 800px;
+    background: white;
+}
+
+.schedule-header-cell {
+    background: #f1f5f9;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+}
+
+.time-slot-label {
+    padding: 0.25rem;
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #f1f5f9;
+    /* lighter separator */
+}
+
+.schedule-grid-cell {
+    border-right: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    position: relative;
+    height: 40px;
+    /* Base height for 30 mins */
+}
+
+.schedule-block {
+    position: absolute;
+    top: 0;
+    left: 2px;
+    right: 2px;
+    border-radius: 4px;
+    padding: 4px 6px;
+    color: white;
+    font-size: 0.75rem;
+    overflow: hidden;
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.schedule-block:hover {
+    z-index: 20;
+    transform: scale(1.02);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-time {
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+.schedule-title {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Right Column Widgets */
+
+/* Date Range Picker */
+.calendar-widget {
+    background: #fff;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-nav-btn {
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+}
+
+.calendar-nav-btn:hover {
+    background: #f1f5f9;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.weekday-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 0.5rem 0;
+}
+
+.calendar-day {
+    padding: 0.5rem 0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.calendar-day:hover:not(.empty) {
+    background: #f1f5f9;
+}
+
+.calendar-day.selected {
+    background: var(--primary-color);
+    color: white;
+}
+
+.calendar-day.in-range {
+    background: rgba(16, 57, 50, 0.1);
+    /* primary color with opacity */
+    color: var(--primary-color);
+}
+
+.calendar-day.today {
+    border: 1px solid var(--primary-color);
+    font-weight: 600;
+}
+
+.calendar-day.disabled {
+    color: #ccc;
+    pointer-events: none;
+}
+
+/* DTR List */
+.dtr-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 1rem;
+}
+
+.dtr-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    border-left: 4px solid transparent;
+}
+
+.dtr-item.present {
+    border-left-color: var(--success);
+}
+
+.dtr-item.absent {
+    border-left-color: var(--danger);
+}
+
+.dtr-item.late {
+    border-left-color: var(--warning);
+}
+
+.dtr-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.dtr-info {
+    flex-grow: 1;
+}
+
+.dtr-date {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.dtr-time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.dtr-status {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #edf2f7;
+    color: var(--text-secondary);
+    display: inline-block;
+    margin-left: 0.5rem;
+}
+
+/* Buttons */
+.btn-modern {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0d2e28;
+}
+
+.btn-accent {
+    background: var(--success);
+    color: white;
+}
+
+.btn-accent:hover {
+    background: #38a169;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #cbd5e0;
+    color: var(--text-primary);
+}
+
+.btn-outline:hover {
+    background: #f7fafc;
+    border-color: #a0aec0;
+}
+
+/* Helper classes */
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.fw-bold {
+    font-weight: 700 !important;
+}
+
+/* Custom Modal Tweaks */
+.modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}

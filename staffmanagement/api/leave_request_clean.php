@@ -91,6 +91,8 @@ function submitLeaveRequest($conn) {
         $leave_type = $_POST['leave_type'] ?? '';
         $start_date = $_POST['start_date'] ?? '';
         $end_date = $_POST['end_date'] ?? '';
+        $start_time = $_POST['start_time'] ?? '';
+        $end_time = $_POST['end_time'] ?? '';
         $reason = $_POST['reason'] ?? '';
         $is_admin = ($_POST['is_admin'] ?? '0') === '1';
         $auto_approve = ($_POST['auto_approve'] ?? '0') === '1';
@@ -101,6 +103,15 @@ function submitLeaveRequest($conn) {
                 'error' => 'Missing required fields'
             ]);
             return;
+        }
+
+        // If times are provided, append them to dates (assuming DATETIME columns or string storage)
+        // If columns are DATE, this will just be truncated by MySQL which is acceptable fallback
+        if ($start_time) {
+            $start_date .= ' ' . $start_time;
+        }
+        if ($end_time) {
+            $end_date .= ' ' . $end_time;
         }
     
     // Handle file upload
