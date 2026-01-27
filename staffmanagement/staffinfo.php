@@ -5,6 +5,15 @@ require_once '../navigation.php';
 
 require '../db_connection.php';
 
+// Redirection Logic for Backward Compatibility
+// Redirect to staff_profile.php unless 'legacy' param is present
+if (!isset($_GET['legacy']) && isset($_GET['id'])) {
+    $redirect_url = 'staff_profile.php?id=' . $_GET['id'];
+    // Preserve other params if needed, but primarily ID
+    header("Location: " . $redirect_url);
+    exit;
+}
+
 // Get current user info
 $currentUser = getCurrentUser();
 

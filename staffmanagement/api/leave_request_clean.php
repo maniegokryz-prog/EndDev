@@ -214,7 +214,7 @@ function submitLeaveRequest($conn) {
             $check_table = $conn->query("SHOW TABLES LIKE 'notifications'");
             if ($check_table->num_rows > 0) {
                 $message = $emp_name . " has submitted a leave request (Pending for approval)";
-                $link = "/EndDev/staffmanagement/staffinfo.php?id=" . $emp_code;
+                $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $emp_code;
                 
                 // Check if link column exists
                 $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
@@ -346,7 +346,7 @@ function approveLeaveRequest($conn) {
             if ($check_table->num_rows > 0) {
                 $emp_name = $leave['first_name'] . ' ' . $leave['last_name'];
                 $message = $emp_name . ", Your leave request has been Approved";
-                $link = "/EndDev/staffmanagement/staffinfo.php?id=" . $leave['emp_code'];
+                $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $leave['emp_code'];
                 
                 // Check if link column exists
                 $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
@@ -422,7 +422,7 @@ function rejectLeaveRequest($conn) {
             if ($check_table->num_rows > 0) {
                 $emp_name = $leave['first_name'] . ' ' . $leave['last_name'];
                 $message = $emp_name . ", Your leave request has been Rejected";
-                $link = "/EndDev/staffmanagement/staffinfo.php?id=" . $leave['emp_code'];
+                $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $leave['emp_code'];
                 
                 // Check if link column exists
                 $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");

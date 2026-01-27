@@ -483,18 +483,59 @@ function approveLeave(id) {
             });
     }
 }
+let currentLeaveIdToReject = null;
+
 function rejectLeave(id) {
-    if (confirm('Reject this leave?')) {
-        const fd = new FormData();
-        fd.append('leave_id', id);
-        fd.append('action', 'reject_request');
-        fd.append('rejection_reason', 'Admin rejected');
-        fetch('api/leave_request_clean.php', { method: 'POST', body: fd }) // Note endpoint might vary based on action param
-            .then(r => r.json()).then(d => {
-                if (d.success) { location.reload(); }
-            });
-    }
+    currentLeaveIdToReject = id;
+    // Reset the modal inputs
+    document.getElementById('rejectionReason').value = '';
+
+    // Hide details modal if open
+    const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsViewModal'));
+    if (detailsModal) detailsModal.hide();
+
+    // Show reject modal
+    const rejectModal = new bootstrap.Modal(document.getElementById('leaveRejectConfirmModal'));
+    rejectModal.show();
 }
+
+// Attach listener for confirm reject button (outside function to avoid multiple bindings)
+document.addEventListener('DOMContentLoaded', () => {
+    const confirmRejectBtn = document.getElementById('confirmRejectBtn');
+    if (confirmRejectBtn) {
+        confirmRejectBtn.addEventListener('click', function () {
+            if (!currentLeaveIdToReject) return;
+
+            const reason = document.getElementById('rejectionReason').value || 'Admin rejected';
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Rejecting...';
+
+            const fd = new FormData();
+            fd.append('leave_id', currentLeaveIdToReject);
+            fd.append('action', 'reject_request');
+            fd.append('rejection_reason', reason);
+
+            fetch('api/leave_request_clean.php', { method: 'POST', body: fd })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        location.reload();
+                    } else {
+                        showErrorModal(d.error || 'Failed to reject request');
+                        btn.disabled = false;
+                        btn.textContent = 'Yes, Reject';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showErrorModal('Network error occurred');
+                    btn.disabled = false;
+                    btn.textContent = 'Yes, Reject';
+                });
+        });
+    }
+});
 function cancelLeave(id) {
     if (confirm('Cancel this request?')) {
         const fd = new FormData();

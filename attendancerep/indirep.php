@@ -216,7 +216,7 @@ if ($id) {
         
         <!-- ✅ SHOW PROFILE BUTTON -->
         <div class="mt-2">
-          <a a href="../staffmanagement/staffinfo.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm">
+          <a a href="../staffmanagement/staff_profile.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm">
             Show Profile
           </a>
         </div>

@@ -112,7 +112,7 @@ document.addEventListener("click", function (e) {
 
   const staffId = viewBtn.getAttribute("data-id");
   if (staffId) {
-    window.location.href = `staffinfo.php?id=${encodeURIComponent(staffId)}`;
+    window.location.href = `staff_profile.php?id=${encodeURIComponent(staffId)}`;
   }
 });
 

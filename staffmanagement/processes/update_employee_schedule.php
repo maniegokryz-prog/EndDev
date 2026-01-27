@@ -334,7 +334,7 @@ class EmployeeScheduleUpdater {
             if ($employee) {
                 $emp_name = $employee['first_name'] . ' ' . $employee['last_name'];
                 $message = $emp_name . ", There are some changes to your schedule";
-                $link = "/EndDev/staffmanagement/staffinfo.php";
+                $link = "/EndDev/staffmanagement/staff_profile.php";
                 
                 // Check if link column exists
                 $check_column = $this->db->query("SHOW COLUMNS FROM notifications LIKE 'link'");

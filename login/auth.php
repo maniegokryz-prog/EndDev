@@ -192,7 +192,7 @@ function handleLogin($conn) {
         $redirect_url = '../dashboard/dashboard.php';
     } else {
         // Normal users go to their individual staff info page
-        $redirect_url = '../staffmanagement/staffinfo.php?id=' . $user['employee_id'];
+        $redirect_url = '../staffmanagement/staff_profile.php?id=' . $user['employee_id'];
     }
     
     echo json_encode([

@@ -630,6 +630,29 @@ $profilePhoto .= '?v=' . time();
     <!-- Generic Confirm for JS usage -->
     <div class="modal fade" id="leaveConfirmModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 id="leaveConfirmTitle">Confirm</h5><p id="leaveConfirmMsg"></p><div class="mt-3"><button class="btn btn-secondary me-2" data-bs-dismiss="modal">No</button><button class="btn btn-primary" id="btnConfirmAction">Yes</button></div></div></div></div>
 
+    <!-- Reject Confirmation Modal -->
+    <div class="modal fade" id="leaveRejectConfirmModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">Reject Leave Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to reject this leave request?</p>
+                    <div class="mb-3">
+                        <label for="rejectionReason" class="form-label">Reason (Optional):</label>
+                        <textarea class="form-control" id="rejectionReason" rows="3" placeholder="Enter reason for rejection..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmRejectBtn">Yes, Reject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Attendance Manual Modal -->
     <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -660,7 +683,7 @@ $profilePhoto .= '?v=' . time();
             <div class="modal-content p-4 text-center">
                 <h5>Edit Schedule</h5>
                 <p>To edit the schedule, please use the legacy interface or contact the system administrator.</p>
-                <a href="staffinfo.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>" class="btn btn-primary">Go to Legacy Editor</a>
+                <a href="staffinfo.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>&legacy=1" class="btn btn-primary">Go to Legacy Editor</a>
             </div>
         </div>
     </div>

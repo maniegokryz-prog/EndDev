@@ -32,7 +32,7 @@ function getNavigationLinks() {
         $employeeId = $currentUser['employee_id'] ?? '';
         if ($username !== 'admin') {
             $links[] = [
-                'url' => '../staffmanagement/staffinfo.php?id=' . urlencode($employeeId),
+                'url' => '../staffmanagement/staff_profile.php?id=' . urlencode($employeeId),
                 'icon' => 'bi-person-circle',
                 'label' => 'My Profile'
             ];
@@ -46,7 +46,7 @@ function getNavigationLinks() {
         // Regular user navigation
         $employeeId = $currentUser['employee_id'] ?? '';
         $links[] = [
-            'url' => '../staffmanagement/staffinfo.php?id=' . urlencode($employeeId),
+            'url' => '../staffmanagement/staff_profile.php?id=' . urlencode($employeeId),
             'icon' => 'bi-house-door',
             'label' => 'My Info'
         ];

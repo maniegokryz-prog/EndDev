@@ -84,7 +84,7 @@ class EmployeeUpdater {
             header('Expires: 0');
             
             // Add timestamp to force browser reload
-            header('Location: ../staffinfo.php?id=' . urlencode($this->validatedData['employee_id_string']) . '&status=updated&t=' . time());
+            header('Location: ../staff_profile.php?id=' . urlencode($this->validatedData['employee_id_string']) . '&status=updated&t=' . time());
             exit;
 
         } catch (Exception $e) {
@@ -92,7 +92,7 @@ class EmployeeUpdater {
             $this->logError('Update Failed', $e->getMessage());
             // Redirect with error message
             $_SESSION['update_error'] = 'Update failed: ' . $e->getMessage();
-            header('Location: ../staffinfo.php?id=' . urlencode($_POST['employee_id'] ?? ''));
+            header('Location: ../staff_profile.php?id=' . urlencode($_POST['employee_id'] ?? ''));
             exit;
         }
     }
