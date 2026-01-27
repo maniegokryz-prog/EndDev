@@ -61,12 +61,17 @@ class EmployeeUpdater {
 
             $this->db->begin_transaction();
 
-            // Get internal employee ID
+            // Get internal employee ID and current data
             $employee = $this->getEmployeeByStringId($this->validatedData['employee_id_string']);
             if (!$employee) {
                 throw new Exception("Employee with ID '{$this->validatedData['employee_id_string']}' not found.");
             }
             $employeeId = $employee['id'];
+
+            // Preserve hire_date if not provided
+            if (empty($this->validatedData['hire_date'])) {
+                $this->validatedData['hire_date'] = $employee['hire_date'];
+            }
 
             // Handle profile picture upload
             $this->handleProfilePictureUpload($employee);
@@ -98,7 +103,7 @@ class EmployeeUpdater {
     }
 
     private function getEmployeeByStringId($employeeIdString) {
-        $stmt = $this->db->prepare("SELECT id, profile_photo FROM employees WHERE employee_id = ?");
+        $stmt = $this->db->prepare("SELECT id, profile_photo, hire_date FROM employees WHERE employee_id = ?");
         $stmt->bind_param('s', $employeeIdString);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -259,7 +264,7 @@ class EmployeeUpdater {
     }
 
     private function logError($context, $message) {
-        // Error logging implementation...
+        file_put_contents('../../update_error.log', date('Y-m-d H:i:s') . " - $context: $message\n", FILE_APPEND);
     }
 
     private function sendErrorResponse($message, $code = 400) {

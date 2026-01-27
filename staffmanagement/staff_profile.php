@@ -195,16 +195,15 @@ if ($schedules) {
     $processedSchedules = array_values($groups);
 }
 
-// Profile Photo Logic
+// Profile Photo Logic (Robust)
 $profilePhoto = '../assets/profile_pic/user.png';
 if (!empty($employee['profile_photo']) && $employee['profile_photo'] !== 'N/A') {
-    if (strpos($employee['profile_photo'], 'assets/') === 0) {
-        $profilePhoto = '../' . $employee['profile_photo'];
-    } else {
-        $profilePhoto = '../assets/profile_pic/' . $employee['profile_photo'];
-    }
+    // Force usage of the standard directory and just the filename to avoid path issues
+    $filename = basename($employee['profile_photo']);
+    $profilePhoto = '../assets/profile_pic/' . $filename;
 }
-$profilePhoto .= '?v=' . time();
+// Add microtime to guarantee uniqueness on update
+$profilePhoto .= '?v=' . microtime(true);
 
 ?>
 <!DOCTYPE html>
