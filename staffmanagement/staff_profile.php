@@ -650,7 +650,7 @@ $profilePhoto .= '?v=' . microtime(true);
     <!-- Alerts/Confirmations -->
     <div class="modal fade" id="leaveValidationErrorModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><i class="bi bi-exclamation-circle text-danger fs-1"></i><h5 class="text-danger mt-3">Validation Error</h5><p id="leaveValidationErrorMsg"></p></div></div></div>
     
-    <div class="modal fade" id="leaveSuccessModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><i class="bi bi-check-circle text-success fs-1"></i><h5 class="text-success mt-3">Success</h5><p id="leaveSuccessMsg"></p><button class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button></div></div></div>
+    <div class="modal fade" id="leaveSuccessModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><i class="bi bi-check-circle text-success fs-1"></i><h5 class="text-success mt-3">Success</h5><p id="leaveSuccessMsg"></p><button class="btn btn-primary mt-3" onclick="window.location.reload()">OK</button></div></div></div>
     
     <div class="modal fade" id="leaveDeleteConfirmModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 class="text-danger">Confirm Delete</h5><p id="leaveDeleteConfirmMsg"></p><div class="mt-3"><button class="btn btn-secondary me-2" data-bs-dismiss="modal">No</button><button class="btn btn-danger" id="leaveDeleteConfirmBtn">Yes, Delete</button></div></div></div></div>
     
@@ -718,7 +718,13 @@ $profilePhoto .= '?v=' . microtime(true);
                 <div class="modal-body">
                     <div id="attendanceContainer">
                         <div class="attendance-row row mb-3 align-items-start">
-                            <div class="col-md-3"><label>Date:</label><input type="date" class="form-control"></div>
+                            <div class="col-md-3">
+                                <label>Date:</label>
+                                <input type="date" class="form-control">
+                                <div class="schedule-error-container" style="min-height: 0;">
+                                    <small class="text-danger schedule-error d-block" style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
+                                </div>
+                            </div>
                             <div class="col-md-3"><label>Time In:</label><input type="time" class="form-control"></div>
                             <div class="col-md-3"><label>Time Out:</label><input type="time" class="form-control"></div>
                             <div class="col-md-3"><button class="btn btn-danger removeRow" style="display:none; margin-top: 32px;">−</button></div>
@@ -1116,6 +1122,7 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- <script src="../assets/js/staff_profile_logic.js?v=<?php echo time(); ?>"></script> -->
+    <script src="../assets/js/new_profile.js?v=<?php echo time(); ?>"></script>
     <script>
         // Logout Modal Trigger
         function showLogoutModal() {

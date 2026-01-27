@@ -721,13 +721,21 @@ body {
 .leave-section-card {
     height: auto;
     /* Let flex determine height */
-    flex: 1;
-    /* Share space equally (50/50) */
+    /* Share space equally (50/50) - DEFAULT, but overridden below */
     min-height: 200px;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
     /* Ensure list scrolls inside */
+}
+
+/* Adjust ratios: DTR (3/4) vs Leave (1/4) */
+.dtr-section-card {
+    flex: 3;
+}
+
+.leave-section-card {
+    flex: 1;
 }
 
 /* Specific override for leave list container */

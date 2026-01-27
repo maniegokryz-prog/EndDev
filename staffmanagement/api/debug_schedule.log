@@ -1,0 +1,77 @@
+Request: ID=7, Date=0002-02-02
+Querying with: ID=7, Day=5 (6), Date=0002-02-02
+Result count: 0
+Returning empty schedule
+Request: ID=7, Date=0002-02-02
+Querying with: ID=7, Day=5 (6), Date=0002-02-02
+Result count: 0
+Returning empty schedule
+Request: ID=7, Date=0202-02-02
+Querying with: ID=7, Day=1 (2), Date=0202-02-02
+Result count: 1
+Request: ID=7, Date=2026-02-02
+Querying with: ID=7, Day=0 (1), Date=2026-02-02
+Result count: 1
+Request: ID=7, Date=0202-02-02
+Querying with: ID=7, Day=1 (2), Date=0202-02-02
+Result count: 1
+Request: ID=7, Date=2026-02-02
+Querying with: ID=7, Day=0 (1), Date=2026-02-02
+Result count: 1
+Request: ID=7, Date=2026-02-02
+Querying with: ID=7, Day=0 (1), Date=2026-02-02
+Result count: 1
+Request: ID=7, Date=2026-02-02
+Querying with: ID=7, Day=0 (1), Date=2026-02-02
+Result count: 1
+Request: ID=7, Date=20260-02-02
+Request: ID=7, Date=2026-02-02
+Querying with: ID=7, Day=0 (1), Date=2026-02-02
+Result count: 1
+Request: ID=7, Date=0002-02-03
+Request: ID=7, Date=0002-02-03
+Request: ID=7, Date=0002-02-02
+Request: ID=7, Date=0002-02-02
+Request: ID=7, Date=2026-02-02
+Request: ID=7, Date=2202-02-02
+Request: ID=7, Date=2026-02-02
+Request: ID=7, Date=2026-02-02
+Request: ID=7, Date=2026-02-02
+Request: ID=7, Date=2026-02-02
+Request: ID=7, Date=2026-02-02
+Request: ID=7, Date=2026-01-26
+Request: ID=7, Date=2026-01-26
+Request: ID=7, Date=0002-01-26
+Request: ID=7, Date=0002-01-26
+Request: ID=7, Date=0001-02-02
+Request: ID=7, Date=0001-02-02
+Request: ID=7, Date=0002-02-02
+Request: ID=7, Date=0002-02-02
+Request: ID=7, Date=0002-01-26
+Request: ID=7, Date=0002-01-26
+Request: ID=7, Date=0002-01-26
+Request: ID=7, Date=0002-01-26
+Request: ID=7, Date=0002-01-27
+Request: ID=7, Date=0002-01-27
+Request: ID=7, Date=0002-01-26
+Request: ID=7, Date=2026-02-26
+Request: ID=7, Date=2026-01-26
+Request: ID=7, Date=2026-01-25
+Request: ID=7, Date=2026-01-02
+Request: ID=7, Date=2026-01-27
+Request: ID=7, Date=2026-01-28
+Request: ID=7, Date=2026-02-02
+Request: ID=7, Date=0002-01-26
+Request: ID=7, Date=0002-01-26
+Request: ID=7, Date=0020-01-26
+Request: ID=7, Date=0020-01-26
+Request: ID=7, Date=0202-01-26
+Request: ID=7, Date=0202-01-26
+Request: ID=7, Date=2026-01-26
+Request: ID=7, Date=2026-01-26
+Request: ID=7, Date=2026-01-30
+Request: ID=7, Date=2026-01-30
+Request: ID=7, Date=2026-01-30
+Request: ID=7, Date=2026-01-30
+Request: ID=7, Date=2026-01-28
+Request: ID=7, Date=2026-01-28

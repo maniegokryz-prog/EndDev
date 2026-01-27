@@ -923,3 +923,286 @@ function executeLeaveAction() {
             }
         });
 }
+
+// ==========================================
+// Manual Attendance Logic
+// ==========================================
+function initManualAttendance() {
+    const attendanceModalEl = document.getElementById('attendanceModal');
+    const addDayBtn = document.getElementById('addDayBtn');
+    const attendanceContainer = document.getElementById('attendanceContainer');
+    const saveBtn = document.getElementById('saveBtn');
+
+    if (!attendanceModalEl || !addDayBtn || !attendanceContainer || !saveBtn) {
+        // Elements might not exist if user is not admin
+        return;
+    }
+
+    const attendanceModal = new bootstrap.Modal(attendanceModalEl);
+
+    // Function to fetch and populate schedule times for a date
+    async function populateScheduleTimes(dateInput, timeInInput, timeOutInput) {
+        const selectedDate = dateInput.value;
+
+        // Find the error message element for this row
+        const row = dateInput.closest('.attendance-row');
+        const errorMsg = row ? row.querySelector('.schedule-error') : null;
+
+        if (!selectedDate) {
+            if (errorMsg) {
+                errorMsg.style.display = 'none';
+                errorMsg.textContent = '';
+            }
+            return;
+        }
+
+        try {
+            // Use window.employeeInternalId instead of PHP tag
+            const employeeId = window.employeeInternalId;
+
+            // First, check if attendance record already exists for this date
+            const existsResponse = await fetch('api/check_attendance_exists.php?employee_id=' + employeeId + '&date=' + selectedDate);
+            const existsResult = await existsResponse.json();
+
+            if (existsResult.success && existsResult.exists) {
+                timeInInput.value = '';
+                timeOutInput.value = '';
+                timeInInput.classList.remove('bg-light');
+                timeOutInput.classList.remove('bg-light');
+
+                if (errorMsg) {
+                    const dateObj = new Date(selectedDate);
+                    const formattedDate = dateObj.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    errorMsg.textContent = 'Attendance record already exists for ' + formattedDate;
+                    errorMsg.style.display = 'block';
+                }
+                return;
+            }
+
+            // If no existing record, proceed to fetch schedule
+            const response = await fetch('api/get_employee_schedule.php?employee_id=' + employeeId + '&date=' + selectedDate);
+            const result = await response.json();
+
+            if (result.success && result.has_schedule) {
+                timeInInput.value = result.schedule.start_time;
+                timeOutInput.value = result.schedule.end_time;
+                timeInInput.classList.add('bg-light');
+                timeOutInput.classList.add('bg-light');
+
+                if (errorMsg) {
+                    errorMsg.style.display = 'none';
+                    errorMsg.textContent = '';
+                }
+            } else {
+                timeInInput.value = '';
+                timeOutInput.value = '';
+                timeInInput.classList.remove('bg-light');
+                timeOutInput.classList.remove('bg-light');
+
+                if (selectedDate && errorMsg) {
+                    const dateObj = new Date(selectedDate);
+                    const formattedDate = dateObj.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    errorMsg.textContent = 'No schedule assigned for ' + formattedDate;
+                    errorMsg.style.display = 'block';
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching schedule:', error);
+            if (errorMsg) {
+                errorMsg.textContent = 'Error checking schedule';
+                errorMsg.style.display = 'block';
+            }
+        }
+    }
+
+    // Function to attach date change listener to a row
+    function attachDateListener(row) {
+        const dateInput = row.querySelector('input[type=\'date\']');
+        const timeInputs = row.querySelectorAll('input[type=\'time\']');
+        if (!timeInputs || timeInputs.length < 2) return;
+        
+        const timeInInput = timeInputs[0];
+        const timeOutInput = timeInputs[1];
+
+        if (dateInput && timeInInput && timeOutInput) {
+            const oldVal = dateInput.value;
+            const newDateInput = dateInput.cloneNode(true);
+            newDateInput.value = oldVal;
+            dateInput.parentNode.replaceChild(newDateInput, dateInput);
+
+            newDateInput.addEventListener('change', () => {
+                populateScheduleTimes(newDateInput, timeInInput, timeOutInput);
+            });
+
+            newDateInput.addEventListener('input', () => {
+                populateScheduleTimes(newDateInput, timeInInput, timeOutInput);
+            });
+        }
+    }
+
+    // Initialize when modal opens
+    attendanceModalEl.addEventListener('shown.bs.modal', () => {
+        // Setup listener for initial row when modal opens
+        const initialRow = attendanceContainer.querySelector('.attendance-row');
+        if (initialRow) {
+            attachDateListener(initialRow);
+        }
+    });
+
+    // Add another day
+    addDayBtn.addEventListener('click', () => {
+        const newRow = document.createElement('div');
+        newRow.classList.add('attendance-row', 'row', 'mb-3', 'align-items-start');
+        newRow.innerHTML = '<div class=\'col-md-3\'>' +
+          '<label>Date:</label>' +
+          '<input type=\'date\' class=\'form-control\'>' +
+          '<div class=\'schedule-error-container\' style=\'min-height: 0;\'>' +
+            '<small class=\'text-danger schedule-error d-block\' style=\'display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;\'></small>' +
+          '</div>' +
+        '</div>' +
+        '<div class=\'col-md-3\'>' +
+          '<label>Time In:</label>' +
+          '<input type=\'time\' class=\'form-control\'>' +
+        '</div>' +
+        '<div class=\'col-md-3\'>' +
+          '<label>Time Out:</label>' +
+          '<input type=\'time\' class=\'form-control\'>' +
+        '</div>' +
+        '<div class=\'col-md-3\'>' +
+          '<button class=\'btn btn-danger removeRow\' style=\'margin-top: 32px;\'>-</button>' +
+        '</div>';
+        attendanceContainer.appendChild(newRow);
+
+        attachDateListener(newRow);
+    });
+
+    // Remove a day row
+    attendanceContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('removeRow')) {
+            e.target.closest('.attendance-row').remove();
+        }
+    });
+
+    // Save attendance records
+    saveBtn.addEventListener('click', async () => {
+        const rows = attendanceContainer.querySelectorAll('.attendance-row');
+        const records = [];
+        let hasError = false;
+        let validationMessage = '';
+
+        const employeeId = window.employeeInternalId;
+
+        rows.forEach((row, index) => {
+            const inputs = row.querySelectorAll('input');
+            const date = inputs[0].value;
+            const timeIn = inputs[1].value;
+            const timeOut = inputs[2].value;
+
+            if (!date || !timeIn || !timeOut) {
+                if (!hasError) validationMessage = 'Please fill all fields in row ' + (index + 1);
+                hasError = true;
+                return;
+            }
+
+            records.push({
+                date: date,
+                time_in: timeIn,
+                time_out: timeOut
+            });
+        });
+
+        if (hasError || records.length === 0) {
+            const errEl = document.getElementById('attendanceErrorMessage');
+            if (errEl) errEl.textContent = validationMessage || 'Please fill out all records before saving.';
+            const errModalEl = document.getElementById('attendanceErrorModal');
+            if (errModalEl) {
+                const em = new bootstrap.Modal(errModalEl);
+                em.show();
+                // Auto-hide after 5s
+                setTimeout(() => {
+                    try { em.hide(); } catch (e) {}
+                }, 5000);
+            }
+            return;
+        }
+
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        try {
+            const response = await fetch('api/add_manual_attendance.php?action=add_manual', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    employee_id: employeeId,
+                    records: records
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                let message = result.message || 'Records saved successfully.';
+                if (result.warnings && result.warnings.length > 0) {
+                    message += ' Warnings: ' + result.warnings.join('; ');
+                }
+                const successEl = document.getElementById('attendanceSuccessMessage');
+                if (successEl) successEl.textContent = message;
+
+                try { attendanceModal.hide(); } catch (e) {}
+
+                const successModalEl = document.getElementById('attendanceSuccessModal');
+                if (successModalEl) {
+                   const sm = new bootstrap.Modal(successModalEl);
+                   sm.show();
+                }
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+
+            } else {
+                let errMsg = result.error || 'Unknown error occurred';
+                if (result.warnings && result.warnings.length > 0) {
+                    errMsg = result.warnings.join('\n');
+                }
+                const errEl = document.getElementById('attendanceErrorMessage');
+                if (errEl) errEl.textContent = errMsg;
+                const errModalEl = document.getElementById('attendanceErrorModal');
+                if (errModalEl) {
+                    const em = new bootstrap.Modal(errModalEl);
+                     em.show();
+                }
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Records';
+            }
+        } catch (error) {
+            console.error('Error saving attendance:', error);
+            const errEl = document.getElementById('attendanceErrorMessage');
+            if (errEl) errEl.textContent = 'Failed: ' + error.message;
+            const errModalEl = document.getElementById('attendanceErrorModal');
+            if (errModalEl) new bootstrap.Modal(errModalEl).show();
+            
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Records';
+        }
+    });
+}
+
+// Initialize Manual Attendance
+document.addEventListener('DOMContentLoaded', () => {
+    initManualAttendance();
+});
+
