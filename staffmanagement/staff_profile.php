@@ -227,6 +227,18 @@ $profilePhoto .= '?v=' . time();
     <link rel="stylesheet" href="staff.css?v=<?php echo time(); ?>"> <!-- Keep for Sidebar styles specific to staff module -->
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* Force button sizing for edit schedule modal */
+        #editScheduleModal .add-schedule-btn,
+        #editScheduleModal .edit-schedule-btn,
+        #editScheduleModal .btn-cancel {
+            flex: 0 0 auto !important;
+            width: auto !important; 
+            max-width: 180px !important;
+            padding: 10px 20px !important;
+            min-width: 140px !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -677,13 +689,220 @@ $profilePhoto .= '?v=' . time();
     <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 class="text-success">Attendance Saved</h5><p id="attendanceSuccessMessage">Records saved successfully.</p><button class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button></div></div></div>
     <div class="modal fade" id="attendanceErrorModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-4 text-center"><h5 class="text-danger">Save Failed</h5><p id="attendanceErrorMessage"></p></div></div></div>
 
-    <!-- Edit Schedule Placeholder -->
-    <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5>Edit Schedule</h5>
-                <p>To edit the schedule, please use the legacy interface or contact the system administrator.</p>
-                <a href="staffinfo.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>&legacy=1" class="btn btn-primary">Go to Legacy Editor</a>
+    <!-- HELPER MODALS FOR EDIT SCHEDULE -->
+    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
+          <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
+          <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
+          <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-warning">Required Fields</h5>
+          <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for schedules!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
+          <p id="scheduleAddedSuccessMsg">Your schedule has been added.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
+          <p id="scheduleUpdatedSuccessMsg">Your schedule has been updated.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-warning">Confirm Clear All</h5>
+          <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
+          <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            <button type="button" class="btn btn-danger" id="scheduleClearConfirmBtn">Yes, Clear All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
+          <p id="scheduleDeleteConfirmMsg">Are you sure you want to delete this schedule?</p>
+          <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
+          <p id="scheduleClearedSuccessMsg">All schedules have been cleared!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
+          <p id="scheduleSavedSuccessMsg">Schedule updated successfully!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
+          <p id="scheduleNoDataMsg">No schedules to clear!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered edit-schedule-modal-dialog">
+            <div class="modal-content border-0 shadow-sm">
+            <div class="modal-header">
+                <h4 class="modal-title fw-semibold" id="editScheduleModalLabel">Edit Schedule</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="editScheduleForm" action="processes/update_employee_schedule.php" method="POST">
+                    <input type="hidden" name="employee_id" value="<?php echo htmlspecialchars($employee['employee_id']); ?>">
+                    <input type="hidden" name="first_name" value="<?php echo htmlspecialchars($employee['first_name']); ?>">
+                    <input type="hidden" name="last_name" value="<?php echo htmlspecialchars($employee['last_name']); ?>">
+                    <div class="schedule-section">
+                        <div class="form-group">
+                            <label>Select Working Days:</label>
+                            <p class="helper-text">Selected days appear dimmed</p>
+                            <div class="day-buttons">
+                                <button type="button" class="day-btn" data-day="Monday" onclick="toggleDay(this)">Mon</button>
+                                <button type="button" class="day-btn" data-day="Tuesday" onclick="toggleDay(this)">Tue</button>
+                                <button type="button" class="day-btn" data-day="Wednesday" onclick="toggleDay(this)">Wed</button>
+                                <button type="button" class="day-btn" data-day="Thursday" onclick="toggleDay(this)">Thu</button>
+                                <button type="button" class="day-btn" data-day="Friday" onclick="toggleDay(this)">Fri</button>
+                                <button type="button" class="day-btn" data-day="Saturday" onclick="toggleDay(this)">Sat</button>
+                                <button type="button" class="day-btn" data-day="Sunday" onclick="toggleDay(this)">Sun</button>
+                            </div>
+                            <input type="hidden" name="work_days" id="work_days" value="">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="shift_start">Shift Start Time:</label>
+                                <input type="time" id="shift_start" name="shift_start">
+                            </div>
+                            <div class="form-group">
+                                <label for="shift_end">Shift End Time:</label>
+                                <input type="time" id="shift_end" name="shift_end">
+                            </div>
+                        </div>
+                        <div class="form-row" id="faculty-fields">
+                            <div class="form-group">
+                                <label for="designate_class">Designate Class <span style="color: #999;">(Faculty Only)</span></label>
+                                <input type="text" id="designate_class" name="designate_class" 
+                                    placeholder="Available for Faculty_Members only" 
+                                    autocomplete="off" style="text-transform: uppercase;" disabled>
+                                <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing classes</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="designate_subject">Subject <span style="color: #999;">(Faculty Only)</span></label>
+                                <input type="text" id="designate_subject" name="designate_subject" 
+                                    placeholder="Available for Faculty_Members only" 
+                                    autocomplete="off" style="text-transform: uppercase;" disabled>
+                                <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing subjects</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="room-number">Room Number <span style="color: #999;">(Faculty Only)</span></label>
+                                <input type="text" id="room-number" name="room-number" 
+                                    placeholder="Available for Faculty_Members only" 
+                                    autocomplete="off" style="text-transform: uppercase;" disabled>
+                                <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing rooms</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
+                                <button type="button" class="add-schedule-btn" onclick="addSchedule()">Add Schedule</button>
+                                <button type="button" id="edit-schedule-btn" class="edit-schedule-btn" onclick="editSchedule()" disabled>Update Selected Schedule</button>
+                                <button type="button" class="btn-cancel" onclick="clearScheduleForm()">Cancel</button>
+                            </div>
+                        </div>
+
+                        <div class="schedule-calendar-section">
+                            <div class="schedule-header">
+                                <h3>Schedule</h3>
+                                <button type="button" class="clear-schedules-btn" onclick="clearAllSchedules()">
+                                    Clear All Schedules
+                                </button>
+                            </div>
+                            <div class="calendar-wrapper">
+                                <div class="schedule-calendar" id="edit-schedule-calendar">
+                                    <div class="time-header"></div>
+                                    
+                                    <div class="day-header" data-day="Monday">Mon</div>
+                                    <div class="day-header" data-day="Tuesday">Tue</div>
+                                    <div class="day-header" data-day="Wednesday">Wed</div>
+                                    <div class="day-header" data-day="Thursday">Thu</div>
+                                    <div class="day-header" data-day="Friday">Fri</div>
+                                    <div class="day-header" data-day="Saturday">Sat</div>
+                                    <div class="day-header" data-day="Sunday">Sun</div>
+                                    
+                                    <div id="calendar-grid"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="schedule_data" id="schedule_data">
+                        
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-save">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+            
             </div>
         </div>
     </div>
@@ -787,7 +1006,7 @@ $profilePhoto .= '?v=' . time();
 
     <!-- ========================= SCRIPTS ========================= -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/edit_employee.js"></script>
+    <script src="../assets/js/edit_employee.js?v=<?php echo time(); ?>"></script>
     <script>
         // Global variables required by logic scripts
         const employeeIdForLeave = <?php echo json_encode($employee['id']); ?>;
@@ -797,6 +1016,26 @@ $profilePhoto .= '?v=' . time();
         
         // Schedule Data for Edit Modal
         window.existingSchedules = <?php echo json_encode($existingSchedules); ?>;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the edit schedule modal calendar when modal is shown
+            const editScheduleModal = document.getElementById('editScheduleModal');
+            if (editScheduleModal) {
+                editScheduleModal.addEventListener('shown.bs.modal', function () {
+
+                    console.log('Edit schedule modal opened, initializing calendar...');
+                    // The initializeCalendar function from edit_employee.js should be available
+                    if (typeof initializeCalendar === 'function') {
+                        initializeCalendar();
+                    }
+                    // Re-render schedules after calendar initialization
+                    if (typeof renderSchedules === 'function') {
+                        console.log('Re-rendering schedules. Total schedules:', window.editAddedSchedules?.length || 0);
+                        renderSchedules();
+                    }
+                });
+            }
+        });
 
         // DTR Export Redirection (from staffinfo.php)
         document.getElementById('exportDtrBtn')?.addEventListener('click', function() {

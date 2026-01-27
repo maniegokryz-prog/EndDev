@@ -356,7 +356,7 @@ class EmployeeIDValidator {
                 try {
                     const errorData = JSON.parse(responseText);
                     if (errorData.message) errorMessage = errorData.message;
-                } catch (e) {}
+                } catch (e) { }
                 throw new Error(errorMessage);
             }
             const result = JSON.parse(responseText);
@@ -574,7 +574,7 @@ function initializeFacultyFieldToggle() {
                     field.disabled = false;
                     field.placeholder = field.id === 'designate_class' ? 'Select or type class name' :
                         field.id === 'designate_subject' ? 'Select or type subject' :
-                        'Select or type room number';
+                            'Select or type room number';
                     field.style.opacity = '1';
                     field.style.cursor = 'text';
                     const customDropdown = field.closest('.custom-dropdown');
@@ -621,7 +621,7 @@ function initializeFacultyFieldToggle() {
  * - EmployeeIDValidator
  * - FacultyFieldToggle
  */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize Employee ID Validator
     new EmployeeIDValidator();
 
@@ -658,7 +658,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // ...existing code...
         ];
         const classDropdown = new CustomDropdown(classInput, classOptions);
-        classInput.addEventListener('input', function() {
+        classInput.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
     }
@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // ...existing code...
         ];
         const subjectDropdown = new CustomDropdown(subjectInput, subjectOptions);
-        subjectInput.addEventListener('input', function() {
+        subjectInput.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
     }
@@ -676,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // ...existing code...
         ];
         const roomDropdown = new CustomDropdown(roomInput, roomOptions);
-        roomInput.addEventListener('input', function() {
+        roomInput.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
     }
@@ -697,141 +697,141 @@ window.editAddedSchedules = editAddedSchedules;
 window.editSelectedDays = editSelectedDays;
 
 // Initialize calendar on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Don't initialize calendar here - it will be initialized when modal opens
     setupRoleInput();
     setupDepartmentInput();
-    
+
     // Add form submission handler for edit schedule modal
     const editScheduleForm = document.getElementById('editScheduleForm');
     if (editScheduleForm) {
-        editScheduleForm.addEventListener('submit', function(e) {
+        editScheduleForm.addEventListener('submit', function (e) {
             e.preventDefault(); // Prevent default form submission
-            
+
             // Serialize schedule data
             const scheduleDataInput = document.getElementById('schedule_data');
             if (scheduleDataInput) {
                 scheduleDataInput.value = JSON.stringify(editAddedSchedules);
             }
-            
+
             console.log('Edit Schedule Form submission');
             console.log('Schedule data:', JSON.stringify(editAddedSchedules, null, 2));
             console.log('Total schedules to save:', editAddedSchedules.length);
-            
+
             // Create FormData object
             const formData = new FormData(editScheduleForm);
-            
+
             // Log form data for debugging
             console.log('FormData entries:');
             for (let [key, value] of formData.entries()) {
                 console.log(`  ${key}: ${value}`);
             }
-            
+
             // Submit via AJAX
             fetch('processes/update_employee_schedule.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Server response:', data);
-                
-                if (data.success) {
-                    // Show success modal
-                    const msgEl = document.getElementById('scheduleSavedSuccessMsg');
-                    if (msgEl) msgEl.textContent = 'Schedule updated successfully!';
-                    const modalEl = document.getElementById('scheduleSavedSuccessModal');
-                    if (modalEl) {
-                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                      document.body.classList.remove('modal-open');
-                      modalEl.style.zIndex = 20000;
-                      setTimeout(() => {
-                        const m = new bootstrap.Modal(modalEl);
-                        m.show();
-                        document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-                      }, 40);
-                      setTimeout(() => {
-                        try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
-                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                        document.body.classList.remove('modal-open');
-                        // Close the modal and redirect to staffinfo
-                        const editModal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
-                        if (editModal) {
-                            editModal.hide();
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Server response:', data);
+
+                    if (data.success) {
+                        // Show success modal
+                        const msgEl = document.getElementById('scheduleSavedSuccessMsg');
+                        if (msgEl) msgEl.textContent = 'Schedule updated successfully!';
+                        const modalEl = document.getElementById('scheduleSavedSuccessModal');
+                        if (modalEl) {
+                            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                            document.body.classList.remove('modal-open');
+                            modalEl.style.zIndex = 20000;
+                            setTimeout(() => {
+                                const m = new bootstrap.Modal(modalEl);
+                                m.show();
+                                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+                            }, 40);
+                            setTimeout(() => {
+                                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                                document.body.classList.remove('modal-open');
+                                // Close the modal and redirect to staffinfo
+                                const editModal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
+                                if (editModal) {
+                                    editModal.hide();
+                                }
+                                // Reload the page to show updated schedules
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 500);
+                            }, 5000);
                         }
-                        // Reload the page to show updated schedules
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 500);
-                      }, 5000);
+                    } else {
+                        // Show error modal (using existing error modal or create inline alert)
+                        const errorMsg = 'Error updating schedule: ' + (data.message || 'Unknown error');
+                        console.error(errorMsg);
+                        alert(errorMsg); // Fallback to alert if error modal not available
                     }
-                } else {
-                    // Show error modal (using existing error modal or create inline alert)
-                    const errorMsg = 'Error updating schedule: ' + (data.message || 'Unknown error');
-                    console.error(errorMsg);
-                    alert(errorMsg); // Fallback to alert if error modal not available
-                }
-            })
-            .catch(error => {
-                console.error('Error submitting form:', error);
-                alert('Error updating schedule. Please check the console for details.');
-            });
+                })
+                .catch(error => {
+                    console.error('Error submitting form:', error);
+                    alert('Error updating schedule. Please check the console for details.');
+                });
         });
     }
-    
+
     // Handle Clear All Schedules confirmation
     const scheduleClearConfirmBtn = document.getElementById('scheduleClearConfirmBtn');
     if (scheduleClearConfirmBtn) {
-        scheduleClearConfirmBtn.addEventListener('click', function() {
+        scheduleClearConfirmBtn.addEventListener('click', function () {
             // Hide the confirm modal
-            try { 
+            try {
                 const confirmModal = bootstrap.Modal.getInstance(document.getElementById('scheduleClearConfirmModal'));
                 if (confirmModal) confirmModal.hide();
-            } catch (e) {}
-            
+            } catch (e) { }
+
             // Clear schedules
             editAddedSchedules = [];
             window.editAddedSchedules = editAddedSchedules;
             renderSchedules();
             console.log('All schedules cleared');
-            
+
             // Show success modal (no OK button, auto-close)
             const msgEl = document.getElementById('scheduleClearedSuccessMsg');
             if (msgEl) msgEl.textContent = 'All schedules have been cleared!';
             const modalEl = document.getElementById('scheduleClearedSuccessModal');
             if (modalEl) {
-              document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-              document.body.classList.remove('modal-open');
-              modalEl.style.zIndex = 20000;
-              setTimeout(() => {
-                const m = new bootstrap.Modal(modalEl);
-                m.show();
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-              }, 40);
-              setTimeout(() => {
-                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-              }, 5000);
+                modalEl.style.zIndex = 20000;
+                setTimeout(() => {
+                    const m = new bootstrap.Modal(modalEl);
+                    m.show();
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+                }, 40);
+                setTimeout(() => {
+                    try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
+                }, 5000);
             }
         });
     }
-    
+
     // Handle Delete Schedule confirmation
     const scheduleDeleteConfirmBtn = document.getElementById('scheduleDeleteConfirmBtn');
     if (scheduleDeleteConfirmBtn) {
-        scheduleDeleteConfirmBtn.addEventListener('click', function() {
+        scheduleDeleteConfirmBtn.addEventListener('click', function () {
             // Hide the confirm modal
-            try { 
+            try {
                 const confirmModal = bootstrap.Modal.getInstance(document.getElementById('scheduleDeleteConfirmModal'));
                 if (confirmModal) confirmModal.hide();
-            } catch (e) {}
-            
+            } catch (e) { }
+
             // Get the pending delete data
             if (window.pendingScheduleDelete) {
                 const { scheduleIndex, day } = window.pendingScheduleDelete;
                 const schedule = editAddedSchedules[scheduleIndex];
-                
+
                 // If schedule is only on this day, remove it completely
                 if (schedule.days.length === 1) {
                     editAddedSchedules.splice(scheduleIndex, 1);
@@ -839,37 +839,37 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Remove just this day from the schedule
                     schedule.days = schedule.days.filter(d => d !== day);
                 }
-                
+
                 window.editAddedSchedules = editAddedSchedules;
                 renderSchedules();
                 console.log('Schedule deleted');
-                
+
                 // Clear the pending data
                 window.pendingScheduleDelete = null;
-                
+
                 // Show success modal (optional - auto-close)
                 const msgEl = document.getElementById('scheduleUpdatedSuccessMsg');
                 if (msgEl) msgEl.textContent = 'Schedule deleted successfully!';
                 const modalEl = document.getElementById('scheduleUpdatedSuccessModal');
                 if (modalEl) {
-                  document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                  document.body.classList.remove('modal-open');
-                  modalEl.style.zIndex = 20000;
-                  setTimeout(() => {
-                    const m = new bootstrap.Modal(modalEl);
-                    m.show();
-                    document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-                  }, 40);
-                  setTimeout(() => {
-                    try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
                     document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                     document.body.classList.remove('modal-open');
-                  }, 3000);
+                    modalEl.style.zIndex = 20000;
+                    setTimeout(() => {
+                        const m = new bootstrap.Modal(modalEl);
+                        m.show();
+                        document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+                    }, 40);
+                    setTimeout(() => {
+                        try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                        document.body.classList.remove('modal-open');
+                    }, 3000);
                 }
             }
         });
     }
-    
+
     // --- Load existing schedules from PHP into the JS array ---
     if (window.existingSchedules && Array.isArray(window.existingSchedules) && window.existingSchedules.length > 0) {
         console.log('Loading existing schedules from PHP:', window.existingSchedules);
@@ -891,20 +891,20 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupRoleInput() {
     const roleInput = document.getElementById('roles');
     if (!roleInput) return;
-    
+
     // Add styling for better UX
-    roleInput.addEventListener('focus', function() {
+    roleInput.addEventListener('focus', function () {
         this.style.borderColor = '#007bff';
     });
-    
-    roleInput.addEventListener('blur', function() {
+
+    roleInput.addEventListener('blur', function () {
         this.style.borderColor = '';
         // Trim whitespace from the input
         this.value = this.value.trim();
     });
-    
+
     // Convert to proper case when user types
-    roleInput.addEventListener('input', function() {
+    roleInput.addEventListener('input', function () {
         // Don't auto-format while user is typing, but provide visual feedback
         const value = this.value.trim();
         if (value.length > 0) {
@@ -912,16 +912,16 @@ function setupRoleInput() {
             console.log('Role input:', value);
         }
     });
-    
+
     // Format the role properly on blur
-    roleInput.addEventListener('blur', function() {
+    roleInput.addEventListener('blur', function () {
         let value = this.value.trim();
         if (value) {
             // Convert to proper format (first letter caps, replace spaces with underscores for consistency)
-            value = value.split(' ').map(word => 
+            value = value.split(' ').map(word =>
                 word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
             ).join('_');
-            
+
             this.value = value;
         }
     });
@@ -933,13 +933,13 @@ function setupRoleInput() {
 function setupDepartmentInput() {
     const deptInput = document.getElementById('department');
     if (!deptInput) return;
-    
+
     // Add styling for better UX
-    deptInput.addEventListener('focus', function() {
+    deptInput.addEventListener('focus', function () {
         this.style.borderColor = '#007bff';
     });
-    
-    deptInput.addEventListener('blur', function() {
+
+    deptInput.addEventListener('blur', function () {
         this.style.borderColor = '';
         // Trim whitespace and format properly
         let value = this.value.trim();
@@ -948,13 +948,13 @@ function setupDepartmentInput() {
         //     value = value.split(' ').map(word => 
         //         word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         //     ).join(' ');
-            
+
         //     this.value = value;
         // }
     });
-    
+
     // Provide visual feedback while typing
-    deptInput.addEventListener('input', function() {
+    deptInput.addEventListener('input', function () {
         const value = this.value.trim();
         if (value.length > 0) {
             console.log('Department input:', value);
@@ -987,26 +987,37 @@ function toggleDay(button) {
     console.log('toggleDay called for button:', button);
     const day = button.getAttribute('data-day');
     console.log('Day:', day);
-    
+
     // Toggle the active class
     button.classList.toggle('active');
     console.log('Button classes after toggle:', button.className);
-    
+
+    // Ensure array exists
+    if (!Array.isArray(window.editSelectedDays)) {
+        window.editSelectedDays = [];
+    }
+
     // Update selected days array
     if (button.classList.contains('active')) {
-        if (!editSelectedDays.includes(day)) {
-            editSelectedDays.push(day);
+        if (!window.editSelectedDays.includes(day)) {
+            window.editSelectedDays.push(day);
         }
         console.log('Added day:', day);
     } else {
-        editSelectedDays = editSelectedDays.filter(d => d !== day);
+        window.editSelectedDays = window.editSelectedDays.filter(d => d !== day);
         console.log('Removed day:', day);
     }
-    
+
+    // Update local variable reference if it exists (for backward compatibility if other functions use it)
+    try { editSelectedDays = window.editSelectedDays; } catch (e) { }
+
     // Update hidden input
-    document.getElementById('work_days').value = JSON.stringify(editSelectedDays);
-    console.log('Selected work days:', editSelectedDays);
-    console.log('Button background:', window.getComputedStyle(button).backgroundColor);
+    const daysInput = document.getElementById('work_days');
+    if (daysInput) {
+        daysInput.value = JSON.stringify(window.editSelectedDays);
+    }
+
+    console.log('Selected work days (global):', window.editSelectedDays);
 }
 
 // Test function to manually add active class
@@ -1023,7 +1034,7 @@ function togglePassword(inputId) {
     const passwordInput = document.getElementById(inputId);
     const toggleButton = passwordInput.nextElementSibling;
     const eyeIcon = toggleButton.querySelector('.eye-icon');
-    
+
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         eyeIcon.textContent = '🙈';
@@ -1039,25 +1050,25 @@ function togglePassword(inputId) {
 function initializeCalendar() {
     console.log('initializeCalendar() called');
     const calendar = document.getElementById('edit-schedule-calendar');
-    
+
     if (!calendar) {
         console.error('Edit schedule calendar element not found!');
         return;
     }
-    
+
     console.log('Edit schedule calendar element found:', calendar);
     const timeSlots = generateTimeSlots('07:00', '24:00', 30); // 7AM to 12AM (midnight), 30-minute intervals
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    
+
     // Clear existing grid content (keep headers)
     const existingCells = calendar.querySelectorAll('.time-slot, .calendar-cell');
     console.log('Clearing existing cells:', existingCells.length);
     existingCells.forEach(cell => cell.remove());
-    
+
     // Set up grid rows (header + time slots)
     calendar.style.gridTemplateRows = `40px repeat(${timeSlots.length}, 40px)`;
     console.log('Created', timeSlots.length, 'time slots');
-    
+
     // Create time slots and calendar cells
     timeSlots.forEach((timeSlot, timeIndex) => {
         // Time slot label
@@ -1067,7 +1078,7 @@ function initializeCalendar() {
         timeLabel.style.gridColumn = '1';
         timeLabel.style.gridRow = `${timeIndex + 2}`;
         calendar.appendChild(timeLabel);
-        
+
         // Calendar cells for each day
         days.forEach((day, dayIndex) => {
             const cell = document.createElement('div');
@@ -1080,9 +1091,9 @@ function initializeCalendar() {
             calendar.appendChild(cell);
         });
     });
-    
+
     console.log('Calendar grid created successfully');
-    
+
     // Render existing schedules
     renderSchedules();
     console.log('initializeCalendar() completed');
@@ -1092,13 +1103,13 @@ function generateTimeSlots(startTime, endTime, intervalMinutes) {
     const slots = [];
     const start = parseTime(startTime);
     const end = parseTime(endTime);
-    
+
     let current = start;
     while (current < end) {
         slots.push(formatTimeSlot(current));
         current += intervalMinutes;
     }
-    
+
     return slots;
 }
 
@@ -1123,23 +1134,23 @@ function formatTime(timeSlot) {
 function renderSchedules() {
     console.log('renderSchedules() called. Total schedules:', editAddedSchedules.length);
     console.log('Schedules to render:', editAddedSchedules);
-    
+
     // Get the edit calendar specifically
     const editCalendar = document.getElementById('edit-schedule-calendar');
     if (!editCalendar) {
         console.error('Edit calendar not found in renderSchedules!');
         return;
     }
-    
+
     // Clear existing schedule blocks only from edit calendar
     editCalendar.querySelectorAll('.schedule-block').forEach(block => block.remove());
-    
+
     // Re-render all schedules with updated indices
     editAddedSchedules.forEach((schedule, index) => {
         console.log(`Rendering schedule ${index}:`, schedule);
         renderScheduleBlock(schedule, index);
     });
-    
+
     console.log('renderSchedules() completed');
 }
 
@@ -1149,19 +1160,19 @@ function renderScheduleBlock(schedule, scheduleIndex) {
     const baseTimeMinutes = 420; // 7:00 AM in minutes
     const slotDuration = 30; // 30-minute slots
     const slotHeight = 40; // 40px per slot
-    
+
     // Calculate slot positions
     const startSlotIndex = Math.floor((startTimeMinutes - baseTimeMinutes) / slotDuration);
     const endSlotIndex = Math.ceil((endTimeMinutes - baseTimeMinutes) / slotDuration);
     const slotsSpanned = endSlotIndex - startSlotIndex;
-    
+
     // Get the edit schedule calendar specifically
     const editCalendar = document.getElementById('edit-schedule-calendar');
     if (!editCalendar) {
         console.error('Edit schedule calendar not found!');
         return;
     }
-    
+
     schedule.days.forEach(day => {
         const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(day);
         if (startSlotIndex >= 0 && endSlotIndex <= 34) {
@@ -1198,33 +1209,33 @@ function renderScheduleBlock(schedule, scheduleIndex) {
                     </div>
                 `;
                 // --- Make block editable ---
-                scheduleBlock.addEventListener('click', function(e) {
+                scheduleBlock.addEventListener('click', function (e) {
                     // Don't trigger if clicking the delete button
                     if (e.target.classList.contains('schedule-delete-btn')) {
                         return;
                     }
-                    
+
                     e.stopPropagation();
-                    
+
                     console.log('Schedule block clicked for editing. Schedule index:', scheduleIndex);
                     console.log('Schedule data:', schedule);
-                    
+
                     // Set editing index
                     editCurrentlyEditingIndex = scheduleIndex;
-                    
+
                     // Fill form fields
                     document.getElementById('shift_start').value = schedule.startTime;
                     document.getElementById('shift_end').value = schedule.endTime;
                     document.getElementById('designate_class').value = schedule.class || '';
                     document.getElementById('designate_subject').value = schedule.subject || '';
                     document.getElementById('room-number').value = schedule.room_num || '';
-                    
+
                     // Set day buttons
                     editSelectedDays = [...schedule.days];
                     window.editSelectedDays = editSelectedDays;
-                    
+
                     console.log('Setting days to active:', editSelectedDays);
-                    
+
                     document.querySelectorAll('.day-btn').forEach(btn => {
                         const btnDay = btn.getAttribute('data-day');
                         if (editSelectedDays.includes(btnDay)) {
@@ -1233,23 +1244,23 @@ function renderScheduleBlock(schedule, scheduleIndex) {
                             btn.classList.remove('active');
                         }
                     });
-                    
+
                     document.getElementById('work_days').value = JSON.stringify(editSelectedDays);
-                    
+
                     // Enable edit button, disable add button temporarily
                     document.getElementById('edit-schedule-btn').disabled = false;
-                    
+
                     // Scroll to form
                     const scheduleSection = document.querySelector('.schedule-section');
                     if (scheduleSection) {
                         scheduleSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
-                    
+
                     // Focus on first input
                     setTimeout(() => {
                         document.getElementById('shift_start').focus();
                     }, 300);
-                    
+
                     console.log('Edit mode activated for schedule index:', editCurrentlyEditingIndex);
                 });
                 targetCell.appendChild(scheduleBlock);
@@ -1261,134 +1272,149 @@ function renderScheduleBlock(schedule, scheduleIndex) {
 function checkConsecutiveSchedule(day, timeMinutes, direction) {
     return addedSchedules.some(schedule => {
         if (!schedule.days.includes(day)) return false;
-        
+
         const scheduleStart = parseTime(schedule.startTime);
         const scheduleEnd = parseTime(schedule.endTime);
-        
+
         if (direction === 'before') {
             return Math.abs(scheduleEnd - timeMinutes) <= 1; // Within 1 minute tolerance
         } else if (direction === 'after') {
             return Math.abs(scheduleStart - timeMinutes) <= 1; // Within 1 minute tolerance
         }
-        
+
         return false;
     });
 }
 
 // Add Schedule functionality
+// Add Schedule functionality
 function addSchedule() {
+    // FORCE SYNC: Rebuild selected days from DOM state to ensure accuracy
+    window.editSelectedDays = [];
+    document.querySelectorAll('#editScheduleForm .day-btn.active').forEach(btn => {
+        const d = btn.getAttribute('data-day');
+        if (d) window.editSelectedDays.push(d);
+    });
+
+    // Ensure array exists (fallback)
+    if (!Array.isArray(window.editSelectedDays)) {
+        window.editSelectedDays = [];
+    }
+
+    console.log('addSchedule check validation. Days selected (from DOM):', window.editSelectedDays);
+
     // Validate that at least one day is selected
-    if (editSelectedDays.length === 0) {
+    if (window.editSelectedDays.length === 0) {
         const msgEl = document.getElementById('scheduleNoWorkDayMsg');
         if (msgEl) msgEl.textContent = 'Please select at least one working day first!';
         const modalEl = document.getElementById('scheduleNoWorkDayModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
-    
+
     // Get shift times
     const shiftStart = document.getElementById('shift_start').value;
     const shiftEnd = document.getElementById('shift_end').value;
-    
+
     if (!shiftStart || !shiftEnd) {
         const msgEl = document.getElementById('scheduleMissingTimeMsg');
         if (msgEl) msgEl.textContent = 'Please select both start and end times!';
         const modalEl = document.getElementById('scheduleMissingTimeModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
-    
+
     // Validate time order
     if (shiftStart >= shiftEnd) {
         const msgEl = document.getElementById('scheduleInvalidTimeMsg');
         if (msgEl) msgEl.textContent = 'Start time must be before end time!';
         const modalEl = document.getElementById('scheduleInvalidTimeModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
-    
+
     // Get class, subject, and room
     const designateClass = document.getElementById('designate_class').value;
     const designateSubject = document.getElementById('designate_subject').value;
     const roomNumber = document.getElementById('room-number').value;
-    
+
     // Check if user is faculty member
     const rolesInput = document.getElementById('roles');
     const currentRole = rolesInput ? rolesInput.value.trim() : '';
     const isFaculty = currentRole === 'Faculty_Member';
-    
+
     if (isFaculty && (!designateClass || !designateSubject || !roomNumber)) {
         const msgEl = document.getElementById('scheduleFacultyMissingMsg');
         if (msgEl) msgEl.textContent = 'Faculty members must enter class, subject, and room number for schedules!';
         const modalEl = document.getElementById('scheduleFacultyMissingModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
-    
+
     // For non-faculty, use default values
     const finalClass = isFaculty ? designateClass : 'N/A';
     const finalSubject = isFaculty ? designateSubject : 'General';
     const finalRoom = isFaculty ? roomNumber : 'TBD';
-    
+
     // Create schedule object
     const scheduleData = {
-        days: [...editSelectedDays], // Copy array
+        days: [...window.editSelectedDays], // Copy array from window
         startTime: shiftStart,
         endTime: shiftEnd,
         class: finalClass.toUpperCase(), // Ensure uppercase for consistency
@@ -1396,16 +1422,16 @@ function addSchedule() {
         room_num: finalRoom.toUpperCase(), // Ensure uppercase for consistency
         color: getRandomEditScheduleColor() // Assign random color to this schedule
     };
-    
+
     console.log('Adding new schedule:', scheduleData);
-    
+
     // Resolve overlaps automatically (pass null as editingIndex since this is a new schedule)
     const adjustments = resolveScheduleOverlaps(scheduleData, null);
-    
+
     // Add to schedules array
     editAddedSchedules.push(scheduleData);
     window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
-    
+
     console.log('Schedule created:', scheduleData);
     console.log('All schedules after adding:', editAddedSchedules);
     console.log('Schedule data for backend:', {
@@ -1416,39 +1442,39 @@ function addSchedule() {
         subject: scheduleData.subject,
         room_num: scheduleData.room_num
     });
-    
+
     // Re-render calendar
     renderSchedules();
-    
+
     // Show confirmation with adjustment info
     const daysList = editSelectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
     let message = `Schedule Added Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
-    
+
     if (adjustments.length > 0) {
         message += '\n\n⚠️ Overlapping schedules were automatically adjusted:\n' + adjustments.map(adj => '• ' + adj).join('\n');
     }
-    
+
     // Show success modal
     const msgEl = document.getElementById('scheduleAddedSuccessMsg');
     if (msgEl) msgEl.innerHTML = message.replace(/\n/g, '<br>');
     const modalEl = document.getElementById('scheduleAddedSuccessModal');
     if (modalEl) {
-      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-      document.body.classList.remove('modal-open');
-      modalEl.style.zIndex = 20000;
-      setTimeout(() => {
-        const m = new bootstrap.Modal(modalEl);
-        m.show();
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-      }, 40);
-      setTimeout(() => {
-        try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
         document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
         document.body.classList.remove('modal-open');
-      }, 5000);
+        modalEl.style.zIndex = 20000;
+        setTimeout(() => {
+            const m = new bootstrap.Modal(modalEl);
+            m.show();
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+        }, 40);
+        setTimeout(() => {
+            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+        }, 5000);
     }
-    
+
     // Clear the form for next schedule entry
     clearScheduleForm();
 }
@@ -1459,19 +1485,19 @@ function editSchedule() {
         if (msgEl) msgEl.textContent = 'Please select a schedule block from the calendar to edit.';
         const modalEl = document.getElementById('scheduleNoDataModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
@@ -1485,19 +1511,19 @@ function editSchedule() {
         if (msgEl) msgEl.textContent = 'Please select at least one working day first!';
         const modalEl = document.getElementById('scheduleNoWorkDayModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
@@ -1511,19 +1537,19 @@ function editSchedule() {
         if (msgEl) msgEl.textContent = 'Please select both start and end times!';
         const modalEl = document.getElementById('scheduleMissingTimeModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
@@ -1534,19 +1560,19 @@ function editSchedule() {
         if (msgEl) msgEl.textContent = 'Start time must be before end time!';
         const modalEl = document.getElementById('scheduleInvalidTimeModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
@@ -1566,19 +1592,19 @@ function editSchedule() {
         if (msgEl) msgEl.textContent = 'Faculty members must enter class, subject, and room number for schedules!';
         const modalEl = document.getElementById('scheduleFacultyMissingModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
@@ -1590,9 +1616,16 @@ function editSchedule() {
 
     // Create the updated schedule object
     const originalColor = editAddedSchedules[editCurrentlyEditingIndex].color;
-    
+
+    // FORCE SYNC: Rebuild selected days from DOM state to ensure accuracy
+    window.editSelectedDays = [];
+    document.querySelectorAll('#editScheduleForm .day-btn.active').forEach(btn => {
+        const d = btn.getAttribute('data-day');
+        if (d) window.editSelectedDays.push(d);
+    });
+
     const updatedSchedule = {
-        days: [...editSelectedDays],
+        days: [...window.editSelectedDays],
         startTime: shiftStart,
         endTime: shiftEnd,
         class: finalClass.toUpperCase(),
@@ -1600,51 +1633,51 @@ function editSchedule() {
         room_num: finalRoom.toUpperCase(),
         color: originalColor
     };
-    
+
     console.log('Updating schedule at index', editCurrentlyEditingIndex);
     console.log('Updated schedule data:', updatedSchedule);
-    
+
     // Resolve overlaps automatically (pass editCurrentlyEditingIndex so it skips itself)
     const adjustments = resolveScheduleOverlaps(updatedSchedule, editCurrentlyEditingIndex);
-    
+
     // Update the schedule in the array
     editAddedSchedules[editCurrentlyEditingIndex] = updatedSchedule;
     window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
 
     console.log('Schedule updated in array. All schedules:', editAddedSchedules);
-    
+
     // Re-render calendar
     renderSchedules();
-    
+
     // Show confirmation with adjustment info
     const daysList = editSelectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
     let message = `Schedule Updated Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
-    
+
     if (adjustments.length > 0) {
         message += '\n\n⚠️ Overlapping schedules were automatically adjusted:\n' + adjustments.map(adj => '• ' + adj).join('\n');
     }
-    
+
     // Show success modal
     const msgEl = document.getElementById('scheduleUpdatedSuccessMsg');
     if (msgEl) msgEl.innerHTML = message.replace(/\n/g, '<br>');
     const modalEl = document.getElementById('scheduleUpdatedSuccessModal');
     if (modalEl) {
-      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-      document.body.classList.remove('modal-open');
-      modalEl.style.zIndex = 20000;
-      setTimeout(() => {
-        const m = new bootstrap.Modal(modalEl);
-        m.show();
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-      }, 40);
-      setTimeout(() => {
-        try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
         document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
         document.body.classList.remove('modal-open');
-      }, 5000);
+        modalEl.style.zIndex = 20000;
+        setTimeout(() => {
+            const m = new bootstrap.Modal(modalEl);
+            m.show();
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+        }, 40);
+        setTimeout(() => {
+            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+        }, 5000);
     }
-    
+
     // Clear the form
     clearScheduleForm();
 }
@@ -1653,29 +1686,29 @@ function clearScheduleForm() {
     // Clear selected days
     editSelectedDays = [];
     window.editSelectedDays = editSelectedDays; // Keep global reference in sync
-    
+
     document.querySelectorAll('.day-btn.active').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Clear time inputs
     document.getElementById('shift_start').value = '';
     document.getElementById('shift_end').value = '';
-    
+
     // Only clear faculty fields if they're enabled (for faculty members)
     const rolesInput = document.getElementById('roles');
     const currentRole = rolesInput ? rolesInput.value.trim() : '';
     const isFaculty = currentRole === 'Faculty_Member';
-    
+
     if (isFaculty) {
         document.getElementById('designate_class').value = '';
         document.getElementById('designate_subject').value = '';
         document.getElementById('room-number').value = '';
     }
-    
+
     // Update hidden input
     document.getElementById('work_days').value = '';
-    
+
     // Reset editing state
     editCurrentlyEditingIndex = null;
     document.getElementById('edit-schedule-btn').disabled = true;
@@ -1689,36 +1722,36 @@ function clearAllSchedules() {
         if (msgEl) msgEl.textContent = 'No schedules to clear!';
         const modalEl = document.getElementById('scheduleNoDataModal');
         if (modalEl) {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          modalEl.style.zIndex = 20000;
-          setTimeout(() => {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-          }, 40);
-          setTimeout(() => {
-            try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) {}
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-          }, 5000);
+            modalEl.style.zIndex = 20000;
+            setTimeout(() => {
+                const m = new bootstrap.Modal(modalEl);
+                m.show();
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+            }, 40);
+            setTimeout(() => {
+                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+            }, 5000);
         }
         return;
     }
-    
+
     // Show confirmation modal
     const msgEl = document.getElementById('scheduleClearConfirmMsg');
     if (msgEl) msgEl.textContent = `Are you sure you want to clear all ${editAddedSchedules.length} schedule(s)?`;
     const modalEl = document.getElementById('scheduleClearConfirmModal');
     if (modalEl) {
-      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-      document.body.classList.remove('modal-open');
-      modalEl.style.zIndex = 20000;
-      setTimeout(() => {
-        const m = new bootstrap.Modal(modalEl);
-        m.show();
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-      }, 40);
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        modalEl.style.zIndex = 20000;
+        setTimeout(() => {
+            const m = new bootstrap.Modal(modalEl);
+            m.show();
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+        }, 40);
     }
 }
 
@@ -1741,12 +1774,12 @@ function checkScheduleConflict(newSchedule) {
         // Check if schedules overlap on any common day
         const commonDays = newSchedule.days.filter(day => existingSchedule.days.includes(day));
         if (commonDays.length === 0) return false;
-        
+
         const newStart = parseTime(newSchedule.startTime);
         const newEnd = parseTime(newSchedule.endTime);
         const existingStart = parseTime(existingSchedule.startTime);
         const existingEnd = parseTime(existingSchedule.endTime);
-        
+
         // Check for time overlap
         return (newStart < existingEnd && newEnd > existingStart);
     });
@@ -1762,10 +1795,10 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
     const adjustments = [];
     const newStart = parseTime(newSchedule.startTime);
     const newEnd = parseTime(newSchedule.endTime);
-    
+
     console.log('Resolving overlaps for new schedule:', newSchedule);
     console.log('Editing index:', editingIndex);
-    
+
     // Check each existing schedule for overlaps
     editAddedSchedules.forEach((existingSchedule, index) => {
         // Skip if this is the schedule we're editing
@@ -1773,34 +1806,34 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
             console.log(`Skipping index ${index} (currently being edited)`);
             return;
         }
-        
+
         // Find common days between new and existing schedules
         const commonDays = newSchedule.days.filter(day => existingSchedule.days.includes(day));
-        
+
         if (commonDays.length === 0) {
             return; // No overlap on days, skip
         }
-        
+
         const existingStart = parseTime(existingSchedule.startTime);
         const existingEnd = parseTime(existingSchedule.endTime);
-        
+
         // Check for time overlap
         const hasTimeOverlap = (newStart < existingEnd && newEnd > existingStart);
-        
+
         if (!hasTimeOverlap) {
             return; // No time overlap, skip
         }
-        
+
         console.log(`Overlap detected with schedule ${index}:`, existingSchedule);
-        
+
         // Determine how to adjust the existing schedule
-        
+
         // Case 1: New schedule completely covers existing schedule
         if (newStart <= existingStart && newEnd >= existingEnd) {
             console.log(`Case 1: New schedule completely covers existing schedule ${index}`);
             // Remove the common days from existing schedule
             existingSchedule.days = existingSchedule.days.filter(day => !commonDays.includes(day));
-            
+
             if (existingSchedule.days.length === 0) {
                 // Mark for deletion (will be removed after iteration)
                 existingSchedule._markedForDeletion = true;
@@ -1830,10 +1863,10 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
             console.log(`Case 4: New schedule splits existing schedule ${index}`);
             // This case is complex - keep the first part, create a second part
             const originalEnd = existingSchedule.endTime;
-            
+
             // Shorten existing schedule to end at new schedule's start
             existingSchedule.endTime = formatTimeSlot(newStart);
-            
+
             // Create a new schedule for the second part (after new schedule ends)
             const secondPart = {
                 days: [...commonDays],
@@ -1844,22 +1877,22 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
                 room_num: existingSchedule.room_num,
                 color: existingSchedule.color
             };
-            
+
             // Remove common days from existing schedule's second part
             // (we already shortened the time, so we need to add back the days but with new time)
             editAddedSchedules.push(secondPart);
-            
+
             adjustments.push(`Split schedule "${existingSchedule.subject || 'Work'}" on ${commonDays.join(', ')}: ${formatTime(existingSchedule.startTime)} - ${formatTime(existingSchedule.endTime)} and ${formatTime(secondPart.startTime)} - ${formatTime(secondPart.endTime)}`);
         }
     });
-    
+
     // Remove schedules marked for deletion
     editAddedSchedules = editAddedSchedules.filter(schedule => !schedule._markedForDeletion);
     window.editAddedSchedules = editAddedSchedules;
-    
+
     console.log('Adjustments made:', adjustments);
     console.log('Updated schedules:', editAddedSchedules);
-    
+
     return adjustments;
 }
 
@@ -1870,33 +1903,33 @@ function deleteSchedule(scheduleIndex, day) {
     if (msgEl) msgEl.textContent = 'Are you sure you want to delete this schedule block?';
     const modalEl = document.getElementById('scheduleDeleteConfirmModal');
     if (modalEl) {
-      // Store the data we need for confirmation
-      window.pendingScheduleDelete = { scheduleIndex, day };
-      
-      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-      document.body.classList.remove('modal-open');
-      modalEl.style.zIndex = 20000;
-      setTimeout(() => {
-        const m = new bootstrap.Modal(modalEl);
-        m.show();
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-      }, 40);
+        // Store the data we need for confirmation
+        window.pendingScheduleDelete = { scheduleIndex, day };
+
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        modalEl.style.zIndex = 20000;
+        setTimeout(() => {
+            const m = new bootstrap.Modal(modalEl);
+            m.show();
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
+        }, 40);
     } else {
-      // Fallback to native confirm if modal not found
-      if (window.confirm('Are you sure you want to delete this schedule?')) {
-        const schedule = editAddedSchedules[scheduleIndex];
-        
-        // If schedule is only on this day, remove it completely
-        if (schedule.days.length === 1) {
-            editAddedSchedules.splice(scheduleIndex, 1);
-        } else {
-            // Remove just this day from the schedule
-            schedule.days = schedule.days.filter(d => d !== day);
+        // Fallback to native confirm if modal not found
+        if (window.confirm('Are you sure you want to delete this schedule?')) {
+            const schedule = editAddedSchedules[scheduleIndex];
+
+            // If schedule is only on this day, remove it completely
+            if (schedule.days.length === 1) {
+                editAddedSchedules.splice(scheduleIndex, 1);
+            } else {
+                // Remove just this day from the schedule
+                schedule.days = schedule.days.filter(d => d !== day);
+            }
+
+            window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
+            renderSchedules();
+            console.log('Schedule deleted');
         }
-        
-        window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
-        renderSchedules();
-        console.log('Schedule deleted');
-      }
     }
 }

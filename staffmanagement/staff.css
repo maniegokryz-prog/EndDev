@@ -234,7 +234,8 @@
 
    .day-buttons {
      display: flex;
-     flex-wrap: wrap;
+     flex-wrap: nowrap;
+     /* Prevent wrapping on desktop */
      gap: 10px;
      justify-content: space-between;
      margin-bottom: 15px;
@@ -243,11 +244,10 @@
    }
 
    .day-btn {
-     flex: 0 0 auto;
-     /* Don't grow or shrink, use natural width */
-     width: calc((100% - 60px) / 7);
-     /* 7 buttons with 6 gaps */
-     min-width: 70px;
+     flex: 1;
+     /* evenly distribute width */
+     min-width: 0;
+     /* allows shrinking if needed */
      height: 60px;
      font-weight: 700;
      border: 2px solid #ccc;
@@ -260,11 +260,15 @@
      align-items: center;
      justify-content: center;
      font-size: 14px;
+     white-space: nowrap;
+     /* keep text on one line */
    }
 
    /* When modal is 700px or less, allow wrapping to 2 rows */
    @media (max-width: 750px) {
      .day-buttons {
+       flex-wrap: wrap;
+       /* Re-enable wrapping for mobile */
        gap: 8px;
        justify-content: space-around;
      }
@@ -677,8 +681,8 @@
 
    .metrics-card {
      margin-bottom: 30px !important;
-    width: 64% !important;
-    margin-top: -70% !important;
+     width: 64% !important;
+     margin-top: -70% !important;
    }
 
 
@@ -995,9 +999,10 @@
    }
 
    /*edit sched modal*/
+   /*edit sched modal*/
    .edit-schedule-modal-dialog {
-     max-width: 800px;
-     width: 100%;
+     max-width: 950px;
+     width: 95%;
    }
 
    /* Day buttons container - wraps at 700px modal width */
@@ -1093,11 +1098,11 @@
    }
 
    /* Target only the leave list container */
-  #leaveList {
-    max-height: 55px;
-    /* allow ~1 leave entry before scroll */
-    overflow-y: auto;
-    padding-right: 6px;
+   #leaveList {
+     max-height: 55px;
+     /* allow ~1 leave entry before scroll */
+     overflow-y: auto;
+     padding-right: 6px;
    }
 
    /* Optional: smooth scrollbar appearance */
