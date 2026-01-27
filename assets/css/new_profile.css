@@ -710,3 +710,35 @@ body {
     border: none;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
+
+/* Fix for left column cards collapsing */
+.left-column-wrapper {
+    height: 100%;
+}
+
+.dtr-section-card,
+.leave-section-card {
+    height: auto;
+    /* Let flex determine height */
+    flex: 1;
+    /* Share space equally (50/50) */
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Ensure list scrolls inside */
+}
+
+/* Specific override for leave list container */
+#leaveList.leave-list-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: 100%;
+    /* Fill the flexible card */
+    max-height: none;
+    /* Remove arbitrary limit */
+    overflow-y: auto;
+    /* Scroll if content exceeds card height */
+    padding-right: 5px;
+}

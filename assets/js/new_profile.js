@@ -574,6 +574,131 @@ function formatMinutesToTime(minutes) {
     return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
 }
 
+// Global function to update schedule based on leaves
+window.updateVisualScheduleWithLeaves = function (leaves) {
+    if (!window.schedulesData || !leaves) return;
+
+    // Clone original data to avoid permanent mutation on re-renders
+    // distinct from window.originalSchedulesData if we wanted to revert, but 
+    // for now we'll just rebuild from window.schedulesData (assuming it's the source)
+    // Actually, purely visual manipulation might be safer? 
+    // Let's modify the DOM directly or re-render with a merged list.
+
+    // Better: Helper to checks if a specific day name has an ACTIVE leave
+    // Problem: Leaves are by Date (YYYY-MM-DD), Schedule is by Day Name (Monday).
+    // Strategy: Look for leaves in the CURRENT week or upcoming? 
+    // To be simple and immediate for the user who just added a leave:
+    // We will simple check if there are ANY pending/approved leaves for the days of the week.
+    // If a user has a leave on ANY Monday, we highlight Monday? 
+    // Or closer: Check leaves overlapping "Today" or specific range?
+    // User expectation: "I added a leave for Feb 2. Show it."
+
+    // We will map leaves to Day Names.
+    const leavesMap = {}; // { 'Monday': { type: 'Sick', status: 'pending', date: '...' } }
+
+    leaves.forEach(leave => {
+        // Allow all statuses to be visualized per user request
+        // if (leave.status === 'rejected' || leave.status === 'cancelled') return;
+
+        // Convert start_date to Day Name
+        // We handle single day leaves (start=end) or ranges. 
+        // For simplicity v1: Handle start_date 's day.
+
+        try {
+            // Manual parse to avoid timezone issues (YYYY-MM-DD to local midnight)
+            const parts = leave.start_date.split('-');
+            const year = parseInt(parts[0]);
+            const month = parseInt(parts[1]) - 1;
+            const day = parseInt(parts[2]);
+            const dateObj = new Date(year, month, day);
+
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayName = days[dateObj.getDay()];
+
+            console.log(`Processing Leave: ${leave.start_date} (${dayName}) - ${leave.status}`);
+
+            // Determine Color
+            let color = '#ed8936'; // Pending (Orange)
+            if (leave.status === 'approved') color = '#48bb78'; // Green
+            if (leave.status === 'rejected') color = '#f56565'; // Red
+            if (leave.status === 'cancelled') color = '#cbd5e0'; // Gray
+
+            // Prioritize: Approved > Pending > Rejected? 
+            // If multiple on same day, we might overwrite. 
+            // Logic: If map has something, only overwrite if current is 'more important'?
+            // Simple logic: Overwrite if current is NOT rejected, or if map is empty.
+            // Actually, let's just show the latest one or prioritize Approved.
+            // For now, simple overwrite or keep existing logic.
+
+            if (!leavesMap[dayName] || (leavesMap[dayName].status !== 'approved' && leave.status === 'approved')) {
+                leavesMap[dayName] = {
+                    subject: leave.leave_type + ' Leave',
+                    class: leave.status.charAt(0).toUpperCase() + leave.status.slice(1), // Pending/Approved
+                    color: color,
+                    status: leave.status,
+                    startTime: '08:00', // Default visual time
+                    endTime: '17:00'
+                };
+            }
+        } catch (e) { console.error('Error parsing leave date:', e); }
+    });
+
+    console.log('Leaves Map:', leavesMap);
+
+    // Re-render with overrides
+    const calendar = document.getElementById('visualScheduleCalendar');
+    // const mobileContainer = document.getElementById('mobileScheduleView');
+
+    // 1. Re-render base schedule first to clear previous leave overlays
+    if (calendar && window.schedulesData && window.schedulesData.length > 0) {
+        renderVisualSchedule(calendar, window.schedulesData);
+    }
+
+    // 2. Overlay leaves
+    Object.keys(leavesMap).forEach(day => {
+        const leave = leavesMap[day]; // { subject, class (Status), color }
+        console.log(`Overlaying ${day}:`, leave);
+
+        // Find existing schedule blocks for this day and HIDE/MODIFY them or Overlay
+        const cells = document.querySelectorAll(`.schedule-grid-cell[data-day="${day}"]`);
+
+        // Remove existing blocks in this day column to avoid overlap mess
+        cells.forEach(cell => {
+            cell.innerHTML = ''; // Clear work blocks
+        });
+
+        const startMins = 8 * 60; // 480
+        const endMins = 17 * 60; // 1020
+        const interval = 30;
+
+        if (calendar) {
+            // NOTE: data-time must match exactly what renderVisualSchedule generates (multiples of 30 starting from 420)
+            const startCell = calendar.querySelector(`.schedule-grid-cell[data-day="${day}"][data-time="${startMins}"]`);
+            if (startCell) {
+                const block = document.createElement('div');
+                block.className = 'schedule-block leave-block';
+                block.style.backgroundColor = leave.color;
+                // FIXED: Start with simple border, removed invalid 'darken' SCSS function
+                block.style.borderLeft = '4px solid rgba(0,0,0,0.2)';
+
+                const height = ((endMins - startMins) / interval) * 32;
+                block.style.height = `${height - 2}px`;
+
+                block.innerHTML = `
+                    <div class="text-white small fw-bold">${leave.subject}</div>
+                    <div class="text-white small" style="opacity:0.9;">${leave.class}</div>
+                `;
+                block.title = `${leave.subject} (${leave.class})`;
+
+                startCell.appendChild(block);
+            } else {
+                console.warn(`Could not find start cell for ${day} at ${startMins}`);
+            }
+        }
+    });
+
+};
+
 // ==========================================
 // Leave Management System (API-based)
 // ==========================================
@@ -679,6 +804,11 @@ function loadEmployeeLeaves() {
                 </div>`;
             });
             list.innerHTML = html;
+
+            // Update Visual Schedule if function exists
+            if (typeof window.updateVisualScheduleWithLeaves === 'function') {
+                window.updateVisualScheduleWithLeaves(response.data);
+            }
         });
 }
 

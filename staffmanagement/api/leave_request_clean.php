@@ -255,7 +255,7 @@ function getEmployeeRequests($conn) {
     
     $employee_id = $_GET['employee_id'] ?? 0;
     
-    $sql = "SELECT el.*, lt.type_name as leave_type
+    $sql = "SELECT el.*, el.rejection_reason, 1 as force_renew, lt.type_name as leave_type
             FROM employee_leaves el
             INNER JOIN leave_types lt ON el.leave_type_id = lt.id
             WHERE el.employee_id = ?
@@ -411,10 +411,12 @@ function rejectLeaveRequest($conn) {
             return;
         }
         
-        // Update leave status
-        $sql = "UPDATE employee_leaves SET status = 'rejected' WHERE id = ?";
+        // Update leave status and save reason
+        $rejection_reason = $_POST['rejection_reason'] ?? null;
+        
+        $sql = "UPDATE employee_leaves SET status = 'rejected', rejection_reason = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $leave_id);
+        $stmt->bind_param("si", $rejection_reason, $leave_id);
         
         if ($stmt->execute()) {
             // Create notification for employee

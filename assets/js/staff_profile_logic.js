@@ -57,13 +57,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const date = this.value;
             console.log('Leave Request: Date changed to', date);
 
-            if (!date) return;
+            if (!date || date.length < 10 || date.startsWith('00')) return;
 
-            // Auto-set End Date to Start Date if empty
+            // Validate year is reasonable (e.g. >= 2000)
+            const year = parseInt(date.substring(0, 4));
+            if (year < 2000) return;
+
+            // Auto-fill removed per user request (manual input only)
             const leaveToInput = document.getElementById('leaveTo');
-            if (leaveToInput && !leaveToInput.value) {
-                leaveToInput.value = date;
-            }
 
             try {
                 console.log(`Fetching schedule for employee ${employeeInternalId} on ${date}`);
@@ -401,7 +402,8 @@ function finalizeLeave() {
 
 function loadEmployeeLeaves() {
     if (!employeeIdForLeave) return;
-    fetch(`api/leave_request_clean.php?action=get_employee_requests&employee_id=${employeeIdForLeave}`)
+    // Use new V2 API to ensure rejection_reason is fetched correctly (bypassing server cache)
+    fetch(`api/get_requests_v2.php?employee_id=${employeeIdForLeave}&_t=${new Date().getTime()}`)
         .then(res => res.json())
         .then(response => {
             const leaveList = document.getElementById("leaveList");
@@ -440,10 +442,22 @@ function loadEmployeeLeaves() {
 }
 
 function viewLeaveDetails(leave) {
+    console.log('Viewing Leave Details:', leave);
+    console.log('Rejection Reason Check:', leave.status, leave.rejection_reason);
+
     document.getElementById('viewLeaveType').textContent = leave.leave_type;
     document.getElementById('viewLeaveStatus').textContent = leave.status; // simplified
     document.getElementById('viewLeaveDates').textContent = leave.formatted_dates;
     document.getElementById('viewLeaveReason').textContent = leave.reason || 'None';
+
+    // Show Rejection Reason if applicable
+    const rejectionContainer = document.getElementById('viewLeaveRejectionReasonContainer');
+    if (leave.status === 'rejected') {
+        rejectionContainer.style.display = 'block';
+        document.getElementById('viewLeaveRejectionReason').textContent = leave.rejection_reason || 'No specific reason provided.';
+    } else {
+        if (rejectionContainer) rejectionContainer.style.display = 'none';
+    }
 
     // Attachment
     const attContainer = document.getElementById('viewLeaveAttachmentContainer');
@@ -469,44 +483,102 @@ function viewLeaveDetails(leave) {
     modal.show();
 }
 
+let currentLeaveIdToApprove = null;
 function approveLeave(id) {
-    // Implementation uses leaveApproveConfirmModal -> API call
-    // Simplified for brevity - assumes logic similar to staffinfo.php
-    if (confirm('Approve this leave?')) {
-        const fd = new FormData();
-        fd.append('leave_id', id);
-        fd.append('approved_by', 'admin');
-        fetch('api/leave_request_clean.php?action=approve_request', { method: 'POST', body: fd })
-            .then(r => r.json()).then(d => {
-                if (d.success) { location.reload(); }
-                else showErrorModal(d.error);
-            });
-    }
-}
-let currentLeaveIdToReject = null;
-
-function rejectLeave(id) {
-    currentLeaveIdToReject = id;
-    // Reset the modal inputs
-    document.getElementById('rejectionReason').value = '';
-
+    currentLeaveIdToApprove = id;
     // Hide details modal if open
     const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsViewModal'));
     if (detailsModal) detailsModal.hide();
 
-    // Show reject modal
-    const rejectModal = new bootstrap.Modal(document.getElementById('leaveRejectConfirmModal'));
-    rejectModal.show();
+    // Show approve confirm modal
+    const approveModal = new bootstrap.Modal(document.getElementById('leaveApproveConfirmModal'));
+    approveModal.show();
 }
 
-// Attach listener for confirm reject button (outside function to avoid multiple bindings)
+let currentLeaveIdToCancel = null;
+function cancelLeave(id) {
+    currentLeaveIdToCancel = id;
+    // Hide details modal if open
+    const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsViewModal'));
+    if (detailsModal) detailsModal.hide();
+
+    // Show cancel confirm modal
+    const cancelModal = new bootstrap.Modal(document.getElementById('leaveCancelConfirmModal'));
+    cancelModal.show();
+}
+
+// Attach listeners for confirm buttons
 document.addEventListener('DOMContentLoaded', () => {
+    // Approve Confirm
+    const confirmApproveBtn = document.getElementById('confirmApproveBtn');
+    if (confirmApproveBtn) {
+        confirmApproveBtn.addEventListener('click', function () {
+            if (!currentLeaveIdToApprove) return;
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Approving...';
+
+            const fd = new FormData();
+            fd.append('leave_id', currentLeaveIdToApprove);
+            fd.append('approved_by', 'admin');
+
+            fetch('api/leave_request_clean.php?action=approve_request', { method: 'POST', body: fd })
+                .then(r => r.json()).then(d => {
+                    if (d.success) { location.reload(); }
+                    else {
+                        showErrorModal(d.error || 'Failed to approve');
+                        btn.disabled = false;
+                        btn.textContent = 'Yes, Approve';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showErrorModal('Network error');
+                    btn.disabled = false;
+                    btn.textContent = 'Yes, Approve';
+                });
+        });
+    }
+
+    // Cancel Confirm
+    const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+    if (confirmCancelBtn) {
+        confirmCancelBtn.addEventListener('click', function () {
+            if (!currentLeaveIdToCancel) return;
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Cancelling...';
+
+            const fd = new FormData();
+            fd.append('leave_id', currentLeaveIdToCancel);
+            fd.append('action', 'cancel_request');
+
+            fetch('api/leave_request_clean.php?action=cancel_request', { method: 'POST', body: fd })
+                .then(r => r.json()).then(d => {
+                    if (d.success) { location.reload(); }
+                    else {
+                        showErrorModal(d.error || 'Failed to cancel');
+                        btn.disabled = false;
+                        btn.textContent = 'Yes, Cancel Request';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showErrorModal('Network error');
+                    btn.disabled = false;
+                    btn.textContent = 'Yes, Cancel Request';
+                });
+        });
+    }
+
+    // Reject Confirm
     const confirmRejectBtn = document.getElementById('confirmRejectBtn');
     if (confirmRejectBtn) {
         confirmRejectBtn.addEventListener('click', function () {
             if (!currentLeaveIdToReject) return;
 
             const reason = document.getElementById('rejectionReason').value || 'Admin rejected';
+            console.log('Capturing Rejection Reason:', reason);
             const btn = this;
             btn.disabled = true;
             btn.textContent = 'Rejecting...';
@@ -536,16 +608,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-function cancelLeave(id) {
-    if (confirm('Cancel this request?')) {
-        const fd = new FormData();
-        fd.append('leave_id', id);
-        fd.append('action', 'cancel_request');
-        fetch('api/leave_request_clean.php?action=cancel_request', { method: 'POST', body: fd })
-            .then(r => r.json()).then(d => {
-                if (d.success) { location.reload(); }
-            });
-    }
+
+let currentLeaveIdToReject = null;
+function rejectLeave(id) {
+    currentLeaveIdToReject = id;
+    const reasonInput = document.getElementById('rejectionReason');
+    if (reasonInput) reasonInput.value = '';
+
+    const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsViewModal'));
+    if (detailsModal) detailsModal.hide();
+
+    const rejectModal = new bootstrap.Modal(document.getElementById('leaveRejectConfirmModal'));
+    rejectModal.show();
 }
 
 function cancelLeaveRequest() {

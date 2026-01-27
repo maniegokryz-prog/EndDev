@@ -620,6 +620,10 @@ $profilePhoto .= '?v=' . time();
                     <div class="mb-3"><label class="fw-bold">Status:</label><div id="viewLeaveStatus" class="ms-2"></div></div>
                     <div class="mb-3"><label class="fw-bold">Duration:</label><div id="viewLeaveDates" class="ms-2"></div></div>
                     <div class="mb-3"><label class="fw-bold">Reason:</label><div id="viewLeaveReason" class="ms-2 text-muted"></div></div>
+                    <div class="mb-3" id="viewLeaveRejectionReasonContainer" style="display: none;">
+                        <label class="fw-bold text-danger">Rejection Reason:</label>
+                        <div id="viewLeaveRejectionReason" class="ms-2 text-danger"></div>
+                    </div>
                     <div class="mb-3" id="viewLeaveAttachmentContainer" style="display: none;">
                         <label class="fw-bold">Attachment:</label>
                         <div class="ms-2"><a href="#" id="viewLeaveAttachment" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-paperclip"></i> View</a></div>
@@ -660,6 +664,34 @@ $profilePhoto .= '?v=' . time();
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-danger" id="confirmRejectBtn">Yes, Reject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve Leave Confirmation Modal -->
+    <div class="modal fade" id="leaveApproveConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-success">Confirm Approval</h5>
+                <p>Are you sure you want to approve this leave request?</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="confirmApproveBtn">Yes, Approve</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Leave Confirmation Modal -->
+    <div class="modal fade" id="leaveCancelConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-warning">Confirm Cancellation</h5>
+                <p>Are you sure you want to cancel this leave request?</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep it</button>
+                    <button type="button" class="btn btn-warning" id="confirmCancelBtn">Yes, Cancel Request</button>
                 </div>
             </div>
         </div>
@@ -1051,6 +1083,6 @@ $profilePhoto .= '?v=' . time();
             // edit_employee.js likely attaches listeners or we rely on the onclick="toggleDay(this)" attributes I copied.
         };
     </script>
-    <script src="../assets/js/staff_profile_logic.js"></script>
+    <script src="../assets/js/staff_profile_logic.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

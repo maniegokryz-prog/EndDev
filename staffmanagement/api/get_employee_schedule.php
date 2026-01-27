@@ -12,6 +12,10 @@ require '../../db_connection.php';
 try {
     $employee_id = $_GET['employee_id'] ?? 0;
     $date = $_GET['date'] ?? '';
+
+    // DEBUG LOGGING
+    $logMsg = "Request: ID=$employee_id, Date=$date\n";
+    file_put_contents('debug_schedule.log', $logMsg, FILE_APPEND);
     
     if (!$employee_id) {
         throw new Exception('Employee ID is required');
@@ -38,7 +42,6 @@ try {
             WHERE es.employee_id = ? 
               AND es.is_active = 1
               AND sp.day_of_week = ?
-              AND sp.is_active = 1
               AND (es.end_date IS NULL OR es.end_date >= ?)
             ORDER BY sp.start_time ASC";
     
