@@ -687,6 +687,10 @@ async function populateScheduleTimes(dateInput, timeInInput, timeOutInput) {
         return;
     }
 
+    // Ignore invalid years (e.g. while typing)
+    const y = new Date(selectedDate).getFullYear();
+    if (!y || y < 2000) return;
+
     try {
         // Check existing
         const existsRes = await fetch(`api/check_attendance_exists.php?employee_id=${employeeInternalId}&date=${selectedDate}`);
@@ -715,20 +719,18 @@ async function populateScheduleTimes(dateInput, timeInInput, timeOutInput) {
             timeOutInput.classList.add('bg-light');
             if (errorMsg) errorMsg.style.display = 'none';
         } else {
-            // Clear inputs
-            dateInput.value = ''; // <--- Added this
+            // Clear inputs (but keep date!)
+            // dateInput.value = ''; 
             timeInInput.value = '';
             timeOutInput.value = '';
             timeInInput.classList.remove('bg-light');
             timeOutInput.classList.remove('bg-light');
 
-            const msg = `No schedule assigned for ${selectedDate}`;
+            // Do NOT show error modal. Allow manual entry.
             if (errorMsg) {
-                errorMsg.textContent = msg;
+                errorMsg.textContent = 'No preset schedule. Enter manually.';
                 errorMsg.style.display = 'block';
             }
-            // Trigger Modal Popup
-            showErrorModal(msg);
         }
     } catch (e) {
         console.error(e);
@@ -747,6 +749,5 @@ function attachDateListener(row) {
         dateInput.parentNode.replaceChild(newDateInput, dateInput);
 
         newDateInput.addEventListener('change', () => populateScheduleTimes(newDateInput, timeIn, timeOut));
-        newDateInput.addEventListener('input', () => populateScheduleTimes(newDateInput, timeIn, timeOut));
     }
 }
