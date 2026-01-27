@@ -1,42 +1,63 @@
 <?php
-require_once '../../vendor/autoload.php';
+// Prevent any output before JSON
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 header('Content-Type: application/json');
 
-// Check if user is logged in
-if (!isset($_SESSION['employee_id'])) {
-    echo json_encode(['success' => false, 'error' => 'Not authenticated']);
-    exit;
-}
+try {
+    // Check dependencies
+    $vendorPath = __DIR__ . '/../../vendor/autoload.php';
+    if (!file_exists($vendorPath)) {
+        throw new Exception('Composer dependencies (vendor) not found. Please run composer install.');
+    }
+    require_once $vendorPath;
 
-$loggedInEmployeeId = $_SESSION['employee_id'];
+    // Start session if not already started
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
-require_once '../../db_connection.php';
+    // Check if user is logged in
+    if (!isset($_SESSION['employee_id'])) {
+        throw new Exception('Not authenticated');
+    }
 
-// Determine action
-$action = $_GET['action'] ?? '';
+    $loggedInEmployeeId = $_SESSION['employee_id'];
 
-switch ($action) {
-    case 'send_otp':
-        sendOTP();
-        break;
-    case 'verify_otp':
-        verifyOTP();
-        break;
-    case 'change_password':
-        changePassword();
-        break;
-    default:
-        echo json_encode(['success' => false, 'error' => 'Invalid action']);
-        break;
+    $dbPath = __DIR__ . '/../../db_connection.php';
+    if (!file_exists($dbPath)) {
+        throw new Exception('Database connection file not found.');
+    }
+    require_once $dbPath;
+
+    // Determine action
+    $action = $_GET['action'] ?? '';
+
+    switch ($action) {
+        case 'send_otp':
+            sendOTP();
+            break;
+        case 'verify_otp':
+            verifyOTP();
+            break;
+        case 'change_password':
+            changePassword();
+            break;
+        default:
+            throw new Exception('Invalid action');
+    }
+
+} catch (Throwable $e) {
+    http_response_code(500); // Internal Server Error
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage(),
+        'debug' => 'File: ' . $e->getFile() . ' Line: ' . $e->getLine()
+    ]);
 }
 
 /**
@@ -48,8 +69,7 @@ function sendOTP() {
     $email = $_POST['email'] ?? '';
     
     if (empty($email)) {
-        echo json_encode(['success' => false, 'error' => 'Email is required']);
-        return;
+        throw new Exception('Email is required');
     }
     
     // Verify email matches logged-in user
@@ -59,8 +79,7 @@ function sendOTP() {
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
-        echo json_encode(['success' => false, 'error' => 'Email does not match your account']);
-        return;
+        throw new Exception('Email does not match your account');
     }
     
     $employee = $result->fetch_assoc();
@@ -86,10 +105,10 @@ function sendOTP() {
         if (sendOTPEmail($email, $employeeName, $otp)) {
             echo json_encode(['success' => true, 'employee_id' => $loggedInEmployeeId]);
         } else {
-            echo json_encode(['success' => false, 'error' => 'Failed to send OTP email. Please check logs.']);
+            throw new Exception('Failed to send OTP email. Please check logs.');
         }
     } else {
-        echo json_encode(['success' => false, 'error' => 'Failed to generate OTP']);
+        throw new Exception('Failed to generate OTP');
     }
 }
 
@@ -102,8 +121,7 @@ function verifyOTP() {
     $otp = $_POST['otp'] ?? '';
     
     if (empty($otp)) {
-        echo json_encode(['success' => false, 'error' => 'OTP is required']);
-        return;
+        throw new Exception('OTP is required');
     }
     
     // Debug: Check what's in the database
@@ -113,28 +131,24 @@ function verifyOTP() {
     $debugResult = $debugStmt->get_result();
     
     if ($debugResult->num_rows === 0) {
-        echo json_encode(['success' => false, 'error' => 'No OTP found for your account. Please request a new one.']);
-        return;
+        throw new Exception('No OTP found for your account. Please request a new one.');
     }
     
     $debugRow = $debugResult->fetch_assoc();
     
     // Check if OTP matches
     if ($debugRow['otp'] !== $otp) {
-        echo json_encode(['success' => false, 'error' => 'Invalid OTP code']);
-        return;
+        throw new Exception('Invalid OTP code');
     }
     
     // Check if already verified
     if ($debugRow['verified'] == 1) {
-        echo json_encode(['success' => false, 'error' => 'OTP already used. Please request a new one.']);
-        return;
+        throw new Exception('OTP already used. Please request a new one.');
     }
     
     // Check if expired
     if (strtotime($debugRow['expires_at']) <= time()) {
-        echo json_encode(['success' => false, 'error' => 'OTP has expired. Please request a new one.']);
-        return;
+        throw new Exception('OTP has expired. Please request a new one.');
     }
     
     // Check OTP
@@ -144,8 +158,7 @@ function verifyOTP() {
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
-        echo json_encode(['success' => false, 'error' => 'Invalid or expired OTP']);
-        return;
+        throw new Exception('Invalid or expired OTP');
     }
     
     // Mark OTP as verified
@@ -166,18 +179,15 @@ function changePassword() {
     $confirmPassword = $_POST['confirm_password'] ?? '';
     
     if (empty($newPassword) || empty($confirmPassword)) {
-        echo json_encode(['success' => false, 'error' => 'All fields are required']);
-        return;
+        throw new Exception('All fields are required');
     }
     
     if ($newPassword !== $confirmPassword) {
-        echo json_encode(['success' => false, 'error' => 'Passwords do not match']);
-        return;
+        throw new Exception('Passwords do not match');
     }
     
     if (strlen($newPassword) < 6) {
-        echo json_encode(['success' => false, 'error' => 'Password must be at least 6 characters']);
-        return;
+        throw new Exception('Password must be at least 6 characters');
     }
     
     // Verify OTP was verified
@@ -187,8 +197,7 @@ function changePassword() {
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
-        echo json_encode(['success' => false, 'error' => 'OTP verification required']);
-        return;
+        throw new Exception('OTP verification required');
     }
     
     // Hash new password
@@ -206,7 +215,7 @@ function changePassword() {
         
         echo json_encode(['success' => true]);
     } else {
-        echo json_encode(['success' => false, 'error' => 'Failed to update password']);
+        throw new Exception('Failed to update password');
     }
 }
 
@@ -233,9 +242,9 @@ function ensureOTPTable() {
  * Send OTP email using PHPMailer with IONOS SMTP
  */
 function sendOTPEmail($toEmail, $employeeName, $otp) {
-    $mail = new PHPMailer(true);
-    
     try {
+        $mail = new PHPMailer(true); // Using the imported class name
+
         // Server settings
         $mail->isSMTP();
         $mail->Host = 'smtp.ionos.com';
@@ -271,24 +280,30 @@ function sendOTPEmail($toEmail, $employeeName, $otp) {
         $mail->send();
         
         // Log success
-        $logFile = __DIR__ . '/../../logs/password_change_success.log';
-        $logDir = dirname($logFile);
-        if (!file_exists($logDir)) {
-            mkdir($logDir, 0777, true);
-        }
-        file_put_contents($logFile, date('Y-m-d H:i:s') . " - OTP sent to {$toEmail}\n", FILE_APPEND);
+        logMessage("OTP sent to {$toEmail}", 'success');
         
         return true;
-    } catch (Exception $e) {
+    } catch (PHPMailerException $e) {
         // Log error
-        $logFile = __DIR__ . '/../../logs/password_change_errors.log';
-        $logDir = dirname($logFile);
-        if (!file_exists($logDir)) {
-            mkdir($logDir, 0777, true);
-        }
-        file_put_contents($logFile, date('Y-m-d H:i:s') . " - Failed to send OTP to {$toEmail}: " . $mail->ErrorInfo . "\n", FILE_APPEND);
-        
+        logMessage("Failed to send OTP to {$toEmail}: " . $e->getMessage(), 'error');
+        return false;
+    } catch (Exception $e) {
+        logMessage("General error sending OTP to {$toEmail}: " . $e->getMessage(), 'error');
         return false;
     }
+}
+
+/**
+ * Helper to log messages
+ */
+function logMessage($message, $type = 'info') {
+    $logFile = __DIR__ . '/../../logs/password_change_' . $type . '.log';
+    $logDir = dirname($logFile);
+    if (!file_exists($logDir)) {
+        if (!mkdir($logDir, 0777, true)) {
+            return; // Silently fail if can't create directory
+        }
+    }
+    @file_put_contents($logFile, date('Y-m-d H:i:s') . " - " . $message . "\n", FILE_APPEND);
 }
 ?>
