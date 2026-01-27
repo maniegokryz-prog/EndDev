@@ -33,6 +33,8 @@ LIVENESS_THRESHOLD = 0.5
 ENABLE_LOGOUT_RESTRICTION = True
 ENABLE_LOGIN_COOLDOWN = True
 LOGIN_COOLDOWN_MINUTES = 5
+ENABLE_SINGLE_SESSION = True      # Block re-entry after Time Out
+MIN_WORK_DURATION_MINUTES = 60    # Min minutes before Time Out allowed
 
 # Brand Colors (OpenCV uses BGR)
 COLOR_PRIMARY_DARK = (62, 77, 27)      # #1b4d3e (Dark Green)
@@ -474,24 +476,40 @@ def run_app():
                 emp_id = matched_emp['db_id']
                 has_sched = check_employee_schedule(emp_id)
                 l_type = 'visit' if not has_sched else None
-                res = logger.log_attendance(emp_id, log_type=l_type, source='manual login')
                 
+                # Apply same constraints as face recognition
+                cooldown = LOGIN_COOLDOWN_MINUTES if ENABLE_LOGIN_COOLDOWN else 0
+                min_work = MIN_WORK_DURATION_MINUTES
+                single_sess = ENABLE_SINGLE_SESSION
+                
+                res = logger.log_attendance(emp_id, log_type=l_type, source='manual login',
+                                          cooldown_minutes=cooldown,
+                                          min_work_minutes=min_work,
+                                          one_session_per_day=single_sess)
+                
+                verification_done = True
+                last_verify_time = time.time()
+
                 if res['success']:
-                    verification_done = True
-                    last_verify_time = time.time()
-                    
                     rt = res['log_type']
                     if rt == 'time_in': status_text = "Verified - Time In"; status_color = (0, 255, 0)
                     elif rt == 'time_out': status_text = "Verified - Time Out"; status_color = (0, 140, 255)
                     elif rt == 'visit': status_text = "Verified - Visit"; status_color = (255, 0, 255)
                     else: status_text = rt; status_color = (255, 255, 255)
-                    
                     print(f"Logged: {status_text}")
+                elif res.get('status') == 'cooldown':
+                     status_text = res.get('message', "Already Verified")
+                     status_color = (0, 215, 255) 
+                elif res.get('status') == 'too_early':
+                     status_text = res.get('message', "Too Early")
+                     status_color = (255, 165, 0)
+                elif res.get('status') == 'completed':
+                     status_text = "Attendance Completed"
+                     status_color = (0, 100, 255)
                 else:
                     status_text = "Error Logging"
                     status_color = (0, 0, 255)
-                    verification_done = True
-                    last_verify_time = time.time()
+
             else:
                 consecutive_failures = 0 
             
@@ -611,7 +629,15 @@ def run_app():
                                       has_schedule = check_employee_schedule(eid)
                                       lt = 'visit' if not has_schedule else None
                                       
-                                      res = logger.log_attendance(eid, log_type=lt, source='webcam')
+                                      # Determine cooldown
+                                      cooldown = LOGIN_COOLDOWN_MINUTES if ENABLE_LOGIN_COOLDOWN else 0
+                                      min_work = MIN_WORK_DURATION_MINUTES
+                                      single_sess = ENABLE_SINGLE_SESSION
+                                      
+                                      res = logger.log_attendance(eid, log_type=lt, source='webcam', 
+                                                                cooldown_minutes=cooldown,
+                                                                min_work_minutes=min_work,
+                                                                one_session_per_day=single_sess)
                                       
                                       if res['success']:
                                            rt = res['log_type']
@@ -619,6 +645,18 @@ def run_app():
                                            elif rt == 'time_out': status_text = "Verified - Time Out"; status_color = (0, 140, 255)
                                            elif rt == 'visit': status_text = "Verified - Visit"; status_color = (255, 0, 255)
                                            else: status_text = rt; status_color = (255, 255, 255)
+                                      elif res.get('status') == 'cooldown':
+                                           # Cooldown Active - Show Info
+                                           status_text = res.get('message', "Already Verified")
+                                           status_color = (0, 215, 255) # Gold/Orangey
+                                      elif res.get('status') == 'too_early':
+                                           # Tried to Time Out too soon
+                                           status_text = res.get('message', "Too Early to Time Out")
+                                           status_color = (255, 165, 0) # Orange
+                                      elif res.get('status') == 'completed':
+                                           # Already finished for the day
+                                           status_text = "Attendance Completed"
+                                           status_color = (0, 100, 255) # Blue
                                       else:
                                            status_text = "Included / Error"; status_color = (0, 0, 255)
                                            
