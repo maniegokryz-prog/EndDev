@@ -181,6 +181,7 @@ $sql_employee_leaves = "CREATE TABLE IF NOT EXISTS employee_leaves (
     end_date DATE NOT NULL,
     reason TEXT,
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    rejection_reason TEXT DEFAULT NULL,
     attachment VARCHAR(255) DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

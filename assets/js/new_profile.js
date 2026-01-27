@@ -713,10 +713,11 @@ function initLeaveManagement() {
     addLeaveModal.addEventListener('show.bs.modal', checkMonthlyLimit);
 
     // Submit button
-    const btnSubmit = document.getElementById('btnSubmitLeave');
-    if (btnSubmit) {
-        btnSubmit.addEventListener('click', submitLeaveRequest);
-    }
+    // REMOVED: Conflicting event listener. We use onclick="confirmLeave()" in HTML.
+    // const btnSubmit = document.getElementById('btnSubmitLeave');
+    // if (btnSubmit) {
+    //    btnSubmit.removeEventListener('click', submitLeaveRequest); // Ensure no doubles if re-init
+    // }
 
     // Confirmation Action
     const btnConfirm = document.getElementById('btnConfirmAction');
@@ -743,29 +744,56 @@ function showErrorModal(msg) {
 }
 
 function checkMonthlyLimit() {
+    const limitText = document.getElementById('monthlyLimitText');
     const limitInfo = document.getElementById('monthlyLimitInfo');
-    if (!limitInfo) return;
+    
+    if (!limitText) return;
 
-    fetch(`api/leave_request_clean.php?action=get_employee_requests&employee_id=${window.employeeInternalId}`)
+    limitText.innerHTML = 'Checking...';
+    
+    // Use the global variable if available, otherwise fallback
+    const empId = window.employeeInternalId || window.employeeIdForLeave;
+
+    fetch(`api/leave_request_clean.php?action=get_employee_requests&employee_id=${empId}`)
         .then(res => res.json())
         .then(response => {
             if (response.success) {
-                const currentMonth = new Date().toISOString().slice(0, 7);
-                const pending = response.data.filter(l => l.status === 'pending');
-                const approvedThisMonth = response.data.filter(l => l.status === 'approved' && l.start_date.startsWith(currentMonth));
-
-                if (pending.length > 0) {
-                    limitInfo.innerHTML = '<i class="bi bi-hourglass-split"></i> <strong>Pending Request:</strong> Please wait for approval before submitting another.';
-                    limitInfo.className = 'alert alert-warning mb-3';
-                } else if (approvedThisMonth.length >= 2) {
-                    limitInfo.innerHTML = '<i class="bi bi-x-circle"></i> <strong>Limit Reached:</strong> 2/2 approved leaves used this month.';
-                    limitInfo.className = 'alert alert-danger mb-3';
-                } else {
-                    const remaining = 2 - approvedThisMonth.length;
-                    limitInfo.innerHTML = `<i class="bi bi-check-circle"></i> <strong>Available:</strong> ${remaining} of 2 requests this month.`;
-                    limitInfo.className = 'alert alert-info mb-3';
+                const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+                
+                // Check for pending requests
+                const pendingRequests = response.data.filter(leave => leave.status === 'pending');
+                
+                // Count approved requests in current month
+                const approvedThisMonth = response.data.filter(leave => {
+                    const leaveMonth = leave.start_date.slice(0, 7);
+                    return leave.status === 'approved' && leaveMonth === currentMonth;
+                });
+                
+                if (limitInfo) {
+                    // Priority check: Pending requests block new submissions
+                    if (pendingRequests.length > 0) {
+                        limitText.innerHTML = '<strong>⏳ You have a pending leave request.</strong><br>Please wait for approval.';
+                        limitInfo.className = 'alert alert-warning mb-3';
+                    } 
+                    // Check approved monthly limit
+                    else if (approvedThisMonth.length >= 2) {
+                        limitText.innerHTML = '<strong>❌ Monthly limit reached.</strong><br>2/2 approved used.';
+                        limitInfo.className = 'alert alert-danger mb-3';
+                    } 
+                    // Show remaining available requests
+                    else {
+                        const remaining = 2 - approvedThisMonth.length;
+                        limitText.innerHTML = `<strong>✅ ${remaining} of 2 available</strong>`;
+                        limitInfo.className = 'alert alert-success mb-3';
+                    }
                 }
+            } else {
+                 if(limitText) limitText.textContent = 'Error checking.';
             }
+        })
+        .catch(error => {
+            console.error('Error checking limit:', error);
+            if(limitText) limitText.textContent = 'Network error.';
         });
 }
 
@@ -846,53 +874,118 @@ window.openLeaveDetails = function (leave) {
     new bootstrap.Modal(document.getElementById('leaveDetailsViewModal')).show();
 };
 
-function submitLeaveRequest() {
-    const type = document.getElementById('leaveType').value;
-    const from = document.getElementById('leaveFrom').value;
-    const to = document.getElementById('leaveTo').value;
-    const reason = document.getElementById('leaveReason').value;
-    const file = document.getElementById('leaveAttachment').files[0];
-    const autoApprove = document.getElementById('autoApprove') ? document.getElementById('autoApprove').checked : false;
+// Replaces submitLeaveRequest with the confirmation flow
+function confirmLeave() {
+    const leaveType = document.getElementById("leaveType").value;
+    const leaveFrom = document.getElementById("leaveFrom").value;
+    const leaveTo = document.getElementById("leaveTo").value;
+    const leaveReason = document.getElementById("leaveReason").value;
 
-    if (!type || !from || !to) {
-        document.getElementById("leaveValidationErrorMsg").textContent = "Please fill all required fields.";
+    if (!leaveType || !leaveFrom || !leaveTo) {
+        document.getElementById("leaveValidationErrorMsg").textContent = "Please fill out all required fields.";
         new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
         return;
     }
 
+    // Close Add Leave modal
+    const addModalEl = document.getElementById('addLeaveModal');
+    const addModal = bootstrap.Modal.getInstance(addModalEl);
+    if (addModal) addModal.hide();
+
+    // Show confirmation modal with leave details
+    const detailsText = `${leaveType} Leave, from ${formatDate(leaveFrom)} to ${formatDate(leaveTo)}`;
+    document.getElementById("leaveDetailsText").innerText = detailsText;
+
+    setTimeout(() => {
+        const detailsModal = new bootstrap.Modal(document.getElementById('leaveDetailsModal'));
+        detailsModal.show();
+    }, 150);
+}
+
+function finalizeLeave() {
+    const leaveType = document.getElementById("leaveType").value;
+    const leaveFrom = document.getElementById("leaveFrom").value;
+    const leaveTo = document.getElementById("leaveTo").value;
+    const leaveReason = document.getElementById("leaveReason").value;
+    // const autoApprove = isAdmin && document.getElementById("autoApprove").checked; 
+    // ^ In new_profile.js isAdmin is window.isAdmin boolean
+    const autoApproveEl = document.getElementById("autoApprove");
+    const autoApprove = window.isAdmin && autoApproveEl && autoApproveEl.checked;
+
+    // Hide confirmation modal
+    const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsModal'));
+    if (detailsModal) detailsModal.hide();
+
     const formData = new FormData();
     formData.append('action', 'submit_request');
     formData.append('employee_id', window.employeeInternalId);
-    formData.append('leave_type', type);
-    formData.append('start_date', from);
-    formData.append('end_date', to);
-    formData.append('reason', reason);
-    if (file) formData.append('attachment', file);
-    if (autoApprove) formData.append('auto_approve', '1');
-    if (window.isAdmin) formData.append('is_admin', '1');
+    formData.append('leave_type', leaveType);
+    formData.append('start_date', leaveFrom);
+    formData.append('end_date', leaveTo);
+    formData.append('reason', leaveReason);
+    formData.append('is_admin', window.isAdmin ? '1' : '0');
+    formData.append('auto_approve', autoApprove ? '1' : '0');
 
-    const btn = document.getElementById('btnSubmitLeave');
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
+    const fileInput = document.getElementById('leaveAttachment');
+    if (fileInput && fileInput.files.length > 0) {
+        formData.append('attachment', fileInput.files[0]);
+    }
 
-    fetch('api/leave_request_clean.php', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(data => {
-            btn.disabled = false;
-            btn.textContent = 'Submit Request';
-            bootstrap.Modal.getInstance(document.getElementById('addLeaveModal')).hide();
+    setTimeout(() => {
+        fetch('api/leave_request_clean.php', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("leaveSuccessMsg").textContent = data.message || "Request submitted!";
+                    const successModal = new bootstrap.Modal(document.getElementById('leaveSuccessModal'));
+                    successModal.show();
+                    loadEmployeeLeaves();
+                    checkMonthlyLimit(); // Refresh limit status
+                } else {
+                    document.getElementById("leaveValidationErrorMsg").textContent = data.error || "Failed.";
+                    new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
+                    
+                    // Re-open form? Or just stay closed?
+                    // Logic from staffinfo suggests re-opening if known error, but here we just show error.
+                }
+            })
+            .catch(err => {
+                document.getElementById("leaveValidationErrorMsg").textContent = "Network error.";
+                new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
+            });
+    }, 150);
+}
 
-            if (data.success) {
-                showSuccessModal(data.message);
-                loadEmployeeLeaves();
-            } else {
-                showErrorModal(data.error);
-            }
-        })
-        .catch(err => {
-            btn.disabled = false;
-            showErrorModal('Network Error');
-        });
+function goBackToForm() {
+    const detailsModal = bootstrap.Modal.getInstance(document.getElementById('leaveDetailsModal'));
+    if (detailsModal) detailsModal.hide();
+
+    setTimeout(() => {
+        const addModal = new bootstrap.Modal(document.getElementById('addLeaveModal'));
+        addModal.show();
+    }, 150);
+}
+
+function cancelLeaveRequest() {
+    // Just close the modal or reset form?
+    // HTML has data-bs-dismiss="modal" so it closes automatically.
+    // We just need to reset form.
+    document.getElementById('leaveType').value = '';
+    document.getElementById('leaveFrom').value = '';
+    document.getElementById('leaveTo').value = '';
+    document.getElementById('leaveReason').value = '';
+    document.getElementById('leaveAttachment').value = '';
+    const limitText = document.getElementById('monthlyLimitText');
+    if(limitText) limitText.innerHTML = 'Checking...';
+}
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
 }
 
 function executeLeaveAction() {
