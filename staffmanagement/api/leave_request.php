@@ -562,31 +562,65 @@ function getAdminNotifications($conn) {
     // AND their own employee-targeted notifications (their leave request status)
     // Employees see only their own employee-targeted notifications
     if ($user_role === 'admin') {
-        $sql = "SELECT 
-                    n.id,
-                    n.type,
-                    n.message,
-                    n.is_read,
-                    n.created_at,
-                    n.leave_id,
-                    el.start_date,
-                    el.end_date,
-                    e.first_name,
-                    e.last_name,
-                    e.employee_id as employee_code,
-                    n.link
-                FROM notifications n
-                LEFT JOIN employee_leaves el ON n.leave_id = el.id
-                LEFT JOIN employees e ON n.employee_id = e.id
-                WHERE n.target = 'admin' 
-                   OR (n.target = 'employee' AND n.employee_id = ?)
-                ORDER BY n.is_read ASC, n.created_at DESC
-                LIMIT 50";
+        // Check if this is a System Admin (from admin_users table)
+        // System Admins have IDs that might collide with Employee IDs, so we MUST NOT show personal notifications based on ID
+        $is_system_admin = $_SESSION['is_system_admin'] ?? false;
         
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        if ($is_system_admin) {
+             // System Admin: Only see admin notifications, STRICTLY filtering out personal types
+             // We do NOT check employee_id here because the system admin's ID does not correspond to an employee
+             $sql = "SELECT 
+                        n.id,
+                        n.type,
+                        n.message,
+                        n.is_read,
+                        n.created_at,
+                        n.leave_id,
+                        el.start_date,
+                        el.end_date,
+                        e.first_name,
+                        e.last_name,
+                        e.employee_id as employee_code,
+                        n.link
+                    FROM notifications n
+                    LEFT JOIN employee_leaves el ON n.leave_id = el.id
+                    LEFT JOIN employees e ON n.employee_id = e.id
+                    WHERE n.target = 'admin' AND n.type NOT IN ('schedule_change', 'leave_approved', 'leave_rejected')
+                    ORDER BY n.is_read ASC, n.created_at DESC
+                    LIMIT 50";
+            
+            $stmt = $conn->prepare($sql);
+            // No bind param needed as we aren't using user_id in the query
+            $stmt->execute();
+            $result = $stmt->get_result();
+        } else {
+            // Employee Admin: Can see admin notifications AND their own personal notifications
+            $sql = "SELECT 
+                        n.id,
+                        n.type,
+                        n.message,
+                        n.is_read,
+                        n.created_at,
+                        n.leave_id,
+                        el.start_date,
+                        el.end_date,
+                        e.first_name,
+                        e.last_name,
+                        e.employee_id as employee_code,
+                        n.link
+                    FROM notifications n
+                    LEFT JOIN employee_leaves el ON n.leave_id = el.id
+                    LEFT JOIN employees e ON n.employee_id = e.id
+                    WHERE (n.target = 'admin' AND n.type NOT IN ('schedule_change', 'leave_approved', 'leave_rejected')) 
+                       OR (n.employee_id = ?)
+                    ORDER BY n.is_read ASC, n.created_at DESC
+                    LIMIT 50";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+        }
     } else {
         $sql = "SELECT 
                     n.id,
