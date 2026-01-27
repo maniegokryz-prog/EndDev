@@ -97,6 +97,15 @@ $csrfToken = $_SESSION['csrf_token'];
 
       <?php if ($isAdmin): ?>
       <div class="col-6 col-md-3">
+        <div class="setting-card" id="leaveSettings" style="cursor: pointer;">
+          <div class="setting-icon">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <h6>Leave Settings</h6>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
   <div class="setting-card" id="employeeArchive" style="cursor: pointer;">
     <div class="setting-icon">
       <i class="fas fa-user-tie"></i>
@@ -266,6 +275,32 @@ $csrfToken = $_SESSION['csrf_token'];
   </div>
 </div>
 
+
+<!-- ✅ Leave Settings Modal -->
+<div class="modal fade" id="leaveSettingsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Leave Request Configuration</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <p class="text-muted mb-3">Set restrictions for leave requests.</p>
+        
+        <div class="mb-3">
+          <label for="noticePeriodInput" class="form-label fw-semibold">Min. Notice Period (Days)</label>
+          <input type="number" class="form-control" id="noticePeriodInput" min="0" value="0">
+          <small class="text-muted">Users must request leave at least this many days in advance.</small>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn text-white" style="background-color: #083c34;" id="saveLeaveSettingsBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- CLEAR ALL RECORDS CARD - ADMIN ONLY -->
 <?php if ($isAdmin): ?>
@@ -471,6 +506,49 @@ function showLogoutModal() {
   var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
   logoutModal.show();
 }
+</script>
+
+<script>
+// Leave Settings Logic
+document.addEventListener('DOMContentLoaded', function() {
+    const leaveSettingsCard = document.getElementById('leaveSettings');
+    if (leaveSettingsCard) {
+        leaveSettingsCard.addEventListener('click', function() {
+            // Load current setting
+            fetch('../staffmanagement/api/settings_api.php?action=get_leave_settings')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('noticePeriodInput').value = data.notice_period_days;
+                        new bootstrap.Modal(document.getElementById('leaveSettingsModal')).show();
+                    } else {
+                        alert('Failed to load settings');
+                    }
+                });
+        });
+    }
+
+    const saveBtn = document.getElementById('saveLeaveSettingsBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function() {
+            const days = document.getElementById('noticePeriodInput').value;
+            const formData = new FormData();
+            formData.append('action', 'update_leave_settings');
+            formData.append('notice_period_days', days);
+
+            fetch('../staffmanagement/api/settings_api.php', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('leaveSettingsModal')).hide();
+                        showPopupMessage('Leave settings updated successfully');
+                    } else {
+                        alert('Failed to save: ' + (data.error || 'Unknown error'));
+                    }
+                });
+        });
+    }
+});
 </script>
 
 <!-- Logout Modal -->

@@ -160,6 +160,13 @@ if ($id) {
       color: #2d5f3f !important;
       font-weight: 500;
     }
+    
+    /* Leave status badge - Blue/Purple or something distinct */
+    .badge-leave {
+      background-color: #17a2b8 !important;
+      color: white !important;
+      font-weight: 500;
+    }
   </style>
 </head>
 
@@ -328,6 +335,9 @@ if ($id) {
                 } elseif ($status === 'manual') {
                     $badgeClass = 'badge-manual';
                     $statusLabel = 'Manual';
+                } elseif ($status === 'leave') {
+                    $badgeClass = 'badge-leave';
+                    $statusLabel = 'On Leave';
                 }
                 
                 // Format date

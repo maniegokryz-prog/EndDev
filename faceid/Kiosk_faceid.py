@@ -479,6 +479,9 @@ def run_app():
                 
                 # Apply same constraints as face recognition
                 cooldown = LOGIN_COOLDOWN_MINUTES if ENABLE_LOGIN_COOLDOWN else 0
+                if l_type == 'visit':
+                    cooldown = 0
+                
                 min_work = MIN_WORK_DURATION_MINUTES
                 single_sess = ENABLE_SINGLE_SESSION
                 
@@ -631,6 +634,9 @@ def run_app():
                                       
                                       # Determine cooldown
                                       cooldown = LOGIN_COOLDOWN_MINUTES if ENABLE_LOGIN_COOLDOWN else 0
+                                      if lt == 'visit':
+                                          cooldown = 0
+                                      
                                       min_work = MIN_WORK_DURATION_MINUTES
                                       single_sess = ENABLE_SINGLE_SESSION
                                       

@@ -317,9 +317,11 @@ function approveLeaveRequest($conn) {
         }
         
         // Get leave details and employee info
-        $sql = "SELECT el.employee_id, e.first_name, e.last_name, e.employee_id as emp_code 
+        $sql = "SELECT el.employee_id, el.start_date, el.end_date, lt.type_name as leave_type, 
+                       e.first_name, e.last_name, e.employee_id as emp_code 
                 FROM employee_leaves el
                 JOIN employees e ON el.employee_id = e.id
+                JOIN leave_types lt ON el.leave_type_id = lt.id
                 WHERE el.id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $leave_id);
@@ -341,6 +343,37 @@ function approveLeaveRequest($conn) {
         $stmt->bind_param("i", $leave_id);
         
         if ($stmt->execute()) {
+            // ------------------------------------------------------------------
+            // Insert/Update daily_attendance for each day of the leave
+            // ------------------------------------------------------------------
+            $startDate = new DateTime($leave['start_date']);
+            $endDate = new DateTime($leave['end_date']);
+            
+            // Iterate through each date
+            while ($startDate <= $endDate) {
+                $currDateStr = $startDate->format('Y-m-d');
+                $reason = "Leave: " . $leave['leave_type'];  // Simple note
+
+                // Check if record exists
+                $check = $conn->prepare("SELECT id FROM daily_attendance WHERE employee_id = ? AND attendance_date = ?");
+                $check->bind_param("is", $leave['employee_id'], $currDateStr);
+                $check->execute();
+                if ($check->get_result()->num_rows > 0) {
+                     // Update existing
+                     $upsert = $conn->prepare("UPDATE daily_attendance SET status = 'leave', notes = ? WHERE employee_id = ? AND attendance_date = ?");
+                     $upsert->bind_param("sis", $reason, $leave['employee_id'], $currDateStr);
+                     $upsert->execute();
+                } else {
+                     // Insert new
+                     $upsert = $conn->prepare("INSERT INTO daily_attendance (employee_id, attendance_date, status, notes) VALUES (?, ?, 'leave', ?)");
+                     $upsert->bind_param("iss", $leave['employee_id'], $currDateStr, $reason);
+                     $upsert->execute();
+                }
+                
+                $startDate->modify('+1 day');
+            }
+            // ------------------------------------------------------------------
+
             // Create notification for employee
             $check_table = $conn->query("SHOW TABLES LIKE 'notifications'");
             if ($check_table->num_rows > 0) {

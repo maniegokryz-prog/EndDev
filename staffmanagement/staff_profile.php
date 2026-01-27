@@ -1014,6 +1014,20 @@ $profilePhoto .= '?v=' . microtime(true);
             });
         }
     </script>
+
+    <!-- Leave Confirmation Modal (Generic) -->
+    <div class="modal fade" id="leaveConfirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+          <h5 class="fw-bold mb-3 modal-title" id="leaveConfirmTitle">Confirm Action</h5>
+          <p class="mb-4 modal-body-text" id="leaveConfirmMsg">Are you sure you want to proceed?</p>
+          <div class="d-flex justify-content-center gap-3">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnConfirmAction">Yes, Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- ========================= PHP: PREPARE DATA FOR EDIT SCHEDULE ========================= -->
     <?php
     $emp_id = $employee['id'] ?? null;

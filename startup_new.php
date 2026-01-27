@@ -246,6 +246,22 @@ $sql_face_embeddings = "CREATE TABLE IF NOT EXISTS face_embeddings (
 )";
 createTable($conn, $sql_face_embeddings, "face_embeddings");
 
+// System Settings table
+$sql_system_settings = "CREATE TABLE IF NOT EXISTS system_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(100) NOT NULL UNIQUE,
+    setting_value TEXT,
+    description TEXT,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)";
+createTable($conn, $sql_system_settings, "system_settings");
+
+// Insert default settings if they don't exist
+$check_setting = $conn->query("SELECT id FROM system_settings WHERE setting_key = 'leave_notice_period_days'");
+if ($check_setting->num_rows == 0) {
+    $conn->query("INSERT INTO system_settings (setting_key, setting_value, description) VALUES ('leave_notice_period_days', '0', 'Minimum number of days in advance a leave request must be made.')");
+}
+
 // Create indexes for better performance (MySQL Community Server compatible)
 // Check and create indexes only if they don't exist
 $indexes = [

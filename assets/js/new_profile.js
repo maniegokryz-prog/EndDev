@@ -710,7 +710,10 @@ function initLeaveManagement() {
     loadEmployeeLeaves();
 
     // Check limit on modal open
-    addLeaveModal.addEventListener('show.bs.modal', checkMonthlyLimit);
+    addLeaveModal.addEventListener('show.bs.modal', () => {
+        checkMonthlyLimit();
+        fetchLeaveSettings();
+    });
 
     // Submit button
     // REMOVED: Conflicting event listener. We use onclick="confirmLeave()" in HTML.
@@ -724,14 +727,7 @@ function initLeaveManagement() {
     if (btnConfirm) btnConfirm.addEventListener('click', executeLeaveAction);
 }
 
-let pendingLeaveAction = null; // { type: 'approve'|'reject'|'cancel', id: 123 }
-
-function showConfirmModal(title, message, actionType, id) {
-    document.getElementById('leaveConfirmTitle').textContent = title;
-    document.getElementById('leaveConfirmMsg').textContent = message;
-    pendingLeaveAction = { type: actionType, id: id };
-    new bootstrap.Modal(document.getElementById('leaveConfirmModal')).show();
-}
+// pendingLeaveAction and showConfirmModal moved to global scope at bottom of file
 
 function showSuccessModal(msg) {
     document.getElementById('leaveSuccessMsg').textContent = msg;
@@ -746,11 +742,11 @@ function showErrorModal(msg) {
 function checkMonthlyLimit() {
     const limitText = document.getElementById('monthlyLimitText');
     const limitInfo = document.getElementById('monthlyLimitInfo');
-    
+
     if (!limitText) return;
 
     limitText.innerHTML = 'Checking...';
-    
+
     // Use the global variable if available, otherwise fallback
     const empId = window.employeeInternalId || window.employeeIdForLeave;
 
@@ -759,27 +755,27 @@ function checkMonthlyLimit() {
         .then(response => {
             if (response.success) {
                 const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-                
+
                 // Check for pending requests
                 const pendingRequests = response.data.filter(leave => leave.status === 'pending');
-                
+
                 // Count approved requests in current month
                 const approvedThisMonth = response.data.filter(leave => {
                     const leaveMonth = leave.start_date.slice(0, 7);
                     return leave.status === 'approved' && leaveMonth === currentMonth;
                 });
-                
+
                 if (limitInfo) {
                     // Priority check: Pending requests block new submissions
                     if (pendingRequests.length > 0) {
                         limitText.innerHTML = '<strong>⏳ You have a pending leave request.</strong><br>Please wait for approval.';
                         limitInfo.className = 'alert alert-warning mb-3';
-                    } 
+                    }
                     // Check approved monthly limit
                     else if (approvedThisMonth.length >= 2) {
                         limitText.innerHTML = '<strong>❌ Monthly limit reached.</strong><br>2/2 approved used.';
                         limitInfo.className = 'alert alert-danger mb-3';
-                    } 
+                    }
                     // Show remaining available requests
                     else {
                         const remaining = 2 - approvedThisMonth.length;
@@ -788,12 +784,12 @@ function checkMonthlyLimit() {
                     }
                 }
             } else {
-                 if(limitText) limitText.textContent = 'Error checking.';
+                if (limitText) limitText.textContent = 'Error checking.';
             }
         })
         .catch(error => {
             console.error('Error checking limit:', error);
-            if(limitText) limitText.textContent = 'Network error.';
+            if (limitText) limitText.textContent = 'Network error.';
         });
 }
 
@@ -844,7 +840,7 @@ function loadEmployeeLeaves() {
 // Make available globally for inline onclicks
 window.openLeaveDetails = function (leave) {
     document.getElementById('viewLeaveType').textContent = leave.leave_type;
-    document.getElementById('viewLeaveStatus').textContent = leave.status; // Styled in PHP maybe?
+    document.getElementById('viewLeaveStatus').textContent = leave.status;
     document.getElementById('viewLeaveDates').textContent = leave.formatted_dates;
     document.getElementById('viewLeaveReason').textContent = leave.reason || 'No reason';
 
@@ -866,15 +862,33 @@ window.openLeaveDetails = function (leave) {
         btns += `<button class="btn btn-danger ms-2" onclick="showConfirmModal('Reject Leave', 'Are you sure?', 'reject', ${leave.id})">Reject</button>`;
     } else if (!window.isAdmin && leave.status === 'pending') {
         btns += `<button class="btn btn-warning ms-2" onclick="showConfirmModal('Cancel Request', 'Cancel this pending request?', 'cancel', ${leave.id})">Cancel</button>`;
-    } else if (window.isAdmin && leave.status === 'approved') {
-        // Maybe allow revert?
     }
 
     actionContainer.innerHTML = btns;
     new bootstrap.Modal(document.getElementById('leaveDetailsViewModal')).show();
 };
 
-// Replaces submitLeaveRequest with the confirmation flow
+// Confirm Leave - Shows confirmation modal
+window.leaveNoticeDays = 0; // Default
+
+function fetchLeaveSettings() {
+    fetch('api/settings_api.php?action=get_leave_settings')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.leaveNoticeDays = parseInt(data.notice_period_days) || 0;
+                // Optional: Update UI to show requirement
+                const msgEl = document.getElementById('leaveNoticeMsg');
+                if (window.leaveNoticeDays > 0 && msgEl) {
+                    msgEl.textContent = `Note: Requests must be made at least ${window.leaveNoticeDays} days in advance.`;
+                    msgEl.style.display = 'block';
+                } else if (msgEl) {
+                    msgEl.style.display = 'none';
+                }
+            }
+        })
+        .catch(err => console.log('Settings fetch error', err));
+}
 function confirmLeave() {
     const leaveType = document.getElementById("leaveType").value;
     const leaveFrom = document.getElementById("leaveFrom").value;
@@ -883,6 +897,52 @@ function confirmLeave() {
 
     if (!leaveType || !leaveFrom || !leaveTo) {
         document.getElementById("leaveValidationErrorMsg").textContent = "Please fill out all required fields.";
+        new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
+        return;
+    }
+
+    // Validate dates - No past dates allowed
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate comparison
+    const startDate = new Date(leaveFrom);
+    // Fix timezone offset issue where date string parsing might result in previous day depending on local time
+    // Adding time component ensures it parses correctly as local date
+    const startDateCheck = new Date(leaveFrom + 'T00:00:00');
+
+    if (startDateCheck <= today) {
+        document.getElementById("leaveValidationErrorMsg").textContent = "You cannot select a past date or the current date. Please choose a future date.";
+        new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
+        return;
+    }
+
+    // Notice Period Check
+    if (window.leaveNoticeDays > 0) {
+        const minDate = new Date();
+        minDate.setDate(today.getDate() + window.leaveNoticeDays);
+        minDate.setHours(0, 0, 0, 0);
+
+        if (startDateCheck < minDate) {
+            document.getElementById("leaveValidationErrorMsg").textContent = `Requests must be made at least ${window.leaveNoticeDays} days in advance. Earliest available date: ${minDate.toLocaleDateString()}`;
+            new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
+            return;
+        }
+    }
+
+    // Notice Period Check
+    if (window.leaveNoticeDays > 0) {
+        const minDate = new Date();
+        minDate.setDate(today.getDate() + window.leaveNoticeDays);
+        minDate.setHours(0, 0, 0, 0);
+
+        if (startDateCheck < minDate) {
+            document.getElementById("leaveValidationErrorMsg").textContent = `Requests must be made at least ${window.leaveNoticeDays} days in advance. Earliest available date: ${minDate.toLocaleDateString()}`;
+            new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
+            return;
+        }
+    }
+
+    if (new Date(leaveTo) < new Date(leaveFrom)) {
+        document.getElementById("leaveValidationErrorMsg").textContent = "End date cannot be before start date.";
         new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
         return;
     }
@@ -944,7 +1004,7 @@ function finalizeLeave() {
                 } else {
                     document.getElementById("leaveValidationErrorMsg").textContent = data.error || "Failed.";
                     new bootstrap.Modal(document.getElementById("leaveValidationErrorModal")).show();
-                    
+
                     // Re-open form? Or just stay closed?
                     // Logic from staffinfo suggests re-opening if known error, but here we just show error.
                 }
@@ -976,7 +1036,7 @@ function cancelLeaveRequest() {
     document.getElementById('leaveReason').value = '';
     document.getElementById('leaveAttachment').value = '';
     const limitText = document.getElementById('monthlyLimitText');
-    if(limitText) limitText.innerHTML = 'Checking...';
+    if (limitText) limitText.innerHTML = 'Checking...';
 }
 
 function formatDate(dateStr) {
@@ -996,7 +1056,7 @@ function executeLeaveAction() {
 
     if (action === 'approve') apiAction = 'approve_request';
     if (action === 'reject') apiAction = 'reject_request';
-    if (action === 'cancel') apiAction = 'delete_request';
+    if (action === 'cancel') apiAction = 'cancel_request';
 
     const formData = new FormData();
     formData.append('leave_id', pendingLeaveAction.id);
@@ -1015,6 +1075,27 @@ function executeLeaveAction() {
                 showErrorModal(data.error || 'Failed.');
             }
         });
+}
+
+// Make pendingLeaveAction global
+let pendingLeaveAction = null;
+
+function showConfirmModal(title, message, type, id) {
+    pendingLeaveAction = { id: id, type: type };
+
+    // Update modal content
+    const modalTitle = document.querySelector('#leaveConfirmModal .modal-title') || document.querySelector('#leaveConfirmModal h5');
+    const modalBody = document.querySelector('#leaveConfirmModal .modal-body p') || document.querySelector('#leaveConfirmModal .modal-body');
+
+    if (modalTitle) modalTitle.textContent = title;
+    if (modalBody) {
+        // If modalBody is the p tag use it, otherwise set innerHTML of body
+        if (modalBody.tagName === 'P') modalBody.textContent = message;
+        else modalBody.innerHTML = `<p>${message}</p>`;
+    }
+
+    // Show modal
+    new bootstrap.Modal(document.getElementById('leaveConfirmModal')).show();
 }
 
 // ==========================================
@@ -1125,7 +1206,7 @@ function initManualAttendance() {
         const dateInput = row.querySelector('input[type=\'date\']');
         const timeInputs = row.querySelectorAll('input[type=\'time\']');
         if (!timeInputs || timeInputs.length < 2) return;
-        
+
         const timeInInput = timeInputs[0];
         const timeOutInput = timeInputs[1];
 
@@ -1159,23 +1240,23 @@ function initManualAttendance() {
         const newRow = document.createElement('div');
         newRow.classList.add('attendance-row', 'row', 'mb-3', 'align-items-start');
         newRow.innerHTML = '<div class=\'col-md-3\'>' +
-          '<label>Date:</label>' +
-          '<input type=\'date\' class=\'form-control\'>' +
-          '<div class=\'schedule-error-container\' style=\'min-height: 0;\'>' +
+            '<label>Date:</label>' +
+            '<input type=\'date\' class=\'form-control\'>' +
+            '<div class=\'schedule-error-container\' style=\'min-height: 0;\'>' +
             '<small class=\'text-danger schedule-error d-block\' style=\'display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;\'></small>' +
-          '</div>' +
-        '</div>' +
-        '<div class=\'col-md-3\'>' +
-          '<label>Time In:</label>' +
-          '<input type=\'time\' class=\'form-control\'>' +
-        '</div>' +
-        '<div class=\'col-md-3\'>' +
-          '<label>Time Out:</label>' +
-          '<input type=\'time\' class=\'form-control\'>' +
-        '</div>' +
-        '<div class=\'col-md-3\'>' +
-          '<button class=\'btn btn-danger removeRow\' style=\'margin-top: 32px;\'>-</button>' +
-        '</div>';
+            '</div>' +
+            '</div>' +
+            '<div class=\'col-md-3\'>' +
+            '<label>Time In:</label>' +
+            '<input type=\'time\' class=\'form-control\'>' +
+            '</div>' +
+            '<div class=\'col-md-3\'>' +
+            '<label>Time Out:</label>' +
+            '<input type=\'time\' class=\'form-control\'>' +
+            '</div>' +
+            '<div class=\'col-md-3\'>' +
+            '<button class=\'btn btn-danger removeRow\' style=\'margin-top: 32px;\'>-</button>' +
+            '</div>';
         attendanceContainer.appendChild(newRow);
 
         attachDateListener(newRow);
@@ -1225,7 +1306,7 @@ function initManualAttendance() {
                 em.show();
                 // Auto-hide after 5s
                 setTimeout(() => {
-                    try { em.hide(); } catch (e) {}
+                    try { em.hide(); } catch (e) { }
                 }, 5000);
             }
             return;
@@ -1254,12 +1335,12 @@ function initManualAttendance() {
                 const successEl = document.getElementById('attendanceSuccessMessage');
                 if (successEl) successEl.textContent = message;
 
-                try { attendanceModal.hide(); } catch (e) {}
+                try { attendanceModal.hide(); } catch (e) { }
 
                 const successModalEl = document.getElementById('attendanceSuccessModal');
                 if (successModalEl) {
-                   const sm = new bootstrap.Modal(successModalEl);
-                   sm.show();
+                    const sm = new bootstrap.Modal(successModalEl);
+                    sm.show();
                 }
 
                 setTimeout(() => {
@@ -1276,7 +1357,7 @@ function initManualAttendance() {
                 const errModalEl = document.getElementById('attendanceErrorModal');
                 if (errModalEl) {
                     const em = new bootstrap.Modal(errModalEl);
-                     em.show();
+                    em.show();
                 }
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save Records';
@@ -1287,7 +1368,7 @@ function initManualAttendance() {
             if (errEl) errEl.textContent = 'Failed: ' + error.message;
             const errModalEl = document.getElementById('attendanceErrorModal');
             if (errModalEl) new bootstrap.Modal(errModalEl).show();
-            
+
             saveBtn.disabled = false;
             saveBtn.textContent = 'Save Records';
         }
