@@ -237,6 +237,20 @@ $profilePhoto .= '?v=' . microtime(true);
             padding: 10px 20px !important;
             min-width: 140px !important;
         }
+
+        /* Sidebar Toggle Styles (Matched to settings.css) - Using IDs for Specificity */
+        @media (min-width: 992px) {
+            #sidebar { left: 0; transition: all 0.3s; }
+            #content { margin-left: 250px; transition: margin-left 0.3s; }
+            
+            #sidebar.collapsed { left: -250px !important; }
+            #content.shift { margin-left: 0 !important; width: 100% !important; max-width: 100% !important; }
+        }
+        @media (max-width: 991px) {
+            #sidebar { margin-left: -250px; left: -250px; transition: all 0.3s; }
+            #sidebar.active { margin-left: 0 !important; left: 0 !important; }
+            #content { margin-left: 0 !important; width: 100% !important; }
+        }
     </style>
 </head>
 <body>
@@ -244,7 +258,7 @@ $profilePhoto .= '?v=' . microtime(true);
     <!-- Top Navbar -->
     <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
         <div class="menu-toggle">
-            <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
+            <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn" onclick="toggleSidebar()"></i>
         </div>
         <?php include '../includes/notification_bell.php'; ?>
     </div>
@@ -1082,6 +1096,129 @@ $profilePhoto .= '?v=' . microtime(true);
             // edit_employee.js likely attaches listeners or we rely on the onclick="toggleDay(this)" attributes I copied.
         };
     </script>
-    <script src="../assets/js/staff_profile_logic.js?v=<?php echo time(); ?>"></script>
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <h5 class="mb-3">Confirm Logout</h5>
+            <p class="mb-0">Are you sure you want to log out?</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            <form id="logoutForm" method="POST" action="../dashboard/logout.php" style="display:inline;">
+              <input type="hidden" name="confirm_logout" value="1">
+              <button type="submit" class="btn btn-danger">Yes, Log out</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <script src="../assets/js/staff_profile_logic.js?v=<?php echo time(); ?>"></script> -->
+    <script>
+        // Logout Modal Trigger
+        function showLogoutModal() {
+            var modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+            modal.show();
+        }
+
+        // Sidebar Toggle Logic - Direct Style Manipulation with Proper State Detection
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById("sidebar");
+            const content = document.getElementById("content");
+
+            if (!sidebar || !content) {
+                console.error("Sidebar or Content element not found!");
+                return;
+            }
+
+            // Dashboard.js uses 576px as the cutoff
+            if (window.innerWidth <= 576) {
+                // Mobile: toggle visibility
+                const computedLeft = window.getComputedStyle(sidebar).left;
+                const isVisible = computedLeft === '0px';
+                
+                if (isVisible) {
+                    sidebar.style.left = '-250px';
+                    const existing = document.getElementById('mobileBackdrop');
+                    if (existing) existing.remove();
+                    document.body.style.overflow = '';
+                } else {
+                    sidebar.style.left = '0px';
+                    sidebar.style.zIndex = '1050';
+                    document.body.style.overflow = 'hidden';
+                    
+                    const backdrop = document.createElement('div');
+                    backdrop.setAttribute('id', 'mobileBackdrop');
+                    backdrop.style.position = 'fixed';
+                    backdrop.style.top = '0';
+                    backdrop.style.left = '0';
+                    backdrop.style.width = '100vw';
+                    backdrop.style.height = '100vh';
+                    backdrop.style.background = 'rgba(0,0,0,0.5)';
+                    backdrop.style.zIndex = '1040';
+                    document.body.appendChild(backdrop);
+
+                    backdrop.addEventListener('click', () => {
+                        sidebar.style.left = '-250px';
+                        document.body.style.overflow = '';
+                        backdrop.remove();
+                    });
+                }
+            } else {
+                // Desktop/Tablet: toggle sidebar and content margin
+                // Check the ACTUAL computed style, not just inline style
+                const computedLeft = window.getComputedStyle(sidebar).left;
+                const isVisible = computedLeft === '0px';
+                
+                if (isVisible) {
+                    // Currently visible, hide it
+                    sidebar.style.left = '-250px';
+                    content.style.marginLeft = '0px';
+                } else {
+                    // Currently hidden, show it
+                    sidebar.style.left = '0px';
+                    content.style.marginLeft = '250px';
+                }
+            }
+        };
+
+        // Initialize state (optional)
+        document.addEventListener('DOMContentLoaded', function() {
+           // No auto-run needed, click event handles it.
+        });
+    </script>
+    <style>
+        /* Mobile Nav Override if distinct from active */
+        .sidebar.mobile-nav {
+            left: 0 !important;
+            margin-left: 0 !important;
+            z-index: 1050;
+        }
+        body.lock-scroll { overflow: hidden; }
+
+        /* Global Override for Shifted Content (Sidebar Closed) */
+        /* Takes precedence over staff.css global .content.shift */
+        #content.shift { 
+            margin-left: 0 !important; 
+            width: 100% !important; 
+            max-width: 100% !important; 
+        }
+
+        /* Sidebar Toggle Styles (Using IDs for Specificity) */
+        @media (min-width: 992px) {
+            #sidebar { left: 0; transition: all 0.3s; }
+            #content { margin-left: 250px; transition: margin-left 0.3s; }
+            
+            #sidebar.collapsed { left: -250px !important; }
+        }
+        @media (max-width: 991px) {
+            #sidebar { margin-left: -250px; left: -250px; transition: all 0.3s; }
+            #sidebar.active { margin-left: 0 !important; left: 0 !important; }
+            /* #content margin defaults to 0 via staff.css, or base styles */
+            #content { margin-left: 0 !important; }
+        }
+    </style>
 </body>
 </html>
