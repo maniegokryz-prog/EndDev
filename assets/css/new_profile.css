@@ -209,8 +209,8 @@ body {
 /* Top Section Grid */
 .top-section-grid {
     display: grid;
-    grid-template-columns: 550px minmax(0, 1fr);
-    /* Widened from 450px */
+    /* Fluid columns instead of fixed 550px */
+    grid-template-columns: minmax(400px, 40%) minmax(0, 1fr);
     gap: 1.5rem;
     margin-bottom: 1.5rem;
     align-items: stretch;
@@ -226,7 +226,8 @@ body {
 /* Split Grid */
 .profile-split-grid {
     display: grid;
-    grid-template-columns: 450px minmax(0, 1fr);
+    /* Fluid columns instead of fixed 450px */
+    grid-template-columns: minmax(350px, 30%) minmax(0, 1fr);
     /* Widened from 400px */
     gap: 1.5rem;
     /* align-items: start; Removed to allow stretch (equal height) */
@@ -249,7 +250,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    max-height: 500px;
+    max-height: 400px;
     overflow-y: auto;
 }
 
@@ -734,10 +735,10 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    height: 100%;
+    height: auto;
     /* Fill the flexible card */
-    max-height: none;
-    /* Remove arbitrary limit */
+    max-height: 400px;
+    /* Fixed height limit */
     overflow-y: auto;
     /* Scroll if content exceeds card height */
     padding-right: 5px;

@@ -805,10 +805,11 @@ function loadEmployeeLeaves() {
             });
             list.innerHTML = html;
 
-            // Update Visual Schedule if function exists
-            if (typeof window.updateVisualScheduleWithLeaves === 'function') {
-                window.updateVisualScheduleWithLeaves(response.data);
-            }
+            // DISABLED: Don't overlay leaves on work schedule
+            // Leaves are shown in the "Scheduled Leave" section instead
+            // if (typeof window.updateVisualScheduleWithLeaves === 'function') {
+            //     window.updateVisualScheduleWithLeaves(response.data);
+            // }
         });
 }
 
