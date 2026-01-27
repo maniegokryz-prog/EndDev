@@ -51,7 +51,7 @@ class AttendanceLogger:
             from init_local_db import create_database
             create_database()
     
-    def log_attendance(self, employee_db_id, log_type=None, notes=None, source='webcam'):
+    def log_attendance(self, employee_db_id, log_type=None, notes=None, source='webcam', cooldown_minutes=0, min_work_minutes=0, one_session_per_day=False):
         """
         Log an attendance event for an employee.
         
@@ -62,6 +62,9 @@ class AttendanceLogger:
             notes (str, optional): Additional notes for this log entry
             source (str, optional): Source of the log ('webcam', 'manual login', 'kiosk'). 
                                    Defaults to 'webcam'.
+            cooldown_minutes (int): Min minutes between any scans.
+            min_work_minutes (int): Min minutes before allowing Time Out (prevents early out).
+            one_session_per_day (bool): If True, blocks any new logs after a Time Out.
         
         Returns:
             dict: Result containing success status, log_id, log_type, and message
@@ -88,6 +91,102 @@ class AttendanceLogger:
             now = datetime.now()
             log_date = now.strftime('%Y-%m-%d')
             log_time = now.strftime('%Y-%m-%d %H:%M:%S')
+
+            # --- Cooldown Check ---
+            if cooldown_minutes > 0:
+                # Check the most recent log for this employee today
+                cursor.execute("""
+                    SELECT log_type, log_time
+                    FROM attendance_logs
+                    WHERE employee_id = ? AND log_date = ?
+                    ORDER BY log_time DESC
+                    LIMIT 1
+                """, (employee_db_id, log_date))
+                
+                last_log = cursor.fetchone()
+                
+                if last_log:
+                    last_type = last_log[0]
+                    last_time_str = last_log[1]
+                    try:
+                        last_time = datetime.strptime(last_time_str, '%Y-%m-%d %H:%M:%S')
+                        time_diff = (now - last_time).total_seconds() / 60.0
+                        
+                        if time_diff < cooldown_minutes:
+                            print(f"  ⏳ Cooldown active for {employee_name} (Last: {last_time_str}, Diff: {time_diff:.1f}m)")
+                            conn.close()
+                            
+                            # Return special status
+                            msg = ""
+                            if last_type == 'time_in':
+                                msg = f"Already Time In at {last_time.strftime('%I:%M %p')}"
+                            elif last_type == 'time_out':
+                                msg = f"Already Time Out at {last_time.strftime('%I:%M %p')}"
+                            else:
+                                msg = f"Already logged ({last_type}) recently"
+                                
+                            return {
+                                'success': False,
+                                'status': 'cooldown',
+                                'log_type': last_type,
+                                'message': msg
+                            }
+                    except ValueError:
+                        pass # Error parsing time, ignore cooldown
+
+            # --- Single Session & Min Duration Check ---
+            # Determine effective log type (if not provided) to perform checks
+            effective_log_type = log_type
+            if effective_log_type is None:
+                # Basic check: if no logs -> time_in, if last was time_in -> time_out
+                # We need to peek at last log (re-using last_log from cooldown or fetching it)
+                if 'last_log' not in locals() or last_log is None:
+                    cursor.execute("SELECT log_type, log_time FROM attendance_logs WHERE employee_id = ? AND log_date = ? ORDER BY log_time DESC LIMIT 1", (employee_db_id, log_date))
+                    last_log = cursor.fetchone()
+                
+                if not last_log:
+                    effective_log_type = 'time_in'
+                else:
+                    effective_log_type = 'time_out' if last_log[0] == 'time_in' else 'time_in'
+
+            # A. Check Single Session (If strictly one session per day)
+            if one_session_per_day and effective_log_type == 'time_in':
+                # If we are trying to Time In, check if we ALREADY completed a session (i.e. have a time_out)
+                cursor.execute("""
+                    SELECT 1 FROM daily_attendance 
+                    WHERE employee_id = ? AND attendance_date = ? AND time_out IS NOT NULL
+                """, (employee_db_id, log_date))
+                if cursor.fetchone():
+                    print(f"  🛑 Single Session blocked for {employee_name} (Already completed today)")
+                    conn.close()
+                    return {
+                        'success': False,
+                        'status': 'completed',
+                        'message': "Attendance Completed"
+                    }
+
+            # B. Check Min Work Duration (Prevent accidental early Time Out)
+            if min_work_minutes > 0 and effective_log_type == 'time_out':
+                # We are trying to Time Out. Ensure enough time passed since Time In.
+                # Find the Time In for this session
+                cursor.execute("SELECT log_time FROM attendance_logs WHERE employee_id = ? AND log_date = ? AND log_type = 'time_in' ORDER BY log_time DESC LIMIT 1", (employee_db_id, log_date))
+                time_in_row = cursor.fetchone()
+                
+                if time_in_row:
+                    try:
+                        t_in = datetime.strptime(time_in_row[0], '%Y-%m-%d %H:%M:%S')
+                        duration_mins = (now - t_in).total_seconds() / 60.0
+                        if duration_mins < min_work_minutes:
+                            remaining = int(min_work_minutes - duration_mins)
+                            print(f"  🛑 Min Duration blocked for {employee_name} (Worked: {duration_mins:.1f}m, Min: {min_work_minutes}m)")
+                            conn.close()
+                            return {
+                                'success': False,
+                                'status': 'too_early',
+                                'message': f"Too Early: Wait {remaining} min"
+                            }
+                    except ValueError: pass
+
             
             # Auto-determine log type if not provided
             if log_type is None:
