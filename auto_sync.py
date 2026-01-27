@@ -6,7 +6,7 @@ This script monitors the local database and syncs any new/updated records to ION
 """
 
 import requests
-import mysql.connector
+import pymysql
 import time
 import json
 from datetime import datetime
@@ -17,8 +17,46 @@ import urllib3
 urllib3.disable_warnings()
 
 # Configuration
-API_URL = "http://bpcfaceid.com/api/sync_endpoint.php"  # Use HTTP to bypass SSL issues
-API_KEY = "lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo"  # Must match sync_endpoint.php
+CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config", "sync_config.json")
+STATUS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs", "sync_status.json")
+
+# Default values
+API_URL = "http://bpcfaceid.com/api/sync_endpoint.php"
+API_KEY = "lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo"
+SYNC_INTERVAL = 60
+SYNC_ENABLED = True
+
+def load_config():
+    """Load configuration from JSON file"""
+    global API_URL, API_KEY, SYNC_INTERVAL, SYNC_ENABLED
+    
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f:
+                config = json.load(f)
+                API_URL = config.get('api_url', API_URL)
+                API_KEY = config.get('api_key', API_KEY)
+                SYNC_INTERVAL = int(config.get('sync_interval', SYNC_INTERVAL))
+                SYNC_ENABLED = config.get('sync_enabled', SYNC_ENABLED)
+                return True
+        except Exception as e:
+            print(f"Error loading config: {e}")
+            return False
+    return False
+
+def update_status_file(status, message):
+    """Write sync status to JSON for dashboard widget"""
+    try:
+        os.makedirs(os.path.dirname(STATUS_FILE), exist_ok=True)
+        data = {
+            "last_sync": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "status": status,
+            "message": message
+        }
+        with open(STATUS_FILE, 'w') as f:
+            json.dump(data, f)
+    except Exception as e:
+        print(f"Error writing status file: {e}")
 
 # Local Database Configuration
 LOCAL_DB_CONFIG = {
@@ -27,9 +65,6 @@ LOCAL_DB_CONFIG = {
     'password': 'Confirmp@ssword123',
     'database': 'database_records'
 }
-
-# Sync interval (seconds)
-SYNC_INTERVAL = 60
 
 # Log file
 LOG_FILE = "logs/auto_sync.log"
@@ -130,8 +165,8 @@ def sync_with_lookup(table, data):
 def get_unsynced_attendance():
     """Get attendance records that need syncing (from last hour)"""
     try:
-        conn = mysql.connector.connect(**LOCAL_DB_CONFIG)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         
         # Get recent attendance logs (using created_at column)
         query = """
@@ -156,7 +191,7 @@ def get_unsynced_attendance():
         
         return logs, daily
         
-    except mysql.connector.Error as e:
+    except pymysql.Error as e:
         log_message(f"❌ Database error: {str(e)}")
         return [], []
 
@@ -218,8 +253,8 @@ def sync_attendance_records():
 def sync_employees():
     """Sync employee records that were recently updated"""
     try:
-        conn = mysql.connector.connect(**LOCAL_DB_CONFIG)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         
         # Get recently updated employees
         query = """
@@ -246,7 +281,7 @@ def sync_employees():
         
         return synced_count
         
-    except mysql.connector.Error as e:
+    except pymysql.Error as e:
         log_message(f"❌ Database error syncing employees: {str(e)}")
         return 0
 
@@ -293,8 +328,8 @@ def get_cloud_schedule_id(local_schedule_id, conn):
 def sync_schedules():
     """Sync schedule-related tables including FK tables with lookup"""
     try:
-        conn = mysql.connector.connect(**LOCAL_DB_CONFIG)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         synced_count = 0
         
         # Sync schedules (only from last hour to avoid re-syncing old data)
@@ -373,15 +408,15 @@ def sync_schedules():
         
         return synced_count
         
-    except mysql.connector.Error as e:
+    except pymysql.Error as e:
         log_message(f"❌ Database error syncing schedules: {str(e)}")
         return 0
 
 def sync_all_tables():
     """Sync all other tables"""
     try:
-        conn = mysql.connector.connect(**LOCAL_DB_CONFIG)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         synced_count = 0
         
         # Sync holidays
@@ -433,24 +468,45 @@ def sync_all_tables():
         
         return synced_count
         
-    except mysql.connector.Error as e:
+    except pymysql.Error as e:
         log_message(f"❌ Database error syncing other tables: {str(e)}")
         return 0
 
 def main():
     """Main sync loop"""
     log_message("🚀 Auto-Sync Script Started")
+    
+    # Initial config load
+    load_config()
+    
     log_message(f"📡 Syncing to: {API_URL}")
     log_message(f"⏱️ Sync interval: {SYNC_INTERVAL} seconds")
     log_message("-" * 60)
     
     while True:
         try:
+            # Reload config on every loop to pick up changes without restart
+            if load_config():
+                # Check if sync is enabled
+                if not SYNC_ENABLED:
+                    log_message("⏸️ Cloud sync is disabled in settings.")
+                    update_status_file("inactive", "Sync disabled in settings")
+                    time.sleep(10) # Wait 10s before checking again
+                    continue
+            
             # Sync all tables
-            sync_employees()
-            sync_schedules()
-            sync_attendance_records()
-            sync_all_tables()
+            c1 = sync_employees()
+            c2 = sync_schedules()
+            c3 = sync_attendance_records()
+            c4 = sync_all_tables()
+            
+            total_synced = c1 + c2 + c3 + c4
+            if total_synced > 0:
+                msg = f"Synced {total_synced} records"
+                update_status_file("success", msg)
+            elif total_synced == 0:
+                # Update status even on empty sync to show it's alive
+                update_status_file("success", "Sync active - No new data")
             
             # Wait before next sync
             log_message(f"⏳ Waiting {SYNC_INTERVAL} seconds until next sync...\n")
@@ -461,6 +517,7 @@ def main():
             break
         except Exception as e:
             log_message(f"❌ Unexpected error: {str(e)}")
+            update_status_file("error", f"Error: {str(e)}")
             log_message(f"⏳ Retrying in {SYNC_INTERVAL} seconds...\n")
             time.sleep(SYNC_INTERVAL)
 

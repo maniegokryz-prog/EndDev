@@ -42,6 +42,11 @@ function getNavigationLinks() {
             'icon' => 'bi-gear',
             'label' => 'Settings'
         ];
+        $links[] = [
+            'url' => '../settings/sync_cloud_settings.php',
+            'icon' => 'bi-cloud-arrow-up',
+            'label' => 'Sync Settings'
+        ];
     } else {
         // Regular user navigation
         $employeeId = $currentUser['employee_id'] ?? '';
