@@ -277,6 +277,9 @@ function handleSyncWithLookup($conn, $table, $data) {
             $typeId = $res->fetch_assoc()['id'];
         }
         
+        // 3. Prepare Data
+        $cloudIdFromLocal = $data['cloud_id'] ?? null;
+        
         $insertData = [
             'employee_id' => $empId,
             'leave_type_id' => $typeId,
@@ -284,10 +287,43 @@ function handleSyncWithLookup($conn, $table, $data) {
             'end_date' => $data['end_date'],
             'reason' => $data['reason'],
             'status' => $data['status'],
-            'cloud_id' => $data['cloud_id'] ?? null
+            'cloud_id' => $cloudIdFromLocal 
         ];
-        
-        handleInsert($conn, 'employee_leaves', $insertData);
+
+        // 4. CHECK FOR EXISTING RECORD (Upsert Logic)
+        $existingId = null;
+
+        // A. Check by cloud_id (stored locally as 'id') which maps to a column 'cloud_id' on Cloud DB?
+        // Wait, if LOCAL sends its ID as 'cloud_id', and CLOUD stores it in 'cloud_id' column, we can match on that.
+        if ($cloudIdFromLocal) {
+            $stmt = $conn->prepare("SELECT id FROM employee_leaves WHERE cloud_id = ?");
+            $stmt->bind_param("i", $cloudIdFromLocal); // Local ID is integer
+            $stmt->execute();
+            $res = $stmt->get_result();
+            if ($res->num_rows > 0) {
+                $existingId = $res->fetch_assoc()['id'];
+            }
+        }
+
+        // B. Fallback: Check by Employee + Dates (to prevent semantic duplicates if cloud_id correlation is missing)
+        if (!$existingId) {
+            $stmt = $conn->prepare("SELECT id FROM employee_leaves WHERE employee_id = ? AND start_date = ? AND end_date = ?");
+            $stmt->bind_param("iss", $empId, $data['start_date'], $data['end_date']);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            if ($res->num_rows > 0) {
+                $existingId = $res->fetch_assoc()['id'];
+            }
+        }
+
+        if ($existingId) {
+            // UPDATE existing record
+            $where = "id = $existingId";
+            handleUpdate($conn, 'employee_leaves', $insertData, $where);
+        } else {
+            // INSERT new record
+            handleInsert($conn, 'employee_leaves', $insertData);
+        }
         return;
     }
     
