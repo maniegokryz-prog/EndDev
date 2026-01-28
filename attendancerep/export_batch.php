@@ -58,7 +58,7 @@ if ($exportType === 'excel') {
     header('Content-Type: application/vnd.ms-excel');
     header('Content-Disposition: attachment;filename="Batch_DTR_' . date('Ymd_His') . '.xls"');
     header('Cache-Control: max-age=0');
-    
+
     echo '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
     echo '<head>';
     echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
@@ -74,7 +74,7 @@ if ($exportType === 'excel') {
     echo getDTRStyles(false);
     echo '</head>';
     echo '<body>';
-    
+
     // Print Control
     echo '<div class="no-print" style="text-align: center; padding: 10px; background: #333; color: white;">
             <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">PRINT BATCH DTR</button>
@@ -91,15 +91,15 @@ foreach ($employeeIds as $empId) {
     $stmt->bind_param("i", $empId);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows === 0) {
         $stmt->close();
         continue;
     }
-    
+
     $row = $result->fetch_assoc();
-    $fullName = mb_strtoupper($row['last_name'] . ', ' . $row['first_name'] . ' ' . ($row['middle_name'] ?? ''));
-    
+    $fullName = strtoupper($row['last_name'] . ', ' . $row['first_name'] . ' ' . ($row['middle_name'] ?? ''));
+
     $employee = [
         'internal_id' => $row['id'],
         'employee_id' => $row['employee_id'],
@@ -107,29 +107,29 @@ foreach ($employeeIds as $empId) {
         'role' => $row['roles'] ?? 'N/A',
     ];
     $stmt->close();
-    
+
     // Process Periods for this employee
     $employeeRenderData = [];
     foreach ($periods as $period) {
         $y = $period['year'];
         $m = $period['month'];
-        
+
         // Fetch Attendance
         $sql = "SELECT attendance_date, time_in, time_out, actual_hours, status, notes FROM daily_attendance 
                 WHERE employee_id = ? AND MONTH(attendance_date) = ? AND YEAR(attendance_date) = ? AND status != 'visit'";
-        
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("iii", $employee['internal_id'], $m, $y);
         $stmt->execute();
         $res = $stmt->get_result();
-        
+
         $attendanceMap = [];
         while ($r = $res->fetch_assoc()) {
-            $d = (int)date('j', strtotime($r['attendance_date']));
+            $d = (int) date('j', strtotime($r['attendance_date']));
             $attendanceMap[$d] = $r;
         }
         $stmt->close();
-        
+
         $employeeRenderData[] = [
             'year' => $y,
             'month' => $m,
@@ -138,7 +138,7 @@ foreach ($employeeIds as $empId) {
             'validDays' => $period['days']
         ];
     }
-    
+
     // Output Logic
     if ($exportType === 'excel') {
         // Flatten for Excel History Table
@@ -151,18 +151,18 @@ foreach ($employeeIds as $empId) {
             }
         }
         ksort($allRecords);
-        
+
         renderExcelHistoryTable($employee, $allRecords);
         echo '<br><br>'; // Spacing between employees
     } else {
         // PDF / Print - Chunk by 2
         $chunks = array_chunk($employeeRenderData, 2);
-        
+
         foreach ($chunks as $chunk) {
             if (!$isFirstPage) {
                 echo '<div class="page-break"></div>';
             }
-            
+
             if (count($chunk) === 2) {
                 echo '<div class="dtr-side-by-side">';
                 renderDTRForm($employee, $chunk[0], false);

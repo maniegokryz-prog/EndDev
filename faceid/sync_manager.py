@@ -22,6 +22,8 @@ import time
 import json
 from datetime import datetime, timedelta
 from threading import Thread, Event
+import urllib.request
+import urllib.parse
 
 # Fix Windows console encoding for Unicode characters
 if sys.platform == 'win32':
@@ -53,6 +55,12 @@ MYSQL_CONFIG = {
     'database': 'database_records',
     'charset': 'utf8mb4',
     'connect_timeout': 5
+}
+
+# Cloud API Configuration
+CLOUD_API_CONFIG = {
+    'url': 'http://bpcfaceid.com/api/sync_endpoint.php',
+    'key': 'lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo'
 }
 
 # Sync intervals (in seconds)
@@ -98,6 +106,39 @@ class SyncManager:
         except Exception as e:
             self.mysql_available = False
             print(f"⚠️  MySQL connection failed: {e}")
+            return False
+
+    def _sync_to_cloud_api(self, action, table, data, where_condition=''):
+        """
+        Push data to Cloud API using urllib.
+        """
+        try:
+            params = {
+                'action': action,
+                'table': table,
+                'data': json.dumps(data),
+                'where': where_condition
+            }
+            
+            # Prepare data
+            data_encoded = urllib.parse.urlencode(params).encode('utf-8')
+            
+            # Create request
+            req = urllib.request.Request(CLOUD_API_CONFIG['url'], data=data_encoded)
+            req.add_header('X-API-KEY', CLOUD_API_CONFIG['key'])
+            req.add_header('Content-Type', 'application/x-www-form-urlencoded')
+            
+            # Send request
+            with urllib.request.urlopen(req, timeout=5) as response:
+                result = json.loads(response.read().decode('utf-8'))
+                if result.get('success'):
+                    return True
+                else:
+                    print(f"  ⚠️  Cloud Sync Failed ({table}): {result.get('error')}")
+                    return False
+                    
+        except Exception as e:
+            print(f"  ⚠️  Cloud Sync Error ({table}): {e}")
             return False
     
     # ========================================================================
@@ -165,6 +206,17 @@ class SyncManager:
                         mysql_id = mysql_cursor.lastrowid
 
                     mysql_conn.commit()
+
+                    # Push to Cloud API
+                    cloud_data = {
+                        'employee_id': employee_id,
+                        'log_date': str(log_date),
+                        'log_time': str(log_time),
+                        'log_type': log_type,
+                        'source': source,
+                        'notes': notes
+                    }
+                    self._sync_to_cloud_api('insert', 'attendance_logs', cloud_data)
                     
                     # Mark as synced in local database
                     synced_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -277,6 +329,24 @@ class SyncManager:
                               break_time_minutes, status, notes, calculated_at,
                               employee_id, attendance_date))
                         print(f"  ✓ Updated: Employee {employee_id}, Date {attendance_date}, Status: {status}")
+                        
+                        # Sync Update to Cloud
+                        cloud_data = {
+                            'time_in': str(time_in) if time_in else None,
+                            'time_out': str(time_out) if time_out else None,
+                            'scheduled_hours': scheduled_hours,
+                            'actual_hours': actual_hours,
+                            'late_minutes': late_minutes,
+                            'early_departure_minutes': early_departure_minutes,
+                            'overtime_minutes': overtime_minutes,
+                            'break_time_minutes': break_time_minutes,
+                            'status': status,
+                            'notes': notes,
+                            'calculated_at': str(calculated_at)
+                        }
+                        self._sync_to_cloud_api('update', 'daily_attendance', cloud_data, 
+                                              f"employee_id = '{employee_id}' AND attendance_date = '{attendance_date}'")
+
                     else:
                         # Insert new record into MySQL
                         mysql_cursor.execute("""
@@ -291,6 +361,24 @@ class SyncManager:
                               early_departure_minutes, overtime_minutes, break_time_minutes,
                               status, notes, calculated_at))
                         print(f"  ✓ Inserted: Employee {employee_id}, Date {attendance_date}, Status: {status}")
+                        
+                        # Sync Insert to Cloud
+                        cloud_data = {
+                            'employee_id': employee_id,
+                            'attendance_date': str(attendance_date),
+                            'time_in': str(time_in) if time_in else None,
+                            'time_out': str(time_out) if time_out else None,
+                            'scheduled_hours': scheduled_hours,
+                            'actual_hours': actual_hours,
+                            'late_minutes': late_minutes,
+                            'early_departure_minutes': early_departure_minutes,
+                            'overtime_minutes': overtime_minutes,
+                            'break_time_minutes': break_time_minutes,
+                            'status': status,
+                            'notes': notes,
+                            'calculated_at': str(calculated_at)
+                        }
+                        self._sync_to_cloud_api('insert', 'daily_attendance', cloud_data)
                     
                     mysql_conn.commit()
                     success_count += 1
