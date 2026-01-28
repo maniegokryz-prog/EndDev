@@ -24,15 +24,11 @@ header('Cache-Control: no-cache, must-revalidate');
 // Start output buffering to catch any stray output
 ob_start();
 
-// Database connection (inline to avoid any issues)
-$servername = "localhost";
-$username = "root";
-$password = "Confirmp@ssword123";
-$dbname = "database_records";
+// Include database connection (Uses ../../db_connection.php which handles credentials correctly)
+require_once __DIR__ . '/../../db_connection.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
+// Check connection (db_connection.php sets $conn)
+if (!isset($conn) || $conn->connect_error) {
     ob_end_clean();
     echo json_encode([
         'success' => false,

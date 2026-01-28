@@ -331,8 +331,8 @@ function approveLeaveRequest($conn) {
         throw new Exception('Leave ID is required');
     }
     
-    // Get leave details
-    $sql = "SELECT employee_id, start_date, end_date FROM employee_leaves WHERE id = ?";
+    // Get leave details and cloud_id
+    $sql = "SELECT employee_id, start_date, end_date, cloud_id FROM employee_leaves WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $leave_id);
     $stmt->execute();
@@ -353,9 +353,17 @@ function approveLeaveRequest($conn) {
     
     // Sync leave approval to cloud
     require_once __DIR__ . '/../../db_cloud_sync.php';
-    syncToCloud('employee_leaves', [
-        'status' => 'approved'
-    ], 'update', "id = $leave_id");
+    
+    // Check if this was a cloud-originated request
+    if (!empty($leave['cloud_id'])) {
+        syncToCloud('employee_leaves', [
+            'status' => 'approved'
+        ], 'update', "id = " . $leave['cloud_id']); // Update using Cloud ID on Cloud DB
+    } else {
+        syncToCloud('employee_leaves', [
+            'status' => 'approved'
+        ], 'update', "id = $leave_id"); // Fallback or local ID matching if IDs loosely synced
+    }
     
     // Mark attendance dates as "on_leave"
     markDatesAsLeave($conn, $leave['employee_id'], $leave['start_date'], $leave['end_date']);
@@ -385,7 +393,7 @@ function rejectLeaveRequest($conn) {
     }
     
     // Get leave details
-    $sql = "SELECT employee_id FROM employee_leaves WHERE id = ?";
+    $sql = "SELECT employee_id, cloud_id FROM employee_leaves WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $leave_id);
     $stmt->execute();
@@ -406,9 +414,13 @@ function rejectLeaveRequest($conn) {
     
     // Sync leave rejection to cloud
     require_once __DIR__ . '/../../db_cloud_sync.php';
-    syncToCloud('employee_leaves', [
-        'status' => 'rejected'
-    ], 'update', "id = $leave_id");
+    
+    $syncData = ['status' => 'rejected'];
+    if (!empty($leave['cloud_id'])) {
+        syncToCloud('employee_leaves', $syncData, 'update', "id = " . $leave['cloud_id']);
+    } else {
+        syncToCloud('employee_leaves', $syncData, 'update', "id = $leave_id");
+    }
     
     // Create notification for employee
     createEmployeeNotification($conn, $leave['employee_id'], $leave_id, 'rejected');
@@ -824,6 +836,27 @@ function createAdminNotification($conn, $employee_id, $leave_id, $type) {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("iissss", $employee_id, $leave_id, $type, $message, $link);
     $stmt->execute();
+    $notif_id = $conn->insert_id;
+
+    // Sync notification to cloud
+    // Lookup employee_id string for accurate mapping on cloud
+    $stmtCode = $conn->prepare("SELECT employee_id FROM employees WHERE id = ?");
+    $stmtCode->bind_param("i", $employee_id);
+    $stmtCode->execute();
+    $empCode = $stmtCode->get_result()->fetch_assoc()['employee_id'] ?? '';
+
+    require_once __DIR__ . '/../../db_cloud_sync.php';
+    // Use lookup sync for notifications because ID might differ
+    syncToCloudWithLookup('notifications', [
+        'employee_id_string' => $empCode,
+        'leave_id' => $leave_id,
+        'leave_cloud_id' => $leave['cloud_id'] ?? null, // Pass cloud_id of leave if available
+        'type' => $type,
+        'message' => $message,
+        'target' => 'admin',
+        'is_read' => 0, 
+        'link' => $link
+    ]);
 }
 
 /**

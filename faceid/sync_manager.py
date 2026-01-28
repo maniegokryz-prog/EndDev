@@ -143,14 +143,27 @@ class SyncManager:
                 local_id, employee_id, log_date, log_type, log_time, source, notes = log
                 
                 try:
-                    # Insert into MySQL attendance_logs table
+                    # Check if log already exists in MySQL to prevent duplicates
                     mysql_cursor.execute("""
-                        INSERT INTO attendance_logs 
-                        (employee_id, log_date, log_type, log_time, source, notes)
-                        VALUES (%s, %s, %s, %s, %s, %s)
-                    """, (employee_id, log_date, log_type, log_time, source, notes))
+                        SELECT id FROM attendance_logs 
+                        WHERE employee_id = %s AND log_date = %s AND log_time = %s AND log_type = %s
+                    """, (employee_id, log_date, log_time, log_type))
                     
-                    mysql_id = mysql_cursor.lastrowid
+                    existing_log = mysql_cursor.fetchone()
+                    
+                    if existing_log:
+                        mysql_id = existing_log[0]
+                        print(f"  ⚠️  Log already exists in MySQL (ID: {mysql_id}), skipping insert...")
+                    else:
+                        # Insert into MySQL attendance_logs table
+                        mysql_cursor.execute("""
+                            INSERT INTO attendance_logs 
+                            (employee_id, log_date, log_type, log_time, source, notes)
+                            VALUES (%s, %s, %s, %s, %s, %s)
+                        """, (employee_id, log_date, log_type, log_time, source, notes))
+                        
+                        mysql_id = mysql_cursor.lastrowid
+
                     mysql_conn.commit()
                     
                     # Mark as synced in local database

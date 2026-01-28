@@ -70,7 +70,7 @@ $password = "Confirmp@ssword123";
 $database = "dbs14970485";
 
 // Connect to database
-$conn = null;
+$conn = null;                                                                                                                                           
 $lastError = '';
 
 foreach ($possibleHosts as $host) {

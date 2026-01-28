@@ -5,6 +5,9 @@ require_once '../navigation.php';
 
 require '../db_connection.php';
 
+// TOGGLE: Set to true to hide the Add New Staff button entirely
+$hide_add_staff_button = false;
+
 // Get current user info
 $currentUser = getCurrentUser();
 
@@ -275,12 +278,14 @@ $roles = $viewer->getDistinctRoles();
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="fw-bold display-4 text-dark">Staff Management</h2>
      <div class="d-flex justify-content-end mb-3">
+      <?php if (!$hide_add_staff_button): ?>
       <?php if (canAddNewStaff()): ?>
         <a href="newstaff.php" class="btn btn-warning">Add New Staff</a>
       <?php else: ?>
         <button class="btn btn-secondary" disabled title="Adding new staff is disabled on this server">
           <i class="bi bi-lock"></i> Add New Staff (Disabled)
         </button>
+      <?php endif; ?>
       <?php endif; ?>
     </div>
   </div>

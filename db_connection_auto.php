@@ -16,7 +16,7 @@ if ($isLocalhost) {
     $dbname = "database_records";
 } else {
     // IONOS PRODUCTION CONFIGURATION
-    $servername = "localhost";  // On IONOS server, database is localhost
+    $servername = "db5019018805.hosting-data.io"; 
     $username = "dbu58088";
     $password = "Confirmp@ssword123";
     $dbname = "dbs14970485";

@@ -171,7 +171,7 @@ def get_unsynced_attendance():
         # Get recent attendance logs (using created_at column)
         query = """
             SELECT * FROM attendance_logs 
-            WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            WHERE created_at >= DATE_SUB(NOW(), INTERVAL 365 DAY)
             ORDER BY created_at DESC
         """
         cursor.execute(query)
@@ -180,7 +180,7 @@ def get_unsynced_attendance():
         # Get recent daily attendance (using calculated_at column)
         query = """
             SELECT * FROM daily_attendance 
-            WHERE calculated_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            WHERE calculated_at >= DATE_SUB(NOW(), INTERVAL 365 DAY)
             ORDER BY attendance_date DESC
         """
         cursor.execute(query)
@@ -256,11 +256,11 @@ def sync_employees():
         conn = pymysql.connect(**LOCAL_DB_CONFIG)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         
-        # Get recently updated employees
+        # Get recently updated employees (INCREASED TO 365 DAYS TO ENSURE SYNC)
         query = """
             SELECT * FROM employees 
-            WHERE updated_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
-            OR created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            WHERE updated_at >= DATE_SUB(NOW(), INTERVAL 365 DAY)
+            OR created_at >= DATE_SUB(NOW(), INTERVAL 365 DAY)
         """
         cursor.execute(query)
         employees = cursor.fetchall()
@@ -333,7 +333,7 @@ def sync_schedules():
         synced_count = 0
         
         # Sync schedules (only from last hour to avoid re-syncing old data)
-        cursor.execute("SELECT * FROM schedules WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)")
+        cursor.execute("SELECT * FROM schedules WHERE created_at >= DATE_SUB(NOW(), INTERVAL 365 DAY)")
         schedules = cursor.fetchall()
         for record in schedules:
             data = convert_to_json_serializable(record)
@@ -360,7 +360,7 @@ def sync_schedules():
             FROM employee_schedules es
             JOIN employees e ON es.employee_id = e.id
             JOIN schedules s ON es.schedule_id = s.id
-            WHERE es.created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            WHERE es.created_at >= DATE_SUB(NOW(), INTERVAL 365 DAY)
         """)
         employee_schedules_records = cursor.fetchall()
         log_message(f"ℹ️  Found {len(employee_schedules_records)} employee_schedules records to sync")
@@ -383,7 +383,7 @@ def sync_schedules():
             JOIN employees e ON ea.employee_id = e.id
             JOIN schedule_periods sp ON ea.schedule_period_id = sp.id
             JOIN schedules s ON sp.schedule_id = s.id
-            WHERE ea.created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            WHERE ea.created_at >= DATE_SUB(NOW(), INTERVAL 365 DAY)
         """)
         for record in cursor.fetchall():
             data = {
@@ -427,37 +427,40 @@ def sync_all_tables():
             if sync_to_cloud('holidays', data, 'insert'):
                 synced_count += 1
         
-        # Sync ALL leave_types (not just recent ones) - these are reference data
-        # Keep the id so foreign keys work properly
-        cursor.execute("SELECT * FROM leave_types")
+        # Sync leave_types (only new ones)
+        # preventing duplicate entry errors by only syncing recently created types
+        cursor.execute("SELECT * FROM leave_types WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)")
         for record in cursor.fetchall():
             data = convert_to_json_serializable(record)
             # Keep the id field for leave_types since employee_leaves references it
+            # But normally we rely on name lookup. Let's stick to simple insert.
             if sync_to_cloud('leave_types', data, 'insert'):
                 synced_count += 1
         
         # Sync employee_leaves (convert employee_id to employee_id string)
         cursor.execute("""
-            SELECT el.*, e.employee_id as employee_id_string 
+            SELECT el.*, e.employee_id as employee_id_string, lt.type_name as leave_type_name
             FROM employee_leaves el
             JOIN employees e ON el.employee_id = e.id
+            JOIN leave_types lt ON el.leave_type_id = lt.id
             WHERE el.created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR) 
                OR el.updated_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
         """)
         for record in cursor.fetchall():
             data = convert_to_json_serializable(record)
-            # Store the employee_id_string before popping fields
-            employee_id_string = record['employee_id_string']
             
-            # Remove fields that shouldn't be sent
-            data.pop('id', None)
-            data.pop('employee_id', None)
-            data.pop('employee_id_string', None)  # Remove the alias column
+            # Prepare data for lookup sync
+            lookup_data = {
+                'employee_id_string': data['employee_id_string'],
+                'leave_type_name': data['leave_type_name'],
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'reason': data['reason'],
+                'status': data['status'],
+                'cloud_id': data['id'] # Store Local ID as Cloud ID Reference
+            }
             
-            # Set employee_id to the string value (EMP001, etc.)
-            data['employee_id'] = employee_id_string
-            
-            if sync_to_cloud('employee_leaves', data, 'insert'):
+            if sync_with_lookup('employee_leaves', lookup_data):
                 synced_count += 1
         
         cursor.close()
@@ -470,6 +473,120 @@ def sync_all_tables():
         
     except pymysql.Error as e:
         log_message(f"❌ Database error syncing other tables: {str(e)}")
+        return 0
+
+def fetch_cloud_pending_leaves():
+    """Fetch pending leave requests from Cloud and save to Local DB"""
+    try:
+        # 1. Fetch from Cloud
+        headers = {'X-API-KEY': API_KEY, 'User-Agent': 'Auto-Sync/1.0'}
+        # Assuming staffmanagement/api/leave_request.php?action=get_pending_requests exists on Cloud
+        # Note: We need a special 'sync_fetch' action on the cloud endpoint to get ALL pending requests, 
+        # or we reuse get_pending_requests but that might be admin-session protected.
+        # Ideally, we should use sync_endpoint.php with action=fetch_pending_leaves if implemented, 
+        # or call leave_request.php directly if we can bypass auth or simulate it.
+        # For this implementation, we'll assume sync_endpoint.php proxies this or we call a new action.
+        
+        # Let's try the direct API approach first, assuming sync_endpoint handles it or we call leave_request.php
+        # BUT, standard leave_request.php checks session. 
+        # So we should probably rely on sync_endpoint.php having a 'fetch_table' or specific custom action.
+        # Let's implement a 'fetch_new' action on sync_endpoint.php ideally.
+        # Failing that, we'll assume a dedicated endpoint exists.
+        
+        # PROPOSAL: We use sync_endpoint.php with action='fetch_pending_leaves'
+        payload = {'action': 'fetch_pending_leaves', 'table': 'employee_leaves'}
+        response = requests.post(API_URL, data=payload, headers=headers, timeout=30, verify=False)
+        
+        if response.status_code != 200:
+            return 0
+            
+        result = response.json()
+        if not result.get('success') or not result.get('data'):
+            return 0
+            
+        leaves = result['data']
+        count = 0
+        
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        
+        for leave in leaves:
+            # 1. Check if already exists by cloud_id
+            cursor.execute("SELECT id FROM employee_leaves WHERE cloud_id = %s", (leave['id'],))
+            row = cursor.fetchone()
+            if row:
+                continue # Already synced properly
+                
+            # 2. Get Local Employee ID
+            cursor.execute("SELECT id FROM employees WHERE employee_id = %s", (leave['employee_id_string'],))
+            emp_row = cursor.fetchone()
+            if not emp_row:
+                log_message(f"❌ Skipping leave sync: Employee {leave['employee_id_string']} not found locally")
+                continue
+            local_emp_id = emp_row['id']
+
+            # 3. Check if exists by (Employee + Dates) to prevent duplicates of existing local data
+            # This handles the case where local data exists but hasn't been linked to cloud_id yet
+            cursor.execute("""
+                SELECT id FROM employee_leaves 
+                WHERE employee_id = %s AND start_date = %s AND end_date = %s
+            """, (local_emp_id, leave['start_date'], leave['end_date']))
+            existing_leave = cursor.fetchone()
+            
+            if existing_leave:
+                # Update the existing record with the cloud_id
+                cursor.execute("UPDATE employee_leaves SET cloud_id = %s WHERE id = %s", (leave['id'], existing_leave['id']))
+                log_message(f"ℹ️  Linked existing local leave {existing_leave['id']} to Cloud ID {leave['id']}")
+                conn.commit()
+                continue
+
+            # Get Leave Type ID
+            cursor.execute("SELECT id FROM leave_types WHERE type_name = %s", (leave['leave_type_name'],))
+            type_row = cursor.fetchone()
+            if not type_row:
+                cursor.execute("INSERT INTO leave_types (type_name, description) VALUES (%s, %s)", 
+                              (leave['leave_type_name'], f"{leave['leave_type_name']} (Synced)"))
+                conn.commit()
+                local_type_id = cursor.lastrowid
+            else:
+                local_type_id = type_row['id']
+            
+            # Insert Leave Request
+            sql = """INSERT INTO employee_leaves 
+                     (employee_id, leave_type_id, start_date, end_date, reason, status, cloud_id, created_at) 
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (
+                local_emp_id, 
+                local_type_id, 
+                leave['start_date'], 
+                leave['end_date'], 
+                leave['reason'], 
+                leave['status'], 
+                leave['id'],
+                leave['created_at']
+            ))
+            local_leave_id = cursor.lastrowid
+            
+            # Create Local Notification for Admin
+            notif_msg = f"New Sync Request: {leave['employee_name']} ({leave['leave_type_name']})"
+            cursor.execute("""INSERT INTO notifications 
+                              (employee_id, leave_id, type, message, target, is_read, created_at) 
+                              VALUES (%s, %s, 'new_request', %s, 'admin', 0, NOW())""",
+                           (local_emp_id, local_leave_id, notif_msg))
+            
+            count += 1
+            
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        if count > 0:
+            log_message(f"✅ Pulled {count} new leave requests from Cloud")
+            
+        return count
+
+    except Exception as e:
+        log_message(f"❌ Error fetching cloud leaves: {str(e)}")
         return 0
 
 def main():
@@ -499,8 +616,9 @@ def main():
             c2 = sync_schedules()
             c3 = sync_attendance_records()
             c4 = sync_all_tables()
+            c5 = fetch_cloud_pending_leaves()
             
-            total_synced = c1 + c2 + c3 + c4
+            total_synced = c1 + c2 + c3 + c4 + c5
             if total_synced > 0:
                 msg = f"Synced {total_synced} records"
                 update_status_file("success", msg)

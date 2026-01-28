@@ -175,6 +175,7 @@ createTable($conn, $sql_leave_types, "leave_types");
 // Employee Leaves table (for individual leave requests)
 $sql_employee_leaves = "CREATE TABLE IF NOT EXISTS employee_leaves (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    cloud_id INT NULL DEFAULT NULL,
     employee_id INT NOT NULL,
     leave_type_id INT NOT NULL,
     start_date DATE NOT NULL,
@@ -186,7 +187,8 @@ $sql_employee_leaves = "CREATE TABLE IF NOT EXISTS employee_leaves (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
-    FOREIGN KEY (leave_type_id) REFERENCES leave_types(id) ON DELETE CASCADE
+    FOREIGN KEY (leave_type_id) REFERENCES leave_types(id) ON DELETE CASCADE,
+    INDEX (cloud_id)
 )";
 createTable($conn, $sql_employee_leaves, "employee_leaves");
 
@@ -298,6 +300,14 @@ if ($admin_exists->num_rows == 0) {
         // echo "Error creating default admin: " . $conn->error . "<br>";
     }
 }
+
+// --- SCHEMA UPDATES FOR EXISTING INSTALLATIONS ---
+// Check if cloud_id exists in employee_leaves
+$check_cloud_id = $conn->query("SHOW COLUMNS FROM employee_leaves LIKE 'cloud_id'");
+if ($check_cloud_id->num_rows == 0) {
+    $conn->query("ALTER TABLE employee_leaves ADD COLUMN cloud_id INT NULL DEFAULT NULL AFTER id, ADD INDEX idx_cloud_id (cloud_id)");
+}
+
 
 header('Location: dashboard/dashboard.php');
 // echo "All tables and indexes created successfully.<br>";

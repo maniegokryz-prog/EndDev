@@ -1,4 +1,7 @@
- <?php
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once '../auth_guard.php';
 require_once '../navigation.php';
 require_once '../db_connection.php';
@@ -171,7 +174,6 @@ if ($id) {
 </head>
 
 <body>
- <body>
   <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
   <div class="menu-toggle">
     <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
@@ -207,7 +209,6 @@ if ($id) {
     <div class="container-fluid">
       <div class="mb-10">
       <a href="attendancerep.php" class="btn btn-outline-secondary mb-2 mt-3">&larr; Back</a>
-    </a>
   </div>
     <h2 class="fw-bold mt-3 mb-4 display-4 text-dark">
       <?php echo isAdmin() ? 'Individual Report' : 'My Attendance'; ?>
@@ -376,6 +377,7 @@ if ($id) {
       </table>
     </div>
   </div>
+</div>
 </div>
 
 
