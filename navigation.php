@@ -4,12 +4,13 @@
  * Generates role-based navigation links
  */
 
-function getNavigationLinks() {
+function getNavigationLinks()
+{
     $currentUser = getCurrentUser();
     $isAdmin = ($currentUser['role'] === 'admin' || ($currentUser['is_system_admin'] ?? false));
-    
+
     $links = [];
-    
+
     if ($isAdmin) {
         // Admin navigation
         $links[] = [
@@ -67,7 +68,7 @@ function getNavigationLinks() {
             'label' => 'Settings'
         ];
     }
-    
+
     // Logout link (same for everyone)
     $links[] = [
         'url' => '#',
@@ -75,11 +76,12 @@ function getNavigationLinks() {
         'label' => 'Logout',
         'onclick' => 'event.preventDefault(); showLogoutModal();'
     ];
-    
+
     return $links;
 }
 
-function renderNavigation($currentPage = '') {
+function renderNavigation($currentPage = '')
+{
     $links = getNavigationLinks();
 
     // Inject minimal CSS so active indicator is visible on all pages
@@ -121,7 +123,7 @@ function renderNavigation($currentPage = '') {
 
         // Check if link has onclick attribute
         $onclickAttr = isset($link['onclick']) ? 'onclick="' . htmlspecialchars($link['onclick'], ENT_QUOTES, 'UTF-8') . '"' : '';
-        
+
         echo '<a class="nav-link ' . $activeClass . '" href="' . htmlspecialchars($link['url'], ENT_QUOTES, 'UTF-8') . '" ' . $onclickAttr . '>';
         echo '<i class="bi ' . $link['icon'] . '"></i> ' . htmlspecialchars($link['label'], ENT_QUOTES, 'UTF-8');
         echo '</a>' . "\n";

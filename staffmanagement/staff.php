@@ -11,204 +11,219 @@ $hide_add_staff_button = false;
 // Get current user info
 $currentUser = getCurrentUser();
 
-class EmployeeRecordViewer {
-    private $db;
-    private $employees = [];
-    private $errors = [];
-    
-    public function __construct($database) {
-        $this->db = $database;
-    }
-    
-    public function loadEmployeeRecords($filters = []) {
-        try {
-            // Build dynamic query with filters
-            $query = "SELECT 
+class EmployeeRecordViewer
+{
+  private $db;
+  private $employees = [];
+  private $errors = [];
+
+  public function __construct($database)
+  {
+    $this->db = $database;
+  }
+
+  public function loadEmployeeRecords($filters = [])
+  {
+    try {
+      // Build dynamic query with filters
+      $query = "SELECT 
                         employee_id, first_name, middle_name, last_name, 
                         email, phone, roles, department, position, hire_date, status
                       FROM employees";
-            
-            $whereConditions = [];
-            $params = [];
-            $types = '';
-            
-            // Apply filters with prepared statements
-            if (!empty($filters['status'])) {
-                $whereConditions[] = "status = ?";
-                $params[] = $filters['status'];
-                $types .= 's';
-            } else {
-                // Default: only show active employees
-                $whereConditions[] = "status = ?";
-                $params[] = 'active';
-                $types .= 's';
-            }
-            
-            if (!empty($filters['department'])) {
-                $whereConditions[] = "department = ?";
-                $params[] = $filters['department'];
-                $types .= 's';
-            }
-            
-            if (!empty($filters['role'])) {
-                $whereConditions[] = "roles = ?";
-                $params[] = $filters['role'];
-                $types .= 's';
-            }
-            
-            if (!empty($filters['search'])) {
-                $whereConditions[] = "(first_name LIKE ? OR last_name LIKE ? OR employee_id LIKE ?)";
-                $searchTerm = '%' . $filters['search'] . '%';
-                $params[] = $searchTerm;
-                $params[] = $searchTerm;
-                $params[] = $searchTerm;
-                $types .= 'sss';
-            }
-            
-            // Add WHERE clause if conditions exist
-            if (!empty($whereConditions)) {
-                $query .= " WHERE " . implode(" AND ", $whereConditions);
-            }
-            
-            // Add ordering
-            $query .= " ORDER BY created_at DESC";
-            
-            // Execute query with prepared statement for security
-            $stmt = $this->db->prepare($query);
-            
-            if (!$stmt) {
-                throw new Exception('Failed to prepare statement: ' . $this->db->error);
-            }
-            
-            // Bind parameters safely using mysqli
-            if (!empty($params)) {
-                $stmt->bind_param($types, ...$params);
-            }
-            
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to execute employee query: ' . $stmt->error);
-            }
-            
-            $result = $stmt->get_result();
-            
-            if (!$result) {
-                throw new Exception('Failed to get result set');
-            }
-            
-            // Fetch and sanitize all records
-            $this->employees = [];
-            while ($row = $result->fetch_assoc()) {
-                $this->employees[] = $this->sanitizeEmployeeData($row);
-            }
-            
-            $stmt->close();
-            
-            // Log successful operation
-            $this->logActivity("Employee records retrieved", count($this->employees) . " records");
-            
-            return true;
-            
-        } catch (Exception $e) {
-            $this->errors[] = "Database error: " . $e->getMessage();
-            $this->logError("Employee Records Load Failed", $e->getMessage());
-            return false;
+
+      $whereConditions = [];
+      $params = [];
+      $types = '';
+
+      // Apply filters with prepared statements
+      if (!empty($filters['status'])) {
+        $whereConditions[] = "status = ?";
+        $params[] = $filters['status'];
+        $types .= 's';
+      } else {
+        // Default: only show active employees
+        $whereConditions[] = "status = ?";
+        $params[] = 'active';
+        $types .= 's';
+      }
+
+      if (!empty($filters['department'])) {
+        $whereConditions[] = "department = ?";
+        $params[] = $filters['department'];
+        $types .= 's';
+      }
+
+      if (!empty($filters['role'])) {
+        $whereConditions[] = "roles = ?";
+        $params[] = $filters['role'];
+        $types .= 's';
+      }
+
+      if (!empty($filters['search'])) {
+        $whereConditions[] = "(first_name LIKE ? OR last_name LIKE ? OR employee_id LIKE ?)";
+        $searchTerm = '%' . $filters['search'] . '%';
+        $params[] = $searchTerm;
+        $params[] = $searchTerm;
+        $params[] = $searchTerm;
+        $types .= 'sss';
+      }
+
+      // Add WHERE clause if conditions exist
+      if (!empty($whereConditions)) {
+        $query .= " WHERE " . implode(" AND ", $whereConditions);
+      }
+
+      // Add ordering
+      $query .= " ORDER BY created_at DESC";
+
+      // Execute query with prepared statement for security
+      $stmt = $this->db->prepare($query);
+
+      if (!$stmt) {
+        throw new Exception('Failed to prepare statement: ' . $this->db->error);
+      }
+
+      // Bind parameters safely using mysqli
+      if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+      }
+
+      if (!$stmt->execute()) {
+        throw new Exception('Failed to execute employee query: ' . $stmt->error);
+      }
+
+      $result = $stmt->get_result();
+
+      if (!$result) {
+        throw new Exception('Failed to get result set');
+      }
+
+      // Fetch and sanitize all records
+      $this->employees = [];
+      while ($row = $result->fetch_assoc()) {
+        $this->employees[] = $this->sanitizeEmployeeData($row);
+      }
+
+      $stmt->close();
+
+      // Log successful operation
+      $this->logActivity("Employee records retrieved", count($this->employees) . " records");
+
+      return true;
+
+    } catch (Exception $e) {
+      $this->errors[] = "Database error: " . $e->getMessage();
+      $this->logError("Employee Records Load Failed", $e->getMessage());
+      return false;
+    }
+  }
+
+  private function sanitizeEmployeeData($employee)
+  {
+    // Sanitize output data to prevent XSS
+    $sanitized = [];
+
+    foreach ($employee as $key => $value) {
+      if ($value === null || $value === '') {
+        $sanitized[$key] = 'N/A';
+      } else {
+        $sanitized[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+      }
+    }
+
+    // Build full name properly
+    $nameParts = [];
+    if ($employee['first_name'])
+      $nameParts[] = $employee['first_name'];
+    if ($employee['middle_name'])
+      $nameParts[] = $employee['middle_name'];
+    if ($employee['last_name'])
+      $nameParts[] = $employee['last_name'];
+
+    $sanitized['full_name'] = htmlspecialchars(implode(' ', $nameParts), ENT_QUOTES, 'UTF-8');
+
+    return $sanitized;
+  }
+
+  public function getEmployees()
+  {
+    return $this->employees;
+  }
+
+  public function getErrors()
+  {
+    return $this->errors;
+  }
+
+  public function hasErrors()
+  {
+    return !empty($this->errors);
+  }
+
+  public function getDistinctDepartments()
+  {
+    try {
+      $result = $this->db->query("SELECT DISTINCT department FROM employees WHERE department IS NOT NULL AND department != '' ORDER BY department");
+      $departments = [];
+
+      if ($result) {
+        while ($row = $result->fetch_assoc()) {
+          $departments[] = $row['department'];
         }
+      }
+
+      return $departments;
+    } catch (Exception $e) {
+      $this->logError("Get Departments Failed", $e->getMessage());
+      return [];
     }
-    
-    private function sanitizeEmployeeData($employee) {
-        // Sanitize output data to prevent XSS
-        $sanitized = [];
-        
-        foreach ($employee as $key => $value) {
-            if ($value === null || $value === '') {
-                $sanitized[$key] = 'N/A';
-            } else {
-                $sanitized[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-            }
+  }
+
+  public function getDistinctRoles()
+  {
+    try {
+      $result = $this->db->query("SELECT DISTINCT roles FROM employees WHERE roles IS NOT NULL AND roles != '' ORDER BY roles");
+      $roles = [];
+
+      if ($result) {
+        while ($row = $result->fetch_assoc()) {
+          $roles[] = $row['roles'];
         }
-        
-        // Build full name properly
-        $nameParts = [];
-        if ($employee['first_name']) $nameParts[] = $employee['first_name'];
-        if ($employee['middle_name']) $nameParts[] = $employee['middle_name'];
-        if ($employee['last_name']) $nameParts[] = $employee['last_name'];
-        
-        $sanitized['full_name'] = htmlspecialchars(implode(' ', $nameParts), ENT_QUOTES, 'UTF-8');
-        
-        return $sanitized;
+      }
+
+      return $roles;
+    } catch (Exception $e) {
+      $this->logError("Get Roles Failed", $e->getMessage());
+      return [];
     }
-    
-    public function getEmployees() {
-        return $this->employees;
+  }
+
+  private function logActivity($activity, $reference = '')
+  {
+    $log_entry = "[" . date('Y-m-d H:i:s') . "] [ACTIVITY] " . $activity;
+    if ($reference)
+      $log_entry .= " - " . $reference;
+    $log_entry .= PHP_EOL;
+
+    $log_dir = __DIR__ . '/logs/';
+    if (!file_exists($log_dir)) {
+      mkdir($log_dir, 0755, true);
     }
-    
-    public function getErrors() {
-        return $this->errors;
+
+    file_put_contents($log_dir . 'system.log', $log_entry, FILE_APPEND | LOCK_EX);
+  }
+
+  private function logError($context, $message)
+  {
+    $log_entry = "[" . date('Y-m-d H:i:s') . "] [ERROR] Context: " . $context . " - Message: " . $message . PHP_EOL;
+
+    $log_dir = __DIR__ . '/logs/';
+    if (!file_exists($log_dir)) {
+      mkdir($log_dir, 0755, true);
     }
-    
-    public function hasErrors() {
-        return !empty($this->errors);
-    }
-    
-    public function getDistinctDepartments() {
-        try {
-            $result = $this->db->query("SELECT DISTINCT department FROM employees WHERE department IS NOT NULL AND department != '' ORDER BY department");
-            $departments = [];
-            
-            if ($result) {
-                while ($row = $result->fetch_assoc()) {
-                    $departments[] = $row['department'];
-                }
-            }
-            
-            return $departments;
-        } catch (Exception $e) {
-            $this->logError("Get Departments Failed", $e->getMessage());
-            return [];
-        }
-    }
-    
-    public function getDistinctRoles() {
-        try {
-            $result = $this->db->query("SELECT DISTINCT roles FROM employees WHERE roles IS NOT NULL AND roles != '' ORDER BY roles");
-            $roles = [];
-            
-            if ($result) {
-                while ($row = $result->fetch_assoc()) {
-                    $roles[] = $row['roles'];
-                }
-            }
-            
-            return $roles;
-        } catch (Exception $e) {
-            $this->logError("Get Roles Failed", $e->getMessage());
-            return [];
-        }
-    }
-    
-    private function logActivity($activity, $reference = '') {
-        $log_entry = "[" . date('Y-m-d H:i:s') . "] [ACTIVITY] " . $activity;
-        if ($reference) $log_entry .= " - " . $reference;
-        $log_entry .= PHP_EOL;
-        
-        $log_dir = __DIR__ . '/logs/';
-        if (!file_exists($log_dir)) {
-            mkdir($log_dir, 0755, true);
-        }
-        
-        file_put_contents($log_dir . 'system.log', $log_entry, FILE_APPEND | LOCK_EX);
-    }
-    
-    private function logError($context, $message) {
-        $log_entry = "[" . date('Y-m-d H:i:s') . "] [ERROR] Context: " . $context . " - Message: " . $message . PHP_EOL;
-        
-        $log_dir = __DIR__ . '/logs/';
-        if (!file_exists($log_dir)) {
-            mkdir($log_dir, 0755, true);
-        }
-        
-        file_put_contents($log_dir . 'system.log', $log_entry, FILE_APPEND | LOCK_EX);
-    }
+
+    file_put_contents($log_dir . 'system.log', $log_entry, FILE_APPEND | LOCK_EX);
+  }
 }
 
 // Initialize the viewer
@@ -216,10 +231,10 @@ $viewer = new EmployeeRecordViewer($conn);
 
 // Process filter parameters from GET request
 $filters = [
-    'status' => $_GET['status'] ?? 'active',
-    'department' => $_GET['department'] ?? '',
-    'role' => $_GET['role'] ?? '',
-    'search' => $_GET['search'] ?? ''
+  'status' => $_GET['status'] ?? 'active',
+  'department' => $_GET['department'] ?? '',
+  'role' => $_GET['role'] ?? '',
+  'search' => $_GET['search'] ?? ''
 ];
 
 // Load employee records with filters
@@ -232,6 +247,7 @@ $roles = $viewer->getDistinctRoles();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Attendance</title>
@@ -245,7 +261,7 @@ $roles = $viewer->getDistinctRoles();
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Custom CSS -->
-<link rel="stylesheet" href="staff.css">
+  <link rel="stylesheet" href="staff.css">
 </head>
 
 <body>
@@ -259,67 +275,65 @@ $roles = $viewer->getDistinctRoles();
   <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
-      <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>" 
-           alt="Profile" 
-           class="rounded-circle mb-2" 
-           width="70" 
-           height="70"
-           onerror="this.src='../assets/profile_pic/user.png';">
+      <img
+        src="<?php echo (!empty($currentUser['profile_photo']) && $currentUser['profile_photo'] !== 'N/A') ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
+        alt="Profile" class="rounded-circle mb-2" style="width: 70px; height: 70px; object-fit: cover;"
+        onerror="this.src='../assets/profile_pic/user.png';">
       <h5 class="mb-0"><?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?></h5>
-      <small class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
+      <small
+        class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
     </div>
     <nav class="nav flex-column px-2">
       <?php renderNavigation('Staff'); ?>
     </nav>
   </div>
-<!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
- <div class="content pt-3" id="content">
-  <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold display-4 text-dark">Staff Management</h2>
-     <div class="d-flex justify-content-end mb-3">
-      <?php if (!$hide_add_staff_button): ?>
-      <?php if (canAddNewStaff()): ?>
-        <a href="newstaff.php" class="btn btn-warning">Add New Staff</a>
-      <?php else: ?>
-        <button class="btn btn-secondary" disabled title="Adding new staff is disabled on this server">
-          <i class="bi bi-lock"></i> Add New Staff (Disabled)
-        </button>
-      <?php endif; ?>
-      <?php endif; ?>
-    </div>
-  </div>
+  <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+  <div class="content pt-3" id="content">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold display-4 text-dark">Staff Management</h2>
+        <div class="d-flex justify-content-end mb-3">
+          <?php if (!$hide_add_staff_button): ?>
+          <?php if (canAddNewStaff()): ?>
+          <a href="newstaff.php" class="btn btn-warning">Add New Staff</a>
+          <?php else: ?>
+          <button class="btn btn-secondary" disabled title="Adding new staff is disabled on this server">
+            <i class="bi bi-lock"></i> Add New Staff (Disabled)
+          </button>
+          <?php endif; ?>
+          <?php endif; ?>
+        </div>
+      </div>
 
- <!-- Page Content -->
+      <!-- Page Content -->
       <div class="container-fluid mt-3">
         <div class="row g-3 align-items-center">
           <div class="col-md-3">
             <select id="roleFilter" class="form-select">
               <option value="">All Roles</option>
-                        <?php foreach ($roles as $role): ?>
-                            <?php $trimRole = trim($role); ?>
-                            <?php $displayRole = (preg_match('/faculty[\s_\-]*member/i', $trimRole) || strcasecmp($trimRole, 'faculty') === 0) ? 'Faculty' : $role; ?>
-                            <?php $isSelected = (isset($filters['role']) && (strcasecmp($filters['role'], $role) === 0 || strcasecmp($filters['role'], $displayRole) === 0)); ?>
-                            <option value="<?php echo htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8'); ?>" 
-                                    <?php echo $isSelected ? 'selected' : ''; ?> >
-                                <?php echo htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8'); ?>
-                            </option>
-                        <?php endforeach; ?>
+              <?php foreach ($roles as $role): ?>
+                <?php $trimRole = trim($role); ?>
+                <?php $displayRole = (preg_match('/faculty[\s_\-]*member/i', $trimRole) || strcasecmp($trimRole, 'faculty') === 0) ? 'Faculty' : $role; ?>
+                <?php $isSelected = (isset($filters['role']) && (strcasecmp($filters['role'], $role) === 0 || strcasecmp($filters['role'], $displayRole) === 0)); ?>
+                <option value="<?php echo htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8'); ?>" <?php echo $isSelected ? 'selected' : ''; ?>>
+                  <?php echo htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8'); ?>
+                </option>
+              <?php endforeach; ?>
             </select>
           </div>
           <div class="col-md-5">
             <select id="departmentFilter" class="form-select">
               <option value="">All Departments</option>
-                        <?php foreach ($departments as $dept): ?>
-                            <option value="<?php echo htmlspecialchars($dept); ?>" 
-                                    <?php echo $filters['department'] === $dept ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($dept); ?>
-                            </option>
-                        <?php endforeach; ?>
+              <?php foreach ($departments as $dept): ?>
+                <option value="<?php echo htmlspecialchars($dept); ?>" <?php echo $filters['department'] === $dept ? 'selected' : ''; ?>>
+                  <?php echo htmlspecialchars($dept); ?>
+                </option>
+              <?php endforeach; ?>
             </select>
           </div>
           <div class="col-md-4">
-            <input type="text" id="searchInput" class="form-control" placeholder="search by name or Id number" value="<?php echo htmlspecialchars($filters['search']); ?>">
+            <input type="text" id="searchInput" class="form-control" placeholder="search by name or Id number"
+              value="<?php echo htmlspecialchars($filters['search']); ?>">
           </div>
         </div>
 
@@ -342,8 +356,8 @@ $roles = $viewer->getDistinctRoles();
       </div>
     </div>
   </div>
-  
-<!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+  <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 
   <!-- Logout Modal -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
@@ -373,9 +387,5 @@ $roles = $viewer->getDistinctRoles();
     }
   </script>
 </body>
+
 </html>
-
-
- 
-
-

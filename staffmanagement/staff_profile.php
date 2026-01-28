@@ -206,6 +206,11 @@ $loadSuccess = $viewer->loadEmployeeDetails($employee_id);
 $employee = $viewer->getEmployee();
 $schedules = $viewer->getSchedules();
 
+if (!$loadSuccess || !$employee) {
+    header("Location: staff.php?error=employee_not_found");
+    exit;
+}
+
 // Initialize Editor for Modals
 $editor = new EmployeeEditor($conn);
 $editor->loadEmployee($employee_id);
@@ -343,8 +348,9 @@ $profilePhoto .= '?v=' . microtime(true);
     <!-- Sidebar -->
     <div class="sidebar d-flex flex-column pt-5" id="sidebar">
         <div class="profile text-center p-3 mt-4">
-            <img src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo']) . '?v=' . time() : '../assets/profile_pic/user.png'; ?>"
-                alt="Profile" class="rounded-circle mb-2" width="70" height="70">
+            <img src="<?php echo (!empty($currentUser['profile_photo']) && $currentUser['profile_photo'] !== 'N/A') ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
+                alt="Profile" class="rounded-circle mb-2" style="width: 70px; height: 70px; object-fit: cover;"
+                onerror="this.src='../assets/profile_pic/user.png';">
             <h5 class="mb-0"><?php echo htmlspecialchars($currentUser['name'] ?? 'User'); ?></h5>
             <small class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User')); ?></small>
         </div>
@@ -610,7 +616,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                         value="<?php echo htmlspecialchars($employee['phone']); ?>"></div>
                                 <?php if ($isAdmin): ?>
                                     <div class="row">
-                                        <div class="col-md-4 mb-3"><label>Role</label><input type="text" name="roles"
+                                        <div class="col-md-4 mb-3"><label>Role</label><input type="text" name="roles" id="roles"
                                                 class="form-control"
                                                 value="<?php echo htmlspecialchars($employee['roles']); ?>"></div>
                                         <div class="col-md-4 mb-3"><label>Department</label><input type="text" name="department"

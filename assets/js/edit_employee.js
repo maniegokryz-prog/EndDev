@@ -490,8 +490,8 @@ function initializeFacultyFieldToggle() {
     function handleRoleChangeWithSchedules(newRole, previousRole) {
         const scheduleAnalysis = analyzeExistingSchedules();
         if (!scheduleAnalysis.hasSchedules) return true;
-        const newIsFaculty = newRole === 'Faculty_Member';
-        const previousIsFaculty = previousRole === 'Faculty_Member';
+        const newIsFaculty = newRole === 'Faculty_Member' || newRole === 'Faculty Member';
+        const previousIsFaculty = previousRole === 'Faculty_Member' || previousRole === 'Faculty Member';
         if (newIsFaculty === previousIsFaculty) return true;
         let confirmationMessage = '';
         let scheduleTypeInfo = '';
@@ -553,7 +553,7 @@ function initializeFacultyFieldToggle() {
             }
         }
         previousRole = currentRole;
-        const isFaculty = currentRole === 'Faculty_Member';
+        const isFaculty = currentRole === 'Faculty_Member' || currentRole === 'Faculty Member';
         const roleGroup = rolesInput.closest('.form-group');
         const facultyFieldsGroup = document.getElementById('faculty-fields');
         if (roleGroup) {

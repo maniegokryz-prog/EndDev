@@ -6,3 +6,9 @@
 [2026-01-24 16:34:58] [ACTIVITY] Employees deleted permanently - Count: 1
 [2026-01-26 16:14:44] [ACTIVITY] Password verified for restore - System Admin: admin (ID: 1)
 [2026-01-26 16:14:44] [ACTIVITY] Employees restored successfully - Count: 1
+[2026-01-28 05:36:38] [ACTIVITY] Password verified for restore - System Admin: admin (ID: 1)
+[2026-01-28 05:36:38] [ACTIVITY] Employees restored successfully - Count: 1
+[2026-01-28 08:48:29] [ACTIVITY] Password verified for deletion - Employee Admin: Lord Gabriel Castro (ID: 3)
+[2026-01-28 08:48:29] [ACTIVITY] Employees deleted permanently - Count: 1
+[2026-01-28 08:48:47] [ACTIVITY] Password verified for restore - Employee Admin: Lord Gabriel Castro (ID: 3)
+[2026-01-28 08:48:47] [ACTIVITY] Employees restored successfully - Count: 1
