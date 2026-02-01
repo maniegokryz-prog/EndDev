@@ -374,6 +374,8 @@ body {
     margin-top: 1rem;
     display: flex;
     gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 @media (max-width: 576px) {
@@ -664,7 +666,15 @@ body {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
+    white-space: nowrap;
+}
+
+/* New Compact Button */
+.btn-compact {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
 }
 
 .btn-primary {

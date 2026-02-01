@@ -399,6 +399,11 @@ $profilePhoto .= '?v=' . microtime(true);
                                         data-bs-target="#removeEmployeeModal">
                                         <i class="bi bi-trash"></i> Remove
                                     </button>
+                                    <a href="re_register_face.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>"
+                                        class="btn-modern btn-outline text-warning border-warning btn-compact"
+                                        title="Re-register Face Data">
+                                        <i class="bi bi-person-bounding-box"></i> Re-register Face
+                                    </a>
                                 <?php endif; ?>
                             </div>
                         </div>

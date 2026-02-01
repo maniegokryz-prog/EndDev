@@ -349,7 +349,13 @@ class FaceRegistrationApp {
 
 // Initialize application when DOM is ready
 document.addEventListener('DOMContentLoaded', function () {
-    window.faceApp = new FaceRegistrationApp();
-    // Do NOT auto-initialize. We wait for the tab to be active.
-    // window.faceApp.initialize().catch(console.error);
+    // Check if we are on a page that uses this app (look for wizard or re-register element)
+    if (document.getElementById('wizard-step-2') || document.getElementById('face_registration_container')) {
+        window.faceApp = new FaceRegistrationApp();
+        // Do NOT auto-initialize. We wait for the tab to be active or manual init.
+        // window.faceApp.initialize().catch(console.error);
+    }
 });
+
+// Explicitly expose class to window for debug/external checks
+window.FaceRegistrationApp = FaceRegistrationApp;
