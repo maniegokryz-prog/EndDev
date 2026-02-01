@@ -17,6 +17,6 @@ cd /d "%~dp0"
 REM Run Python script with the virtual environment Python
 echo Starting Kiosk system...
 echo.
-..\. venv\Scripts\python.exe start_kiosk.py
+..\.venv\Scripts\python.exe start_kiosk.py
 
 pause

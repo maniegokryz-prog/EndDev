@@ -336,46 +336,46 @@ if ($id) {
             </thead>
             <tbody>
               <?php if (count($attendanceRecords) > 0): ?>
-                  <?php foreach ($attendanceRecords as $record): ?>
-                      <?php
-                      // Determine status and badge
-                      $status = strtolower(trim($record['status']));
-                      $badgeClass = 'bg-secondary';
-                      $statusLabel = 'Unknown';
+                <?php foreach ($attendanceRecords as $record): ?>
+                  <?php
+                  // Determine status and badge
+                  $status = strtolower(trim($record['status']));
+                  $badgeClass = 'bg-secondary';
+                  $statusLabel = 'Unknown';
 
-                      if ($status === 'complete') {
-                        $badgeClass = 'badge-present';
-                        $statusLabel = 'Present';
-                      } elseif ($status === 'incomplete') {
-                        $badgeClass = 'badge-incomplete';
-                        $statusLabel = 'Incomplete';
-                      } elseif ($status === 'absent') {
-                        $badgeClass = 'badge-absent';
-                        $statusLabel = 'Absent';
-                      } elseif ($status === 'manual') {
-                        $badgeClass = 'badge-manual';
-                        $statusLabel = 'Manual';
-                      } elseif ($status === 'leave') {
-                        $badgeClass = 'badge-leave';
-                        $statusLabel = 'On Leave';
-                      }
+                  if ($status === 'complete') {
+                    $badgeClass = 'badge-present';
+                    $statusLabel = 'Present';
+                  } elseif ($status === 'incomplete') {
+                    $badgeClass = 'badge-incomplete';
+                    $statusLabel = 'Incomplete';
+                  } elseif ($status === 'absent') {
+                    $badgeClass = 'badge-absent';
+                    $statusLabel = 'Absent';
+                  } elseif ($status === 'manual') {
+                    $badgeClass = 'badge-manual';
+                    $statusLabel = 'Manual';
+                  } elseif ($status === 'leave') {
+                    $badgeClass = 'badge-leave';
+                    $statusLabel = 'On Leave';
+                  }
 
-                      // Format date
-                      $formattedDate = date('F d, Y', strtotime($record['attendance_date']));
+                  // Format date
+                  $formattedDate = date('F d, Y', strtotime($record['attendance_date']));
 
-                      // Format time_in and time_out
-                      $timeIn = $record['time_in'] ? date('h:i A', strtotime($record['time_in'])) : '-';
-                      $timeOut = $record['time_out'] ? date('h:i A', strtotime($record['time_out'])) : '-';
+                  // Format time_in and time_out
+                  $timeIn = $record['time_in'] ? date('h:i A', strtotime($record['time_in'])) : '-';
+                  $timeOut = $record['time_out'] ? date('h:i A', strtotime($record['time_out'])) : '-';
 
-                      // Convert minutes to hours for display (scheduled_hours and actual_hours are stored in minutes)
-                      $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 1) : '-';
-                      $actualHours = $record['actual_hours'] ? round($record['actual_hours'] / 60, 1) : '-';
+                  // Convert minutes to hours for display (scheduled_hours and actual_hours are stored in minutes)
+                  $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 1) : '-';
+                  $actualHours = $record['actual_hours'] ? round($record['actual_hours'] / 60, 1) : '-';
 
-                      // Add units
-                      $scheduledHoursDisplay = is_numeric($scheduledHours) ? $scheduledHours . ' hrs' : $scheduledHours;
-                      $actualHoursDisplay = is_numeric($actualHours) ? $actualHours . ' hrs' : $actualHours;
-                      ?>
-                      <tr>
+                  // Add units
+                  $scheduledHoursDisplay = is_numeric($scheduledHours) ? $scheduledHours . ' hrs' : $scheduledHours;
+                  $actualHoursDisplay = is_numeric($actualHours) ? $actualHours . ' hrs' : $actualHours;
+                  ?>
+                  <tr>
                     <td><?= $formattedDate ?></td>
                     <td><?= $timeIn ?></td>
                     <td><?= $timeOut ?></td>
@@ -383,15 +383,15 @@ if ($id) {
                     <td><?= $actualHoursDisplay ?></td>
                     <td><span class="badge <?= $badgeClass ?>"><?= $statusLabel ?></span></td>
                   </tr>
-              <?php endforeach; ?>
-            <?php else: ?>
+                  <?php endforeach; ?>
+                <?php else: ?>
                 <tr>
                   <td colspan="6" class="text-center text-muted py-4">
                     <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                     No attendance records found
                   </td>
                 </tr>
-            <?php endif; ?>
+                <?php endif; ?>
             </tbody>
           </table>
         </div>

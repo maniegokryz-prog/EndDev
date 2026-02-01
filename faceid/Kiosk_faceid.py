@@ -106,7 +106,7 @@ def is_face_close_enough(box, frame_w, frame_h):
     w = box[2]
     ratio = w / frame_w
     
-    min_ratio = 0.30 
+    min_ratio = 0.20
     max_ratio = 0.45
     
     if ratio < min_ratio: return False, "too_far"
