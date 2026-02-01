@@ -932,8 +932,14 @@ $profilePhoto .= '?v=' . microtime(true);
                             </div>
                             <div class="col-md-3"><label>Time In:</label><input type="time" class="form-control"></div>
                             <div class="col-md-3"><label>Time Out:</label><input type="time" class="form-control"></div>
-                            <div class="col-md-3"><button class="btn btn-danger removeRow"
-                                    style="display:none; margin-top: 32px;">−</button></div>
+                            <div class="col-md-3">
+                                <div style="margin-top: 32px;">
+                                    <button class="btn btn-warning btn-sm me-1 clearRow" title="Clear Times"><i
+                                            class="bi bi-eraser"></i></button>
+                                    <button class="btn btn-danger btn-sm removeRow" style="display:none;"><i
+                                            class="bi bi-dash-lg"></i></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <button id="addDayBtn" class="btn btn-warning mt-2">+ Add Another Day</button>

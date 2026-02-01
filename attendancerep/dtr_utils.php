@@ -1,6 +1,7 @@
 <?php
 
-function getDTRStyles($isExcel = false) {
+function getDTRStyles($isExcel = false)
+{
     if ($isExcel) {
         return '<style>
             .text-center { text-align: center; }
@@ -8,7 +9,7 @@ function getDTRStyles($isExcel = false) {
             .border { border: 1px solid #000; }
         </style>';
     }
-    
+
     return '<style>
         @media print {
             @page {
@@ -107,19 +108,21 @@ function getDTRStyles($isExcel = false) {
     </style>';
 }
 
-function renderDTRForm($employee, $data, $isExcel = false) {
+function renderDTRForm($employee, $data, $isExcel = false)
+{
     $year = $data['year'];
     $month = $data['month'];
     $monthName = $data['monthName'];
     $attendance = $data['attendance'];
-    
+
     // Calculate totals
     $totalHours = 0;
     $totalMinutes = 0;
-    
+
     // Wrapper
-    if (!$isExcel) echo '<div class="dtr-wrapper">';
-    
+    if (!$isExcel)
+        echo '<div class="dtr-wrapper">';
+
     // Header
     if ($isExcel) {
         echo '<table><tr><td colspan="7" class="text-center bold">BULACAN POLYTECHNIC COLLEGE</td></tr>';
@@ -137,15 +140,15 @@ function renderDTRForm($employee, $data, $isExcel = false) {
                 <div class="title">DAILY TIME RECORD</div>
                 <div style="font-size: 10px;">-----o0o-----</div>
               </div>';
-              
+
         echo '<div style="text-align: center; border-bottom: 2px solid #000080; font-weight: bold; font-size: 13px; margin-bottom: 2px;">' . $employee['name'] . '</div>';
         echo '<div style="text-align: center; font-size: 10px; margin-bottom: 10px;">(Name)</div>';
-        
+
         echo '<div class="info-row">
                 <span>For the month of</span>
                 <span class="line-bottom" style="width: 60%; font-weight: bold; text-align: center;">' . $monthName . ' ' . $year . '</span>
               </div>';
-              
+
         echo '<div class="info-row" style="margin-bottom: 5px;">
                 <span style="font-style: italic; width: 40%;">Official hours for arrival and departure</span>
                 <div style="width: 58%;">
@@ -160,7 +163,7 @@ function renderDTRForm($employee, $data, $isExcel = false) {
                 </div>
               </div>';
     }
-    
+
     // Table Header
     echo '<table ' . ($isExcel ? 'border="1"' : '') . '>';
     echo '<thead>
@@ -180,24 +183,27 @@ function renderDTRForm($employee, $data, $isExcel = false) {
             </tr>
           </thead>';
     echo '<tbody>';
-    
+
     for ($d = 1; $d <= 31; $d++) {
         $r = $attendance[$d] ?? null;
-        
-        $amIn = ''; $amOut = '';
-        $pmIn = ''; $pmOut = '';
-        $hrs = ''; $mins = '';
-        
+
+        $amIn = '';
+        $amOut = '';
+        $pmIn = '';
+        $pmOut = '';
+        $hrs = '';
+        $mins = '';
+
         // Check if date exists in valid days (if range filter applied)
         $currentDate = sprintf('%04d-%02d-%02d', $year, $month, $d);
         $isValidDay = true;
         if (isset($data['validDays']) && $data['validDays'] !== null) {
             $isValidDay = in_array($currentDate, $data['validDays']);
         }
-        
+
         if ($r && $isValidDay) {
             // Logic: Place time based on actual AM/PM value
-            
+
             // TIME IN
             if (!empty($r['time_in'])) {
                 $inTs = strtotime($r['time_in']);
@@ -208,7 +214,7 @@ function renderDTRForm($employee, $data, $isExcel = false) {
                     $pmIn = $inStr; // Late arrival in PM
                 }
             }
-            
+
             // TIME OUT
             if (!empty($r['time_out'])) {
                 $outTs = strtotime($r['time_out']);
@@ -219,20 +225,20 @@ function renderDTRForm($employee, $data, $isExcel = false) {
                     $pmOut = $outStr;
                 }
             }
-            
+
             if ($r['actual_hours']) {
-                $totalM = (float)$r['actual_hours'];
+                $totalM = (float) $r['actual_hours'];
                 $h = floor($totalM / 60);
-                $m = $totalM % 60;
-                
+                $m = (int) ($totalM) % 60;
+
                 $hrs = $h > 0 ? $h : '';
                 $mins = $m > 0 ? $m : '';
-                
+
                 $totalHours += $h;
                 $totalMinutes += $m;
             }
         }
-        
+
         echo '<tr>
                 <td>' . $d . '</td>
                 <td>' . $amIn . '</td>
@@ -243,20 +249,20 @@ function renderDTRForm($employee, $data, $isExcel = false) {
                 <td>' . $mins . '</td>
               </tr>';
     }
-    
+
     // Logic for Total row
     $addedHours = floor($totalMinutes / 60);
     $finalMintues = $totalMinutes % 60;
     $finalHours = $totalHours + $addedHours;
-    
+
     echo '<tr>
             <td colspan="5" style="text-align: right; font-weight: bold; padding-right: 5px;">Total</td>
             <td style="font-weight: bold;">' . ($finalHours > 0 ? $finalHours : '') . '</td>
             <td style="font-weight: bold;">' . ($finalMintues > 0 ? $finalMintues : '') . '</td>
           </tr>';
-          
+
     echo '</tbody></table>';
-    
+
     // Footer
     if ($isExcel) {
         echo '<table>
@@ -280,7 +286,7 @@ function renderDTRForm($employee, $data, $isExcel = false) {
                 </div>
               </div>';
         echo '</div>'; // End wrapper
-        
+
         // Add sync script only once (check if already added)
         if (!defined('DTR_SYNC_SCRIPT_ADDED')) {
             define('DTR_SYNC_SCRIPT_ADDED', true);
@@ -299,7 +305,8 @@ function renderDTRForm($employee, $data, $isExcel = false) {
     }
 }
 
-function renderExcelHistoryTable($employee, $attendanceRecords) {
+function renderExcelHistoryTable($employee, $attendanceRecords)
+{
     // Header Info
     echo '<table border="1">';
     echo '<tr><td colspan="5" style="font-weight: bold; font-size: 14pt; text-align: center;">ATTENDANCE HISTORY</td></tr>';
@@ -324,13 +331,13 @@ function renderExcelHistoryTable($employee, $attendanceRecords) {
             $dateStr = $data['attendance_date'];
             $timeIn = $data['time_in'] ? date('h:i A', strtotime($data['time_in'])) : '';
             $timeOut = $data['time_out'] ? date('h:i A', strtotime($data['time_out'])) : '';
-            
+
             // Hours
             $hours = '';
             if ($data['actual_hours']) {
-                 $h = floor($data['actual_hours'] / 60);
-                 $m = $data['actual_hours'] % 60;
-                 $hours = sprintf('%dh %dm', $h, $m);
+                $h = floor($data['actual_hours'] / 60);
+                $m = (int) ($data['actual_hours']) % 60;
+                $hours = sprintf('%dh %dm', $h, $m);
             }
 
             // Notes / Status

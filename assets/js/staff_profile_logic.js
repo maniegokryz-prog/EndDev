@@ -160,16 +160,29 @@ document.addEventListener('DOMContentLoaded', function () {
                   <input type="time" class="form-control">
                 </div>
                 <div class="col-md-3">
-                  <button class="btn btn-danger removeRow" style="margin-top: 24px;">-</button>
+                  <div style="margin-top: 24px;">
+                    <button class="btn btn-warning btn-sm me-1 clearRow" title="Clear Times"><i class="bi bi-eraser"></i></button>
+                    <button class="btn btn-danger btn-sm removeRow"><i class="bi bi-dash-lg"></i></button>
+                  </div>
                 </div>`;
             attendanceContainer.appendChild(newRow);
             attachDateListener(newRow);
         });
 
-        // Remove row
+        // Handle Row Actions (Remove / Clear)
         attendanceContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('removeRow')) {
+            // Remove
+            if (e.target.closest('.removeRow')) {
                 e.target.closest('.attendance-row').remove();
+            }
+            // Clear
+            if (e.target.closest('.clearRow')) {
+                const row = e.target.closest('.attendance-row');
+                const inputs = row.querySelectorAll('input[type="time"]');
+                inputs.forEach(input => {
+                    input.value = '';
+                    input.classList.remove('bg-light');
+                });
             }
         });
 
@@ -186,8 +199,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const timeIn = inputs[1].value;
                 const timeOut = inputs[2].value;
 
-                if (!date || !timeIn || !timeOut) {
-                    if (!hasError) validationMessage = `Please fill all fields in row ${index + 1}`;
+                if (!date || !timeIn) {
+                    if (!hasError) validationMessage = `Date and Time In are required in row ${index + 1}`;
                     hasError = true;
                     return;
                 }

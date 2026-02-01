@@ -64,7 +64,7 @@ CLOUD_API_CONFIG = {
 }
 
 # Sync intervals (in seconds)
-PULL_INTERVAL = 60  # Pull updates every 60 seconds
+PULL_INTERVAL = 5   # Pull updates every 5 seconds (Near-instant sync)
 PUSH_INTERVAL = 5   # Check for unsynced logs every 5 seconds
 
 # Retry configuration
@@ -308,13 +308,34 @@ class SyncManager:
                 try:
                     # Check if record exists in MySQL
                     mysql_cursor.execute("""
-                        SELECT id FROM daily_attendance 
+                        SELECT id, time_in, time_out FROM daily_attendance 
                         WHERE employee_id = %s AND attendance_date = %s
                     """, (employee_id, attendance_date))
                     
                     existing = mysql_cursor.fetchone()
                     
                     if existing:
+                        mysql_id = existing[0]
+                        remote_time_in = existing[1]
+                        remote_time_out = existing[2]
+                        
+                        # MERGE LOGIC: Don't overwrite valid remote data with local None
+                        # If local is None/Empty but remote has value, keep remote value
+                        
+                        final_time_in = time_in
+                        if (not time_in or str(time_in) == '00:00:00') and remote_time_in:
+                             # Keep remote time_in if convertable to string, else use what we have
+                             # Remote might be timedelta, convert if needed? 
+                             # Actually for UPDATE parameter, we just pass what we want to SET. 
+                             # If we want to keep remote, we pass remote_time_in.
+                             final_time_in = remote_time_in
+                             print(f"    ℹ️  Preserving remote Time In: {remote_time_in}")
+
+                        final_time_out = time_out
+                        if (not time_out or str(time_out) == '00:00:00') and remote_time_out:
+                             final_time_out = remote_time_out
+                             print(f"    ℹ️  Preserving remote Time Out: {remote_time_out}")
+
                         # Update existing record in MySQL
                         mysql_cursor.execute("""
                             UPDATE daily_attendance
@@ -324,7 +345,7 @@ class SyncManager:
                                 overtime_minutes = %s, break_time_minutes = %s,
                                 status = %s, notes = %s, calculated_at = %s
                             WHERE employee_id = %s AND attendance_date = %s
-                        """, (time_in, time_out, scheduled_hours, actual_hours,
+                        """, (final_time_in, final_time_out, scheduled_hours, actual_hours,
                               late_minutes, early_departure_minutes, overtime_minutes,
                               break_time_minutes, status, notes, calculated_at,
                               employee_id, attendance_date))
@@ -734,11 +755,60 @@ class SyncManager:
             added_count = 0
             updated_count = 0
             
+            # Helper to safely convert TIME/timedelta to string
+            def _format_time_value(val):
+                if val is None:
+                    return None
+                if isinstance(val, timedelta):
+                    total_seconds = int(val.total_seconds())
+                    hours = total_seconds // 3600
+                    minutes = (total_seconds % 3600) // 60
+                    seconds = total_seconds % 60
+                    return f"{hours:02}:{minutes:02}:{seconds:02}"
+                return str(val)
+
+            def _safe_float(val):
+                if val is None: return None
+                return float(val)
+
+            def _safe_str(val):
+                if val is None: return None
+                return str(val)
+
             for record in records:
                 local_cursor.execute("SELECT id FROM daily_attendance WHERE id = ?", (record['id'],))
                 exists = local_cursor.fetchone()
                 
+                # Convert Types safely for SQLite
+                t_in = _format_time_value(record['time_in'])
+                t_out = _format_time_value(record['time_out'])
+                att_date = _safe_str(record['attendance_date'])
+                calc_at = _safe_str(record['calculated_at'])
+                
+                # Convert Decimals to float
+                sched_hours = _safe_float(record['scheduled_hours'])
+                act_hours = _safe_float(record['actual_hours'])
+                
+                # print(f"DEBUG: Syncing Daily Record {record['id']} - Raw TimeIn: {record['time_in']} ({type(record['time_in'])}) -> Converted: {t_in}")
+
                 if exists:
+                    # Get existing local values to prevent overwriting with None
+                    local_cursor.execute("SELECT time_in, time_out FROM daily_attendance WHERE id = ?", (record['id'],))
+                    local_rec = local_cursor.fetchone()
+                    local_time_in = local_rec[0]
+                    local_time_out = local_rec[1]
+
+                    # MERGE LOGIC: Keep local value if remote is None but local is valid
+                    final_t_in = t_in
+                    if (not t_in or t_in == '00:00:00') and local_time_in:
+                        final_t_in = local_time_in
+                        # print(f"    ℹ️  Preserving local Time In: {local_time_in}")
+
+                    final_t_out = t_out
+                    if (not t_out or t_out == '00:00:00') and local_time_out:
+                         final_t_out = local_time_out
+                         print(f"    ℹ️  Preserving local Time Out: {local_time_out} (preventing overwrite by remote NULL)")
+
                     # Update existing record
                     local_cursor.execute("""
                         UPDATE daily_attendance
@@ -748,11 +818,11 @@ class SyncManager:
                             status = ?, notes = ?, calculated_at = ?, last_synced = ?
                         WHERE id = ?
                     """, (
-                        record['employee_id'], record['attendance_date'], record['time_in'], 
-                        record['time_out'], record['scheduled_hours'], record['actual_hours'], 
+                        record['employee_id'], att_date, final_t_in, 
+                        final_t_out, sched_hours, act_hours, 
                         record['late_minutes'], record['early_departure_minutes'],
                         record['overtime_minutes'], record['break_time_minutes'], record['status'],
-                        record['notes'], record['calculated_at'],
+                        record['notes'], calc_at,
                         datetime.now().strftime('%Y-%m-%d %H:%M:%S'), record['id']
                     ))
                     updated_count += 1
@@ -765,12 +835,12 @@ class SyncManager:
                          overtime_minutes, break_time_minutes, status, notes, calculated_at, last_synced)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
-                        record['id'], record['employee_id'], record['attendance_date'],
-                        record['time_in'], record['time_out'], record['scheduled_hours'], 
-                        record['actual_hours'], record['late_minutes'],
+                        record['id'], record['employee_id'], att_date,
+                        t_in, t_out, sched_hours, 
+                        act_hours, record['late_minutes'],
                         record['early_departure_minutes'], record['overtime_minutes'],
                         record['break_time_minutes'], record['status'], record['notes'],
-                        record['calculated_at'], datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        calc_at, datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     ))
                     added_count += 1
             

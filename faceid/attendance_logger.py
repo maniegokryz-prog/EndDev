@@ -302,6 +302,56 @@ class AttendanceLogger:
         # Get today's date
         today = datetime.now().strftime('%Y-%m-%d')
         
+        if close_conn:
+            # Don't close yet, we need it for subsequent queries
+            pass
+
+        # 1. Check daily_attendance FIRST (Synced from server/manual entry)
+        # This is the Source of Truth for "Current Session Status"
+        cursor.execute("""
+            SELECT time_in, time_out, status
+            FROM daily_attendance 
+            WHERE employee_id = ? AND attendance_date = ?
+        """, (employee_db_id, today))
+        
+        daily_record = cursor.fetchone()
+        print(f"DEBUG: _determine_log_type daily_record: {daily_record}")
+
+        if daily_record:
+            d_time_in = daily_record[0]
+            d_time_out = daily_record[1]
+            d_status = daily_record[2]
+            
+            # Check for generic "empty" values for Time Out
+            # Including '00:00', '00:00:00' which might come from some SQL defaults
+            is_out_empty = (not d_time_out or 
+                           str(d_time_out).strip() == '' or 
+                           str(d_time_out).strip() == 'None' or
+                           str(d_time_out).strip() == '00:00' or 
+                           str(d_time_out).strip() == '00:00:00')
+
+            # If we have Time In but NO Time Out (or status is incomplete) -> Must Time Out
+            if (d_time_in and is_out_empty) or d_status == 'incomplete':
+                if close_conn: conn.close()
+                return 'time_out'
+                
+            # If we have Time In AND Time Out -> Session Completed
+            # If explicit 'complete' status -> Session Completed
+            if (d_time_in and not is_out_empty) or d_status == 'complete':
+                 # Enforce one session per day check here if needed, 
+                 # but usually we default to 'time_in' (new session) or blocked.
+                 # If one_session_per_day is enforced elsewhere, we just return 'time_in' 
+                 # and let the caller handle "Already Completed".
+                 pass
+                
+            # If we have Time In AND Time Out -> Session Completed
+            # If one_session_per_day logic is handled in log_attendance, we just default to time_in 
+            # (or let log_attendance block it)
+            if d_time_in and d_time_out:
+                # Session closed. Next start is Time In.
+                pass 
+
+        # 2. If no incomplete daily record, check local logs to toggle state
         # Get the most recent log for this employee today
         cursor.execute("""
             SELECT log_type, log_time
@@ -316,17 +366,16 @@ class AttendanceLogger:
         if close_conn:
             conn.close()
         
-        # If no log today, or last log was time_out, next should be time_in
-        if last_log is None:
-            return 'time_in'
+        # If last log found locally, use it to determine next step
+        if last_log:
+            last_log_type = last_log[0]
+            if last_log_type == 'time_in':
+                return 'time_out'
+            else:
+                return 'time_in'
         
-        last_log_type = last_log[0]
-        
-        # Alternate between time_in and time_out
-        if last_log_type == 'time_in':
-            return 'time_out'
-        else:
-            return 'time_in'
+        # Default to time_in
+        return 'time_in'
     
     def _calculate_attendance_status(self, employee_db_id, log_type, log_datetime, conn=None):
         """
@@ -525,14 +574,18 @@ class AttendanceLogger:
                                               {"time_out": log_time_only, "duration": f"{actual_minutes}min"})
                 
                 return
-            
+
             if log_type == 'time_in':
-                # Handle TIME IN
-                late_minutes = 0
+                print(f"     🕐 Processing TIME IN...")
                 
+                # SAFEGUARD: Check if existing record already has a valid time_in
+                if existing_record and existing_record[1]: 
+                     print(f"     ⚠️  Warning: Attempting to overwrite Time In.")
+                     return
+                
+                late_minutes = 0
                 if schedule_periods:
                     # Calculate late minutes based on FIRST period start time
-                    # This is because lateness is measured from the start of the workday
                     first_period_start = schedule_periods[0][0]
                     scheduled_hour, scheduled_minute, scheduled_second = map(int, first_period_start.split(':'))
                     scheduled_datetime = log_datetime.replace(
@@ -547,7 +600,7 @@ class AttendanceLogger:
                         late_minutes = int(time_diff)
                     
                     print(f"     🎯 First period start: {first_period_start}, Late: {late_minutes} min")
-                
+
                 if existing_record:
                     # Update existing record (scheduled_hours already set by initializer)
                     print(f"     📝 Updating time_in for existing record...")
@@ -558,11 +611,10 @@ class AttendanceLogger:
                     """, (log_time_only, late_minutes, log_time_str, existing_record[0]))
                     print(f"     ✓ Updated existing record")
                 else:
-                    # Create new record (this happens if initializer didn't run or employee not scheduled)
-                    # Calculate scheduled_hours as fallback
+                    # Create new record
                     scheduled_hours = 0
                     if schedule_periods:
-                        print(f"     🔢 Calculating scheduled hours (fallback - initializer didn't create record)...")
+                        print(f"     🔢 Calculating scheduled hours (fallback)...")
                         for period in schedule_periods:
                             start_time = period[0]
                             end_time = period[1]
@@ -589,10 +641,27 @@ class AttendanceLogger:
             
             elif log_type == 'time_out':
                 # Handle TIME OUT
-                print(f"     🕐 Processing TIME OUT...")
+                print(f"DEBUG: Handling TIME OUT for Existing ID: {existing_record[0] if existing_record else 'None'}")
                 
+                # Helper to calculate hours
+                def calculate_hours(t_in, t_out):
+                    try:
+                        fmt = '%H:%M:%S'
+                        tdelta = datetime.strptime(t_out, fmt) - datetime.strptime(t_in, fmt)
+                        # changing to total seconds / 3600
+                        return round(tdelta.total_seconds() / 3600, 2)
+                    except:
+                        return 0.0
+
                 if not existing_record:
+                    print("DEBUG: No existing record found for time_out. Checking if creating new one makes sense or error.")
                     # Create record if doesn't exist (user timed out without timing in)
+                    # But wait, logic below says:
+                    # We usually expect a time_in record. If not, it's a "Ghost Time Out" -> Status: Complete (but missing Time In?)
+                    # Actually, if no existing record, we create one with time_out set.
+                    
+                    # Fetch schedule hours for today (simplified default 8h if not found)
+                    # ... (existing logic) ...
                     print(f"     ⚠️  No time_in record found, creating time_out only record...")
                     cursor.execute("""
                         INSERT INTO daily_attendance
@@ -623,17 +692,23 @@ class AttendanceLogger:
                     # Calculate actual_hours: time worked from time_in to time_out
                     # NOTE: Result is stored in MINUTES (field name is misleading)
                     # Parse time_in
-                    time_in_hour, time_in_minute, time_in_second = map(int, time_in_str.split(':'))
-                    time_in_datetime = log_datetime.replace(
-                        hour=time_in_hour,
-                        minute=time_in_minute,
-                        second=time_in_second,
-                        microsecond=0
-                    )
+                    try:
+                        time_in_hour, time_in_minute, time_in_second = map(int, time_in_str.split(':'))
+                        time_in_datetime = log_datetime.replace(
+                            hour=time_in_hour,
+                            minute=time_in_minute,
+                            second=time_in_second,
+                            microsecond=0
+                        )
+                        
+                        # Calculate actual minutes worked
+                        # Use float for precision (matches DB decimal(5,2))
+                        actual_hours = round((log_datetime - time_in_datetime).total_seconds() / 60, 2)
+                        print(f"     ⏱️  Actual hours (time_in to time_out): {actual_hours} min ({actual_hours/60.0:.2f}h)")
                     
-                    # Calculate actual minutes worked
-                    actual_hours = int((log_datetime - time_in_datetime).total_seconds() / 60)
-                    print(f"     ⏱️  Actual hours (time_in to time_out): {actual_hours} min ({actual_hours/60.0:.2f}h)")
+                    except Exception as e:
+                        print(f"     ❌ Error parsing time_in '{time_in_str}': {e}")
+                        actual_hours = 0
                     
                     # Calculate early departure or overtime based on last period end time
                     if schedule_periods:

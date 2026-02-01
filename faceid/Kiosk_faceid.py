@@ -216,12 +216,8 @@ def draw_filled_rounded_rect(img, pt1, pt2, color, radius=10):
 # ============================================================================
 # DIALOG CLASSES
 # ============================================================================
-class ManualLoginDialog:
-    def __init__(self, attendance_logger):
-        self.result = False
-        self.attendance_logger = attendance_logger
-        self.employee_data = None
-        
+class AdminPromptDialog:
+    def __init__(self):
         # Colors
         self.COLOR_BG = "#FFFFFF"
         self.COLOR_PRIMARY = "#1b4d3e" # Dark Green
@@ -230,7 +226,7 @@ class ManualLoginDialog:
         
         # Setup Window
         self.root = tk.Tk()
-        self.root.title("Manual Verification")
+        self.root.title("Authentication Notice")
         self.root.configure(bg=self.COLOR_BG)
         self.root.attributes('-fullscreen', True)
         
@@ -272,50 +268,30 @@ class ManualLoginDialog:
         self.time_label.place(relx=0.5, rely=0.5, anchor="center")
         self.update_clock()
         
-        # --- MAIN CONTENT (Login Form) ---
+        # --- MAIN CONTENT ---
         content_frame = tk.Frame(self.root, bg=self.COLOR_BG)
         content_frame.pack(side="top", expand=True, fill="both")
         
         # Center Box
-        form_frame = tk.Frame(content_frame, bg=self.COLOR_BG)
-        form_frame.place(relx=0.5, rely=0.5, anchor="center")
+        msg_frame = tk.Frame(content_frame, bg=self.COLOR_BG)
+        msg_frame.place(relx=0.5, rely=0.5, anchor="center")
         
-        tk.Label(form_frame, text="Manual Verification", fg=self.COLOR_PRIMARY, bg=self.COLOR_BG, 
-                font=("Segoe UI", 28, "bold")).pack(pady=(0, 10))
+        tk.Label(msg_frame, text="Face Not Recognize", fg="#dc3545", bg=self.COLOR_BG, 
+                font=("Segoe UI", 36, "bold")).pack(pady=(0, 20))
                 
-        tk.Label(form_frame, text="Please log in with your credentials", fg="#666", bg=self.COLOR_BG, 
-                font=("Segoe UI", 14)).pack(pady=(0, 40))
+        tk.Label(msg_frame, text="Please go to the Admin for manual attendance.", fg=self.COLOR_TEXT, bg=self.COLOR_BG, 
+                font=("Segoe UI", 20)).pack(pady=(0, 40))
         
-        # ID Input
-        tk.Label(form_frame, text="Employee ID", fg=self.COLOR_TEXT, bg=self.COLOR_BG, 
-                font=("Segoe UI", 12, "bold")).pack(anchor="w", fill="x", padx=20)
-        self.entry_id = tk.Entry(form_frame, font=("Segoe UI", 16), bd=2, relief="solid", justify="center")
-        self.entry_id.pack(fill="x", padx=20, pady=(5, 20), ipady=5)
-        
-        # Pass Input
-        tk.Label(form_frame, text="Password", fg=self.COLOR_TEXT, bg=self.COLOR_BG, 
-                font=("Segoe UI", 12, "bold")).pack(anchor="w", fill="x", padx=20)
-        self.entry_pass = tk.Entry(form_frame, font=("Segoe UI", 16), bd=2, relief="solid", show="*", justify="center")
-        self.entry_pass.pack(fill="x", padx=20, pady=(5, 30), ipady=5)
-        
-        # Buttons
-        btn_frame = tk.Frame(form_frame, bg=self.COLOR_BG)
-        btn_frame.pack(fill="x", padx=20)
-        
-        self.btn_login = tk.Button(btn_frame, text="Log In", bg="#198754", fg="white", 
-                                 font=("Segoe UI", 14, "bold"), relief="flat", cursor="hand2", 
-                                 command=self.verify)
-        self.btn_login.pack(fill="x", ipady=10)
-        
-        tk.Button(form_frame, text="Cancel", bg=self.COLOR_BG, fg="#dc3545", bd=0, 
-                 font=("Segoe UI", 12, "underline"), cursor="hand2", 
-                 command=self.root.destroy).pack(pady=20)
+        tk.Button(msg_frame, text="Return to Camera", bg="#198754", fg="white", 
+                 font=("Segoe UI", 16, "bold"), relief="flat", cursor="hand2", 
+                 command=self.root.destroy, padx=30, pady=10).pack(pady=20)
 
-        # Hotkeys
-        self.root.bind('<Return>', lambda e: self.verify())
-        self.root.bind('<Escape>', lambda e: self.root.destroy())
+        # Auto-close after 5 seconds
+        self.root.after(5000, self.root.destroy)
         
-        self.entry_id.focus()
+        # Hotkeys
+        self.root.bind('<Return>', lambda e: self.root.destroy())
+        self.root.bind('<Escape>', lambda e: self.root.destroy())
         
         self.root.lift()
         self.root.attributes('-topmost', True)
@@ -328,36 +304,6 @@ class ManualLoginDialog:
             self.time_label.config(text=now)
             self.root.after(1000, self.update_clock)
         except: pass
-
-    def verify(self):
-        emp_id = self.entry_id.get().strip()
-        pw = self.entry_pass.get()
-        
-        if not emp_id or not pw:
-            messagebox.showerror("Error", "Enter all fields")
-            return
-            
-        try:
-            url = "http://localhost/EndDev/login/auth.php?action=login"
-            data = urllib.parse.urlencode({'employee_id': emp_id, 'password': pw}).encode('utf-8')
-            req = urllib.request.Request(url, data=data)
-            with urllib.request.urlopen(req) as resp:
-                res = json.loads(resp.read().decode('utf-8'))
-                
-            if res.get('success'):
-                user = res.get('user', {})
-                code = user.get('employee_id')
-                local = self.attendance_logger.get_employee_by_code(code)
-                if local:
-                    self.employee_data = local
-                    self.result = True
-                    self.root.destroy()
-                else:
-                    messagebox.showerror("Error", "Employee not found locally.")
-            else:
-                messagebox.showerror("Error", "Invalid credentials")
-        except Exception as e:
-            messagebox.showerror("Error", f"Connection error: {e}")
 
 # ============================================================================
 # MAIN APPLICATION LOGIC
@@ -405,9 +351,18 @@ def run_app():
     all_embeddings = None
     employee_info = []
     if os.path.exists(AUTHORIZED_EMBEDDINGS_PATH):
-        data = np.load(AUTHORIZED_EMBEDDINGS_PATH, allow_pickle=True).item()
-        all_embeddings = data['embeddings']
-        employee_info = data['employee_info']
+        try:
+            data = np.load(AUTHORIZED_EMBEDDINGS_PATH, allow_pickle=True).item()
+            all_embeddings = data.get('embeddings')
+            employee_info = data.get('employee_info', [])
+        except Exception as e:
+            print(f"Error loading embeddings: {e}")
+            all_embeddings = None
+    
+    # Check if database is actually populated
+    db_populated = all_embeddings is not None and len(all_embeddings) > 0
+    if not db_populated:
+        print("⚠️ WARNING: No face embeddings loaded. Verification will be disabled.")
         
     profile_pics = load_profile_pictures(employee_info, os.path.join(script_dir, "database", "user_profile"))
     logo_path = os.path.join(script_dir, "bpc-logo.png")
@@ -442,80 +397,19 @@ def run_app():
                 last_simulation = time.time()
                 print(f"Simulated Failure: {consecutive_failures}")
 
-        manual_login_user = None
         if consecutive_failures >= 3:
-            print("Triggering Manual Login...")
-            cv2.destroyAllWindows() 
-            dlg = ManualLoginDialog(logger)
+            print("Triggering Admin Prompt...")
+            # Release camera temporarily if needed, or just destroy windows
+            # cv2.destroyAllWindows() # Optional: Might cause flicker or loss of context, but cleaner for dialog
             
-            if dlg.result:
-                manual_login_user = dlg.employee_data
-                
-                # Normalize keys: DB uses employee_id (e.g. EMP001), but drawing logic expects employee_code
-                if manual_login_user and 'employee_id' in manual_login_user and 'employee_code' not in manual_login_user:
-                     manual_login_user['employee_code'] = manual_login_user['employee_id']
-                
-                # Ensure profile picture is loaded for this user (in case they weren't in authorized_embeddings)
-                emp_code = manual_login_user.get('employee_code')
-                if emp_code and emp_code not in profile_pics:
-                    user_profile_dir = os.path.join(script_dir, "database", "user_profile")
-                    for ext in ['.jpg', '.png', '.jpeg']:
-                        p = os.path.join(user_profile_dir, f"{emp_code}{ext}")
-                        if os.path.exists(p):
-                            img = cv2.imread(p)
-                            if img is not None:
-                                profile_pics[emp_code] = img
-                                print(f"Loaded profile pic for {emp_code} on-the-fly")
-                            break
-                
-                consecutive_failures = 0
-                print(f"Manual Login Success: {manual_login_user.get('full_name')}")
-                
-                matched_emp = manual_login_user
-                
-                emp_id = matched_emp['db_id']
-                has_sched = check_employee_schedule(emp_id)
-                l_type = 'visit' if not has_sched else None
-                
-                # Apply same constraints as face recognition
-                cooldown = LOGIN_COOLDOWN_MINUTES if ENABLE_LOGIN_COOLDOWN else 0
-                if l_type == 'visit':
-                    cooldown = 0
-                
-                min_work = MIN_WORK_DURATION_MINUTES
-                single_sess = ENABLE_SINGLE_SESSION
-                
-                res = logger.log_attendance(emp_id, log_type=l_type, source='manual login',
-                                          cooldown_minutes=cooldown,
-                                          min_work_minutes=min_work,
-                                          one_session_per_day=single_sess)
-                
-                verification_done = True
-                last_verify_time = time.time()
-
-                if res['success']:
-                    rt = res['log_type']
-                    if rt == 'time_in': status_text = "Verified - Time In"; status_color = (0, 255, 0)
-                    elif rt == 'time_out': status_text = "Verified - Time Out"; status_color = (0, 140, 255)
-                    elif rt == 'visit': status_text = "Verified - Visit"; status_color = (255, 0, 255)
-                    else: status_text = rt; status_color = (255, 255, 255)
-                    print(f"Logged: {status_text}")
-                elif res.get('status') == 'cooldown':
-                     status_text = res.get('message', "Already Verified")
-                     status_color = (0, 215, 255) 
-                elif res.get('status') == 'too_early':
-                     status_text = res.get('message', "Too Early")
-                     status_color = (255, 165, 0)
-                elif res.get('status') == 'completed':
-                     status_text = "Attendance Completed"
-                     status_color = (0, 100, 255)
-                else:
-                    status_text = "Error Logging"
-                    status_color = (0, 0, 255)
-
-            else:
-                consecutive_failures = 0 
+            # Show the dialog
+            dlg = AdminPromptDialog()
             
+            # After dialog closes, reset failures and continue
+            consecutive_failures = 0
+            frontal_start = None # Reset tracking
+            
+            # Ensure window is back
             cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
             if is_fullscreen: cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
@@ -575,15 +469,17 @@ def run_app():
                   # cv2.putText(canvas, f"Live: {liveness_score:.2f}", (mcx, mcy-35), cv2.FONT_HERSHEY_SIMPLEX, 0.6, score_color, 2)
 
              # Visual Feedback: Green if ready, Red if not
-             # READY CONDITION: Frontal + Close + High Confidence + Real
-             is_ready = is_frontal and is_close and (conf > 0.8) and is_real
+             # READY CONDITION: Database has people + Frontal + Close + High Confidence + Real
+             is_ready = db_populated and is_frontal and is_close and (conf > 0.8) and is_real
              
              col = (0, 255, 0) if is_ready else (0, 0, 255)
              cv2.rectangle(canvas, (mcx, mcy), (mcx+mcw, mcy+mch), col, 2)
 
              # Guidance Text
              guidance_text = ""
-             if not is_real:
+             if not db_populated:
+                 guidance_text = "No Registered Faces"
+             elif not is_real:
                  guidance_text = "FAKE FACE DETECTED"
              elif not is_frontal:
                  guidance_text = "Look at Camera"
@@ -670,8 +566,27 @@ def run_app():
                                       last_verify_time = time.time()
                                       consecutive_failures = 0
                                  else:
+                                      # Not recognized
                                       consecutive_failures += 1
                                       frontal_start = None 
+                                      
+                                      # Visual feedback for Unknown Face
+                                      # We overwrite the box color to Red and show text
+                                      col = (0, 0, 255) # Red
+                                      cv2.rectangle(canvas, (mcx, mcy), (mcx+mcw, mcy+mch), col, 2)
+                                      
+                                      guidance_text = "Unknown Face"
+                                      # Calculate text size to center it
+                                      g_scale = 1.0
+                                      g_thick = 2
+                                      g_size = cv2.getTextSize(guidance_text, cv2.FONT_HERSHEY_SIMPLEX, g_scale, g_thick)[0]
+                                      g_x = mcx + (mcw - g_size[0]) // 2
+                                      g_y = mcy - 10
+                                      if g_y < 30: g_y = mcy + mch + 30 
+                                      
+                                      # Draw text
+                                      cv2.putText(canvas, guidance_text, (g_x, g_y), cv2.FONT_HERSHEY_SIMPLEX, g_scale, (0,0,0), g_thick+2)
+                                      cv2.putText(canvas, guidance_text, (g_x, g_y), cv2.FONT_HERSHEY_SIMPLEX, g_scale, (0, 0, 255), g_thick)
                          else:
                               frontal_start = None
                  else:

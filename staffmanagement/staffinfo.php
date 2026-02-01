@@ -625,7 +625,8 @@ $schedules = $viewer->getSchedules();
                   <h3 class="fw-bold mb-1"><?php echo $viewer->getFullName(); ?></h3>
                   <p class="text-muted mb-1"><?php echo htmlspecialchars($employee['employee_id']); ?></p>
                   <p class="mb-1"><?php echo htmlspecialchars($employee['roles']); ?> |
-                    <?php echo htmlspecialchars($employee['position']); ?></p>
+                    <?php echo htmlspecialchars($employee['position']); ?>
+                  </p>
                   <p class="mb-1">Email: <?php echo htmlspecialchars($employee['email']); ?></p>
                   <p class="mb-3">Contact: <?php echo htmlspecialchars($employee['phone']); ?></p>
 
@@ -1983,9 +1984,8 @@ $schedules = $viewer->getSchedules();
               }
             </script>
 
-            <div id="calendarCard" class="card shadow-sm mb-3"
-              style="<?php if (!canRequestLeave($employee['roles']))
-                echo 'margin-top: -60px !important;'; ?>">
+            <div id="calendarCard" class="card shadow-sm mb-3" style="<?php if (!canRequestLeave($employee['roles']))
+              echo 'margin-top: -60px !important;'; ?>">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <button class="btn btn-sm btn-outline-secondary" id="prevMonth"><i
                     class="bi bi-chevron-left"></i></button>
@@ -2204,7 +2204,12 @@ $schedules = $viewer->getSchedules();
                           <input type="time" class="form-control">
                         </div>
                         <div class="col-md-3">
-                          <button class="btn btn-danger removeRow" style="display:none; margin-top: 32px;">−</button>
+                          <div style="margin-top: 32px;">
+                            <button class="btn btn-warning btn-sm me-1 clearRow" title="Clear Times"><i
+                                class="bi bi-eraser"></i></button>
+                            <button class="btn btn-danger btn-sm removeRow" style="display:none;"><i
+                                class="bi bi-dash-lg"></i></button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2386,7 +2391,10 @@ $schedules = $viewer->getSchedules();
           <input type="time" class="form-control">
         </div>
         <div class="col-md-3">
-          <button class="btn btn-danger removeRow" style="margin-top: 32px;">−</button>
+          <div style="margin-top: 32px;">
+            <button class="btn btn-warning btn-sm me-1 clearRow" title="Clear Times"><i class="bi bi-eraser"></i></button>
+            <button class="btn btn-danger btn-sm removeRow"><i class="bi bi-dash-lg"></i></button>
+          </div>
         </div>`;
                   attendanceContainer.appendChild(newRow);
 
@@ -2394,10 +2402,20 @@ $schedules = $viewer->getSchedules();
                   attachDateListener(newRow);
                 });
 
-                // 🔹 Step 3: Remove a day row
+                // 🔹 Step 3: Handle Row Actions (Remove / Clear)
                 attendanceContainer.addEventListener('click', (e) => {
-                  if (e.target.classList.contains('removeRow')) {
+                  // Remove
+                  if (e.target.closest('.removeRow')) {
                     e.target.closest('.attendance-row').remove();
+                  }
+                  // Clear
+                  if (e.target.closest('.clearRow')) {
+                    const row = e.target.closest('.attendance-row');
+                    const inputs = row.querySelectorAll('input[type="time"]');
+                    inputs.forEach(input => {
+                      input.value = '';
+                      input.classList.remove('bg-light');
+                    });
                   }
                 });
 
@@ -2415,8 +2433,8 @@ $schedules = $viewer->getSchedules();
                     const timeIn = inputs[1].value;  // Second input is time in
                     const timeOut = inputs[2].value;  // Third input is time out
 
-                    if (!date || !timeIn || !timeOut) {
-                      if (!hasError) validationMessage = `Please fill all fields in row ${index + 1}`;
+                    if (!date || !timeIn) {
+                      if (!hasError) validationMessage = `Date and Time In are required in row ${index + 1}`;
                       hasError = true;
                       return;
                     }
@@ -2766,8 +2784,9 @@ $schedules = $viewer->getSchedules();
                   };
 
                   // Check if record is incomplete with time_in but no time_out
+                  // Check if record is incomplete OR manual with time_in but no time_out
                   const showEditButton = isAdmin &&
-                    record.status === 'incomplete' &&
+                    (record.status === 'incomplete' || record.status === 'manual') &&
                     record.time_in &&
                     !record.time_out;
 
