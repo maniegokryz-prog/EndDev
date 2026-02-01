@@ -8,6 +8,9 @@ require '../db_connection.php';
 $currentUser = getCurrentUser();
 $isAdmin = isset($currentUser['role']) && $currentUser['role'] === 'admin';
 
+// CONFIGURATION: Set to true when deploying to IONOS server to disable editing
+$is_ionos_server = false;
+
 // Check if user can request leave
 function canRequestLeave($employeeRoles)
 {
@@ -501,7 +504,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
                         <!-- Compact Actions -->
                         <div class="d-flex gap-2 mb-3">
-                            <?php if ($isAdmin): ?>
+                            <?php if ($isAdmin && !$is_ionos_server): ?>
                                 <button class="btn btn-sm btn-outline-success flex-grow-1" data-bs-toggle="modal"
                                     data-bs-target="#attendanceModal">
                                     <i class="bi bi-plus-lg"></i> Add
@@ -539,7 +542,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <div class="profile-card schedule-section-card">
                     <div class="card-header-custom">
                         <h3 class="card-title">Schedule</h3>
-                        <?php if ($isAdmin): ?>
+                        <?php if ($isAdmin && !$is_ionos_server): ?>
                             <button class="btn-modern btn-outline btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#editScheduleModal">
                                 <i class="bi bi-pencil"></i> Edit
