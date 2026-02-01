@@ -9,7 +9,7 @@ import requests
 import pymysql
 import time
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 # Disable SSL warnings completely
@@ -589,6 +589,101 @@ def fetch_cloud_pending_leaves():
         log_message(f"❌ Error fetching cloud leaves: {str(e)}")
         return 0
 
+def fetch_cloud_employees():
+    """Fetch updated employees from Cloud and update Local DB"""
+    try:
+        # Fetch from Cloud
+        headers = {'X-API-KEY': API_KEY, 'User-Agent': 'Auto-Sync/1.0'}
+        # We want to catch any update in the last sync interval + buffer
+        # But since we don't track last sync time persistently for this specific action,
+        # let's look back 1 hour or 24 hours to be safe.
+        # Ideally, we pass 'since' param.
+        
+        since_time = (datetime.now() - timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')
+        payload = {
+            'action': 'fetch_employees', 
+            'since': since_time
+        }
+        
+        # Verify=False for testing
+        response = requests.post(API_URL, data=payload, headers=headers, timeout=30, verify=False)
+        
+        if response.status_code != 200:
+            return 0
+            
+        result = response.json()
+        if not result.get('success') or not result.get('data'):
+            return 0
+            
+        employees = result['data']
+        count = 0
+        
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        
+        for emp in employees:
+            emp_id_string = emp['employee_id']
+            
+            # Check if exists locally
+            cursor.execute("SELECT * FROM employees WHERE employee_id = %s", (emp_id_string,))
+            local_emp = cursor.fetchone()
+            
+            if local_emp:
+                # Update if Cloud is newer (simple logic: just overwrite if cloud updated_at is recent)
+                # Note: This might overwrite local changes if we are not careful.
+                # Since User requested "Cloud changes reflect on Local", we assume Cloud is master for these updates.
+                
+                # Check timestamps if we want to be fancy, but let's just update for now if data differs.
+                # Actually, let's only update if local updated_at is OLDER than cloud updated_at?
+                # Or simply overwrite.
+                
+                # Let's overwrite specific fields that are personal info
+                update_query = """
+                    UPDATE employees SET 
+                    first_name=%s, last_name=%s, email=%s, phone=%s, 
+                    position=%s, department=%s, 
+                    updated_at=%s 
+                    WHERE id=%s
+                """
+                cursor.execute(update_query, (
+                    emp['first_name'], emp['last_name'], emp['email'], emp.get('phone'),
+                    emp['position'], emp['department'],
+                    emp['updated_at'], # Keep sync with cloud time? Or set to NOW()?
+                    local_emp['id']
+                ))
+                if cursor.rowcount > 0:
+                    count += 1
+                    log_message(f"🔄 Updated local employee: {emp['first_name']} {emp['last_name']}")
+            else:
+                # Insert new employee from Cloud?
+                # The user asked if "change or modification" reflects.
+                # Implicitly, new employees might also be desired.
+                # Let's support INSERT too.
+                insert_query = """
+                    INSERT INTO employees (employee_id, first_name, last_name, email, phone, position, department, created_at, updated_at)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """
+                cursor.execute(insert_query, (
+                    emp['employee_id'], emp['first_name'], emp['last_name'], emp['email'], emp.get('phone'),
+                    emp['position'], emp['department'],
+                    emp['created_at'], emp['updated_at']
+                ))
+                count += 1
+                log_message(f"➕ Added new local employee from cloud: {emp['first_name']} {emp['last_name']}")
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        if count > 0:
+            log_message(f"✅ Pulled {count} employee updates from Cloud")
+            
+        return count
+
+    except Exception as e:
+        log_message(f"❌ Error fetching cloud employees: {str(e)}")
+        return 0
+
 def main():
     """Main sync loop"""
     log_message("🚀 Auto-Sync Script Started")
@@ -617,8 +712,9 @@ def main():
             c3 = sync_attendance_records()
             c4 = sync_all_tables()
             c5 = fetch_cloud_pending_leaves()
+            c6 = fetch_cloud_employees()
             
-            total_synced = c1 + c2 + c3 + c4 + c5
+            total_synced = c1 + c2 + c3 + c4 + c5 + c6
             if total_synced > 0:
                 msg = f"Synced {total_synced} records"
                 update_status_file("success", msg)

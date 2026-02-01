@@ -66,6 +66,9 @@ try {
         case 'fetch_pending_leaves':
             fetchPendingLeaves($conn);
             break;
+        case 'fetch_employees':
+            fetchEmployees($conn);
+            break;
         case 'insert':
             handleInsert($conn, $table, $data);
             break;
@@ -108,6 +111,29 @@ function fetchPendingLeaves($conn)
     while ($row = $result->fetch_assoc())
         $leaves[] = $row;
     echo json_encode(['success' => true, 'data' => $leaves]);
+}
+
+function fetchEmployees($conn)
+{
+    // Fetch employees modified or created in the last 24 hours (or larger window if needed)
+    // For robustness, maybe we fetch all? No, that's too heavy.
+    // Let's assume we want to sync changes.
+    // Ideally, the client sends a 'since' timestamp.
+
+    $since = $_POST['since'] ?? date('Y-m-d H:i:s', strtotime('-1 day'));
+
+    $sql = "SELECT * FROM employees WHERE updated_at >= ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $since);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $employees = [];
+    while ($row = $result->fetch_assoc()) {
+        $employees[] = $row;
+    }
+
+    echo json_encode(['success' => true, 'data' => $employees]);
 }
 
 function handleInsert($conn, $table, $data)
