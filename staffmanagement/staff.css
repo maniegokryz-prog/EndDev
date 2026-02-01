@@ -1232,3 +1232,67 @@
      font-size: 0.875rem;
      font-style: italic;
    }
+
+   /* Face Registration Thumbnails */
+   #photo-thumbnails {
+       display: flex;
+       gap: 15px;
+       flex-wrap: wrap;
+       margin-top: 15px;
+   }
+
+   .photo-thumbnail {
+       width: 100px;
+       height: 120px;
+       position: relative;
+       border-radius: 8px;
+       overflow: visible; /* Changed to visible to allow hover expansion outside */
+       background: #fff;
+       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+       transition: transform 0.3s ease;
+       cursor: pointer;
+       z-index: 1; /* Default z-index */
+   }
+
+   .thumbnail-content {
+       width: 100%;
+       height: 100%;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       border: 3px solid #dee2e6;
+       border-radius: 8px;
+       overflow: hidden;
+       background: white;
+   }
+
+   .thumbnail-img {
+       width: 100%;
+       height: 85px;
+       object-fit: cover;
+       background-color: #f0f0f0;
+   }
+
+   .thumbnail-caption {
+       width: 100%;
+       text-align: center;
+       padding: 2px;
+       background: #f8f9fa;
+       border-top: 1px solid #dee2e6;
+       font-size: 0.75rem;
+       font-weight: 600;
+       color: #666;
+   }
+
+   /* Hover Effect - Enlarge */
+   .photo-thumbnail:hover {
+       z-index: 100 !important; /* Bring to very front */
+       transform: scale(2.5); /* Make it much bigger */
+       transition-delay: 0.1s; /* Slight delay to prevent accidental flickers */
+   }
+
+   /* Ensure caption is still readable or hidden on hover if improved look is needed */
+   .photo-thumbnail:hover .thumbnail-content {
+       border-color: #198754; /* Green border on hover */
+       box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+   }

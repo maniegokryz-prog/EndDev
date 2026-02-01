@@ -245,12 +245,18 @@ class FaceRegistrationApp {
     }
 
     createThumbnail(angle, step) {
+        // Find the photo data for this step
+        const photo = this.capturedPhotos.find(p => p.step === step);
+        const imgSrc = photo ? photo.dataURL : '';
+
         const thumbnailDiv = document.createElement('div');
         thumbnailDiv.className = 'photo-thumbnail';
         thumbnailDiv.innerHTML = `
-            <div class="thumbnail-placeholder">
-                📷 Photo ${step}<br>
-                <small>${angle} angle</small>
+            <div class="thumbnail-content">
+                <img src="${imgSrc}" class="thumbnail-img" alt="Photo ${step}">
+                <div class="thumbnail-caption">
+                    <small>${angle}</small>
+                </div>
             </div>
         `;
         this.elements.photoThumbnails.appendChild(thumbnailDiv);
@@ -260,10 +266,16 @@ class FaceRegistrationApp {
         const thumbnails = this.elements.photoThumbnails.children;
         if (thumbnails.length > 0) {
             const lastThumbnail = thumbnails[thumbnails.length - 1];
+            // Get the latest photo data
+            const lastPhoto = this.capturedPhotos[this.capturedPhotos.length - 1];
+            const imgSrc = lastPhoto ? lastPhoto.dataURL : '';
+
             lastThumbnail.innerHTML = `
-                <div class="thumbnail-placeholder">
-                    📷 Photo ${thumbnails.length} (Updated)<br>
-                    <small>${this.angles[thumbnails.length - 1].angle} angle</small>
+                <div class="thumbnail-content">
+                    <img src="${imgSrc}" class="thumbnail-img" alt="Photo ${this.capturedPhotos.length}">
+                    <div class="thumbnail-caption">
+                        <small>${this.angles[thumbnails.length - 1].angle}</small>
+                    </div>
                 </div>
             `;
         }
