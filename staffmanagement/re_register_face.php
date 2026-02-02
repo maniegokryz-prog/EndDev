@@ -33,9 +33,9 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Re-register Face - <?php echo htmlspecialchars($fullName); ?></title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"> -->
 
     <!-- Styles -->
     <link rel="stylesheet" href="../assets/css/styles.css?v=<?php echo time(); ?>">
@@ -43,8 +43,9 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
 
     <!-- Face API scripts -->
     <script src="../assets/js/face-api.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+    <!-- Tensorflow/Blazeface (Check local availability) -->
+    <script src="../assets/js/tf.min.js"></script>
+    <!-- <script src="../assets/js/blazeface.js"></script> --> <!-- Blazeface not found locally -->
 
     <style>
         /* Sidebar & Dashboard Layout Styles (Matching dashboard.css) */
