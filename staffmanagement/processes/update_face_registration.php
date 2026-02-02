@@ -83,7 +83,7 @@ class FaceRegistrationUpdater
                         'profile_photo' => $newProfilePhotoPath,
                         '_lookup_key' => 'employee_id', // Assuming helper uses this or hardcoded logic
                         '_lookup_value' => $this->validatedData['employee_id_string']
-                    ], 'update');
+                    ]);
                 } else {
                     // Fallback if syncToCloudWithLookup isn't flexible, use syncToCloud with manual condition
                     syncToCloud('employees', [
