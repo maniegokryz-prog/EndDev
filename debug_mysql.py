@@ -24,7 +24,7 @@ def check_mysql_data():
             SELECT id, employee_id, attendance_date, time_in, time_out, actual_hours, status 
             FROM daily_attendance 
             ORDER BY id DESC 
-            LIMIT 5
+            LIMIT 10
         """)
         
         rows = cursor.fetchall()

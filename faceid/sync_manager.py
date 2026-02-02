@@ -308,7 +308,7 @@ class SyncManager:
                 try:
                     # Check if record exists in MySQL
                     mysql_cursor.execute("""
-                        SELECT id, time_in, time_out FROM daily_attendance 
+                        SELECT id, time_in, time_out, actual_hours, status FROM daily_attendance 
                         WHERE employee_id = %s AND attendance_date = %s
                     """, (employee_id, attendance_date))
                     
@@ -318,16 +318,15 @@ class SyncManager:
                         mysql_id = existing[0]
                         remote_time_in = existing[1]
                         remote_time_out = existing[2]
+                        # Correct indices based on new SELECT
+                        remote_actual_hours = existing[3]
+                        remote_status = existing[4]
                         
                         # MERGE LOGIC: Don't overwrite valid remote data with local None
                         # If local is None/Empty but remote has value, keep remote value
                         
                         final_time_in = time_in
                         if (not time_in or str(time_in) == '00:00:00') and remote_time_in:
-                             # Keep remote time_in if convertable to string, else use what we have
-                             # Remote might be timedelta, convert if needed? 
-                             # Actually for UPDATE parameter, we just pass what we want to SET. 
-                             # If we want to keep remote, we pass remote_time_in.
                              final_time_in = remote_time_in
                              print(f"    ℹ️  Preserving remote Time In: {remote_time_in}")
 
@@ -335,6 +334,17 @@ class SyncManager:
                         if (not time_out or str(time_out) == '00:00:00') and remote_time_out:
                              final_time_out = remote_time_out
                              print(f"    ℹ️  Preserving remote Time Out: {remote_time_out}")
+
+                        # MERGE LOGIC: Preserve actual_hours and status
+                        final_actual_hours = actual_hours
+                        if (actual_hours is None or actual_hours == 0) and remote_actual_hours:
+                            final_actual_hours = remote_actual_hours
+                            print(f"    ℹ️  Preserving remote Actual Hours: {remote_actual_hours}")
+                        
+                        final_status = status
+                        if (not status or status == 'incomplete') and (remote_status == 'complete' or remote_status == 'manual'):
+                            final_status = remote_status
+                            print(f"    ℹ️  Preserving remote Status: {remote_status}")
 
                         # Update existing record in MySQL
                         mysql_cursor.execute("""
@@ -345,11 +355,11 @@ class SyncManager:
                                 overtime_minutes = %s, break_time_minutes = %s,
                                 status = %s, notes = %s, calculated_at = %s
                             WHERE employee_id = %s AND attendance_date = %s
-                        """, (final_time_in, final_time_out, scheduled_hours, actual_hours,
+                        """, (final_time_in, final_time_out, scheduled_hours, final_actual_hours,
                               late_minutes, early_departure_minutes, overtime_minutes,
-                              break_time_minutes, status, notes, calculated_at,
+                              break_time_minutes, final_status, notes, calculated_at,
                               employee_id, attendance_date))
-                        print(f"  ✓ Updated: Employee {employee_id}, Date {attendance_date}, Status: {status}")
+                        print(f"  ✓ Updated: Employee {employee_id}, Date {attendance_date}, Status: {final_status}")
                         
                         # Sync Update to Cloud
                         cloud_data = {
