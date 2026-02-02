@@ -716,7 +716,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             console.log('Edit Schedule Form submission');
             console.log('Schedule data:', JSON.stringify(editAddedSchedules, null, 2));
-            console.log('Total schedules to save:', editAddedSchedules.length);
+
+            // Get submit button and apply loading state
+            const saveBtn = editScheduleForm.querySelector('.btn-save');
+            const originalBtnText = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
 
             // Create FormData object
             const formData = new FormData(editScheduleForm);
@@ -750,6 +755,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 m.show();
                                 document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
                             }, 40);
+
+                            // Reduce wait time from 5000ms to 1500ms
                             setTimeout(() => {
                                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
@@ -762,10 +769,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 // Reload the page to show updated schedules
                                 setTimeout(() => {
                                     window.location.reload();
-                                }, 500);
-                            }, 5000);
+                                }, 300);
+                            }, 1500);
                         }
                     } else {
+                        // Reset button on error
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalBtnText;
+
                         // Show error modal (using existing error modal or create inline alert)
                         const errorMsg = 'Error updating schedule: ' + (data.message || 'Unknown error');
                         console.error(errorMsg);
@@ -773,6 +784,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .catch(error => {
+                    // Reset button on catch
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalBtnText;
+
                     console.error('Error submitting form:', error);
                     alert('Error updating schedule. Please check the console for details.');
                 });

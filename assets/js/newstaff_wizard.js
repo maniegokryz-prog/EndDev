@@ -154,6 +154,7 @@ window.toggleDay = function (button) {
 }
 
 /* Add Schedule Function */
+/* Add Schedule Function */
 window.addSchedule = async function () {
     if (selectedDays.length === 0) { showAppAlert('Please select at least one working day!'); return; }
 
@@ -181,15 +182,28 @@ window.addSchedule = async function () {
         endTime: shiftEnd,
         class: isFaculty ? designateClass.toUpperCase() : 'N/A',
         subject: isFaculty ? designateSubject.toUpperCase() : 'GENERAL',
-        room_num: isFaculty ? roomNumber.toUpperCase() : 'TBD',
+        room_num: isFaculty ? roomNumber.toUpperCase() : 'TBD', // Fixed typo 'room_bum' in some versions? No, standard is room_num
         color: getRandomScheduleColor()
     };
 
-    if (checkScheduleConflict(scheduleData)) {
-        if (!confirm('This schedule conflicts with an existing schedule. Do you want to add it anyway?')) return;
+    // Check for conflicts first
+    if (detectConflict(scheduleData)) {
+        showConfirmModal(
+            'This schedule overlaps with an existing one. The existing schedule will be automatically adjusted (trimmed or split) to fit this new schedule. Do you want to proceed?',
+            'Schedule Conflict',
+            function () {
+                executeAddSchedule(scheduleData);
+            }
+        );
+    } else {
+        executeAddSchedule(scheduleData);
     }
+}
 
-    addedSchedules.push(scheduleData);
+function executeAddSchedule(scheduleData) {
+    // Auto-resolve conflicts
+    resolveScheduleConflicts(scheduleData);
+
     window.addedSchedules = addedSchedules;
 
     // Update Hidden Input for Form Submission
@@ -197,21 +211,91 @@ window.addSchedule = async function () {
 
     renderSchedules();
     clearScheduleForm();
-    showAppAlert('Schedule added to preview!', 'Success', 'success');
+    // Optional: Use a more subtle notification since it's auto-adjusted
+    showAppAlert('Schedule added (conflicts resolved automatically).', 'Success', 'success');
 }
 
-function checkScheduleConflict(newSchedule) {
+function detectConflict(newSchedule) {
+    let newStart = parseTime(newSchedule.startTime);
+    let newEnd = parseTime(newSchedule.endTime);
+
     return addedSchedules.some(existing => {
-        const commonDays = newSchedule.days.filter(d => existing.days.includes(d));
+        // Check day overlap
+        const commonDays = existing.days.filter(d => newSchedule.days.includes(d));
         if (commonDays.length === 0) return false;
 
-        const newStart = parseTime(newSchedule.startTime);
-        const newEnd = parseTime(newSchedule.endTime);
+        // Check time overlap
         const existingStart = parseTime(existing.startTime);
         const existingEnd = parseTime(existing.endTime);
 
-        return (newStart < existingEnd && newEnd > existingStart);
+        return (existingStart < newEnd && existingEnd > newStart);
     });
+}
+
+function resolveScheduleConflicts(newSchedule) {
+    let newSchedulesList = [];
+    const newStart = parseTime(newSchedule.startTime);
+    const newEnd = parseTime(newSchedule.endTime);
+
+    // Iterate over existing schedules to adjust them
+    addedSchedules.forEach(existing => {
+        // Find days that overlap
+        const conflictingDays = existing.days.filter(d => newSchedule.days.includes(d));
+        const nonConflictingDays = existing.days.filter(d => !newSchedule.days.includes(d));
+
+        // 1. Keep the parts of the schedule on days that don't conflict
+        if (nonConflictingDays.length > 0) {
+            newSchedulesList.push({
+                ...existing,
+                days: nonConflictingDays
+            });
+        }
+
+        // 2. If there are conflicting days, check time overlap
+        if (conflictingDays.length > 0) {
+            const existingStart = parseTime(existing.startTime);
+            const existingEnd = parseTime(existing.endTime);
+
+            // Check if times actually overlap
+            // Overlap condition: StartA < EndB && EndA > StartB
+            if (existingStart < newEnd && existingEnd > newStart) {
+
+                // Case A: Existing schedule starts before new schedule (Pre-segment)
+                if (existingStart < newStart) {
+                    newSchedulesList.push({
+                        ...existing, // Copy props (color, class, etc)
+                        days: [...conflictingDays],
+                        startTime: existing.startTime, // Keeping original string format
+                        endTime: minutesToHHMM(newStart)
+                    });
+                }
+
+                // Case B: Existing schedule ends after new schedule (Post-segment)
+                if (existingEnd > newEnd) {
+                    newSchedulesList.push({
+                        ...existing,
+                        days: [...conflictingDays],
+                        startTime: minutesToHHMM(newEnd),
+                        endTime: existing.endTime
+                    });
+                }
+
+                // The middle part (overlapping) is effectively "overwritten" by not including it.
+            } else {
+                // No time overlap, so we keep the schedule on these days as is
+                newSchedulesList.push({
+                    ...existing,
+                    days: [...conflictingDays]
+                });
+            }
+        }
+    });
+
+    // Finally add the new schedule
+    newSchedulesList.push(newSchedule);
+
+    // Update the global list
+    addedSchedules = newSchedulesList;
 }
 
 function clearScheduleForm() {
@@ -229,7 +313,7 @@ function clearScheduleForm() {
 }
 
 window.deleteSchedule = function (index, day) {
-    showConfirmModal('Are you sure you want to delete this schedule block?', 'Confirm Delete', function() {
+    showConfirmModal('Are you sure you want to delete this schedule block?', 'Confirm Delete', function () {
         const schedule = addedSchedules[index];
         if (schedule.days.length === 1) {
             addedSchedules.splice(index, 1);
@@ -244,7 +328,7 @@ window.deleteSchedule = function (index, day) {
 
 window.clearAllSchedules = async function () {
     if (addedSchedules.length === 0) return;
-    showConfirmModal(`Are you sure you want to clear all ${addedSchedules.length} schedule(s)?`, 'Confirm Clear', function() {
+    showConfirmModal(`Are you sure you want to clear all ${addedSchedules.length} schedule(s)?`, 'Confirm Clear', function () {
         addedSchedules = [];
         window.addedSchedules = [];
         document.getElementById('schedule_data').value = '[]';
@@ -326,6 +410,12 @@ function formatTime(t) {
     return `${displayH}:${m.toString().padStart(2, '0')}${period}`;
 }
 
+function minutesToHHMM(totalMinutes) {
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+}
+
 // Show confirmation modal
 function showConfirmModal(message, title = 'Confirm', onConfirm = null) {
     const modalEl = document.getElementById('appConfirmModal');
@@ -333,7 +423,7 @@ function showConfirmModal(message, title = 'Confirm', onConfirm = null) {
     const titleEl = document.getElementById('appConfirmModalLabel');
     const okBtn = document.getElementById('appConfirmOk');
     const cancelBtn = document.getElementById('appConfirmCancel');
-    
+
     if (!modalEl || !okBtn) {
         // Fallback to native confirm
         if (window.confirm(message)) {
@@ -341,39 +431,39 @@ function showConfirmModal(message, title = 'Confirm', onConfirm = null) {
         }
         return;
     }
-    
+
     if (msgEl) msgEl.textContent = message;
     if (titleEl) titleEl.textContent = title;
-    
+
     const bsModal = new bootstrap.Modal(modalEl);
-    
+
     function cleanup() {
         okBtn.removeEventListener('click', onOk);
         if (cancelBtn) cancelBtn.removeEventListener('click', onCancel);
         modalEl.removeEventListener('hidden.bs.modal', onHidden);
     }
-    
+
     function onOk(e) {
         e && e.preventDefault();
         cleanup();
         bsModal.hide();
         if (onConfirm) onConfirm();
     }
-    
+
     function onCancel(e) {
         e && e.preventDefault();
         cleanup();
         bsModal.hide();
     }
-    
+
     function onHidden() {
         cleanup();
     }
-    
+
     okBtn.addEventListener('click', onOk);
     if (cancelBtn) cancelBtn.addEventListener('click', onCancel);
     modalEl.addEventListener('hidden.bs.modal', onHidden);
-    
+
     bsModal.show();
 }
 
