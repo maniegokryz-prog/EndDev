@@ -147,7 +147,66 @@ function initCalendarWidget() {
             const header = popup.querySelector('.calendar-header');
             if (header) header.insertAdjacentElement('afterend', info);
         }
-        // Toggle Popup
+
+        // ==========================================
+        // Visit Offset Logic
+        // ==========================================
+        let pendingOffsetId = null;
+
+        window.confirmSetOffset = function (recordId) {
+            pendingOffsetId = recordId;
+            const modalEl = document.getElementById('leaveConfirmModal');
+            if (modalEl) {
+                document.getElementById('leaveConfirmTitle').textContent = 'Confirm Offset';
+                document.getElementById('leaveConfirmMsg').textContent = 'Are you sure you want to set this visit as an official offset? This will mark the attendance as Present.';
+                const btn = document.getElementById('btnConfirmAction');
+                // Remove previous listeners to avoid duplicates (cleaner would be to use a persistent handler that checks a variable, but this works for simple cases)
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+
+                newBtn.addEventListener('click', () => {
+                    executeSetOffset();
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                });
+
+                new bootstrap.Modal(modalEl).show();
+            } else {
+                if (confirm('Are you sure you want to set this visit as an official offset?')) {
+                    executeSetOffset();
+                }
+            }
+        };
+
+        async function executeSetOffset() {
+            if (!pendingOffsetId) return;
+
+            try {
+                const response = await fetch('processes/set_visit_offset.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ record_id: pendingOffsetId })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Reload DTR
+                    loadDTRForSelectedRange();
+                    // Optional: Show success
+                    // alert('Visit successfully set as Offset.'); 
+                } else {
+                    alert('Failed: ' + result.message);
+                }
+            } catch (e) {
+                console.error(e);
+                alert('An error occurred.');
+            } finally {
+                pendingOffsetId = null;
+            }
+        }
+
+
         trigger.addEventListener("click", (e) => {
             e.stopPropagation();
             const isHidden = popup.style.display === "none" || popup.style.display === "";
@@ -416,10 +475,14 @@ function renderDTRList(records) {
                     ${record.hours_worked !== 'N/A' ? ` • ${record.hours_worked} hrs` : ''}
                 </div>
                 ${window.isAdmin ? `
-                <div class="mt-1">
+                <div class="mt-1 d-flex gap-2 align-items-center">
                     <button class="btn btn-sm btn-link p-0 text-primary" style="font-size: 0.8em;" onclick='openEditAttendanceModal(${JSON.stringify(record)})'>
                         <i class="bi bi-pencil-square"></i> Edit
                     </button>
+                    ${(record.status && record.status.toLowerCase() === 'visit') ? `
+                    <button class="btn btn-sm btn-link p-0 text-success" style="font-size: 0.8em;" onclick="confirmSetOffset(${record.id})">
+                        <i class="bi bi-check-circle-fill"></i> Set as Offset
+                    </button>` : ''}
                 </div>` : ''}
             </div>
         </div>`;

@@ -313,8 +313,16 @@ def main():
             
             if result.returncode == 0:
                 print("✓ Embeddings synced successfully")
+                # Parse output to find count
+                for line in result.stdout.splitlines():
+                    if "Successfully saved" in line:
+                        print(f"    {line.split(']')[-1].strip()}")
             else:
                 print("⚠️  Warning: Embedding sync failed")
+                if result.stdout:
+                    print(f"    Output: {result.stdout}")
+                if result.stderr:
+                    print(f"    Error: {result.stderr}")
         except Exception as e:
             print(f"⚠️  Warning: Could not sync embeddings: {e}")
     else:
