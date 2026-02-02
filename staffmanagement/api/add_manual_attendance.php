@@ -109,9 +109,9 @@ function addManualAttendance($conn)
                 continue;
             }
 
-            // Validate time in format
-            if (!preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $time_in)) {
-                $errors[] = "Record " . ($index + 1) . ": Invalid time in format";
+            // Validate time in format (HH:MM or HH:MM:SS)
+            if (!preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/', $time_in)) {
+                $errors[] = "Record " . ($index + 1) . ": Invalid time in format '$time_in'";
                 continue;
             }
 
@@ -120,8 +120,8 @@ function addManualAttendance($conn)
 
             // Validate time out format if provided
             if ($time_out) {
-                if (!preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $time_out)) {
-                    $errors[] = "Record " . ($index + 1) . ": Invalid time out format";
+                if (!preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/', $time_out)) {
+                    $errors[] = "Record " . ($index + 1) . ": Invalid time out format '$time_out'";
                     continue;
                 }
 
