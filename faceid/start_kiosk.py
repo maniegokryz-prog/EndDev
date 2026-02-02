@@ -4,6 +4,8 @@ import os
 import time
 import ctypes
 import socket
+import json
+from datetime import datetime
 from threading import Thread, Event
 
 # Global shutdown event for coordinating graceful shutdown
@@ -472,6 +474,23 @@ def main():
         shutdown_event.set()
         if sync_thread and sync_thread.is_alive():
             sync_thread.join(timeout=3)
+            
+        # FORCE UPDATE STATUS TO STOPPED
+        try:
+            log_dir = os.path.join(script_dir, "logs")
+            if os.path.exists(log_dir):
+                status_file = os.path.join(log_dir, "sync_status.json")
+                data = {
+                    "last_sync": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    "status": "error",
+                    "message": "Sync Stopped (Kiosk Closed)"
+                }
+                with open(status_file, 'w') as f:
+                    json.dump(data, f)
+                print("✓ Sync status updated to Stopped")
+        except Exception as e:
+            print(f"⚠️ Could not update sync status: {e}")
+
         print("✓ All systems stopped")
         time.sleep(1)
 

@@ -41,6 +41,14 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_DIR = os.path.join(SCRIPT_DIR, "database")
 sys.path.insert(0, DB_DIR)
 
+# Define Logs Directory
+LOG_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "logs")
+if not os.path.exists(LOG_DIR):
+    try:
+        os.makedirs(LOG_DIR)
+    except Exception as e:
+        print(f"⚠️  Warning: Could not create logs directory: {e}")
+
 from init_local_db import get_db_connection, DB_PATH
 
 # ============================================================================
@@ -1031,6 +1039,9 @@ class SyncManager:
         print("\n🛑 Stopping sync threads...")
         self.stop_event.set()
         
+        # Write stopped status immediately
+        self._write_sync_status_json(False, "Sync Stopped")
+        
         if self.push_thread:
             self.push_thread.join(timeout=2)
         if self.pull_thread:
@@ -1042,6 +1053,25 @@ class SyncManager:
     # Utility Methods
     # ========================================================================
     
+    def _write_sync_status_json(self, success, message=None):
+        """
+        Write sync status to JSON file for PHP dashboard.
+        """
+        try:
+            status_file = os.path.join(LOG_DIR, "sync_status.json")
+            
+            data = {
+                "last_sync": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "status": "success" if success else "error",
+                "message": message if message else ("Synced successfully" if success else "Unknown error")
+            }
+            
+            with open(status_file, 'w') as f:
+                json.dump(data, f)
+                
+        except Exception as e:
+            print(f"⚠️  Warning: Could not write sync status JSON: {e}")
+
     def _update_sync_status(self, table_name, sync_type, success, error_msg=None):
         """
         Update the sync status table.
@@ -1075,6 +1105,9 @@ class SyncManager:
             conn.close()
         except Exception as e:
             print(f"⚠️  Warning: Could not update sync status: {e}")
+            
+        # Also write to JSON for the dashboard
+        self._write_sync_status_json(success, error_msg)
     
     def get_sync_status(self):
         """
