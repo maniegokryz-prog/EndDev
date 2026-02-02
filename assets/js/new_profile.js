@@ -415,6 +415,12 @@ function renderDTRList(records) {
                     <span>Out: ${record.time_out_formatted || '--'}</span>
                     ${record.hours_worked !== 'N/A' ? ` • ${record.hours_worked} hrs` : ''}
                 </div>
+                ${window.isAdmin ? `
+                <div class="mt-1">
+                    <button class="btn btn-sm btn-link p-0 text-primary" style="font-size: 0.8em;" onclick='openEditAttendanceModal(${JSON.stringify(record)})'>
+                        <i class="bi bi-pencil-square"></i> Edit
+                    </button>
+                </div>` : ''}
             </div>
         </div>`;
     });
@@ -1387,6 +1393,106 @@ function initManualAttendance() {
         }
     });
 }
+
+
+
+// ==========================================
+// Edit Attendance Logic
+// ==========================================
+window.openEditAttendanceModal = function (record) {
+    const modalEl = document.getElementById('editAttendanceModal');
+    if (!modalEl) return;
+
+    // Populate Fields
+    document.getElementById('editAttDate').value = record.formatted_date;
+    document.getElementById('editAttDateValue').value = record.attendance_date; // YYYY-MM-DD
+    document.getElementById('editAttTimeIn').value = record.time_in || '';
+    document.getElementById('editAttTimeOut').value = record.time_out || '';
+    document.getElementById('editAttError').classList.add('d-none');
+
+    // Show Modal
+    new bootstrap.Modal(modalEl).show();
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnSaveEdit = document.getElementById('btnSaveEditAttendance');
+    if (btnSaveEdit) {
+        btnSaveEdit.addEventListener('click', async () => {
+            const date = document.getElementById('editAttDateValue').value;
+            const timeIn = document.getElementById('editAttTimeIn').value;
+            const timeOut = document.getElementById('editAttTimeOut').value;
+            const errorEl = document.getElementById('editAttError');
+
+            if (!timeIn) {
+                errorEl.textContent = 'Time In is required.';
+                errorEl.classList.remove('d-none');
+                return;
+            }
+
+            // Simple validation
+            if (timeOut && timeIn && timeOut <= timeIn) {
+                // Allow overnight shifts? API supports it, but let's warn or simpler validation first.
+                // For now, let API handle complex validation, but basic check here:
+                // Actually, API handles it.
+            }
+
+            btnSaveEdit.disabled = true;
+            btnSaveEdit.textContent = 'Saving...';
+
+            try {
+                // Reuse existing add_manual_attendance.php logic which handles UPDATE if record exists
+                const employeeId = window.employeeInternalId;
+
+                const payload = {
+                    employee_id: employeeId,
+                    records: [{
+                        date: date,
+                        time_in: timeIn,
+                        time_out: timeOut
+                    }]
+                };
+
+                const response = await fetch('api/add_manual_attendance.php?action=add_manual', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Success
+                    const modalEl = document.getElementById('editAttendanceModal');
+                    bootstrap.Modal.getInstance(modalEl).hide();
+
+                    // Show success feedback
+                    const successModalEl = document.getElementById('attendanceSuccessModal');
+                    if (successModalEl) {
+                        document.getElementById('attendanceSuccessMessage').textContent = 'Attendance updated successfully.';
+                        new bootstrap.Modal(successModalEl).show();
+                    }
+
+                    // Reload DTR list
+                    loadRecentDTR(); // Or loadDTRForSelectedRange() if active
+
+                    // Reset button
+                    btnSaveEdit.disabled = false;
+                    btnSaveEdit.textContent = 'Save Changes';
+
+                } else {
+                    throw new Error(result.error || (result.warnings ? result.warnings.join(', ') : 'Unknown error'));
+                }
+
+            } catch (error) {
+                console.error('Error updating attendance:', error);
+                errorEl.textContent = error.message;
+                errorEl.classList.remove('d-none');
+                btnSaveEdit.disabled = false;
+                btnSaveEdit.textContent = 'Save Changes';
+            }
+        });
+    }
+});
 
 // Initialize Manual Attendance
 document.addEventListener('DOMContentLoaded', () => {

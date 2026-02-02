@@ -180,30 +180,19 @@ def main():
     # -------------------------------------------------------------------------
     # CHECK 2: Localhost Connectivity (Web Server)
     # -------------------------------------------------------------------------
-    print("\n[1/7] Verifying Local Server Connectivity...")
-    if not check_localhost_availability():
-        err_msg = (
-            "Cannot connect to the Localhost Web Server (127.0.0.1).\n\n"
-            "Please ensure IIS or your local web server is running.\n"
-            "This is required for the application to function."
-        )
-        show_error_message("Startup Error - Connection Refused", err_msg)
-        sys.exit(1)
+    print("\n[1/8] Verifying Local Server Connectivity...")
+    server_online = check_localhost_availability()
+    if not server_online:
+        print("⚠️  Working in OFFLINE MODE (Web Server Unreachable)")
+        print("   Attendance will be saved locally and synced when online.")
 
     # -------------------------------------------------------------------------
     # CHECK 3: Database Connectivity (MySQL)
     # -------------------------------------------------------------------------
-    print("\n[2/7] Verifying Database Connectivity...")
-    if not check_database_connection():
-        err_msg = (
-            "Cannot connect to the Localhost Database (MySQL).\n\n"
-            "Please check:\n"
-            "1. MySQL Service is running.\n"
-            "2. Credentials are correct (root/Confirmp@ssword123).\n"
-            "3. Database 'database_records' exists."
-        )
-        show_error_message("Startup Error - Database Unavailable", err_msg)
-        sys.exit(1)
+    print("\n[2/8] Verifying Database Connectivity...")
+    db_online = check_database_connection()
+    if not db_online:
+        print("⚠️  Working in OFFLINE MODE (Database Unreachable)")
 
 
     # Get the directory where this script is located
@@ -214,13 +203,14 @@ def main():
     embd_sync_script = os.path.join(script_dir, "embd_up.py")
     daily_init_script = os.path.join(script_dir, "daily_attendance_initializer.py")
     profile_sync_script = os.path.join(script_dir, "sync_profile_pictures.py")
+    sync_manager_script = os.path.join(script_dir, "sync_manager.py")
     kiosk_script = os.path.join(script_dir, "Kiosk_faceid.py")
     
 
     # -------------------------------------------------------------------------
     # CHECK 4: Initialize local SQLite database
     # -------------------------------------------------------------------------
-    print("\n[3/7] Initializing local SQLite database...")
+    print("\n[3/8] Initializing local SQLite database...")
     try:
         # Check if database exists
         db_path = os.path.join(script_dir, "database", "kiosk_local.db")
@@ -254,53 +244,84 @@ def main():
         sys.exit(1)
     
     # -------------------------------------------------------------------------
-    # CHECK 5: Sync Backend Data (Profiles & Embeddings)
+    # CHECK 5: Pre-flight Data Sync (Employees & Schedules)
+    # -------------------------------------------------------------------------
+    print("\n[4/8] Performing Pre-flight Data Sync...")
+    if db_online:
+        try:
+            print("  Fetching latest employees and schedules...", end=" ", flush=True)
+            result = subprocess.run(
+                [sys.executable, sync_manager_script, "--mode", "pull"],
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                timeout=20
+            )
+            if result.returncode == 0:
+                print("✓ Done")
+            else:
+                print("⚠️  Sync Warning")
+                if result.stderr:
+                    print(f"    {result.stderr.strip()[:100]}...")
+        except subprocess.TimeoutExpired:
+            print("⚠️  Timeout (Skipping)")
+        except Exception as e:
+            print(f"⚠️  Error: {e}")
+    else:
+        print("  Skipped (Offline Mode)")
+
+    # -------------------------------------------------------------------------
+    # CHECK 6: Sync Backend Data (Profiles & Embeddings)
     # -------------------------------------------------------------------------
     
-    # 5.1 Sync profile pictures
-    print("\n[4/7] Syncing profile pictures...")
-    try:
-        result = subprocess.run(
-            [sys.executable, profile_sync_script, "once"],
-            capture_output=True,
-            text=True,
-            encoding='utf-8',
-            errors='replace',
-            timeout=30
-        )
-        if result.returncode == 0:
-            print("✓ Profile pictures synced")
-        else:
-            print("⚠️  Warning: Profile picture sync failed (Non-critical)")
-    except Exception as e:
-         print(f"⚠️  Warning: Could not sync profile pictures: {e}")
+    # 6.1 Sync profile pictures
+    print("\n[5/8] Syncing profile pictures...")
+    if server_online or db_online:
+        try:
+            result = subprocess.run(
+                [sys.executable, profile_sync_script, "once"],
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                timeout=30
+            )
+            if result.returncode == 0:
+                print("✓ Profile pictures synced")
+            else:
+                print("⚠️  Warning: Profile picture sync failed (Non-critical)")
+        except Exception as e:
+             print(f"⚠️  Warning: Could not sync profile pictures: {e}")
+    else:
+        print("  Skipped (Offline Mode)")
     
-    # 5.2 Sync embeddings from database
-    print("\n[5/7] Syncing face embeddings from database...")
-    try:
-        result = subprocess.run(
-            [sys.executable, embd_sync_script, "once"],
-            capture_output=True,
-            text=True,
-            encoding='utf-8',
-            errors='replace',
-            timeout=30
-        )
-        
-        if result.returncode == 0:
-            print("✓ Embeddings synced successfully")
-        else:
-            print("⚠️  Warning: Embedding sync failed")
-            # This is arguably critical, but maybe they have a cached file? 
-            # If no cached file exists, Kiosk will fail anyway.
-            # We'll let it proceed but warn heavily.
-    except Exception as e:
-        print(f"⚠️  Warning: Could not sync embeddings: {e}")
+    # 6.2 Sync embeddings from database
+    print("\n[6/8] Syncing face embeddings from database...")
+    if db_online:
+        try:
+            result = subprocess.run(
+                [sys.executable, embd_sync_script, "once"],
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                timeout=30
+            )
+            
+            if result.returncode == 0:
+                print("✓ Embeddings synced successfully")
+            else:
+                print("⚠️  Warning: Embedding sync failed")
+        except Exception as e:
+            print(f"⚠️  Warning: Could not sync embeddings: {e}")
+    else:
+        print("  Skipped (Offline Mode)")
     
     # -------------------------------------------------------------------------
     # CHECK 6: Initialize daily attendance records & Models
     # -------------------------------------------------------------------------
-    print("\n[6/7] Finalizing Setup (Attendance & Models)...")
+    print("\n[7/8] Finalizing Setup (Attendance & Models)...")
     
     # Daily Init
     print("  Initializing daily records...", end=" ")
@@ -347,7 +368,7 @@ def main():
     # -------------------------------------------------------------------------
     # CHECK 7: Webcam Connectivity (Final Check)
     # -------------------------------------------------------------------------
-    print("\n[7/8] Verifying Webcam Connectivity...")
+    print("\n[8/8] Verifying Webcam Connectivity...")
     
     # Define check function inside main or calling a helper
     def check_webcam_internal():
@@ -398,7 +419,7 @@ def main():
     # -------------------------------------------------------------------------
     
     # Step 8: Start sync manager in background thread
-    print("\n[8/8] Starting background sync manager...")
+    print("\n[9/8] Starting background sync manager...")
     
     sync_thread = None
     try:
@@ -412,7 +433,10 @@ def main():
     
     # Launch Kiosk system
     print("\n" + "="*70)
-    print("ALL CHECKS PASSED. LAUNCHING KIOSK...", flush=True)
+    if not server_online or not db_online:
+         print("LAUNCHING KIOSK IN OFFLINE MODE", flush=True)
+    else:
+         print("ALL CHECKS PASSED. LAUNCHING KIOSK...", flush=True)
     print("="*70 + "\n")
     
     # Create shutdown signal file path for inter-process communication

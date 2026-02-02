@@ -331,7 +331,8 @@ class AttendanceLogger:
                            str(d_time_out).strip() == '00:00:00')
 
             # If we have Time In but NO Time Out (or status is incomplete) -> Must Time Out
-            if (d_time_in and is_out_empty) or d_status == 'incomplete':
+            # FIX: Ensure d_time_in exists. Initializer creates 'incomplete' records with NULL time_in.
+            if d_time_in and (is_out_empty or d_status == 'incomplete'):
                 if close_conn: conn.close()
                 return 'time_out'
                 
@@ -693,7 +694,11 @@ class AttendanceLogger:
                     # NOTE: Result is stored in MINUTES (field name is misleading)
                     # Parse time_in
                     try:
-                        time_in_hour, time_in_minute, time_in_second = map(int, time_in_str.split(':'))
+                        time_in_parts = list(map(int, time_in_str.split(':')))
+                        time_in_hour = time_in_parts[0]
+                        time_in_minute = time_in_parts[1]
+                        time_in_second = time_in_parts[2] if len(time_in_parts) > 2 else 0
+
                         time_in_datetime = log_datetime.replace(
                             hour=time_in_hour,
                             minute=time_in_minute,

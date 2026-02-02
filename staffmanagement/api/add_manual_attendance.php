@@ -208,9 +208,28 @@ function addManualAttendance($conn)
             // Calculate actual hours worked (in minutes, stored as decimal)
             $actual_hours = 0;
             if ($timeOutObj) {
-                $interval = $timeInObj->diff($timeOutObj);
-                $actual_minutes = ($interval->h * 60) + $interval->i;
+                // Check for overnight shift (if Time Out < Time In)
+                // Note: We are using the SAME date for both details above.
+                // If the user meant the next day, we should add a day to timeOutObj
+                // But generally manual entry implies the date selected.
+                // However, for correct diff, if Time Out is smaller than Time In, assume +1 day
+                $tempTimeOut = clone $timeOutObj;
+                if ($tempTimeOut < $timeInObj) {
+                    $tempTimeOut->modify('+1 day');
+                }
+
+                $interval = $timeInObj->diff($tempTimeOut);
+                $actual_minutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
                 $actual_hours = round($actual_minutes, 2);
+
+                // Debug logging to a custom file
+                file_put_contents(
+                    __DIR__ . '/debug_manual_calc.txt',
+                    date('Y-m-d H:i:s') . " - Calc: In=" . $timeInObj->format('Y-m-d H:i:s') .
+                    ", Out=" . $tempTimeOut->format('Y-m-d H:i:s') .
+                    ", Mins=$actual_minutes, Val=$actual_hours\n",
+                    FILE_APPEND
+                );
             }
 
             // Calculate late minutes (based on first period start time)
@@ -233,6 +252,11 @@ function addManualAttendance($conn)
             if ($last_period_end && $timeOutObj) {
                 $scheduled_end = new DateTime($date . ' ' . $last_period_end);
 
+                // Adjust scheduled end if it looks like overnight (e.g. shift ends at 06:00 next day)
+                // This is complex without shift configuration, but we rely on simple comparison
+                // If scheduled end is < scheduled start, it's overnight.
+                // But here we rely on the Date.
+
                 if ($timeOutObj < $scheduled_end) {
                     // Left early (undertime)
                     $early_interval = $timeOutObj->diff($scheduled_end);
@@ -251,12 +275,12 @@ function addManualAttendance($conn)
             $check_stmt->execute();
             $existing = $check_stmt->get_result()->fetch_assoc();
 
-            $status = ($time_out) ? 'manual' : 'incomplete';
+            $status = ($timeOutObj) ? 'manual' : 'incomplete';
 
             error_log("DEBUG: Processing Record - EmpID: $employee_id, Date: $date");
             error_log("DEBUG: TimeIn: " . var_export($time_in, true));
             error_log("DEBUG: TimeOut: " . var_export($time_out, true));
-            error_log("DEBUG: Status: $status");
+            error_log("DEBUG: Status: $status, ActualHours: $actual_hours");
 
             if ($existing) {
                 // Update existing record

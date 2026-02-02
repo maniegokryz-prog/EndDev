@@ -959,6 +959,42 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
+    <!-- Edit Attendance Modal -->
+    <div class="modal fade" id="editAttendanceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editAttendanceForm">
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="text" class="form-control-plaintext fw-bold" id="editAttDate" readonly>
+                            <input type="hidden" id="editAttDateValue">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Time In</label>
+                                <input type="time" class="form-control" id="editAttTimeIn">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Time Out</label>
+                                <input type="time" class="form-control" id="editAttTimeOut">
+                            </div>
+                        </div>
+                        <div id="editAttError" class="alert alert-danger d-none p-2 mb-3 small"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveEditAttendance">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">

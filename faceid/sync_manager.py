@@ -791,9 +791,21 @@ class SyncManager:
                 
                 # print(f"DEBUG: Syncing Daily Record {record['id']} - Raw TimeIn: {record['time_in']} ({type(record['time_in'])}) -> Converted: {t_in}")
 
+                if not exists:
+                     # Fallback: Check for existing record by natural key (employee_id + date)
+                     # This handles cases where local intializer created a record with a different ID than MySQL
+                     local_cursor.execute("SELECT id FROM daily_attendance WHERE employee_id = ? AND attendance_date = ?", 
+                                          (record['employee_id'], att_date))
+                     exists = local_cursor.fetchone()
+                     if exists:
+                         # print(f"DEBUG: Found match by natural key for Emp {record['employee_id']} Date {att_date}. Local ID: {exists[0]} vs Remote ID: {record['id']}")
+                         pass
+
                 if exists:
+                    local_id = exists[0]
+                    
                     # Get existing local values to prevent overwriting with None
-                    local_cursor.execute("SELECT time_in, time_out FROM daily_attendance WHERE id = ?", (record['id'],))
+                    local_cursor.execute("SELECT time_in, time_out FROM daily_attendance WHERE id = ?", (local_id,))
                     local_rec = local_cursor.fetchone()
                     local_time_in = local_rec[0]
                     local_time_out = local_rec[1]
@@ -809,7 +821,24 @@ class SyncManager:
                          final_t_out = local_time_out
                          print(f"    ℹ️  Preserving local Time Out: {local_time_out} (preventing overwrite by remote NULL)")
 
+                    # MERGE LOGIC: Preserve actual_hours and status
+                    local_cursor.execute("SELECT actual_hours, status FROM daily_attendance WHERE id = ?", (local_id,))
+                    local_info = local_cursor.fetchone()
+                    local_act_hours = local_info[0]
+                    local_status = local_info[1]
+
+                    final_act_hours = act_hours
+                    if (act_hours is None or act_hours == 0) and (local_act_hours is not None and local_act_hours > 0):
+                        final_act_hours = local_act_hours
+                        print(f"    ℹ️  Preserving local Actual Hours: {local_act_hours}")
+
+                    final_status = record['status']
+                    if (not final_status or final_status == 'incomplete') and (local_status == 'complete' or local_status == 'manual'):
+                        final_status = local_status
+                        print(f"    ℹ️  Preserving local Status: {local_status}")
+
                     # Update existing record
+                    # Note: We do NOT update the 'id' column, we keep the local ID to maintain referential integrity
                     local_cursor.execute("""
                         UPDATE daily_attendance
                         SET employee_id = ?, attendance_date = ?, time_in = ?, time_out = ?,
@@ -819,30 +848,50 @@ class SyncManager:
                         WHERE id = ?
                     """, (
                         record['employee_id'], att_date, final_t_in, 
-                        final_t_out, sched_hours, act_hours, 
+                        final_t_out, sched_hours, final_act_hours, 
                         record['late_minutes'], record['early_departure_minutes'],
-                        record['overtime_minutes'], record['break_time_minutes'], record['status'],
+                        record['overtime_minutes'], record['break_time_minutes'], final_status,
                         record['notes'], calc_at,
-                        datetime.now().strftime('%Y-%m-%d %H:%M:%S'), record['id']
+                        datetime.now().strftime('%Y-%m-%d %H:%M:%S'), local_id
                     ))
                     updated_count += 1
                 else:
                     # Insert new record
-                    local_cursor.execute("""
-                        INSERT INTO daily_attendance
-                        (id, employee_id, attendance_date, time_in, time_out,
-                         scheduled_hours, actual_hours, late_minutes, early_departure_minutes, 
-                         overtime_minutes, break_time_minutes, status, notes, calculated_at, last_synced)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (
-                        record['id'], record['employee_id'], att_date,
-                        t_in, t_out, sched_hours, 
-                        act_hours, record['late_minutes'],
-                        record['early_departure_minutes'], record['overtime_minutes'],
-                        record['break_time_minutes'], record['status'], record['notes'],
-                        calc_at, datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    ))
-                    added_count += 1
+                    # If ID doesn't exist locall and natural key doesn't exist, it's safe to insert.
+                    # We try to use the MySQL ID if possible, but if it conflicts with another table (unlikely in SQLite unless strict), logic holds.
+                    try:
+                        local_cursor.execute("""
+                            INSERT INTO daily_attendance
+                            (id, employee_id, attendance_date, time_in, time_out,
+                             scheduled_hours, actual_hours, late_minutes, early_departure_minutes, 
+                             overtime_minutes, break_time_minutes, status, notes, calculated_at, last_synced)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (
+                            record['id'], record['employee_id'], att_date,
+                            t_in, t_out, sched_hours, 
+                            act_hours, record['late_minutes'],
+                            record['early_departure_minutes'], record['overtime_minutes'],
+                            record['break_time_minutes'], record['status'], record['notes'],
+                            calc_at, datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        ))
+                        added_count += 1
+                    except sqlite3.IntegrityError:
+                        # Fallback if ID conflict occurs (rare but possible if IDs drifted)
+                        local_cursor.execute("""
+                            INSERT INTO daily_attendance
+                            (employee_id, attendance_date, time_in, time_out,
+                             scheduled_hours, actual_hours, late_minutes, early_departure_minutes, 
+                             overtime_minutes, break_time_minutes, status, notes, calculated_at, last_synced)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (
+                            record['employee_id'], att_date,
+                            t_in, t_out, sched_hours, 
+                            act_hours, record['late_minutes'],
+                            record['early_departure_minutes'], record['overtime_minutes'],
+                            record['break_time_minutes'], record['status'], record['notes'],
+                            calc_at, datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        ))
+                        added_count += 1
             
             local_conn.commit()
             
