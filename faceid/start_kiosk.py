@@ -55,6 +55,34 @@ def run_as_admin():
         print(f"Error requesting administrator privileges: {e}")
         return False
 
+def check_system_time_and_confirm():
+    """
+    Prompt the admin to verify the system time is correct.
+    """
+    if sys.platform == 'win32':
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        message = (
+            f"Current System Time: {current_time}\n\n"
+            "Is this time correct?\n"
+            "Having the incorrect time will cause attendance records to be invalid.\n\n"
+            "Click YES to proceed.\n"
+            "Click NO to open Date/Time settings and exit."
+        )
+        # 0x04 = MB_YESNO
+        # 0x20 = MB_ICONQUESTION
+        # 0x1000 = MB_SYSTEMMODAL
+        result = ctypes.windll.user32.MessageBoxW(0, message, "Verify System Time", 0x04 | 0x20 | 0x1000)
+        
+        # 7 = IDNO
+        if result == 7:
+            print("User indicated time is incorrect. Opening settings...")
+            subprocess.Popen("control timedate.cpl")
+            sys.exit(0)
+    else:
+        # Non-windows fallback
+        print(f"Current System Time: {datetime.now()}")
+        print("Please verify this is correct before proceeding.")
+
 def show_error_message(title, message):
     """
     Display a Windows Message Box with an Error icon.
@@ -178,6 +206,11 @@ def main():
             print("Attempting to elevate privileges...")
             run_as_admin()
             return
+
+    # -------------------------------------------------------------------------
+    # CHECK 1.5: Verify System Time
+    # -------------------------------------------------------------------------
+    check_system_time_and_confirm()
 
     # -------------------------------------------------------------------------
     # CHECK 2: Localhost Connectivity (Web Server)
