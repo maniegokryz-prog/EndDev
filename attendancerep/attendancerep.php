@@ -356,11 +356,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
   <div class="content pt-3" id="content">
   <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold display-4 text-dark">Attendance Reports</h2>
+      <h2 class="display-4 text-dark">Attendance Reports</h2>
       <div class="d-flex align-items-center gap-3">
-        <span class="text-muted">Selected Date: <strong><?php echo $currentDate; ?></strong></span>
+        <span class="text-dark">Selected Date: <strong><?php echo $currentDate; ?></strong></span>
         <?php if (isAdmin()): ?>
-        <a href="exporep.php" class="btn btn-warning">Batch Export DTR</a>
+        <a href="exporep.php" class="btn btn-warning fw-bold">Batch Export DTR</a>
         <?php endif; ?>
       </div>
   </div>

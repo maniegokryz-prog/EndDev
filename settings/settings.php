@@ -31,8 +31,7 @@ $csrfToken = $_SESSION['csrf_token'];
   <!-- Bootstrap Icons -->
   <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
 
-  <!-- ✅ FONT AWESOME (official CDN – works on localhost) -->
-  <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"> -->
+
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="settings.css">
@@ -72,7 +71,7 @@ $csrfToken = $_SESSION['csrf_token'];
     <div class="content pt-3" id="content">
       <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="fw-bold display-4 text-dark">Settings</h2>
+          <h2 class="display-4 text-dark">Settings</h2>
           <div class="d-flex justify-content-end mb-3">
           </div>
         </div>
@@ -81,7 +80,7 @@ $csrfToken = $_SESSION['csrf_token'];
           <div class="col-6 col-md-3">
             <div class="setting-card" id="changePassword">
               <div class="setting-icon">
-                <i class="fas fa-lock"></i>
+                <i class="bi bi-shield-lock-fill"></i>
               </div>
               <h6>Change Password</h6>
             </div>
@@ -90,7 +89,7 @@ $csrfToken = $_SESSION['csrf_token'];
           <div class="col-6 col-md-3">
             <div class="setting-card" id="privacyPolicy">
               <div class="setting-icon">
-                <i class="fas fa-info-circle"></i>
+                <i class="bi bi-shield-check"></i>
               </div>
               <h6>Privacy Policy / Terms</h6>
             </div>
@@ -100,7 +99,7 @@ $csrfToken = $_SESSION['csrf_token'];
           <div class="col-6 col-md-3">
             <div class="setting-card" id="leaveSettings" style="cursor: pointer;">
               <div class="setting-icon">
-                <i class="fas fa-calendar-check"></i>
+                <i class="bi bi-calendar2-check-fill"></i>
               </div>
               <h6>Leave Settings</h6>
             </div>
@@ -109,7 +108,7 @@ $csrfToken = $_SESSION['csrf_token'];
           <div class="col-6 col-md-3">
             <div class="setting-card" id="employeeArchive" style="cursor: pointer;">
               <div class="setting-icon">
-                <i class="fas fa-user-tie"></i>
+                <i class="bi bi-archive-fill"></i>
               </div>
               <h6>Employee Archive</h6>
             </div>
@@ -328,7 +327,7 @@ $csrfToken = $_SESSION['csrf_token'];
             <div class="col-6 col-md-3">
               <div class="setting-card" id="clearAllRecords" style="cursor:pointer;" onclick="handleClearRecordsClick()">
                 <div class="setting-icon">
-                  <i class="fas fa-trash"></i>
+                  <i class="bi bi-trash3-fill"></i>
                 </div>
                 <h6>CLEAR ALL RECORDS</h6>
               </div>
@@ -340,7 +339,7 @@ $csrfToken = $_SESSION['csrf_token'];
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content text-center p-3">
                 <div class="modal-body">
-                  <i class="fa-solid fa-triangle-exclamation text-warning mb-3" style="font-size:3rem;"></i>
+                  <i class="bi bi-exclamation-triangle-fill text-warning mb-3" style="font-size:3rem;"></i>
                   <h5 class="mb-3">
                     This will delete all the attendance records
                     <span id="recordsCountDisplay">
@@ -366,7 +365,7 @@ $csrfToken = $_SESSION['csrf_token'];
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                  <i class="fa-solid fa-triangle-exclamation text-warning mb-3" style="font-size:3rem;"></i>
+                  <i class="bi bi-exclamation-triangle-fill text-warning mb-3" style="font-size:3rem;"></i>
                   <h5 class="mb-3">You cannot undo this action.</h5>
                   <p class="text-muted mb-3">Do you wish to continue?</p>
 
@@ -397,7 +396,7 @@ $csrfToken = $_SESSION['csrf_token'];
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content text-center p-4">
                 <div class="modal-body">
-                  <i class="fa-solid fa-circle-check text-success mb-3" style="font-size:3rem;"></i>
+                  <i class="bi bi-check-circle-fill text-success mb-3" style="font-size:3rem;"></i>
                   <h5>All records are deleted.</h5>
                   <p class="text-muted">Returning to settings...</p>
                 </div>

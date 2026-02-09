@@ -117,7 +117,15 @@ function renderNavigation($currentPage = '')
             $cmpCurrent = strtolower(trim($currentPage));
             $cmpLabel = strtolower(trim($link['label']));
             if (strpos($cmpLabel, $cmpCurrent) !== false || strpos($cmpCurrent, $cmpLabel) !== false) {
-                $activeClass = 'active';
+                // Prevent 'Settings' and 'Sync Settings' from cross-matching
+                if (
+                    ($cmpCurrent === 'settings' && $cmpLabel === 'sync settings') ||
+                    ($cmpCurrent === 'sync settings' && $cmpLabel === 'settings')
+                ) {
+                    // Do not mark as active
+                } else {
+                    $activeClass = 'active';
+                }
             }
         }
 

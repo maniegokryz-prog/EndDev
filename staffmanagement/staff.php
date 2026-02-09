@@ -292,8 +292,8 @@ $roles = $viewer->getDistinctRoles();
   <div class="content pt-3" id="content">
     <div class="container-fluid">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold display-4 text-dark">Staff Management</h2>
-        <div class="d-flex justify-content-end mb-3">
+        <h2 class="display-4 text-dark">Staff Management</h2>
+        <div class="d-flex justify-content-end mb-3 mt-3 ms-3 me-3">
           <?php if (!$hide_add_staff_button): ?>
           <?php if (canAddNewStaff()): ?>
           <a href="newstaff.php" class="btn btn-warning">Add New Staff</a>
