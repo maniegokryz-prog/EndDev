@@ -1,17 +1,4 @@
-// Sidebar Toggle
-const menuBtn = document.getElementById("menu-btn");
-const sidebar = document.getElementById("sidebar");
-const content = document.getElementById("content");
-menuBtn.addEventListener('click', () => {
-  if (window.innerWidth < 992) {
-    // MOBILE: overlay style
-    sidebar.classList.toggle('active');
-  } else {
-    // DESKTOP: push style
-    sidebar.classList.toggle('collapsed');
-    content.classList.toggle('shift');
-  }
-});
+// Sidebar Toggle handled by dashboard.js
 //----------------------------------------------------------------------------------------------//
 
 // Store staff data globally

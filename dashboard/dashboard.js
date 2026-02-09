@@ -3,7 +3,7 @@ const sidebar = document.getElementById("sidebar");
 const content = document.getElementById("content");
 
 menuBtn.addEventListener('click', () => {
-  if (window.innerWidth <= 576) {
+  if (window.innerWidth <= 991) {
     sidebar.classList.toggle('mobile-nav');
     document.body.classList.toggle('lock-scroll');
 
@@ -83,86 +83,86 @@ updateClock();
   }
 
   function renderCalendar(date) {
-  calendarBody.innerHTML = '';
+    calendarBody.innerHTML = '';
 
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const monthName = date.toLocaleString(undefined, { month: 'long' });
-  monthYearEl.textContent = `${monthName} ${year}`;
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const monthName = date.toLocaleString(undefined, { month: 'long' });
+    monthYearEl.textContent = `${monthName} ${year}`;
 
-  const firstDayIndex = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const cells = [];
+    const cells = [];
 
-  const prevMonthLastDate = new Date(year, month, 0).getDate();
-  for (let i = 0; i < firstDayIndex; i++) {
-    const dayNum = prevMonthLastDate - firstDayIndex + 1 + i;
-    const dObj = new Date(year, month - 1, dayNum);
-    cells.push({ day: dayNum, otherMonth: true, dateObj: dObj });
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    cells.push({ day: d, otherMonth: false, dateObj: new Date(year, month, d) });
-  }
-
-  let nextDay = 1;
-  while (cells.length < 42) {
-    const dObj = new Date(year, month + 1, nextDay);
-    cells.push({ day: nextDay, otherMonth: true, dateObj: dObj });
-    nextDay++;
-  }
-
-  const today = new Date();
-
-  for (let i = 0; i < 42; i += 7) {
-    const tr = document.createElement('tr');
-
-    for (let j = 0; j < 7; j++) {
-      const cell = cells[i + j];
-      const td = document.createElement('td');
-      const link = document.createElement('a');
-
-      link.classList.add('calendar-day');
-      link.href = '#';
-      link.setAttribute('data-date', formatDateYMD(cell.dateObj));
-      link.textContent = cell.day;
-
-      if (cell.otherMonth) {
-        link.classList.add('calendar-other');
-        link.style.backgroundColor = 'transparent'; // Remove any bg for other months
-      }
-
-      const isSameDay =
-        cell.dateObj.getFullYear() === today.getFullYear() &&
-        cell.dateObj.getMonth() === today.getMonth() &&
-        cell.dateObj.getDate() === today.getDate();
-
-      const isSameMonthView =
-        date.getFullYear() === today.getFullYear() &&
-        date.getMonth() === today.getMonth();
-
-      if (isSameDay && isSameMonthView && !cell.otherMonth) {
-        link.classList.add('calendar-today');
-        link.style.backgroundColor = 'transparent'; // Remove the blue background of today
-        link.style.boxShadow = 'none'; // Remove shadow if present
-      }
-
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const dateStr = this.getAttribute('data-date');
-        // Set the selected date and reload dashboard data
-        setSelectedDate(dateStr);
-        loadDashboardData(dateStr);
-      });
-
-      td.appendChild(link);
-      tr.appendChild(td);
+    const prevMonthLastDate = new Date(year, month, 0).getDate();
+    for (let i = 0; i < firstDayIndex; i++) {
+      const dayNum = prevMonthLastDate - firstDayIndex + 1 + i;
+      const dObj = new Date(year, month - 1, dayNum);
+      cells.push({ day: dayNum, otherMonth: true, dateObj: dObj });
     }
 
-    calendarBody.appendChild(tr);
+    for (let d = 1; d <= daysInMonth; d++) {
+      cells.push({ day: d, otherMonth: false, dateObj: new Date(year, month, d) });
+    }
+
+    let nextDay = 1;
+    while (cells.length < 42) {
+      const dObj = new Date(year, month + 1, nextDay);
+      cells.push({ day: nextDay, otherMonth: true, dateObj: dObj });
+      nextDay++;
+    }
+
+    const today = new Date();
+
+    for (let i = 0; i < 42; i += 7) {
+      const tr = document.createElement('tr');
+
+      for (let j = 0; j < 7; j++) {
+        const cell = cells[i + j];
+        const td = document.createElement('td');
+        const link = document.createElement('a');
+
+        link.classList.add('calendar-day');
+        link.href = '#';
+        link.setAttribute('data-date', formatDateYMD(cell.dateObj));
+        link.textContent = cell.day;
+
+        if (cell.otherMonth) {
+          link.classList.add('calendar-other');
+          link.style.backgroundColor = 'transparent'; // Remove any bg for other months
+        }
+
+        const isSameDay =
+          cell.dateObj.getFullYear() === today.getFullYear() &&
+          cell.dateObj.getMonth() === today.getMonth() &&
+          cell.dateObj.getDate() === today.getDate();
+
+        const isSameMonthView =
+          date.getFullYear() === today.getFullYear() &&
+          date.getMonth() === today.getMonth();
+
+        if (isSameDay && isSameMonthView && !cell.otherMonth) {
+          link.classList.add('calendar-today');
+          link.style.backgroundColor = 'transparent'; // Remove the blue background of today
+          link.style.boxShadow = 'none'; // Remove shadow if present
+        }
+
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          const dateStr = this.getAttribute('data-date');
+          // Set the selected date and reload dashboard data
+          setSelectedDate(dateStr);
+          loadDashboardData(dateStr);
+        });
+
+        td.appendChild(link);
+        tr.appendChild(td);
+      }
+
+      calendarBody.appendChild(tr);
+    }
   }
-}
 
   prevBtn.addEventListener('click', function () {
     viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1);

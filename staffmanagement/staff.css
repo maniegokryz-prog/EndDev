@@ -15,7 +15,7 @@
      left: -250px;
      /* hidden by default */
      transition: all 0.3s;
-     z-index: 1050;
+     z-index: 1200;
 
 
    }
@@ -90,19 +90,55 @@
    }
 
    /* Responsive adjustments */
+   /* Responsive adjustments */
    @media (max-width: 991px) {
      .sidebar {
-       margin-left: -250px;
-     }
-
-     .sidebar.show {
+       left: -280px;
+       /* Hide off-screen by default */
+       top: 0;
+       bottom: 0;
+       height: 100vh;
+       width: 250px;
+       position: fixed;
+       transition: left 0.3s ease;
+       z-index: 1200;
+       background-color: #103932;
        margin-left: 0;
+       /* Reset margin */
      }
 
-     .top-navbar {
-       margin-left: 0;
+     .sidebar.mobile-nav {
+       left: 0;
+       /* Slide in */
+       box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
      }
 
+     .mobile-backdrop {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100vw;
+       height: 100vh;
+       background: rgba(0, 0, 0, 0.5);
+       z-index: 1150;
+       animation: fadeIn 0.3s ease;
+     }
+
+     body.lock-scroll {
+       overflow: hidden;
+     }
+
+     @keyframes fadeIn {
+       from {
+         opacity: 0;
+       }
+
+       to {
+         opacity: 1;
+       }
+     }
+
+     .top-navbar,
      .content {
        margin-left: 0;
      }
@@ -158,7 +194,9 @@
    }
 
    /* Hover Effect */
-   .sidebar .nav-link:hover {
+   /* Hover Effect & Active State */
+   .sidebar .nav-link:hover,
+   .sidebar .nav-link.active {
      background-color: #d8af35;
      /* Yellow background */
      color: #103932;
@@ -1235,64 +1273,73 @@
 
    /* Face Registration Thumbnails */
    #photo-thumbnails {
-       display: flex;
-       gap: 15px;
-       flex-wrap: wrap;
-       margin-top: 15px;
+     display: flex;
+     gap: 15px;
+     flex-wrap: wrap;
+     margin-top: 15px;
    }
 
    .photo-thumbnail {
-       width: 100px;
-       height: 120px;
-       position: relative;
-       border-radius: 8px;
-       overflow: visible; /* Changed to visible to allow hover expansion outside */
-       background: #fff;
-       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-       transition: transform 0.3s ease;
-       cursor: pointer;
-       z-index: 1; /* Default z-index */
+     width: 100px;
+     height: 120px;
+     position: relative;
+     border-radius: 8px;
+     overflow: visible;
+     /* Changed to visible to allow hover expansion outside */
+     background: #fff;
+     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+     transition: transform 0.3s ease;
+     cursor: pointer;
+     z-index: 1;
+     /* Default z-index */
    }
 
    .thumbnail-content {
-       width: 100%;
-       height: 100%;
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-       border: 3px solid #dee2e6;
-       border-radius: 8px;
-       overflow: hidden;
-       background: white;
+     width: 100%;
+     height: 100%;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     border: 3px solid #dee2e6;
+     border-radius: 8px;
+     overflow: hidden;
+     background: white;
    }
 
    .thumbnail-img {
-       width: 100%;
-       height: 85px;
-       object-fit: cover;
-       background-color: #f0f0f0;
+     width: 100%;
+     height: 85px;
+     object-fit: cover;
+     background-color: #f0f0f0;
    }
 
    .thumbnail-caption {
-       width: 100%;
-       text-align: center;
-       padding: 2px;
-       background: #f8f9fa;
-       border-top: 1px solid #dee2e6;
-       font-size: 0.75rem;
-       font-weight: 600;
-       color: #666;
+     width: 100%;
+     text-align: center;
+     padding: 2px;
+     background: #f8f9fa;
+     border-top: 1px solid #dee2e6;
+     font-size: 0.75rem;
+     font-weight: 600;
+     color: #666;
    }
 
    /* Hover Effect - Enlarge */
    .photo-thumbnail:hover {
-       z-index: 100 !important; /* Bring to very front */
-       transform: scale(2.5); /* Make it much bigger */
-       transition-delay: 0.1s; /* Slight delay to prevent accidental flickers */
+     z-index: 100 !important;
+     /* Bring to very front */
+     transform: scale(2.5);
+     /* Make it much bigger */
+     transition-delay: 0.1s;
+     /* Slight delay to prevent accidental flickers */
    }
 
    /* Ensure caption is still readable or hidden on hover if improved look is needed */
    .photo-thumbnail:hover .thumbnail-content {
-       border-color: #198754; /* Green border on hover */
-       box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+     border-color: #198754;
+     /* Green border on hover */
+     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
    }
+/* Ensure modals are always above sidebar */
+.modal { z-index: 2000 !important; }
+.modal-backdrop { z-index: 1900 !important; }

@@ -217,23 +217,7 @@
   }
 
   /* Responsive adjustments */
-  @media (max-width: 991px) {
-    .sidebar {
-      margin-left: -250px;
-    }
 
-    .sidebar.show {
-      margin-left: 0;
-    }
-
-    .top-navbar {
-      margin-left: 0;
-    }
-
-    .content {
-      margin-left: 0;
-    }
-  }
 
   /* Profile Section */
   .sidebar .profile h5 {
@@ -284,8 +268,9 @@
     display: inline-block;
   }
 
-  /* Hover Effect */
-  .sidebar .nav-link:hover {
+  /* Hover Effect & Active State */
+  .sidebar .nav-link:hover,
+  .sidebar .nav-link.active {
     background-color: #d8af35;
     /* Yellow background */
     color: #103932;
@@ -309,31 +294,56 @@
     /* palit kulay */
   }
 
-  @media (max-width: 576px) {
-    .sidebar.popup {
-      left: 0 !important;
-      width: 100vw;
-      height: 100vh;
-      position: fixed;
+  @media (max-width: 991px) {
+    .sidebar {
+      left: -280px;
+      /* Hide off-screen by default */
       top: 0;
+      bottom: 0;
+      height: 100vh;
+      width: 250px;
+      /* Standard sidebar width */
+      position: fixed;
+      transition: left 0.3s ease;
+      z-index: 1200;
+      /* Higher than top-navbar (1100) */
       background-color: #103932;
-      z-index: 9999;
-      overflow-y: auto;
-      transition: all 0.3s ease;
     }
 
-    .popup-overlay {
+    .sidebar.mobile-nav {
+      left: 0;
+      /* Slide in */
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
+      /* Shadow to separate from content */
+    }
+
+    /* Backdrop for mobile menu */
+    .mobile-backdrop {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 9998;
+      background: rgba(0, 0, 0, 0.5);
+      /* Semi-transparent black */
+      z-index: 1150;
+      /* Behind sidebar (1050) but above content */
+      animation: fadeIn 0.3s ease;
     }
 
     body.lock-scroll {
       overflow: hidden;
+      /* Prevent background scrolling */
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
   }
 
@@ -1435,3 +1445,6 @@
       margin-right: 8px;
     }
   }
+/* Ensure modals are always above sidebar */
+.modal { z-index: 2000 !important; }
+.modal-backdrop { z-index: 1900 !important; }

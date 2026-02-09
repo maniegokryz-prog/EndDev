@@ -1073,6 +1073,7 @@ try {
             modal.show();
         }
     </script>
+    <script src="../dashboard/dashboard.js"></script>
 </body>
 
 </html>

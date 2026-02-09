@@ -466,6 +466,7 @@ $result = $conn->query($sql);
 
           <!-- Custom JS -->
           <script src="attendancerep.js"></script>
+          <script src="../dashboard/dashboard.js"></script>
         </body>
 
 </html>

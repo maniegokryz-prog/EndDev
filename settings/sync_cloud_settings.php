@@ -124,22 +124,22 @@ if (file_exists($configFile)) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../dashboard/dashboard.js"></script>
     <script>
-        document.getElementById('toggleKey').addEventListener('click', function () {
+            document.getElementById('toggleKey').addEventListener('click', function () {
             const input = document.getElementById('api_key');
             const icon = this.querySelector('i');
             if (input.type === 'password') {
                 input.type = 'text';
-                icon.classList.remove('bi-eye');
-                icon.classList.add('bi-eye-slash');
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
             } else {
                 input.type = 'password';
-                icon.classList.remove('bi-eye-slash');
-                icon.classList.add('bi-eye');
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
             }
         });
 
-        document.getElementById('syncSettingsForm').addEventListener('submit', function (e) {
-            e.preventDefault();
+            document.getElementById('syncSettingsForm').addEventListener('submit', function (e) {
+                e.preventDefault();
             const btn = this.querySelector('button[type="submit"]');
             const spinner = document.getElementById('saveSpinner');
 
@@ -152,25 +152,51 @@ if (file_exists($configFile)) {
 
             fetch('processes/save_sync_config.php', {
                 method: 'POST',
-                body: formData
+            body: formData
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Configuration saved successfully!');
+                alert('Configuration saved successfully!');
                     } else {
-                        alert('Error: ' + data.message);
+                alert('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
-                    alert('Connection error: ' + error);
+                alert('Connection error: ' + error);
                 })
                 .finally(() => {
-                    btn.disabled = false;
-                    spinner.classList.add('d-none');
+                btn.disabled = false;
+            spinner.classList.add('d-none');
                 });
         });
+
+            function showLogoutModal() {
+            var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+            logoutModal.show();
+        }
     </script>
+
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title w-100 text-center" id="logoutModalLabel">Confirm Logout</h5>
+                </div>
+                <div class="modal-body text-center">
+                    Are you sure you want to logout?
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="POST" action="logout.php" style="display: inline;">
+                        <input type="hidden" name="confirm_logout" value="1">
+                        <button type="submit" class="btn btn-danger">Yes, Log out</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
