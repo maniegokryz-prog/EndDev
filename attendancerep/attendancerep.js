@@ -1,4 +1,35 @@
-// Sidebar Toggle handled by dashboard.js
+// Sidebar Toggle
+const menuBtn = document.getElementById("menu-btn");
+const sidebar = document.getElementById("sidebar");
+const content = document.getElementById("content");
+
+if (menuBtn && sidebar && content) {
+  menuBtn.addEventListener('click', () => {
+    if (window.innerWidth <= 767) {
+      sidebar.classList.toggle('mobile-nav');
+      document.body.classList.toggle('lock-scroll');
+
+      if (sidebar.classList.contains('mobile-nav')) {
+        const backdrop = document.createElement('div');
+        backdrop.classList.add('mobile-backdrop');
+        backdrop.setAttribute('id', 'mobileBackdrop');
+        document.body.appendChild(backdrop);
+
+        backdrop.addEventListener('click', () => {
+          sidebar.classList.remove('mobile-nav');
+          document.body.classList.remove('lock-scroll');
+          backdrop.remove();
+        });
+      } else {
+        const existing = document.getElementById('mobileBackdrop');
+        if (existing) existing.remove();
+      }
+    } else {
+      sidebar.classList.toggle('collapsed');
+      content.classList.toggle('shift');
+    }
+  });
+}
 //----------------------------------------------------------------------------------------------//
 
 // Filter handlers

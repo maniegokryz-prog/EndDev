@@ -3,7 +3,7 @@ const sidebar = document.getElementById("sidebar");
 const content = document.getElementById("content");
 
 menuBtn.addEventListener('click', () => {
-  if (window.innerWidth <= 991) {
+  if (window.innerWidth <= 767) {
     sidebar.classList.toggle('mobile-nav');
     document.body.classList.toggle('lock-scroll');
 

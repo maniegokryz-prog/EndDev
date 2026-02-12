@@ -59,6 +59,12 @@
 
    }
 
+   /* Ensure menu button is above sidebar */
+   .menu-toggle {
+     /* z-index removed so sidebar (1200) covers it */
+     position: relative;
+   }
+
    .top-navbar .notification i {
      color: #ffc107;
      /* yellow notif bell */
@@ -66,7 +72,11 @@
    }
 
    /* desktop: sidebar pushes content */
-   @media (min-width: 992px) {
+   @media (min-width: 768px) {
+     .menu-toggle {
+       display: none;
+     }
+
      .sidebar {
        left: 0;
        /* default open sa desktop */
@@ -90,14 +100,14 @@
    }
 
    /* Responsive adjustments */
-   @media (max-width: 991px) {
+   @media (max-width: 767px) {
      .sidebar {
        left: -280px;
        /* Hide off-screen by default */
        top: 0;
        bottom: 0;
        height: 100vh;
-       width: 250px;
+       width: 250px !important;
        position: fixed;
        transition: left 0.3s ease;
        z-index: 1200;
@@ -140,6 +150,8 @@
      .top-navbar,
      .content {
        margin-left: 0;
+       width: 100%;
+       /* added width ensure */
      }
    }
 
@@ -156,6 +168,7 @@
      color: #ffc107 !important;
      /* Yellow */
      font-weight: 600;
+     font-family: Arial, sans-serif;
    }
 
 
@@ -512,7 +525,14 @@
    #clearFiltersBtn:hover {
      background-color: #5a6268;
      border-color: #5a6268;
+     color: #ffc107;
    }
-/* Ensure modals are always above sidebar */
-.modal { z-index: 2000 !important; }
-.modal-backdrop { z-index: 1900 !important; }
+
+   /* Ensure modals are always above sidebar */
+   .modal {
+     z-index: 2000 !important;
+   }
+
+   .modal-backdrop {
+     z-index: 1900 !important;
+   }

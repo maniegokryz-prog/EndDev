@@ -222,9 +222,11 @@ if ($id) {
 
   <div class="content" id="content">
     <div class="container-fluid">
-      <div class="mb-10">
-        <a href="attendancerep.php" class="btn btn-outline-secondary mb-2 mt-3">&larr; Back</a>
-      </div>
+      <?php if (isAdmin()): ?>
+        <div class="mb-10">
+          <a href="attendancerep.php" class="btn btn-outline-secondary mb-2 mt-3">&larr; Back</a>
+        </div>
+      <?php endif; ?>
       <h2 class="fw-bold mt-3 mb-4 display-4 text-dark">
         <?php echo isAdmin() ? 'Individual Report' : 'My Attendance'; ?>
       </h2>

@@ -157,6 +157,7 @@
      color: #ffc107 !important;
      /* Yellow */
      font-weight: 600;
+     font-family: Arial, sans-serif;
    }
 
 
@@ -235,17 +236,7 @@
      vertical-align: middle;
    }
 
-   @media (max-width: 768px) {
-     #sidebar {
-       position: fixed;
-       left: -250px;
-       z-index: 1000;
-     }
-
-     #sidebar.active {
-       left: 0;
-     }
-   }
+   /* Removed conflicting media query for #sidebar */
 
    /* Kung may container or wrapper */
    .container,
@@ -545,6 +536,7 @@
 
      .header-bar h5 {
        font-size: 1rem;
+       margin-bottom: 0px;
      }
 
      #backBtn {
@@ -760,6 +752,7 @@
        width: 95% !important;
        margin-left: auto !important;
        margin-right: auto !important;
+       margin-top: 2rem !important;
      }
 
      .metrics-card .card-body .row>div {
@@ -777,7 +770,7 @@
      }
    }
 
-   @media (min-width: 992px) and (max-width: 1200px) {
+   @media (min-width: 992px) and (max-width: 1199px) {
 
      .metrics-card,
      .schedule-card {
@@ -1083,7 +1076,7 @@
    /* Align with calendar and lower slightly */
    .col-xl-4 {
      margin-top: 3.5rem;
-     /* adjust as needed to match calendar height */
+     /**/
      margin-bottom: 10px !important;
    }
 
@@ -1340,6 +1333,19 @@
      /* Green border on hover */
      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
    }
-/* Ensure modals are always above sidebar */
-.modal { z-index: 2000 !important; }
-.modal-backdrop { z-index: 1900 !important; }
+
+   /* Ensure modals are always above sidebar */
+   .modal {
+     z-index: 2000 !important;
+   }
+
+   .modal-backdrop {
+     z-index: 1900 !important;
+   }
+
+   /* Ensure menu button is above sidebar */
+   .menu-toggle {
+     z-index: 1201 !important;
+     /* Higher than sidebar (1200) */
+     position: relative;
+   }

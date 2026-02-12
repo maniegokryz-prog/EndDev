@@ -34,11 +34,13 @@ if (file_exists($configFile)) {
 </head>
 
 <body>
-    <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
-        <div class="menu-toggle">
+    <div class="top-navbar d-flex align-items-center p-2 shadow-sm">
+        <div class="menu-toggle d-lg-none">
             <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
         </div>
-        <?php include '../includes/notification_bell.php'; ?>
+        <div class="ms-auto">
+            <?php include '../includes/notification_bell.php'; ?>
+        </div>
     </div>
 
     <div class="sidebar d-flex flex-column pt-5" id="sidebar">
@@ -124,22 +126,22 @@ if (file_exists($configFile)) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../dashboard/dashboard.js"></script>
     <script>
-            document.getElementById('toggleKey').addEventListener('click', function () {
+        document.getElementById('toggleKey').addEventListener('click', function () {
             const input = document.getElementById('api_key');
             const icon = this.querySelector('i');
             if (input.type === 'password') {
                 input.type = 'text';
-            icon.classList.remove('bi-eye');
-            icon.classList.add('bi-eye-slash');
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
             } else {
                 input.type = 'password';
-            icon.classList.remove('bi-eye-slash');
-            icon.classList.add('bi-eye');
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
             }
         });
 
-            document.getElementById('syncSettingsForm').addEventListener('submit', function (e) {
-                e.preventDefault();
+        document.getElementById('syncSettingsForm').addEventListener('submit', function (e) {
+            e.preventDefault();
             const btn = this.querySelector('button[type="submit"]');
             const spinner = document.getElementById('saveSpinner');
 
@@ -152,26 +154,26 @@ if (file_exists($configFile)) {
 
             fetch('processes/save_sync_config.php', {
                 method: 'POST',
-            body: formData
+                body: formData
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                alert('Configuration saved successfully!');
+                        alert('Configuration saved successfully!');
                     } else {
-                alert('Error: ' + data.message);
+                        alert('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
-                alert('Connection error: ' + error);
+                    alert('Connection error: ' + error);
                 })
                 .finally(() => {
-                btn.disabled = false;
-            spinner.classList.add('d-none');
+                    btn.disabled = false;
+                    spinner.classList.add('d-none');
                 });
         });
 
-            function showLogoutModal() {
+        function showLogoutModal() {
             var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
             logoutModal.show();
         }
