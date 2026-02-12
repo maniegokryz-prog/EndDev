@@ -67,6 +67,11 @@
    }
 
    /* Welcome Message Styling */
+   .welcome-message {
+     margin-right: 15px !important;
+     margin-left: 10px !important;
+   }
+
    .welcome-message h5 {
      color: #ffffff;
      font-weight: 600;
@@ -663,6 +668,21 @@
      #current-date {
        font-size: 1.5rem !important;
      }
+
+     /* Adjust welcome message for tablet */
+     .welcome-message h5 {
+       font-size: 1.1rem !important;
+       padding: 6px 12px !important;
+     }
+
+     /* Adjust metric cards for tablet */
+     .card p.display-6 {
+       font-size: 2rem !important;
+     }
+
+     .card h6 {
+       font-size: 0.9rem !important;
+     }
    }
 
    /* ⬅ FOCUS: Mobile Layout (576px and below) ⬅ */
@@ -681,7 +701,21 @@
      }
 
      .card p.display-6 {
-       font-size: 1.5rem !important;
+       font-size: 1.2rem !important;
+       margin-bottom: 0 !important;
+     }
+
+     /* Mobile metric labels */
+     .card h6 {
+       font-size: 0.75rem !important;
+       white-space: nowrap;
+       overflow: hidden;
+       text-overflow: ellipsis;
+     }
+
+     /* Reduce padding on mobile cards */
+     .col-xl-9>.row>.col-3 .card {
+       padding: 0.5rem !important;
      }
 
      .attendance-feed {
@@ -708,6 +742,27 @@
        max-height: 40vh !important;
        height: 100% !important;
        margin-top: 20px !important;
+     }
+
+     /* Even smaller fonts for very small screens */
+     .card p.display-6 {
+       font-size: 1rem !important;
+     }
+
+     .card h6 {
+       font-size: 0.65rem !important;
+     }
+
+     /* Adjust welcome message for mobile */
+     .welcome-message h5 {
+       font-size: 0.85rem !important;
+       padding: 4px 8px !important;
+       border-left-width: 3px !important;
+       white-space: nowrap;
+       overflow: hidden;
+       text-overflow: ellipsis;
+       max-width: 150px;
+       /* limit width to prevent pushing other elements */
      }
    }
 

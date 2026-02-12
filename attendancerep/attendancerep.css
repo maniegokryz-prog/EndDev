@@ -536,3 +536,19 @@
    .modal-backdrop {
      z-index: 1900 !important;
    }
+
+   /* Responsive Page Title */
+   @media (max-width: 767px) {
+     .page-title.display-4 {
+       font-size: 2rem !important;
+       font-weight: bold;
+       margin-bottom: 0.5rem;
+     }
+   }
+
+   /* Tablet Adjustments */
+   @media (min-width: 768px) and (max-width: 991px) {
+     .page-title.display-4 {
+       font-size: 2.5rem !important;
+     }
+   }

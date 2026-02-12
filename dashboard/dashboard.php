@@ -36,7 +36,8 @@ $currentUser = getCurrentUser();
       </div>
       <div class="welcome-message">
         <h5 class="mb-0 text-white">Welcome,
-          <?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?>!</h5>
+          <?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?>!
+        </h5>
       </div>
     </div>
 
@@ -81,7 +82,7 @@ $currentUser = getCurrentUser();
 
       <div class="d-flex align-items-center justify-content-between">
         <!-- <h2 class="mb-4 display-4 text-dark">Welcome!</h2> -->
-        <button id="calendar-toggle-btn" class="btn btn-success d-sm-none d-block" style="display: none;"></button>
+
       </div>
 
       <div class="container-fluid px-3 mt-3">
