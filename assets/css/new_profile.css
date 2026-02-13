@@ -761,3 +761,184 @@ body {
     /* Scroll if content exceeds card height */
     padding-right: 5px;
 }
+
+/* =========================================
+   MOBILE FIXES FOR CONTAINER ALIGNMENT 
+   ========================================= */
+@media (max-width: 991px) {
+
+    /* 1. Layout Containers: Force full width column stack */
+    /* 1. Layout Containers: Force full width column stack with EQUAL GAPS */
+    .top-section-grid,
+    .profile-split-grid,
+    .left-column-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        gap: 1rem !important;
+        /* Standardized equal gap for all containers */
+    }
+
+    /* 2. All Cards: enforce full width and consistent margins */
+    .profile-card,
+    .dtr-section-card,
+    .leave-section-card,
+    .schedule-section-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+        flex: none !important;
+    }
+
+    /* Reset margins for cards inside wrappers to zero so GAP handles spacing */
+    .left-column-wrapper .profile-card,
+    .profile-card {
+        margin-bottom: 0 !important;
+        /* Let flex-gap handle the spacing */
+    }
+
+    /* 3. CENTER PROFILE INFO (First Container) */
+    .staff-info-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        width: 100% !important;
+        gap: 0.5rem !important;
+        /* Reduced from default gap */
+    }
+
+    .profile-avatar-container {
+        margin: 0 auto 0.5rem auto !important;
+        /* SIGNIFICANTLY REDUCED from 1.5rem */
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    .staff-details {
+        width: 100% !important;
+        text-align: center !important;
+        align-items: center !important;
+    }
+
+    .staff-details h2 {
+        margin-bottom: 0.2rem !important;
+        /* Minimal gap below name */
+    }
+
+    .staff-role {
+        margin: 0.2rem 0 !important;
+    }
+
+    .contact-info {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin-top: 0.25rem !important;
+        /* Reduced from 0.5rem */
+    }
+
+    .contact-info div {
+        justify-content: center !important;
+        margin-bottom: 0.1rem !important;
+        /* Tighter contact lines */
+    }
+
+    .action-buttons {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        flex-wrap: wrap !important;
+        margin-top: 0.25rem !important;
+        /* Minimized margin top */
+        gap: 0.25rem !important;
+        /* Minimized gap between buttons */
+    }
+
+    /* 4. PERFORMANCE METRICS (2x2 Grid) */
+    .metrics-row {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        /* Force 2 columns */
+        gap: 1rem !important;
+        width: 100% !important;
+    }
+
+    .metric-item {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 5. Maximize screen usage - Remove all outer padding */
+    .content {
+        padding: 5px !important;
+        /* Override the 2rem desktop padding */
+    }
+
+    .container-fluid {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Reduce card padding on mobile to maximize internal content space */
+    /* Reduce card padding on mobile to maximize internal content space */
+    .profile-card {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    /* 6. Header Adjustments: Stack Title and Controls (Performance Metrics) */
+    .card-header-custom {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        /* Center alignment for title */
+        gap: 0.5rem !important;
+    }
+
+    .card-header-custom .card-title {
+        width: 100% !important;
+        white-space: nowrap !important;
+        /* "straight the word" = single line */
+        margin-bottom: 0 !important;
+        text-align: center !important;
+    }
+
+    /* Target the dropdown container inside header */
+    .card-header-custom>div {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        /* Align dropdowns to center under title */
+        gap: 0.5rem !important;
+    }
+
+    /* 7. Scheduled Leave Header: Stack Title and Button */
+    .leave-section-card>.d-flex {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+    }
+
+    .leave-section-card .card-title {
+        text-align: center !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+        background: transparent;
+        /* Ensure no weird background */
+    }
+
+    .leave-section-card .btn {
+        width: 100% !important;
+        /* Make button full width for easy tapping */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

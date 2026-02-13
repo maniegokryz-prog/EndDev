@@ -1336,7 +1336,7 @@ function addSchedule() {
                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 3000);
         }
         return;
     }
@@ -1362,7 +1362,7 @@ function addSchedule() {
                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 3000);
         }
         return;
     }
@@ -1385,7 +1385,7 @@ function addSchedule() {
                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 3000);
         }
         return;
     }
@@ -1417,7 +1417,7 @@ function addSchedule() {
                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 3000);
         }
         return;
     }
@@ -1487,7 +1487,7 @@ function addSchedule() {
             try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-        }, 5000);
+        }, 3000);
     }
 
     // Clear the form for next schedule entry
@@ -1512,7 +1512,7 @@ function editSchedule() {
                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 3000);
         }
         return;
     }
@@ -1538,7 +1538,7 @@ function editSchedule() {
                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 3000);
         }
         return;
     }
@@ -1564,7 +1564,7 @@ function editSchedule() {
                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 3000);
         }
         return;
     }
@@ -1587,7 +1587,7 @@ function editSchedule() {
                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 3000);
         }
         return;
     }
@@ -1619,7 +1619,7 @@ function editSchedule() {
                 try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 document.body.classList.remove('modal-open');
-            }, 5000);
+            }, 3000);
         }
         return;
     }
@@ -1690,7 +1690,7 @@ function editSchedule() {
             try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
             document.body.classList.remove('modal-open');
-        }, 5000);
+        }, 3000);
     }
 
     // Clear the form

@@ -284,15 +284,101 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <script src="../assets/vendor/chartjs/chart.umd.min.js"></script>
     <style>
-        /* Force button sizing for edit schedule modal */
+        /* Force button sizing for edit schedule modal - DESKTOP DEFAULT */
         #editScheduleModal .add-schedule-btn,
         #editScheduleModal .edit-schedule-btn,
         #editScheduleModal .btn-cancel {
-            flex: 0 0 auto !important;
-            width: auto !important;
-            max-width: 180px !important;
-            padding: 10px 20px !important;
-            min-width: 140px !important;
+            flex: 0 0 auto;
+            width: auto;
+            min-width: 140px;
+            padding: 8px 16px;
+        }
+
+        /* Clear All & Cancel Buttons - Lighter Red & Shared Sizing */
+        #editScheduleModal .clear-schedules-btn,
+        #editScheduleModal .btn-cancel,
+        #editScheduleModal .btn-save {
+            min-width: 200px;
+            /* Uniform width */
+            padding: 10px 20px;
+        }
+
+        #editScheduleModal .clear-schedules-btn,
+        #editScheduleModal .btn-cancel {
+            background-color: #ef5350 !important;
+            /* Keeping distinct red, user might perceive #ef5350 as normal red. Trying #ff6b6b for 'light red' */
+            background-color: #ff6b6b !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        /* Unified Hover Effect: Light Gray for ALL buttons */
+        #editScheduleModal button:hover,
+        #editScheduleModal .btn:hover:not(:disabled),
+        #editScheduleModal .add-schedule-btn:hover,
+        #editScheduleModal .edit-schedule-btn:hover:not(:disabled),
+        #editScheduleModal .btn-cancel:hover,
+        #editScheduleModal .clear-schedules-btn:hover,
+        #editScheduleModal .btn-save:hover {
+            background-color: #e2e8f0 !important;
+            /* Light Gray */
+            color: #1e293b !important;
+            /* Dark text for contrast */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        /* Responsive Fixes for Modal */
+        @media (max-width: 768px) {
+
+            /* 1. Stack the top action buttons */
+            #editScheduleModal .form-group[style*="display: flex"] {
+                flex-direction: column !important;
+                gap: 8px !important;
+            }
+
+            #editScheduleModal .add-schedule-btn,
+            #editScheduleModal .edit-schedule-btn,
+            #editScheduleModal .btn-cancel,
+            #editScheduleModal .btn-save {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                padding: 10px !important;
+                margin-bottom: 0 !important;
+            }
+
+            /* 2. Fix Schedule Header (Clear All overlapping title) */
+            .schedule-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+                margin-bottom: 15px !important;
+            }
+
+            .clear-schedules-btn {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+
+            /* 3. Bottom Form Actions */
+            .form-actions {
+                display: flex !important;
+                /* Ensure flex is on */
+                flex-direction: column !important;
+                gap: 10px !important;
+                margin-top: 15px;
+                /* Some space above buttons */
+            }
+
+            /* 4. Ensure Modal is centered and fits */
+            .edit-schedule-modal-dialog {
+                margin: 1rem auto;
+                max-width: 95%;
+            }
         }
 
         /* Sidebar Toggle Styles (Matched to settings.css) - Using IDs for Specificity */
@@ -635,9 +721,8 @@ $profilePhoto .= '?v=' . microtime(true);
                                                 value="<?php echo htmlspecialchars($employee['position']); ?>"></div>
                                     </div>
                                 <?php endif; ?>
-                                <div class="text-end mt-4">
-                                    <button type="button" class="btn btn-secondary me-2"
-                                        data-bs-dismiss="modal">Cancel</button>
+                                <div class="mt-4 d-flex flex-column flex-md-row justify-content-md-end gap-2">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn btn-primary">Save Changes</button>
                                 </div>
                             </form>
@@ -1013,114 +1098,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <!-- HELPER MODALS FOR EDIT SCHEDULE -->
-    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
-                <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
-            </div>
-        </div>
-    </div>
 
-    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
-                <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
-                <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-warning">Required Fields</h5>
-                <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for
-                    schedules!</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
-                <p id="scheduleAddedSuccessMsg">Your schedule has been added.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
-                <p id="scheduleUpdatedSuccessMsg">Your schedule has been updated.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-warning">Confirm Clear All</h5>
-                <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
-                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-danger" id="scheduleClearConfirmBtn">Yes, Clear All</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
-                <p id="scheduleDeleteConfirmMsg">Are you sure you want to delete this schedule?</p>
-                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
-                <p id="scheduleClearedSuccessMsg">All schedules have been cleared!</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
-                <p id="scheduleSavedSuccessMsg">Schedule updated successfully!</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
-                <p id="scheduleNoDataMsg">No schedules to clear!</p>
-            </div>
-        </div>
-    </div>
 
     <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel"
         aria-hidden="true">
@@ -1252,6 +1230,127 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
+
+    <!-- HELPER MODALS FOR EDIT SCHEDULE (Moved to end for z-index stacking) -->
+    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
+                <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
+                <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
+                <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-warning">Required Fields</h5>
+                <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for
+                    schedules!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
+                <p id="scheduleAddedSuccessMsg">Your schedule has been added.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
+                <p id="scheduleUpdatedSuccessMsg">Your schedule has been updated.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-warning">Confirm Clear All</h5>
+                <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger" id="scheduleClearConfirmBtn">Yes, Clear All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
+                <p id="scheduleDeleteConfirmMsg">Are you sure you want to delete this schedule?</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
+                <p id="scheduleClearedSuccessMsg">All schedules have been cleared!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 10000 !important;" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
+                <p id="scheduleSavedSuccessMsg">Schedule updated successfully!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true" style="z-index: 10000 !important;"
+        data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
+                <p id="scheduleNoDataMsg">No schedules to clear!</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Variables for JS -->
     <script>
         window.employeeId = '<?php echo $employee_id; ?>';
@@ -1271,6 +1370,8 @@ $profilePhoto .= '?v=' . microtime(true);
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('content').classList.toggle('shift');
         });
+
+
 
         // Remove Employee Logic (Simplified/Copied from staffinfo.php)
         const removeForm = document.getElementById('removeEmployeeForm');

@@ -199,6 +199,9 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
 
             .content {
                 margin-left: 0;
+                padding: 5px;
+                padding-top: 2px;
+                /* Reduced padding on mobile */
             }
 
             .content.expanded {
@@ -209,6 +212,11 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
 
             .top-navbar {
                 padding-left: 20px;
+            }
+
+            .reg-card {
+                padding: 10px !important;
+                /* Reduced card padding on mobile */
             }
         }
 
@@ -372,12 +380,13 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
     <div class="content" id="content">
 
         <!-- Header Row -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div
+            class="d-flex flex-column-reverse flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
             <div>
-                <h4 class="fw-bold text-dark mb-0">Re-register Face Data</h4>
+                <h4 class="fw-bold text-dark mb-0 text-nowrap">Re-register Face Data</h4>
             </div>
             <a href="staff_profile.php?id=<?php echo htmlspecialchars($employee_id); ?>"
-                class="btn btn-outline-secondary">
+                class="btn btn-outline-secondary mb-2 mb-md-0 align-self-start align-self-md-auto">
                 <i class="bi bi-arrow-left"></i> Back to Profile
             </a>
         </div>
