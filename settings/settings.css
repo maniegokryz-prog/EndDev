@@ -414,6 +414,12 @@
      font-size: 3rem;
      color: #28a745;
    }
-/* Ensure modals are always above sidebar */
-.modal { z-index: 2000 !important; }
-.modal-backdrop { z-index: 1900 !important; }
+
+   /* Ensure modals are always above sidebar */
+   .modal {
+     z-index: 2000 !important;
+   }
+
+   .modal-backdrop {
+     z-index: 1900 !important;
+   }

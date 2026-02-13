@@ -211,8 +211,8 @@ try {
                     <!-- STEP 1: PERSONAL INFORMATION -->
                     <div class="tab-pane fade show active" id="step1" role="tabpanel" aria-labelledby="step1-tab">
                         <div class="card shadow-sm border-0">
-                            <div class="card-body">
-                                <div class="step-instructions">
+                            <div class="card-body" style="display: block !important;">
+                                <div class="step-instructions text-center">
                                     <strong>Step 1:</strong> Enter the basic information for the new staff member. This
                                     will create the employee record in the database.
                                 </div>
@@ -296,7 +296,7 @@ try {
                                         value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
                                     <!-- Step 1 Submit -->
-                                    <div class="mt-4 d-flex justify-content-end">
+                                    <div class="mt-4 d-flex justify-content-center">
                                         <button type="submit" class="btn btn-success px-4 py-2">Save Personal
                                             Information</button>
                                     </div>
@@ -308,8 +308,8 @@ try {
                     <!-- STEP 2: FACE REGISTRATION -->
                     <div class="tab-pane fade" id="step2" role="tabpanel" aria-labelledby="step2-tab">
                         <div class="card shadow-sm border-0">
-                            <div class="card-body">
-                                <div class="step-instructions">
+                            <div class="card-body" style="display: block !important;">
+                                <div class="step-instructions text-center">
                                     <strong>Step 2:</strong> Register the staff's face for biometric authentication.
                                     Search for the employee ID created in Step 1.
                                 </div>
@@ -378,7 +378,7 @@ try {
                                         <div id="photo-thumbnails"></div>
                                     </div>
 
-                                    <div class="mt-4 pt-3 border-top d-flex justify-content-end">
+                                    <div class="mt-4 pt-3 border-top d-flex justify-content-center">
                                         <button type="button" id="save-faces-btn" class="btn btn-success px-5" disabled
                                             onclick="submitFaceData()">
                                             Save Face Registration
@@ -392,8 +392,8 @@ try {
                     <!-- STEP 3: SCHEDULE -->
                     <div class="tab-pane fade" id="step3" role="tabpanel" aria-labelledby="step3-tab">
                         <div class="card shadow-sm border-0">
-                            <div class="card-body">
-                                <div class="step-instructions">
+                            <div class="card-body" style="display: block !important;">
+                                <div class="step-instructions text-center">
                                     <strong>Step 3:</strong> Assign a weekly schedule to the staff member. Search for
                                     the employee ID to begin.
                                 </div>
@@ -508,7 +508,7 @@ try {
                                             </div>
                                         </div>
 
-                                        <div class="mt-4 pt-3 border-top d-flex justify-content-end">
+                                        <div class="mt-4 pt-3 border-top d-flex justify-content-center">
                                             <button type="button" class="btn btn-success px-5"
                                                 onclick="submitSchedule()">Save Schedule</button>
                                         </div>
