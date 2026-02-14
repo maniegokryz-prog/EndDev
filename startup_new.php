@@ -308,6 +308,12 @@ if ($check_cloud_id->num_rows == 0) {
     $conn->query("ALTER TABLE employee_leaves ADD COLUMN cloud_id INT NULL DEFAULT NULL AFTER id, ADD INDEX idx_cloud_id (cloud_id)");
 }
 
+// Check if link exists in notifications
+$check_link = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
+if ($check_link->num_rows == 0) {
+    $conn->query("ALTER TABLE notifications ADD COLUMN link VARCHAR(255) NULL AFTER message");
+}
+
 
 header('Location: dashboard/dashboard.php');
 // echo "All tables and indexes created successfully.<br>";
