@@ -68,6 +68,21 @@ function fetchResults() {
   if (dept) params.append('department', dept);
   if (search) params.append('search', search);
 
+  // Update Selected Date Display
+  const dateDisplay = document.getElementById("selectedDateDisplay");
+  if (dateDisplay) {
+    if (date) {
+      const dateObj = new Date(date + 'T00:00:00');
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      dateDisplay.textContent = dateObj.toLocaleDateString('en-US', options);
+    } else {
+      // Fallback to today's date if filter is cleared
+      const today = new Date();
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      dateDisplay.textContent = today.toLocaleDateString('en-US', options);
+    }
+  }
+
   // Update URL without reloading
   const newUrl = window.location.pathname + '?' + params.toString();
   window.history.pushState({}, '', newUrl);

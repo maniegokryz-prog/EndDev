@@ -178,10 +178,10 @@ try {
     <div class="content pt-3" id="content">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <a href="staff.php" class="btn btn-outline-secondary mb-5 mt-0">&larr; Back to Staff List</a>
+
             </div>
 
-            <div class="container py-4">
+            <div class="container py-4 mt-5" style="margin-top: -5px !important;">
                 <h3 class="fw-bold mb-4 pt-4">Add New Staff / Wizard</h3>
 
                 <!-- Navigation Tabs -->

@@ -224,7 +224,8 @@ if ($id) {
     <div class="container-fluid">
       <?php if (isAdmin()): ?>
         <div class="mb-10">
-          <a href="attendancerep.php" class="btn btn-outline-secondary mb-2 mt-3">&larr; Back</a>
+          <a href="../staffmanagement/staff_profile.php?id=<?= $id ?>" class="btn btn-outline-secondary mb-2 mt-3">&larr;
+            Back</a>
         </div>
       <?php endif; ?>
       <h2 class="fw-bold mt-3 mb-4 display-4 text-dark">
@@ -252,39 +253,41 @@ if ($id) {
 
 
       <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
-        <!-- Month -->
-        <div class="dropdown">
-          <button class="btn btn-outline-primary dropdown-toggle" type="button" id="monthDropdown"
-            data-bs-toggle="dropdown" aria-expanded="false">
-            <span id="selectedMonth">Select Month</span>
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="monthDropdown">
-            <li><a class="dropdown-item month-option" href="#" data-month="1">January</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="2">February</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="3">March</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="4">April</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="5">May</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="6">June</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="7">July</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="8">August</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="9">September</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="10">October</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="11">November</a></li>
-            <li><a class="dropdown-item month-option" href="#" data-month="12">December</a></li>
-          </ul>
-        </div>
+        <div class="d-flex gap-2">
+          <!-- Month -->
+          <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="monthDropdown"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <span id="selectedMonth">Select Month</span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="monthDropdown">
+              <li><a class="dropdown-item month-option" href="#" data-month="1">January</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="2">February</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="3">March</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="4">April</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="5">May</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="6">June</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="7">July</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="8">August</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="9">September</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="10">October</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="11">November</a></li>
+              <li><a class="dropdown-item month-option" href="#" data-month="12">December</a></li>
+            </ul>
+          </div>
 
-        <!-- Year -->
-        <div class="dropdown">
-          <button class="btn btn-outline-primary dropdown-toggle" type="button" id="yearDropdown"
-            data-bs-toggle="dropdown" aria-expanded="false">
-            <span id="selectedYear">Select Year</span>
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="yearDropdown" id="yearDropdownMenu">
-            <?php foreach ($yearOptions as $year): ?>
-              <li><a class="dropdown-item year-option" href="#" data-year="<?= $year ?>"><?= $year ?></a></li>
-            <?php endforeach; ?>
-          </ul>
+          <!-- Year -->
+          <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="yearDropdown"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <span id="selectedYear">Year</span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="yearDropdown" id="yearDropdownMenu">
+              <?php foreach ($yearOptions as $year): ?>
+                <li><a class="dropdown-item year-option" href="#" data-year="<?= $year ?>"><?= $year ?></a></li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
         </div>
 
         <!-- Date Range Picker -->
@@ -300,7 +303,7 @@ if ($id) {
 
         <!-- Reset Button -->
         <button class="btn btn-outline-secondary" id="resetBtn">
-          <i class="bi bi-arrow-clockwise me-1"></i>
+          <i class="bi bi-arrow-clockwise me-1"></i> Reset Filter
         </button>
 
         <!-- Export - Admin Only -->

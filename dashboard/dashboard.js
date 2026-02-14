@@ -469,7 +469,7 @@ async function loadLateToday(date = null) {
     container.innerHTML = '';
 
     if (lateEmployees.length === 0) {
-      container.innerHTML = '<div class="text-center text-muted py-3"><small>No late employees today</small></div>';
+      container.innerHTML = '<div class="text-center text-muted py-3">No late employees today</div>';
       return;
     }
 
@@ -517,7 +517,7 @@ async function loadOnLeave(date = null) {
     container.innerHTML = '';
 
     if (onLeaveEmployees.length === 0) {
-      container.innerHTML = '<div class="text-center text-muted py-3"><small>No employees on leave today</small></div>';
+      container.innerHTML = '<div class="text-center text-muted on-leave-empty">No employees on leave today</div>';
       return;
     }
 
@@ -543,9 +543,165 @@ async function loadOnLeave(date = null) {
   }
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------//
+// Mobile Calendar Functionality
+(function () {
+  const calendarBody = document.getElementById('mobile-calendar-body');
+  const monthYearEl = document.getElementById('mobile-cal-month-year');
+  const prevBtn = document.getElementById('mobile-cal-prev');
+  const nextBtn = document.getElementById('mobile-cal-next');
 
+  // New Elements for Button/Modal
+  const mobileDateBtnText = document.getElementById('mobile-date-btn-text');
 
+  // If mobile calendar elements don't exist, exit
+  if (!calendarBody || !monthYearEl || !prevBtn || !nextBtn) return;
 
+  let viewDate = new Date();
 
+  // Initialize button text with today's date
+  const today = new Date();
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  if (mobileDateBtnText) {
+    mobileDateBtnText.textContent = today.toLocaleDateString('en-US', options);
+  }
 
+  function formatDateYMD(d) {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
 
+  function renderCalendar(date) {
+    calendarBody.innerHTML = '';
+
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const monthName = date.toLocaleString(undefined, { month: 'long' });
+    monthYearEl.textContent = `${monthName} ${year}`;
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const cells = [];
+
+    const prevMonthLastDate = new Date(year, month, 0).getDate();
+    for (let i = 0; i < firstDayIndex; i++) {
+      const dayNum = prevMonthLastDate - firstDayIndex + 1 + i;
+      const dObj = new Date(year, month - 1, dayNum);
+      cells.push({ day: dayNum, otherMonth: true, dateObj: dObj });
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      cells.push({ day: d, otherMonth: false, dateObj: new Date(year, month, d) });
+    }
+
+    let nextDay = 1;
+    while (cells.length < 42) {
+      const dObj = new Date(year, month + 1, nextDay);
+      cells.push({ day: nextDay, otherMonth: true, dateObj: dObj });
+      nextDay++;
+    }
+
+    const today = new Date();
+
+    for (let i = 0; i < 42; i += 7) {
+      const tr = document.createElement('tr');
+
+      for (let j = 0; j < 7; j++) {
+        const cell = cells[i + j];
+        const td = document.createElement('td');
+        const link = document.createElement('a');
+
+        link.classList.add('calendar-day');
+        // Add mobile-specific class if needed in CSS
+        link.classList.add('mobile-calendar-day');
+
+        link.href = '#';
+        link.setAttribute('data-date', formatDateYMD(cell.dateObj));
+        link.textContent = cell.day;
+
+        if (cell.otherMonth) {
+          link.classList.add('calendar-other');
+          link.style.backgroundColor = 'transparent';
+        }
+
+        const isSameDay =
+          cell.dateObj.getFullYear() === today.getFullYear() &&
+          cell.dateObj.getMonth() === today.getMonth() &&
+          cell.dateObj.getDate() === today.getDate();
+
+        const isSameMonthView =
+          date.getFullYear() === today.getFullYear() &&
+          date.getMonth() === today.getMonth();
+
+        if (isSameDay && isSameMonthView && !cell.otherMonth) {
+          link.classList.add('calendar-today');
+          link.style.backgroundColor = 'transparent';
+          link.style.boxShadow = 'none';
+        }
+
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          const dateStr = this.getAttribute('data-date');
+
+          // Update the button text when a date is clicked
+          const clickedDate = new Date(dateStr + 'T00:00:00'); // Ensure local time parsing
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+          if (mobileDateBtnText) {
+            mobileDateBtnText.textContent = clickedDate.toLocaleDateString('en-US', options);
+          }
+
+          // Use global functions from main calendar logic
+          if (typeof setSelectedDate === 'function') {
+            setSelectedDate(dateStr);
+          }
+          if (typeof loadDashboardData === 'function') {
+            loadDashboardData(dateStr);
+          }
+
+          // Also highlight in desktop calendar to keep in sync if switching views
+          if (typeof updateCalendarHighlight === 'function') {
+            updateCalendarHighlight(dateStr);
+          }
+
+          // Close modal programmatically
+          const modalEl = document.getElementById('mobileCalendarModal');
+          if (modalEl) {
+            // Fallback if bootstrap instance is tricky to get directly
+            // We can just find the close button or trigger click on backdrop/close
+            // Or simpler: remove 'show' class and style.display = 'none', remove backdrop
+            // But proper BS way is:
+            var myModalEl = document.getElementById('mobileCalendarModal');
+            var modal = bootstrap.Modal.getInstance(myModalEl);
+            if (modal) {
+              modal.hide();
+            } else {
+              // If not instantiated? or instance lost?
+              // Try triggering click on close button
+              const btnClose = myModalEl.querySelector('.btn-close');
+              if (btnClose) btnClose.click();
+            }
+          }
+        });
+
+        td.appendChild(link);
+        tr.appendChild(td);
+      }
+
+      calendarBody.appendChild(tr);
+    }
+  }
+
+  prevBtn.addEventListener('click', function () {
+    viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1);
+    renderCalendar(viewDate);
+  });
+
+  nextBtn.addEventListener('click', function () {
+    viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1);
+    renderCalendar(viewDate);
+  });
+
+  renderCalendar(viewDate);
+})();

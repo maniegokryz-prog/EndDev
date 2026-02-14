@@ -1103,14 +1103,14 @@
        margin-right: auto !important;
      }
 
-     /* 3. Late at On Leave Cards: Tiyakin na naka-stack din at 100% width. */
      .late-card,
      .on-leave-card {
-       width: 93% !important;
-       margin-left: 50px !important;
+       width: 98% !important;
+       margin-left: 13px !important;
        /* Panatilihin ang 0px margin-top para walang extra space sa taas nila */
-       margin-top: 0px !important;
+       margin-top: 5px !important;
        display: block !important;
+       margin-bottom: 20px !important;
      }
 
      /* 4. Font Size Adjustments */
@@ -1410,8 +1410,8 @@
      .late-card,
      .on-leave-card {
        /* Full width at minimal padding para sa masikip na screens */
-       width: 92%;
-       margin-left: 25px;
+       width: 98% !important;
+       margin-left: 13px !important;
        /* Alisin ang margins */
        margin-top: 5px;
 
@@ -1439,8 +1439,8 @@
      .late-card,
      .on-leave-card {
        /* Panatilihin ang styling ng 576px, pero maaaring bawasan pa ang padding */
-       width: 92%;
-       margin-left: 20px;
+       width: 98% !important;
+       margin-left: 13px !important;
        margin-top: 15px;
      }
 
@@ -1469,4 +1469,80 @@
    .menu-toggle {
      /* z-index removed so sidebar (1200) covers it */
      position: relative;
+   }
+
+   /* Mobile Calendar Styling */
+   .mobile-calendar-card {
+     background: #fff;
+   }
+
+   .mobile-calendar-card .calendar-day {
+     width: 30px !important;
+     height: 30px !important;
+     line-height: 30px !important;
+     font-size: 0.8rem;
+     margin: 0 auto;
+     display: inline-block;
+     border-radius: 6px;
+     color: #222;
+     text-decoration: none;
+   }
+
+   /* Adjust table cell padding for mobile calendar */
+   .mobile-calendar-card table td {
+     padding: 2px !important;
+     height: 35px !important;
+     vertical-align: middle;
+   }
+
+   /* Highlight colors matching desktop */
+   .mobile-calendar-card .calendar-today {
+     background-color: #ffc107;
+     color: #000;
+     font-weight: bold;
+     border: 2px solid #ff9800;
+   }
+
+   .mobile-calendar-card .calendar-day.selected {
+     background-color: #103932 !important;
+     color: #ffffff !important;
+     font-weight: bold;
+     box-shadow: 0 2px 8px rgba(16, 57, 50, 0.3);
+   }
+
+   /* Late Today & On Leave Card Styles */
+   .late-card h5,
+   .on-leave-card h5 {
+     font-size: 1.25rem;
+   }
+
+   .late-list,
+   .on-leave-list {
+     font-size: 1.1rem;
+   }
+
+   /* Empty State Message Styling */
+   .on-leave-empty {
+     padding-bottom: 1rem;
+     margin-top: -5px;
+   }
+
+   @media (max-width: 991.98px) {
+     .on-leave-empty {
+       margin-top: 10px;
+       padding-top: 0.5rem;
+     }
+   }
+
+   @media (max-width: 767.98px) {
+
+     .late-card h5,
+     .on-leave-card h5 {
+       font-size: 1.4rem !important;
+     }
+
+     .late-list,
+     .on-leave-list {
+       font-size: 1.2rem;
+     }
    }

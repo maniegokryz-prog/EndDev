@@ -247,9 +247,9 @@ $csrfToken = $_SESSION['csrf_token'];
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
 
-              <div class="modal-body px-4 pb-3" style="max-height: 70vh; overflow-y: auto;">
+              <div class="modal-body px-4 pb-3" style="max-height: 70vh; overflow-y: auto; text-align: justify;">
 
-                <h5 class="fw-bold mt-2">Privacy Policy</h5>
+                <h5 class="fw-bold mt-2 text-center">Privacy Policy</h5>
                 <p>This Automated Attendance System uses facial recognition technology to record and manage the
                   attendance of administrators, faculty members, and non-teaching staff. By using this system, you
                   consent to the collection and processing of:</p>
@@ -269,7 +269,7 @@ $csrfToken = $_SESSION['csrf_token'];
 
                 <hr>
 
-                <h5 class="fw-bold">Terms of Use</h5>
+                <h5 class="fw-bold text-center">Terms of Use</h5>
                 <p>By accessing and using this system, you agree to:</p>
                 <ol>
                   <li>Allow the system to capture and process your facial data strictly for attendance purposes.</li>

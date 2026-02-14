@@ -86,6 +86,60 @@ $currentUser = getCurrentUser();
       </div>
 
       <div class="container-fluid px-3 mt-3">
+
+        <!-- Mobile Date Picker Button (Visible only on mobile/tablet) -->
+        <div class="d-flex justify-content-center d-lg-none mb-5" style="margin-top: -24px;">
+          <button id="mobile-date-btn" class="btn btn-success fw-bold shadow py-2 px-4" data-bs-toggle="modal"
+            data-bs-target="#mobileCalendarModal" style="border-radius: 8px; font-size: 0.95rem; width: 90%;">
+            <i class="bi bi-calendar-event me-2"></i><span id="mobile-date-btn-text">Loading...</span>
+          </button>
+        </div>
+
+        <!-- Mobile Calendar Modal -->
+        <div class="modal fade" id="mobileCalendarModal" tabindex="-1" aria-labelledby="mobileCalendarModalLabel"
+          aria-hidden="true" style="z-index: 10500;">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px;">
+              <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="mobileCalendarModalLabel">Select Date</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body pt-2">
+                <!-- Calendar Controls -->
+                <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+                  <h5 id="mobile-cal-month-year" class="fw-bold mb-0 text-dark">Month Year</h5>
+                  <div>
+                    <button id="mobile-cal-prev" class="btn btn-sm btn-outline-secondary me-1 px-2 py-1" type="button"
+                      style="border-radius: 6px;">&lsaquo;</button>
+                    <button id="mobile-cal-next" class="btn btn-sm btn-outline-secondary px-2 py-1" type="button"
+                      style="border-radius: 6px;">&rsaquo;</button>
+                  </div>
+                </div>
+                <!-- Calendar Table -->
+                <div class="table-responsive">
+                  <table class="table table-bordered text-center m-0 shadow-sm"
+                    style="table-layout: fixed; border-radius: 8px; overflow: hidden;">
+                    <thead class="table-light">
+                      <tr>
+                        <th class="py-2 text-secondary small">Sun</th>
+                        <th class="py-2 text-secondary small">Mon</th>
+                        <th class="py-2 text-secondary small">Tue</th>
+                        <th class="py-2 text-secondary small">Wed</th>
+                        <th class="py-2 text-secondary small">Thu</th>
+                        <th class="py-2 text-secondary small">Fri</th>
+                        <th class="py-2 text-secondary small">Sat</th>
+                      </tr>
+                    </thead>
+                    <tbody id="mobile-calendar-body">
+                      <!-- JS will populate -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="row g-3 align-items-start">
 
           <!-- Removed old widget code -->
@@ -162,7 +216,7 @@ $currentUser = getCurrentUser();
         <div class="col-lg-6 col-md-12">
           <div class="card text-center d-flex flex-column justify-content-center time-card">
             <h1 id="current-time" class="fw-bold mb-2">--:-- --</h1>
-            <h5 id="current-date" class="mt-2 mb-0">Loading...</h5>
+            <h5 id="current-date" class="mt-2 mb-0 d-none d-lg-block">Loading...</h5>
           </div>
         </div>
 
@@ -253,23 +307,23 @@ $currentUser = getCurrentUser();
 
 
 
-        <div class="col-md-6 d-flex justify-content-left">
-          <div class="card p-5 shadow-sm h-100 late-card">
-            <h6 class="fw-bold">Late Today</h6>
-
-            <!-- Scrollable Area -->
-            <div class="late-list">
+        <div class="col-md-6 col-12 mb-3">
+          <div
+            class="card p-4 shadow-sm h-100 d-flex flex-column justify-content-center align-items-center text-center late-card"
+            style="min-height: 200px;">
+            <h5 class="fw-bold mb-3" style="font-size: 1.25rem;">Late Today</h5>
+            <div class="late-list w-100 d-flex flex-column justify-content-center align-items-center">
               <!-- JavaScript will populate this dynamically -->
             </div>
           </div>
         </div>
 
-        <div class="col-md-6 d-flex justify-content-left">
-          <div class="card p-5 shadow-sm h-100 on-leave-card">
-            <h6 class="fw-bold">On Leave</h6>
-
-            <!-- Scrollable Area -->
-            <div class="on-leave-list">
+        <div class="col-md-6 col-12 mb-3">
+          <div
+            class="card p-4 shadow-sm h-100 d-flex flex-column justify-content-center align-items-center text-center on-leave-card"
+            style="min-height: 200px;">
+            <h5 class="fw-bold mb-3" style="font-size: 1.25rem;">On Leave</h5>
+            <div class="on-leave-list w-100 d-flex flex-column justify-content-center align-items-center">
               <!-- JavaScript will populate this dynamically -->
             </div>
           </div>

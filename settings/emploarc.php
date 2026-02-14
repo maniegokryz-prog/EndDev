@@ -73,12 +73,7 @@ $currentUser = getCurrentUser();
     <div class="content pt-3" id="content">
       <div class="container-fluid">
 
-        <!-- Back Button -->
-        <div class="mb-3">
-          <a href="settings.php" class="btn btn-outline-secondary btn-sm">
-            <i class="fa-solid fa-arrow-left me-1"></i> Back
-          </a>
-        </div>
+
 
         <div class="page">
           <h1>Employee Archive</h1>
@@ -635,6 +630,41 @@ $currentUser = getCurrentUser();
         <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
         <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="settings.js"></script>
+
+        <script>
+          // Sidebar Toggle Logic (Adapted from dashboard.js)
+          const menuBtn = document.getElementById("menu-btn");
+          const sidebar = document.getElementById("sidebar");
+          const content = document.getElementById("content");
+
+          if (menuBtn && sidebar) {
+            menuBtn.addEventListener('click', () => {
+              if (window.innerWidth <= 767) {
+                sidebar.classList.toggle('mobile-nav');
+                document.body.classList.toggle('lock-scroll');
+
+                if (sidebar.classList.contains('mobile-nav')) {
+                  const backdrop = document.createElement('div');
+                  backdrop.classList.add('mobile-backdrop');
+                  backdrop.setAttribute('id', 'mobileBackdrop');
+                  document.body.appendChild(backdrop);
+
+                  backdrop.addEventListener('click', () => {
+                    sidebar.classList.remove('mobile-nav');
+                    document.body.classList.remove('lock-scroll');
+                    backdrop.remove();
+                  });
+                } else {
+                  const existing = document.getElementById('mobileBackdrop');
+                  if (existing) existing.remove();
+                }
+              } else {
+                sidebar.classList.toggle('collapsed');
+                if (content) content.classList.toggle('shift');
+              }
+            });
+          }
+        </script>
   </body>
 
 </html>
