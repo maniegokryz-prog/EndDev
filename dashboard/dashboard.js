@@ -42,7 +42,11 @@ function updateClock() {
   minutes = minutes < 10 ? "0" + minutes : minutes;
 
   const timeStr = `${hours}:${minutes} ${ampm}`;
-  document.getElementById("current-time").textContent = timeStr;
+  const mainTime = document.getElementById("current-time");
+  if (mainTime) mainTime.textContent = timeStr;
+
+  const mobileTime = document.getElementById("current-time-mobile");
+  if (mobileTime) mobileTime.textContent = timeStr;
 
   // Date
   const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };

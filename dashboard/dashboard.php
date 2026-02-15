@@ -88,9 +88,9 @@ $currentUser = getCurrentUser();
       <div class="container-fluid px-3 mt-3">
 
         <!-- Mobile Date Picker Button (Visible only on mobile/tablet) -->
-        <div class="d-flex justify-content-center d-lg-none mb-5" style="margin-top: -24px;">
+        <div class="d-flex justify-content-center d-lg-none mb-3" style="margin-top: -24px;">
           <button id="mobile-date-btn" class="btn btn-success fw-bold shadow py-2 px-4" data-bs-toggle="modal"
-            data-bs-target="#mobileCalendarModal" style="border-radius: 8px; font-size: 0.95rem; width: 90%;">
+            data-bs-target="#mobileCalendarModal" style="border-radius: 8px; font-size: 0.95rem; width: 100%;">
             <i class="bi bi-calendar-event me-2"></i><span id="mobile-date-btn-text">Loading...</span>
           </button>
         </div>
@@ -140,12 +140,21 @@ $currentUser = getCurrentUser();
           </div>
         </div>
 
+        <!-- Mobile Time Container (Moved Here as requested) -->
+        <div class="row justify-content-center d-lg-none mb-4">
+          <div class="col-12">
+            <div class="card text-center py-3 shadow-sm border-0" style="border-radius: 12px;">
+              <h1 id="current-time-mobile" class="fw-bold mb-0 display-3">--:-- --</h1>
+            </div>
+          </div>
+        </div>
+
         <div class="row g-3 align-items-start">
 
           <!-- Removed old widget code -->
 
           <div class="col-xl-9 col-lg-8 col-md-8">
-            <div class="row g-3">
+            <div class="row g-2 mt-1">
 
               <div class="col-3">
                 <div class="card text-center p-3 shadow-sm border-0 clickable-card">
@@ -213,7 +222,7 @@ $currentUser = getCurrentUser();
       <div class="row g-3 mb-4" style="margin-top: -440px;">
 
         <!-- TIME & DATE CARD -->
-        <div class="col-lg-6 col-md-12">
+        <div class="col-lg-6 d-none d-lg-block">
           <div class="card text-center d-flex flex-column justify-content-center time-card">
             <h1 id="current-time" class="fw-bold mb-2">--:-- --</h1>
             <h5 id="current-date" class="mt-2 mb-0 d-none d-lg-block">Loading...</h5>
@@ -311,7 +320,7 @@ $currentUser = getCurrentUser();
           <div
             class="card p-4 shadow-sm h-100 d-flex flex-column justify-content-center align-items-center text-center late-card"
             style="min-height: 200px;">
-            <h5 class="fw-bold mb-3" style="font-size: 1.25rem;">Late Today</h5>
+            <h3 class="fw-bold mb-3" style="font-size: 1rem;">Late Today</h3>
             <div class="late-list w-100 d-flex flex-column justify-content-center align-items-center">
               <!-- JavaScript will populate this dynamically -->
             </div>
@@ -322,7 +331,7 @@ $currentUser = getCurrentUser();
           <div
             class="card p-4 shadow-sm h-100 d-flex flex-column justify-content-center align-items-center text-center on-leave-card"
             style="min-height: 200px;">
-            <h5 class="fw-bold mb-3" style="font-size: 1.25rem;">On Leave</h5>
+            <h3 class="fw-bold mb-3" style="font-size: 1rem;">On Leave</h3>
             <div class="on-leave-list w-100 d-flex flex-column justify-content-center align-items-center">
               <!-- JavaScript will populate this dynamically -->
             </div>

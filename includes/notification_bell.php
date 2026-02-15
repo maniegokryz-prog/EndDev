@@ -39,7 +39,7 @@
 
 <!-- All Notifications Modal -->
 <div class="modal fade" id="allNotificationsModal" tabindex="-1" aria-labelledby="allNotificationsModalLabel"
-  aria-hidden="true" data-bs-backdrop="false">
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
@@ -122,14 +122,6 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  #allNotificationsModal {
-    pointer-events: none;
-  }
-
-  #allNotificationsModal .modal-dialog {
-    pointer-events: auto;
-  }
-
   .notification-item {
     padding: 12px 16px;
     border-bottom: 1px solid #f0f0f0;
@@ -161,6 +153,14 @@
       const notificationBody = document.getElementById('notificationBody');
       const notificationCount = document.getElementById('notificationCount');
       const markAllReadBtn = document.getElementById('markAllRead');
+
+      // Move modals to body to ensure correct stacking context (fixes backdrop issues)
+      ['allNotificationsModal', 'deleteNotificationModal', 'deleteAllNotificationsModal'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.parentElement !== document.body) {
+          document.body.appendChild(el);
+        }
+      });
 
       if (!notificationBtn) return;
 

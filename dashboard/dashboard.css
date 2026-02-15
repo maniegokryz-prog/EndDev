@@ -734,6 +734,18 @@
      .col-xl-3 {
        order: 2;
      }
+
+     /* Adjust font sizes for Late Today & On Leave cards */
+     .late-card h5,
+     .on-leave-card h5 {
+       font-size: 1.25rem !important;
+       margin-bottom: 0.5rem !important;
+     }
+
+     .late-list,
+     .on-leave-list {
+       font-size: 0.85rem !important;
+     }
    }
 
    /* 📏 Ultra-Mobile: 500px and below */
