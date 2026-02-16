@@ -689,57 +689,102 @@ class AttendanceLogger:
                 
                 print(f"     🔢 Calculating actual hours and status...")
                 
-                if time_in_str:
-                    # Calculate actual_hours: time worked from time_in to time_out
-                    # NOTE: Result is stored in MINUTES (field name is misleading)
-                    # Parse time_in
-                    try:
-                        time_in_parts = list(map(int, time_in_str.split(':')))
-                        time_in_hour = time_in_parts[0]
-                        time_in_minute = time_in_parts[1]
-                        time_in_second = time_in_parts[2] if len(time_in_parts) > 2 else 0
-
-                        time_in_datetime = log_datetime.replace(
-                            hour=time_in_hour,
-                            minute=time_in_minute,
-                            second=time_in_second,
-                            microsecond=0
-                        )
-                        
-                        # Calculate actual minutes worked
-                        # Use float for precision (matches DB decimal(5,2))
-                        actual_hours = round((log_datetime - time_in_datetime).total_seconds() / 60, 2)
-                        print(f"     ⏱️  Actual hours (time_in to time_out): {actual_hours} min ({actual_hours/60.0:.2f}h)")
-                    
-                    except Exception as e:
-                        print(f"     ❌ Error parsing time_in '{time_in_str}': {e}")
-                        actual_hours = 0
-                    
-                    # Calculate early departure or overtime based on last period end time
-                    if schedule_periods:
-                        last_end = schedule_periods[-1][1]
-                        last_end_hour, last_end_minute, last_end_second = map(int, last_end.split(':'))
-                        scheduled_end_datetime = log_datetime.replace(
-                            hour=last_end_hour,
-                            minute=last_end_minute,
-                            second=last_end_second,
-                            microsecond=0
-                        )
-                        
-                        time_diff = (log_datetime - scheduled_end_datetime).total_seconds() / 60
-                        
-                        if time_diff < 0:
-                            # Left early (undertime)
-                            early_departure_minutes = int(abs(time_diff))
-                            print(f"     ⚠️  Undertime detected: {early_departure_minutes} minutes")
-                        else:
-                            # Overtime
-                            overtime_minutes = int(time_diff)
-                            print(f"     ⏰ Overtime detected: {overtime_minutes} minutes")
-                
                 # Determine status: complete if both time_in and time_out exist
                 status = 'complete' if time_in_str and log_time_str else 'incomplete'
                 print(f"     ✓ Status determined: {status}")
+                
+                # Calculate actual_hours with schedule clamping
+                actual_hours = 0
+                if time_in_str:
+                    try:
+                        # Parse Log times
+                        time_in_parts = list(map(int, time_in_str.split(':')))
+                        t_in_dt = log_datetime.replace(
+                            hour=time_in_parts[0], 
+                            minute=time_in_parts[1], 
+                            second=time_in_parts[2] if len(time_in_parts)>2 else 0, 
+                            microsecond=0
+                        )
+                        t_out_dt = log_datetime  # Current time is Time Out
+
+                        # Default calculation (Actual In to Actual Out)
+                        calc_start_dt = t_in_dt
+                        calc_end_dt = t_out_dt
+
+                        # Apply Schedule Clamping if available
+                        if schedule_periods:
+                            # Parse Schedule Start (First Period)
+                            sched_start_str = schedule_periods[0][0]
+                            ss_h, ss_m, ss_s = map(int, sched_start_str.split(':'))
+                            sched_start_dt = log_datetime.replace(hour=ss_h, minute=ss_m, second=ss_s, microsecond=0)
+
+                            # Parse Schedule End (Last Period)
+                            sched_end_str = schedule_periods[-1][1]
+                            se_h, se_m, se_s = map(int, sched_end_str.split(':'))
+                            sched_end_dt = log_datetime.replace(hour=se_h, minute=se_m, second=se_s, microsecond=0)
+
+                            # CLAMP START / ROUND LATE START
+                            if t_in_dt < sched_start_dt:
+                                # Early In: Clamp to Schedule Start
+                                print(f"     ✂️  Clipping Early In: {t_in_dt.strftime('%H:%M')} -> {sched_start_dt.strftime('%H:%M')}")
+                                calc_start_dt = sched_start_dt
+                            elif t_in_dt > sched_start_dt:
+                                # Late In: Round UP to next full hour
+                                # Logic: If 8:23 -> 9:00. If 8:00:01 -> 9:00.
+                                # Use timedelta to get to next hour
+                                delta_min = 60 - t_in_dt.minute
+                                # If minute is 0 but second > 0, we still need to round up? 
+                                # Let's assume strict next hour.
+                                # If already exactly on hour (minute=0, second=0), no rounding needed? 
+                                # But t_in_dt > sched_start_dt implies it IS late.
+                                # If sched 8:00, in 9:00 -> Late 1h. Start at 9:00.
+                                
+                                # If we strictly add minutes to reach :00
+                                current_min = t_in_dt.minute
+                                current_sec = t_in_dt.second
+                                
+                                if current_min == 0 and current_sec == 0:
+                                    # Exactly on an hour (but late). e.g. Sched 8:00, In 9:00.
+                                    # Do not add another hour.
+                                    calc_start_dt = t_in_dt
+                                else:
+                                    # Round up
+                                    # We can just add 1 hour and zero out min/sec?
+                                    # No, if 8:01 -> 9:00.
+                                    next_hour_dt = (t_in_dt + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+                                    print(f"     ✂️  Rounding Late In: {t_in_dt.strftime('%H:%M:%S')} -> {next_hour_dt.strftime('%H:%M:%S')}")
+                                    calc_start_dt = next_hour_dt
+                            
+                            # CLAMP END: effectively ignores Overtime (Late Out)
+                            if t_out_dt > sched_end_dt:
+                                print(f"     ✂️  Clipping Late Out: {t_out_dt.strftime('%H:%M')} -> {sched_end_dt.strftime('%H:%M')}")
+                                calc_end_dt = sched_end_dt
+                        
+                        # Calculate duration in minutes
+                        diff_seconds = (calc_end_dt - calc_start_dt).total_seconds()
+                        if diff_seconds < 0:
+                            diff_seconds = 0
+                        
+                        actual_hours = round(diff_seconds / 60, 2)
+                        print(f"     ⏱️  Actual hours (Clamped/Rounded): {actual_hours} min ({actual_hours/60.0:.2f}h)")
+
+                        # Calculate Overtime / Undertime (unclamped vs schedule)
+                        if schedule_periods:
+                             # Use floating point diff for calculation
+                             ot_diff = (t_out_dt - sched_end_dt).total_seconds() / 60.0
+                             
+                             if ot_diff > 0:
+                                 overtime_minutes = int(ot_diff)
+                                 print(f"     ⏰ Overtime detected: {overtime_minutes} minutes")
+                             elif ot_diff < 0:
+                                 early_departure_minutes = int(abs(ot_diff))
+                                 print(f"     ⚠️  Undertime detected: {early_departure_minutes} minutes")
+
+                    except Exception as e:
+                        print(f"     ❌ Error calculating actual_hours: {e}")
+                        actual_hours = 0
+                        import traceback
+                        traceback.print_exc()
                 
                 # Update the record (scheduled_hours was already set during time_in)
                 print(f"     📝 Updating daily_attendance record with time_out...")

@@ -4,120 +4,133 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require_once '../auth_guard.php';
 require_once '../navigation.php';
-require_once '../db_connection.php';
+    require_once '../db_connection.php';
+    require_once 'dtr_utils.php'; // Include shared DTR logic
 
-// Get current user info
-$currentUser = getCurrentUser();
-
-$id = $_GET['id'] ?? null;
-$employee = null;
-$hireYear = date('Y'); // Default to current year
-
-if ($id) {
-  // Fetch employee data from database
-  $stmt = $conn->prepare("SELECT employee_id, first_name, middle_name, last_name, roles, hire_date, profile_photo FROM employees WHERE employee_id = ?");
-  $stmt->bind_param("s", $id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ?? '') . ' ' . $row['last_name']);
-
-    $imagePath = $row['profile_photo'];
-    $fullPath = $imagePath ? dirname(__DIR__) . '/' . $imagePath : '';
-
-    $finalImage = (!empty($imagePath) && file_exists($fullPath))
-      ? $imagePath
-      : 'assets/profile_pic/user.png';
-
-    $employee = [
-      'name' => $fullName,
-      'role' => $row['roles'] ?? 'N/A',
-      'image' => $finalImage,
-      'hire_date' => $row['hire_date']
-    ];
-
-    // Get hire year for dynamic year dropdown
-    if (!empty($row['hire_date'])) {
-      $hireYear = date('Y', strtotime($row['hire_date']));
+    // Get current user info
+    $currentUser = getCurrentUser();
+    
+    $id = $_GET['id'] ?? null;
+    $employee = null;
+    $hireYear = date('Y'); // Default to current year
+    
+    if ($id) {
+      // Fetch employee data from database
+      $stmt = $conn->prepare("SELECT employee_id, first_name, middle_name, last_name, roles, hire_date, profile_photo FROM employees WHERE employee_id = ?");
+      $stmt->bind_param("s", $id);
+      $stmt->execute();
+      $result = $stmt->get_result();
+    
+      if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ?? '') . ' ' . $row['last_name']);
+    
+        $imagePath = $row['profile_photo'];
+        $fullPath = $imagePath ? dirname(__DIR__) . '/' . $imagePath : '';
+    
+        $finalImage = (!empty($imagePath) && file_exists($fullPath))
+          ? $imagePath
+          : 'assets/profile_pic/user.png';
+    
+        $employee = [
+          'name' => $fullName,
+          'role' => $row['roles'] ?? 'N/A',
+          'image' => $finalImage,
+          'hire_date' => $row['hire_date']
+        ];
+    
+        // Get hire year for dynamic year dropdown
+        if (!empty($row['hire_date'])) {
+          $hireYear = date('Y', strtotime($row['hire_date']));
+        }
+      }
+      $stmt->close();
     }
-  }
-  $stmt->close();
-}
-
-// Generate year options from hire year to current year
-$currentYear = date('Y');
-$yearOptions = [];
-for ($year = $hireYear; $year <= $currentYear; $year++) {
-  $yearOptions[] = $year;
-}
-
-// Fetch attendance records
-$attendanceRecords = [];
-if ($id) {
-  // Get employee's internal ID
-  $stmt = $conn->prepare("SELECT id FROM employees WHERE employee_id = ?");
-  $stmt->bind_param("s", $id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  if ($result->num_rows > 0) {
-    $empRow = $result->fetch_assoc();
-    $employeeInternalId = $empRow['id'];
-
-    // Build attendance query with filters
-    $query = "SELECT 
-                    attendance_date, 
-                    time_in, 
-                    time_out, 
-                    scheduled_hours, 
-                    actual_hours, 
-                    late_minutes,
-                    early_departure_minutes,
-                    overtime_minutes,
-                    status 
-                  FROM daily_attendance 
-                  WHERE employee_id = ? AND status != 'visit'";
-
-    $params = [$employeeInternalId];
-    $types = "i";
-
-    // Apply filters from GET parameters
-    $filterMonth = $_GET['month'] ?? null;
-    $filterYear = $_GET['year'] ?? null;
-    $startDate = $_GET['start_date'] ?? null;
-    $endDate = $_GET['end_date'] ?? null;
-
-    if ($startDate && $endDate) {
-      $query .= " AND attendance_date BETWEEN ? AND ?";
-      $params[] = $startDate;
-      $params[] = $endDate;
-      $types .= "ss";
-    } elseif ($filterMonth && $filterYear) {
-      $query .= " AND MONTH(attendance_date) = ? AND YEAR(attendance_date) = ?";
-      $params[] = $filterMonth;
-      $params[] = $filterYear;
-      $types .= "ii";
-    } elseif ($filterYear) {
-      $query .= " AND YEAR(attendance_date) = ?";
-      $params[] = $filterYear;
-      $types .= "i";
+    
+    // Generate year options from hire year to current year
+    $currentYear = date('Y');
+    $yearOptions = [];
+    for ($year = $hireYear; $year <= $currentYear; $year++) {
+      $yearOptions[] = $year;
     }
-
-    $query .= " ORDER BY attendance_date DESC";
-
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param($types, ...$params);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) {
-      $attendanceRecords[] = $row;
+    
+    // Fetch attendance records
+    $attendanceRecords = [];
+    if ($id) {
+      // Get employee's internal ID
+      $stmt = $conn->prepare("SELECT id FROM employees WHERE employee_id = ?");
+      $stmt->bind_param("s", $id);
+      $stmt->execute();
+      $result = $stmt->get_result();
+    
+      if ($result->num_rows > 0) {
+        $empRow = $result->fetch_assoc();
+        $employeeInternalId = $empRow['id'];
+        
+        // Fetch schedule for recalculation
+        $schedule = getEmployeeSchedule($conn, $employeeInternalId);
+    
+        // Build attendance query with filters
+        $query = "SELECT 
+                        attendance_date, 
+                        time_in, 
+                        time_out, 
+                        scheduled_hours, 
+                        actual_hours, 
+                        late_minutes,
+                        early_departure_minutes,
+                        overtime_minutes,
+                        status 
+                      FROM daily_attendance 
+                      WHERE employee_id = ? AND status != 'visit'";
+    
+        $params = [$employeeInternalId];
+        $types = "i";
+    
+        // Apply filters from GET parameters
+        $filterMonth = $_GET['month'] ?? null;
+        $filterYear = $_GET['year'] ?? null;
+        $startDate = $_GET['start_date'] ?? null;
+        $endDate = $_GET['end_date'] ?? null;
+    
+        if ($startDate && $endDate) {
+          $query .= " AND attendance_date BETWEEN ? AND ?";
+          $params[] = $startDate;
+          $params[] = $endDate;
+          $types .= "ss";
+        } elseif ($filterMonth && $filterYear) {
+          $query .= " AND MONTH(attendance_date) = ? AND YEAR(attendance_date) = ?";
+          $params[] = $filterMonth;
+          $params[] = $filterYear;
+          $types .= "ii";
+        } elseif ($filterYear) {
+          $query .= " AND YEAR(attendance_date) = ?";
+          $params[] = $filterYear;
+          $types .= "i";
+        }
+    
+        $query .= " ORDER BY attendance_date DESC";
+    
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        while ($row = $result->fetch_assoc()) {
+          // Recalculate actual_hours for display consistency
+          if (!empty($row['time_in']) && !empty($row['time_out'])) {
+            $row['actual_hours'] = calculateActualHoursWithClamping(
+                $row['time_in'], 
+                $row['time_out'], 
+                $schedule, 
+                $row['attendance_date']
+            );
+          }
+          $attendanceRecords[] = $row;
+        }
+        $stmt->close();
+      }
     }
-    $stmt->close();
-  }
-}
 ?>
 
 <!DOCTYPE html>

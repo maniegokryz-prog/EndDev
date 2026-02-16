@@ -567,7 +567,8 @@ function renderMobileSchedule(container, schedules) {
 function renderVisualSchedule(container, schedules) {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const timeStart = 7 * 60; // 7:00 AM in minutes
-    const timeEnd = 23 * 60 + 30; // 11:30 PM
+    // Maximum school schedule is 9:00 PM, show up to 9:30 PM so 9:00 PM label appears
+    const timeEnd = 21 * 60 + 30; // 9:30 PM
     const interval = 30; // minutes
     const totalSlots = (timeEnd - timeStart) / interval;
 
@@ -593,6 +594,31 @@ function renderVisualSchedule(container, schedules) {
     schedules.forEach(sched => {
         placeScheduleBlock(container, sched, days, timeStart, interval);
     });
+
+    // Calculate Total Weekly Hours
+    let totalWeeklyMinutes = 0;
+    schedules.forEach(sched => {
+        const start = parseTimeStr(sched.startTime);
+        const end = parseTimeStr(sched.endTime);
+        const duration = end - start;
+        // Check if days is array, just to be safe though expected
+        if (Array.isArray(sched.days)) {
+            totalWeeklyMinutes += duration * sched.days.length;
+        }
+    });
+    const totalWeeklyHours = +(totalWeeklyMinutes / 60).toFixed(2);
+
+    // Append Total Row (spans all columns)
+    const totalRow = document.createElement('div');
+    totalRow.style.gridColumn = '1 / -1';
+    totalRow.style.padding = '15px';
+    totalRow.style.textAlign = 'center';
+    totalRow.style.fontWeight = 'bold';
+    totalRow.style.borderTop = '1px solid #e2e8f0';
+    totalRow.style.marginTop = '10px';
+    totalRow.style.color = '#2d3748';
+    totalRow.innerHTML = `Total Weekly Hours: <span class="text-primary" style="font-size: 1.1em;">${totalWeeklyHours} hrs</span>`;
+    container.appendChild(totalRow);
 }
 
 function placeScheduleBlock(container, schedule, days, gridStartMinutes, interval) {

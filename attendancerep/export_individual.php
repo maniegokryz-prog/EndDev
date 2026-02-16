@@ -36,6 +36,9 @@ $employee = [
 ];
 $stmt->close();
 
+// Fetch employee schedule once
+$schedule = getEmployeeSchedule($conn, $employee['internal_id']);
+
 // Determine date ranges to process
 $periods = [];
 
@@ -91,6 +94,12 @@ foreach ($periods as $key => $period) {
 
     $attendanceMap = [];
     while ($r = $res->fetch_assoc()) {
+        // RECALCULATE ACTUAL HOURS DYNAMICALLY
+        // This ensures the "Last Hour" / Clamping rules apply even to historic data
+        if (!empty($r['time_in']) && !empty($r['time_out'])) {
+            $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date']);
+        }
+
         $d = (int) date('j', strtotime($r['attendance_date']));
         $attendanceMap[$d] = $r;
     }

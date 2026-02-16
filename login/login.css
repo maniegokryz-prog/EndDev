@@ -1,5 +1,6 @@
 /* Reset */
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -48,6 +49,7 @@ body, html {
   .system-title {
     font-size: 42px;
   }
+
   .facial-title {
     font-size: 34px;
   }
@@ -59,12 +61,15 @@ body, html {
     width: 100%;
     padding: 60px 20px;
   }
+
   .login-image {
     width: 55%;
   }
+
   .system-title {
     font-size: 36px;
   }
+
   .facial-title {
     font-size: 30px;
   }
@@ -77,12 +82,15 @@ body, html {
     padding: 50px 15px;
     min-height: auto;
   }
+
   .login-image {
     width: 65%;
   }
+
   .system-title {
     font-size: 28px;
   }
+
   .facial-title {
     font-size: 24px;
   }
@@ -93,9 +101,11 @@ body, html {
   .login-image {
     width: 70%;
   }
+
   .system-title {
     font-size: 22px;
   }
+
   .facial-title {
     font-size: 20px;
   }
@@ -109,14 +119,17 @@ body, html {
 
 .login-box {
   width: 100%;
-  max-width: 600px;        /* increased from 420px → 600px */
-  padding: 70px 60px;      /* increased padding for bigger look */
+  max-width: 600px;
+  /* increased from 420px → 600px */
+  padding: 70px 60px;
+  /* increased padding for bigger look */
   border-radius: 20px;
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
 }
 
 .login-box h2 {
-  font-size: 2.2rem;       /* larger title */
+  font-size: 2.2rem;
+  /* larger title */
 }
 
 .form-control {
@@ -130,7 +143,8 @@ body, html {
 .btn-success {
   background-color: #0b473f;
   border: none;
-   height: 65px;            /* bigger button */
+  height: 65px;
+  /* bigger button */
   border-radius: 8px;
 }
 
@@ -141,16 +155,39 @@ body, html {
 /* Password Toggle Icon */
 .toggle-password {
   position: absolute;
-  top: 40px;
-  right: 10px;
+  top: 50px;
+  /* Manual adjustment for 55px input */
+  right: 15px;
   cursor: pointer;
   color: #6c757d;
+  z-index: 10;
+  line-height: 1;
 }
 
+/* Responsive top adjustments */
+@media (max-width: 992px) {
+  .toggle-password {
+    top: 47px;
+  }
 
-/* small visual tweak so toggle icon doesn't block input text on very small widths */
+  /* 50px input */
+}
+
+@media (max-width: 768px) {
+  .toggle-password {
+    top: 46px;
+  }
+
+  /* 48px input */
+}
+
 @media (max-width: 480px) {
-  .toggle-password { right: 8px; top: 38px; }
+  .toggle-password {
+    top: 44px;
+    right: 12px;
+  }
+
+  /* 44px input */
 }
 
 /* ===========================
@@ -174,24 +211,37 @@ body, html {
     max-width: 45%;
   }
 
-  .system-title { font-size: 36px; }
-  .facial-title { font-size: 28px; }
+  .system-title {
+    font-size: 36px;
+  }
+
+  .facial-title {
+    font-size: 28px;
+  }
 
   .login-box {
     max-width: 520px;
     padding: 50px 40px;
     border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   }
 
-  .form-control { height: 50px; font-size: 18px; }
-  .btn-success  { height: 60px; font-size: 18px; }
+  .form-control {
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .btn-success {
+    height: 60px;
+    font-size: 18px;
+  }
 }
 
 /* ===========================
    RESPONSIVE: Phones
    =========================== */
 @media (max-width: 768px) {
+
   .login-left,
   .login-right {
     padding: 30px 14px;
@@ -202,8 +252,13 @@ body, html {
     max-width: 55%;
   }
 
-  .system-title { font-size: 28px; }
-  .facial-title { font-size: 24px; }
+  .system-title {
+    font-size: 28px;
+  }
+
+  .facial-title {
+    font-size: 24px;
+  }
 
   .login-box {
     width: 100%;
@@ -212,28 +267,63 @@ body, html {
     border-radius: 12px;
   }
 
-  .login-box h4 { font-size: 1.4rem; margin-bottom: 14px; }
-  .form-control { height: 48px; font-size: 16px; }
-  .btn-success  { height: 55px; font-size: 16px; }
+  .login-box h4 {
+    font-size: 1.4rem;
+    margin-bottom: 14px;
+  }
+
+  .form-control {
+    height: 48px;
+    font-size: 16px;
+  }
+
+  .btn-success {
+    height: 55px;
+    font-size: 16px;
+  }
 }
 
 /* ===========================
    RESPONSIVE: Very small phones
    =========================== */
 @media (max-width: 480px) {
-  .login-image { width: 130px; max-width: 60%; }
-  .system-title { font-size: 22px; }
-  .facial-title { font-size: 20px; }
+  .login-image {
+    width: 130px;
+    max-width: 60%;
+  }
 
-  .login-box { padding: 28px 16px; }
-  .login-box h4 { font-size: 1.2rem; }
-  .form-control { height: 44px; font-size: 15px; }
-  .btn-success  { height: 50px; font-size: 15px; }
+  .system-title {
+    font-size: 22px;
+  }
+
+  .facial-title {
+    font-size: 20px;
+  }
+
+  .login-box {
+    padding: 28px 16px;
+  }
+
+  .login-box h4 {
+    font-size: 1.2rem;
+  }
+
+  .form-control {
+    height: 44px;
+    font-size: 15px;
+  }
+
+  .btn-success {
+    height: 50px;
+    font-size: 15px;
+  }
 }
 
 /* ===========================
    Small layout helpers
    =========================== */
-.text-warning { color: #f9b233 !important; } /* preserves your facial-title colour in markup using .text-warning */
+.text-warning {
+  color: #f9b233 !important;
+}
 
-
+/* preserves your facial-title colour in markup using .text-warning */
