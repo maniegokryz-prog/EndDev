@@ -111,8 +111,8 @@
 
         <div id="step3Error" class="alert alert-danger" style="display: none;"></div>
 
-        <input type="password" id="newPassword" class="form-control mb-2" placeholder="New Password (min 6 characters)"
-          required>
+        <input type="password" id="newPassword" class="form-control mb-1" placeholder="New Password" required>
+        <small class="text-muted d-block mb-3">At least 6 chars, must contain a number</small>
         <input type="password" id="confirmPassword" class="form-control mb-3" placeholder="Confirm Password" required>
 
         <div class="d-flex justify-content-between">

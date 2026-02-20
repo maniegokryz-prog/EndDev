@@ -47,6 +47,9 @@ try {
         case 'change_password':
             changePassword();
             break;
+        case 'verify_old_and_update':
+            verifyOldAndUpdate();
+            break;
         default:
             throw new Exception('Invalid action');
     }
@@ -58,6 +61,60 @@ try {
         'error' => $e->getMessage(),
         'debug' => 'File: ' . $e->getFile() . ' Line: ' . $e->getLine()
     ]);
+}
+
+/**
+ * Verify old password and update to new password
+ */
+function verifyOldAndUpdate()
+{
+    global $conn, $loggedInEmployeeId;
+
+    $currentPassword = $_POST['current_password'] ?? '';
+    $newPassword = $_POST['new_password'] ?? '';
+
+    if (empty($currentPassword) || empty($newPassword)) {
+        throw new Exception('All fields are required');
+    }
+
+    if (strlen($newPassword) < 6) {
+        throw new Exception('New password must be at least 6 characters');
+    }
+
+    if (!preg_match('/[0-9]/', $newPassword)) {
+        throw new Exception('New password must contain at least one number');
+    }
+
+    // Get current password hash
+    $stmt = $conn->prepare("SELECT employee_password FROM employees WHERE employee_id = ?");
+    $stmt->bind_param("s", $loggedInEmployeeId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        throw new Exception('User not found');
+    }
+
+    $employee = $result->fetch_assoc();
+    $currentHash = $employee['employee_password'];
+
+    // Verify current password
+    if (!password_verify($currentPassword, $currentHash)) {
+        throw new Exception('Incorrect current password');
+    }
+
+    // Hash new password
+    $newHashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+    // Update password
+    $updateStmt = $conn->prepare("UPDATE employees SET employee_password = ? WHERE employee_id = ?");
+    $updateStmt->bind_param("ss", $newHashedPassword, $loggedInEmployeeId);
+
+    if ($updateStmt->execute()) {
+        echo json_encode(['success' => true]);
+    } else {
+        throw new Exception('Failed to update password');
+    }
 }
 
 /**
@@ -74,7 +131,7 @@ function sendOTP()
     }
 
     // Verify email matches logged-in user
-    $stmt = $conn->prepare("SELECT employee_id, first_name, middle_name, last_name, email FROM employees WHERE employee_id = ? AND email = ? AND status = 'active'");
+    $stmt = $conn->prepare("SELECT employee_id, first_name, middle_name, last_name, email, phone FROM employees WHERE employee_id = ? AND email = ? AND status = 'active'");
     $stmt->bind_param("ss", $loggedInEmployeeId, $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -98,8 +155,15 @@ function sendOTP()
     $deleteStmt->execute();
 
     // Insert new OTP (use NOW() + INTERVAL to avoid timezone issues)
-    $insertStmt = $conn->prepare("INSERT INTO password_reset_otp (employee_id, otp, email, expires_at, verified) VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE), 0)");
-    $insertStmt->bind_param("sss", $loggedInEmployeeId, $otp, $email);
+    $phone = $employee['phone'] ?? '';
+    // Check if contact column exists in schema before binding - handle dynamically or assume fixed schema
+    // Since previous fix added contact column, we assume it's there or ensureOTPTable added it.
+    // However, ensureOTPTable is called AFTER this check in original flow? No, used inside.
+    // Let's rely on standard flow.
+    
+    // We need to be careful with bind_param count vs query string
+    $insertStmt = $conn->prepare("INSERT INTO password_reset_otp (employee_id, otp, email, contact, expires_at, verified) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE), 0)");
+    $insertStmt->bind_param("ssss", $loggedInEmployeeId, $otp, $email, $phone);
 
     if ($insertStmt->execute()) {
         // Send OTP email
@@ -193,6 +257,10 @@ function changePassword()
         throw new Exception('Password must be at least 6 characters');
     }
 
+    if (!preg_match('/[0-9]/', $newPassword)) {
+        throw new Exception('Password must contain at least one number');
+    }
+
     // Verify OTP was verified
     $stmt = $conn->prepare("SELECT * FROM password_reset_otp WHERE employee_id = ? AND verified = 1 AND expires_at > NOW()");
     $stmt->bind_param("s", $loggedInEmployeeId);
@@ -240,6 +308,18 @@ function ensureOTPTable()
     )";
 
     $conn->query($createTableSQL);
+
+    // Check if email column exists (migration for existing tables)
+    $check = $conn->query("SHOW COLUMNS FROM password_reset_otp LIKE 'email'");
+    if ($check && $check->num_rows == 0) {
+        $conn->query("ALTER TABLE password_reset_otp ADD COLUMN email VARCHAR(255) NOT NULL AFTER otp");
+    }
+
+    // Check if contact column exists (migration for existing tables)
+    $check = $conn->query("SHOW COLUMNS FROM password_reset_otp LIKE 'contact'");
+    if ($check && $check->num_rows == 0) {
+        $conn->query("ALTER TABLE password_reset_otp ADD COLUMN contact VARCHAR(255) DEFAULT '' AFTER email");
+    }
 }
 
 /**

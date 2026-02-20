@@ -600,7 +600,16 @@ function renderVisualSchedule(container, schedules) {
     schedules.forEach(sched => {
         const start = parseTimeStr(sched.startTime);
         const end = parseTimeStr(sched.endTime);
-        const duration = end - start;
+        let duration = end - start;
+
+        // Apply configurable break deduction for Admin/Non-Teaching if worked > 5 hours
+        if (window.employeeRole && window.breakDeductionMinutes > 0) {
+            const role = window.employeeRole.toLowerCase();
+            if ((role.includes('admin') || role.includes('non-teaching') || role.includes('non_teaching')) && duration >= 300) {
+                duration = Math.max(0, duration - window.breakDeductionMinutes);
+            }
+        }
+
         // Check if days is array, just to be safe though expected
         if (Array.isArray(sched.days)) {
             totalWeeklyMinutes += duration * sched.days.length;
@@ -1449,11 +1458,10 @@ function initManualAttendance() {
                 if (successModalEl) {
                     const sm = new bootstrap.Modal(successModalEl);
                     sm.show();
+                    successModalEl.addEventListener('hidden.bs.modal', function () {
+                        window.location.reload();
+                    }, { once: true });
                 }
-
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
 
             } else {
                 let errMsg = result.error || 'Unknown error occurred';

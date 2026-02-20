@@ -81,7 +81,7 @@ function getDTRStyles($isExcel = false)
             display: flex;
             justify-content: center;
             gap: 20px;
-            page-break-after: always; /* Ensure each pair takes a page */
+            /* page-break-after: always; Removed to avoid double page breaks with manual PHP breaks */
         }
         
         @media print {
@@ -397,7 +397,7 @@ function getEmployeeSchedule($conn, $employeeInternalId) {
 }
 
 
-function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr) {
+function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '') {
     if (empty($timeInStr) || empty($timeOutStr) || empty($schedule)) {
         return 0;
     }
@@ -486,6 +486,38 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
         }
     }
 
-    return round($totalSeconds / 60, 2);
+    // Apply Break Deduction for Admin and Non-Teaching Personnel
+    // 5 hours = 300 minutes
+    $totalMinutes = $totalSeconds / 60;
+    
+
+
+    // Apply Break Deduction for Admin and Non-Teaching Personnel
+    // Fetch setting from DB (cached static)
+    static $deductionMinutes = null;
+    global $conn; // Ensure connection is available
+
+    if ($deductionMinutes === null) {
+        if (isset($conn)) {
+             $result = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'");
+             if ($result && $row = $result->fetch_assoc()) {
+                 $deductionMinutes = (int)$row['setting_value'];
+             } else {
+                 $deductionMinutes = 60; // Default if not found
+             }
+        } else {
+             $deductionMinutes = 60; // Default fallback
+        }
+    }
+
+    $role = strtolower($employeeRole);
+    if (strpos($role, 'admin') !== false || strpos($role, 'non-teaching') !== false || strpos($role, 'non_teaching') !== false) {
+        // If worked > 5 hours (300 mins), apply deduction
+        if ($totalMinutes >= 300) {
+            $totalMinutes = max(0, $totalMinutes - $deductionMinutes);
+        }
+    }
+
+    return round($totalMinutes, 2);
 }
 

@@ -57,6 +57,44 @@ try {
         exit;
     }
 
+    if ($action === 'get_break_settings') {
+        $sql = "SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'";
+        $result = $conn->query($sql);
+        
+        $minutes = 60; // Default
+        if ($result && $row = $result->fetch_assoc()) {
+            $minutes = (int)$row['setting_value'];
+        }
+        
+        echo json_encode(['success' => true, 'break_deduction_minutes' => $minutes]);
+        exit;
+    }
+
+    if ($action === 'update_break_settings') {
+        if (!isset($_SESSION['is_system_admin']) || $_SESSION['is_system_admin'] !== true) {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized. System Admin privileges required.']);
+            exit;
+        }
+
+        $minutes = $_POST['break_deduction_minutes'] ?? 60;
+        $minutes = (int)$minutes;
+        if ($minutes < 0) {
+            $minutes = 0; // Ensure non-negative
+        }
+        
+        // Use ON DUPLICATE KEY UPDATE logic if key might not exist?
+        // But init script handled it. Let's stick to update, or better: INSERT ... ON DUPLICATE
+        $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('break_deduction_minutes', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+        $stmt->bind_param("s", $minutes);
+        
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true, 'message' => 'Break settings updated']);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Update failed: ' . $conn->error]);
+        }
+        exit;
+    }
+
     echo json_encode(['success' => false, 'error' => 'Invalid action']);
 
 } catch (Exception $e) {

@@ -13,13 +13,132 @@ if (employeeArchiveBtn) {
 //changepass - OTP-based Password Change Flow
 let changeEmployeeIdGlobal = '';
 
-// Open modal when "Change Password" card is clicked
+// Open SELECTION MODAL when "Change Password" card is clicked
 document.getElementById("changePassword").addEventListener("click", () => {
+  const modal = new bootstrap.Modal(document.getElementById("changePasswordSelectionModal"));
+  modal.show();
+});
+
+// Handle "Via Email OTP" button click
+document.getElementById("btnSelectOTP").addEventListener("click", () => {
+  // Hide selection modal
+  bootstrap.Modal.getInstance(document.getElementById("changePasswordSelectionModal")).hide();
+  // Show OTP Step 1 modal
   const modal = new bootstrap.Modal(document.getElementById("changePasswordModal"));
   modal.show();
 });
 
-// Step 1: Send OTP to Email
+// Handle "Via Current Password" button click
+document.getElementById("btnSelectCurrent").addEventListener("click", () => {
+  // Hide selection modal
+  bootstrap.Modal.getInstance(document.getElementById("changePasswordSelectionModal")).hide();
+  // Show Current Password Change modal
+  const modal = new bootstrap.Modal(document.getElementById("changePasswordViaCurrentModal"));
+  modal.show();
+});
+
+// Toggle Password Visibility Helpers (for new modal)
+function setupToggle(inputId, toggleId) {
+  const toggleBtn = document.getElementById(toggleId);
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function () {
+      const input = document.getElementById(inputId);
+      const icon = this.querySelector('i');
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+      }
+    });
+  }
+}
+setupToggle('currentPasswordInput', 'toggleCurrentPassword');
+setupToggle('newPasswordInput', 'toggleNewPassword');
+setupToggle('confirmNewPasswordInput', 'toggleConfirmNewPassword');
+
+
+// Handle "Change Password" submit via Current Password
+document.getElementById("btnSubmitCurrentPassChange").addEventListener("click", async function () {
+  const currentPassword = document.getElementById('currentPasswordInput').value;
+  const newPassword = document.getElementById('newPasswordInput').value;
+  const confirmPassword = document.getElementById('confirmNewPasswordInput').value;
+  const errorDiv = document.getElementById('currentPassError');
+
+  // Basic Validation
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    errorDiv.textContent = 'Please fill in all fields';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    errorDiv.textContent = 'New passwords do not match';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    errorDiv.textContent = 'New password must be at least 6 characters';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (!/\d/.test(newPassword)) {
+    errorDiv.textContent = 'New password must contain at least one number';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  errorDiv.style.display = 'none';
+  const btn = this;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Verifying...';
+
+  try {
+    const formData = new FormData();
+    formData.append('current_password', currentPassword);
+    formData.append('new_password', newPassword);
+
+    // We reuse the change_password.php process but with specific action
+    const response = await fetch('processes/change_password.php?action=verify_old_and_update', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Close modal
+      bootstrap.Modal.getInstance(document.getElementById("changePasswordViaCurrentModal")).hide();
+
+      // Show Success Modal
+      new bootstrap.Modal(document.getElementById("changePasswordSuccess")).show();
+
+      // Clear fields
+      document.getElementById('currentPasswordInput').value = '';
+      document.getElementById('newPasswordInput').value = '';
+      document.getElementById('confirmNewPasswordInput').value = '';
+    } else {
+      errorDiv.textContent = result.error || 'Password update failed';
+      errorDiv.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Update password error:', error);
+    errorDiv.textContent = 'An error occurred. Please try again.';
+    errorDiv.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = originalText;
+});
+
+
+// Step 1: Send OTP to Email (Existing Flow)
 document.getElementById("changeToStep2").onclick = async function () {
   const email = document.getElementById('changeEmail').value.trim();
   const errorDiv = document.getElementById('changeStep1Error');
@@ -142,6 +261,12 @@ document.getElementById("changeFinalStep").onclick = async function () {
 
   if (newPassword.length < 6) {
     errorDiv.textContent = 'Password must be at least 6 characters';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (!/\d/.test(newPassword)) {
+    errorDiv.textContent = 'Password must contain at least one number';
     errorDiv.style.display = 'block';
     return;
   }

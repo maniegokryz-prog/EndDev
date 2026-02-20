@@ -6,6 +6,15 @@ require '../db_connection.php';
 
 // Get current user info
 $currentUser = getCurrentUser();
+
+// Check for status messages from redirect
+$updateStatus = $_GET['status'] ?? '';
+$updateTimestamp = $_GET['t'] ?? '';
+$updateError = $_SESSION['update_error'] ?? '';
+// Clear the error from session after reading it
+if (isset($_SESSION['update_error'])) {
+    unset($_SESSION['update_error']);
+}
 $isAdmin = isset($currentUser['role']) && $currentUser['role'] === 'admin';
 
 // CONFIGURATION: Set to true when deploying to IONOS server to disable editing
@@ -1232,69 +1241,80 @@ $profilePhoto .= '?v=' . microtime(true);
 
 
     <!-- HELPER MODALS FOR EDIT SCHEDULE (Moved to end for z-index stacking) -->
-    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
                 <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
                 <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
                 <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-warning">Required Fields</h5>
                 <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for
                     schedules!</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
                 <p id="scheduleAddedSuccessMsg">Your schedule has been added.</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
                 <p id="scheduleUpdatedSuccessMsg">Your schedule has been updated.</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-warning">Confirm Clear All</h5>
@@ -1307,8 +1327,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
@@ -1321,32 +1340,38 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
                 <p id="scheduleClearedSuccessMsg">All schedules have been cleared!</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 10000 !important;" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
                 <p id="scheduleSavedSuccessMsg">Schedule updated successfully!</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true" style="z-index: 10000 !important;"
-        data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
                 <p id="scheduleNoDataMsg">No schedules to clear!</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-info text-white" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1357,6 +1382,15 @@ $profilePhoto .= '?v=' . microtime(true);
         window.employeeIdEncoded = '<?php echo htmlspecialchars($employee['employee_id']); ?>';
         window.employeeInternalId = <?php echo $employee['id']; ?>;
         window.isAdmin = <?php echo $isAdmin ? 'true' : 'false'; ?>;
+        window.employeeRole = <?php echo json_encode($employee['roles']); ?>;
+        <?php
+        $breakDedVal = 60; 
+        if (isset($conn)) {
+             $bdRes = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'");
+             if ($bdRes && $bdRow = $bdRes->fetch_assoc()) $breakDedVal = (int)$bdRow['setting_value'];
+        }
+        ?>
+        window.breakDeductionMinutes = <?php echo $breakDedVal; ?>;
         window.schedulesData = <?php echo json_encode($processedSchedules); ?>;
     </script>
 
@@ -1465,7 +1499,7 @@ $profilePhoto .= '?v=' . microtime(true);
     ?>
 
     <!-- ========================= SCRIPTS ========================= -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="../assets/js/edit_employee.js?v=<?php echo time(); ?>"></script>
     <script>
         // Global variables required by logic scripts
@@ -1603,6 +1637,55 @@ $profilePhoto .= '?v=' . microtime(true);
         // Initialize state (optional)
         document.addEventListener('DOMContentLoaded', function () {
             // No auto-run needed, click event handles it.
+
+            // Fix for stacked modals: When Delete/Helper Confirmation closes, ensure Edit Schedule modal keeps scrolling/focus
+            const scheduleHelperModals = [
+                'scheduleDeleteConfirmModal',
+                'scheduleNoWorkDayModal',
+                'scheduleMissingTimeModal',
+                'scheduleInvalidTimeModal',
+                'scheduleFacultyMissingModal',
+                'scheduleAddedSuccessModal',
+                'scheduleUpdatedSuccessModal',
+                'scheduleClearConfirmModal',
+                'scheduleClearedSuccessModal',
+                'scheduleSavedSuccessModal',
+                'scheduleNoDataModal'
+            ];
+
+            scheduleHelperModals.forEach(modalId => {
+                const modalEl = document.getElementById(modalId);
+                if (modalEl) {
+                    // 1. When helper modal ID hides, check if #editScheduleModal is open -> restore scrolling
+                    modalEl.addEventListener('hidden.bs.modal', function () {
+                        const editScheduleModal = document.getElementById('editScheduleModal');
+                        if (editScheduleModal && editScheduleModal.classList.contains('show')) {
+                            document.body.classList.add('modal-open');
+                            if (!document.querySelector('.modal-backdrop')) {
+                                const backdrop = document.createElement('div');
+                                backdrop.className = 'modal-backdrop fade show';
+                                document.body.appendChild(backdrop);
+                            }
+                        }
+                    });
+
+                    // 2. When helper modal shows, force it ABOVE the edit modal (z-index 2000 from css)
+                    modalEl.addEventListener('show.bs.modal', function () {
+                        // Set modal higher with !important to override staff.css
+                        this.style.setProperty('z-index', '2050', 'important');
+                        
+                        // Wait for backdrop to be inserted, then elevate it
+                        setTimeout(() => {
+                            const backdrops = document.querySelectorAll('.modal-backdrop');
+                            if (backdrops.length > 0) {
+                                // The new backdrop is usually the last one
+                                const lastBackdrop = backdrops[backdrops.length - 1];
+                                lastBackdrop.style.setProperty('z-index', '2040', 'important');
+                            }
+                        }, 0);
+                    });
+                }
+            });
         });
     </script>
     <style>
@@ -1662,4 +1745,29 @@ $profilePhoto .= '?v=' . microtime(true);
     </style>
 </body>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for update success
+            const updateStatus = '<?php echo $updateStatus; ?>';
+            if (updateStatus === 'updated') {
+                const successModal = new bootstrap.Modal(document.getElementById('saveSuccessModal'));
+                successModal.show();
+                // Clean up URL without reloading
+                const url = new URL(window.location);
+                url.searchParams.delete('status');
+                url.searchParams.delete('t');
+                window.history.replaceState({}, '', url);
+            }
+
+            // Check for update error
+            const updateError = <?php echo json_encode($updateError); ?>;
+            if (updateError) {
+                const errorModalVal = new bootstrap.Modal(document.getElementById('errorRemoveModal'));
+                const msgEl = document.getElementById('errorRemoveMessage');
+                if (msgEl) msgEl.textContent = updateError;
+                // Update title to be generic if needed, but "Failed" works
+                errorModalVal.show();
+            }
+        });
+    </script>
 </html>

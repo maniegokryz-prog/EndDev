@@ -72,10 +72,23 @@ try {
 
     // Sort
     if ($filter === 'pending_face' || $filter === 'pending_schedule') {
-        $sql .= " ORDER BY e.id DESC LIMIT 50";
+        $sql .= " ORDER BY e.id DESC";
     } else {
         $sql .= " ORDER BY e.last_name, e.first_name";
     }
+
+    // Pagination
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 15;
+    $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
+    
+    // Validate limit/offset
+    if ($limit <= 0) $limit = 15;
+    if ($offset < 0) $offset = 0;
+
+    $sql .= " LIMIT ? OFFSET ?";
+    $params[] = $limit;
+    $params[] = $offset;
+    $types .= 'ii';
 
     // Execute
     if (!empty($params)) {

@@ -354,6 +354,13 @@ $roles = $viewer->getDistinctRoles();
             </tbody>
           </table>
         </div>
+        
+        <!-- Load More Container -->
+        <div id="loadMoreContainer" class="text-center mt-3 d-none">
+          <button id="loadMoreBtn" class="btn btn-outline-primary px-4">
+            See More <i class="bi bi-chevron-down ms-1"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>

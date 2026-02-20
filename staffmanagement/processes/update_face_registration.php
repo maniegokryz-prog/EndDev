@@ -63,34 +63,10 @@ class FaceRegistrationUpdater
             $lastName = $employee['last_name'];
             $internalId = $employee['id'];
 
-            // Process photos and get the path of the first one (for profile picture)
-            $newProfilePhotoPath = $this->processFacePhotos($this->validatedData['employee_id_string'], $firstName, $lastName);
-
-            // Update profile photo in DB if we got a photo
-            if ($newProfilePhotoPath) {
-                // Update local DB
-                $stmt = $this->db->prepare("UPDATE employees SET profile_photo = ? WHERE id = ?");
-                $stmt->bind_param('si', $newProfilePhotoPath, $internalId);
-                $stmt->execute();
-
-                $this->logActivity('Profile photo updated', "Employee: {$this->validatedData['employee_id_string']}, Path: $newProfilePhotoPath");
-
-                // Sync to Cloud
-                // ensure syncToCloudWithLookup is available (it is in db_cloud_sync.php)
-                if (function_exists('syncToCloudWithLookup')) {
-                    syncToCloudWithLookup('employees', [
-                        'employee_id_string' => $this->validatedData['employee_id_string'],
-                        'profile_photo' => $newProfilePhotoPath,
-                        '_lookup_key' => 'employee_id', // Assuming helper uses this or hardcoded logic
-                        '_lookup_value' => $this->validatedData['employee_id_string']
-                    ]);
-                } else {
-                    // Fallback if syncToCloudWithLookup isn't flexible, use syncToCloud with manual condition
-                    syncToCloud('employees', [
-                        'profile_photo' => $newProfilePhotoPath
-                    ], 'update', "employee_id = '" . $this->db->real_escape_string($this->validatedData['employee_id_string']) . "'");
-                }
-            }
+            // Process photos and get the path of the first one (we just need them saved for embeddings)
+            $this->processFacePhotos($this->validatedData['employee_id_string'], $firstName, $lastName);
+            
+            // Logic to update profile_photo has been removed to keep the default/existing picture.
 
             $this->db->commit();
 

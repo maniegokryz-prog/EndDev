@@ -97,7 +97,7 @@ foreach ($periods as $key => $period) {
         // RECALCULATE ACTUAL HOURS DYNAMICALLY
         // This ensures the "Last Hour" / Clamping rules apply even to historic data
         if (!empty($r['time_in']) && !empty($r['time_out'])) {
-            $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date']);
+            $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role']);
         }
 
         $d = (int) date('j', strtotime($r['attendance_date']));
@@ -141,25 +141,20 @@ function exportToPDF($employee, $renderData)
             <br><small>Use Scale in Print Settings if needed.</small>
           </div>';
 
-    // Process in chunks of 2 for side-by-side layout
-    $chunks = array_chunk($renderData, 2);
+    // Process each month individually
     $isFirstPage = true;
 
-    foreach ($chunks as $chunk) {
-        if (!$isFirstPage)
+    foreach ($renderData as $monthData) {
+        if (!$isFirstPage) {
             echo '<div class="page-break"></div>';
-
-        if (count($chunk) === 2) {
-            echo '<div class="dtr-side-by-side">';
-            renderDTRForm($employee, $chunk[0], false);
-            renderDTRForm($employee, $chunk[1], false);
-            echo '</div>';
-        } else {
-            // Single DTR (center it or just render)
-            // If it's just one, we can still use the wrapper to keep styling consistent if desired, 
-            // or just render it. Let's just render standard.
-            renderDTRForm($employee, $chunk[0], false);
         }
+
+        echo '<div class="dtr-side-by-side">';
+        // Render 2 copies of the SAME month
+        renderDTRForm($employee, $monthData, false);
+        renderDTRForm($employee, $monthData, false);
+        echo '</div>';
+        
         $isFirstPage = false;
     }
 

@@ -123,7 +123,8 @@ require_once '../navigation.php';
                 $row['time_in'], 
                 $row['time_out'], 
                 $schedule, 
-                $row['attendance_date']
+                $row['attendance_date'],
+                $employee['role']
             );
           }
           $attendanceRecords[] = $row;

@@ -779,6 +779,8 @@ class AttendanceLogger:
                              elif ot_diff < 0:
                                  early_departure_minutes = int(abs(ot_diff))
                                  print(f"     ⚠️  Undertime detected: {early_departure_minutes} minutes")
+                        
+
 
                     except Exception as e:
                         print(f"     ❌ Error calculating actual_hours: {e}")
@@ -1039,7 +1041,7 @@ class AttendanceLogger:
             
             cursor.execute("""
                 SELECT id, employee_id, first_name, middle_name, last_name,
-                       email, phone, department, position, status
+                       email, phone, department, position, status, roles
                 FROM employees
                 WHERE id = ?
             """, (db_id,))
@@ -1059,7 +1061,8 @@ class AttendanceLogger:
                     'phone': row[6],
                     'department': row[7],
                     'position': row[8],
-                    'status': row[9]
+                    'status': row[9],
+                    'role': row[10]
                 }
             return None
             

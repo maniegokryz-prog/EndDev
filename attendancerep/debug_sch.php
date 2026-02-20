@@ -7,7 +7,7 @@ $employeeId = $_GET['id'] ?? '121212'; // Default to Lord D Castro
 echo "<h1>Debug Schedule for Employee ID: $employeeId</h1>";
 
 // Get Internal ID
-$stmt = $conn->prepare("SELECT id, first_name, last_name FROM employees WHERE employee_id = ?");
+$stmt = $conn->prepare("SELECT id, first_name, last_name, roles FROM employees WHERE employee_id = ?");
 $stmt->bind_param("s", $employeeId);
 $stmt->execute();
 $res = $stmt->get_result();
@@ -37,7 +37,7 @@ if ($row = $res->fetch_assoc()) {
         $tIn = '08:00:00';
         $tOut = '15:00:00'; // 3:00 PM
         echo "Test Calc: In $tIn, Out $tOut<br>";
-        $hours = calculateActualHoursWithClamping($tIn, $tOut, $schedule, $date);
+        $hours = calculateActualHoursWithClamping($tIn, $tOut, $schedule, $date, $row['roles']);
         echo "Calculated Hours: $hours (Expected 3.5 if clamped to 3.5h schedule)<br>";
     } else {
         echo "Schedule NOT FOUND for Monday.<br>";

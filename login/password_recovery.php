@@ -61,7 +61,7 @@ function verifyAccount($conn)
     }
 
     // Check if user exists with matching employee_id AND email
-    $sql = "SELECT id, employee_id, email, first_name, last_name 
+    $sql = "SELECT id, employee_id, email, first_name, last_name, phone 
             FROM employees 
             WHERE employee_id = ? AND email = ? AND status = 'active'";
 
@@ -89,10 +89,11 @@ function verifyAccount($conn)
     $stmt->execute();
 
     // Insert new OTP (use NOW() + INTERVAL to avoid timezone issues)
-    $sql = "INSERT INTO password_reset_otp (employee_id, otp, email, expires_at) 
-            VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))";
+    $phone = $user['phone'] ?? '';
+    $sql = "INSERT INTO password_reset_otp (employee_id, otp, email, contact, expires_at) 
+            VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $employee_id, $otp, $email);
+    $stmt->bind_param("ssss", $employee_id, $otp, $email, $phone);
     $stmt->execute();
 
     // Send OTP via email
@@ -176,6 +177,10 @@ function resetPassword($conn)
         throw new Exception('Password must be at least 6 characters long');
     }
 
+    if (!preg_match('/[0-9]/', $new_password)) {
+        throw new Exception('Password must contain at least one number');
+    }
+
     // Check if OTP was verified
     $sql = "SELECT id FROM password_reset_otp 
             WHERE employee_id = ? AND verified = 1 
@@ -229,6 +234,18 @@ function ensureOTPTable($conn)
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )";
     $conn->query($sql);
+
+    // Check if email column exists (migration for existing tables)
+    $check = $conn->query("SHOW COLUMNS FROM password_reset_otp LIKE 'email'");
+    if ($check && $check->num_rows == 0) {
+        $conn->query("ALTER TABLE password_reset_otp ADD COLUMN email VARCHAR(255) NOT NULL AFTER otp");
+    }
+
+    // Check if contact column exists (migration for existing tables)
+    $check = $conn->query("SHOW COLUMNS FROM password_reset_otp LIKE 'contact'");
+    if ($check && $check->num_rows == 0) {
+        $conn->query("ALTER TABLE password_reset_otp ADD COLUMN contact VARCHAR(255) DEFAULT '' AFTER email");
+    }
 }
 
 /**

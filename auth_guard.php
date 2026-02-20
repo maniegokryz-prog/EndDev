@@ -33,6 +33,11 @@ function isAdmin() {
     return isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
 }
 
+// Function to check if user is system admin (from admin_users table)
+function isSystemAdmin() {
+    return isset($_SESSION['is_system_admin']) && $_SESSION['is_system_admin'] === true;
+}
+
 // Function to require admin access
 function requireAdmin() {
     if (!isAdmin()) {
