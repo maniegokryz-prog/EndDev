@@ -49,13 +49,18 @@ try {
     error_log("Error fetching departments: " . $e->getMessage());
 }
 
+$ignore_list = ['work shift', 'work_shift', 'n/a', 'na', 'tba', 'tbd', 'none'];
+
 // Get existing classes
 $existing_classes = [];
 try {
     $result = $conn->query("SELECT DISTINCT designate_class FROM employee_assignments WHERE designate_class IS NOT NULL AND designate_class != '' ORDER BY designate_class");
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $existing_classes[] = $row['designate_class'];
+            $val = trim($row['designate_class']);
+            if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                $existing_classes[] = $val;
+            }
         }
     }
 } catch (Exception $e) {
@@ -68,7 +73,10 @@ try {
     $result = $conn->query("SELECT DISTINCT subject_code FROM employee_assignments WHERE subject_code IS NOT NULL AND subject_code != '' ORDER BY subject_code");
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $existing_subjects[] = $row['subject_code'];
+            $val = trim($row['subject_code']);
+            if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                $existing_subjects[] = $val;
+            }
         }
     }
 } catch (Exception $e) {
@@ -81,7 +89,10 @@ try {
     $result = $conn->query("SELECT DISTINCT room_num FROM employee_assignments WHERE room_num IS NOT NULL AND room_num != '' ORDER BY room_num");
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $existing_rooms[] = $row['room_num'];
+            $val = trim($row['room_num']);
+            if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                $existing_rooms[] = $val;
+            }
         }
     }
 } catch (Exception $e) {

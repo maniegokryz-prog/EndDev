@@ -654,27 +654,21 @@ document.addEventListener('DOMContentLoaded', function () {
         new CustomDropdown(departmentInput, departmentOptions);
     }
     if (classInput) {
-        const classOptions = [
-            // ...existing code...
-        ];
+        const classOptions = window.existingClasses || [];
         const classDropdown = new CustomDropdown(classInput, classOptions);
         classInput.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
     }
     if (subjectInput) {
-        const subjectOptions = [
-            // ...existing code...
-        ];
+        const subjectOptions = window.existingSubjects || [];
         const subjectDropdown = new CustomDropdown(subjectInput, subjectOptions);
         subjectInput.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
     }
     if (roomInput) {
-        const roomOptions = [
-            // ...existing code...
-        ];
+        const roomOptions = window.existingRooms || [];
         const roomDropdown = new CustomDropdown(roomInput, roomOptions);
         roomInput.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
@@ -1228,6 +1222,8 @@ function renderScheduleBlock(schedule, scheduleIndex) {
 
                     // Enable edit button, disable add button temporarily
                     document.getElementById('edit-schedule-btn').disabled = false;
+                    const addBtn = document.getElementById('add-schedule-btn');
+                    if (addBtn) addBtn.disabled = true;
 
                     // Scroll to form
                     const scheduleSection = document.querySelector('.schedule-section');
@@ -1614,6 +1610,8 @@ function clearScheduleForm() {
     // Reset editing state
     editCurrentlyEditingIndex = null;
     document.getElementById('edit-schedule-btn').disabled = true;
+    const addBtn = document.getElementById('add-schedule-btn');
+    if (addBtn) addBtn.disabled = false;
 
     console.log('Schedule form cleared');
 }

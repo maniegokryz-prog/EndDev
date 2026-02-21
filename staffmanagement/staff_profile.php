@@ -1191,7 +1191,8 @@ $profilePhoto .= '?v=' . microtime(true);
 
                             <div class="form-row">
                                 <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
-                                    <button type="button" class="add-schedule-btn" onclick="addSchedule()">Add
+                                    <button type="button" id="add-schedule-btn" class="add-schedule-btn"
+                                        onclick="addSchedule()">Add
                                         Schedule</button>
                                     <button type="button" id="edit-schedule-btn" class="edit-schedule-btn"
                                         onclick="editSchedule()" disabled>Update Selected Schedule</button>
@@ -1497,6 +1498,53 @@ $profilePhoto .= '?v=' . microtime(true);
         $existingSchedules = array_values($scheduleMap);
         $stmt->close();
     }
+
+    // Fetch unique classes, subjects, and rooms for the dropdowns
+    $existing_classes = [];
+    $existing_subjects = [];
+    $existing_rooms = [];
+
+    $ignore_list = ['work shift', 'work_shift', 'n/a', 'na', 'tba', 'tbd', 'none'];
+
+    try {
+        $res = $conn->query("SELECT DISTINCT designate_class FROM employee_assignments WHERE designate_class IS NOT NULL AND designate_class != '' ORDER BY designate_class");
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $val = trim($row['designate_class']);
+                if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                    $existing_classes[] = $val;
+                }
+            }
+        }
+    } catch (Exception $e) {
+    }
+
+    try {
+        $res = $conn->query("SELECT DISTINCT subject_code FROM employee_assignments WHERE subject_code IS NOT NULL AND subject_code != '' ORDER BY subject_code");
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $val = trim($row['subject_code']);
+                if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                    $existing_subjects[] = $val;
+                }
+            }
+        }
+    } catch (Exception $e) {
+    }
+
+    try {
+        $res = $conn->query("SELECT DISTINCT room_num FROM employee_assignments WHERE room_num IS NOT NULL AND room_num != '' ORDER BY room_num");
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $val = trim($row['room_num']);
+                if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                    $existing_rooms[] = $val;
+                }
+            }
+        }
+    } catch (Exception $e) {
+    }
+
     ?>
 
     <!-- ========================= SCRIPTS ========================= -->
@@ -1511,6 +1559,11 @@ $profilePhoto .= '?v=' . microtime(true);
 
         // Schedule Data for Edit Modal
         window.existingSchedules = <?php echo json_encode($existingSchedules); ?>;
+
+        // Options for User Dropdowns
+        window.existingClasses = <?php echo json_encode($existing_classes); ?>;
+        window.existingSubjects = <?php echo json_encode($existing_subjects); ?>;
+        window.existingRooms = <?php echo json_encode($existing_rooms); ?>;
 
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize the edit schedule modal calendar when modal is shown
