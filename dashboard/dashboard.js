@@ -394,9 +394,11 @@ async function loadAttendanceFeed(date = null) {
       const tooltipText = `${record.formatted_date} at ${record.formatted_time}\n${record.detailed_time_ago}`;
 
       item.innerHTML = `
-        <img src="${record.profile_photo}" alt="${record.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
+        <a href="../staffmanagement/staff_profile.php?id=${encodeURIComponent(record.employee_code)}">
+          <img src="${record.profile_photo}" alt="${record.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
+        </a>
         <div class="feed-info">
-          <h6>${record.full_name} <span class="badge ${badgeClass} ms-1" style="${badgeStyle}">${badgeText}</span></h6>
+          <h6><a href="../staffmanagement/staff_profile.php?id=${encodeURIComponent(record.employee_code)}" class="text-decoration-none text-dark">${record.full_name}</a> <span class="badge ${badgeClass} ms-1" style="${badgeStyle}">${badgeText}</span></h6>
           <small class="${statusClass}">${record.formatted_time}</small>
         </div>
         <small class="text-muted time-ago-badge" 
@@ -473,20 +475,28 @@ async function loadLateToday(date = null) {
     container.innerHTML = '';
 
     if (lateEmployees.length === 0) {
-      container.innerHTML = '<div class="text-center text-muted py-3">No late employees today</div>';
+      container.innerHTML = '<div class="text-center text-muted my-auto w-100 py-4"><i class="bi bi-check2-circle fs-1 text-success d-block mb-2"></i>No late employees today</div>';
       return;
     }
 
     // Populate late employees using the same template structure
     lateEmployees.forEach(employee => {
       const item = document.createElement("div");
-      item.classList.add("d-flex", "align-items-center", "border-bottom", "py-2");
+      item.classList.add("d-flex", "align-items-center", "justify-content-between", "border-bottom", "py-2", "w-100");
 
       item.innerHTML = `
-        <img src="${employee.profile_photo}" class="profile-img me-3" alt="${employee.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
-        <div>
-          <h6 class="mb-0">${employee.full_name}</h6>
-          <small>${employee.position} - ${employee.time_in} (${employee.late_display})</small>
+        <div class="d-flex align-items-center">
+          <a href="../staffmanagement/staff_profile.php?id=${encodeURIComponent(employee.employee_code)}">
+            <img src="${employee.profile_photo}" class="profile-img me-3" alt="${employee.full_name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e0e0e0;" onerror="this.src='../assets/profile_pic/user.png'">
+          </a>
+          <div class="text-start">
+            <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;"><a href="../staffmanagement/staff_profile.php?id=${encodeURIComponent(employee.employee_code)}" class="text-decoration-none" style="color: #103932;">${employee.full_name}</a></h6>
+            <small class="text-muted" style="font-size: 0.8rem;">${employee.position}</small>
+          </div>
+        </div>
+        <div class="text-end" style="min-width: 80px;">
+          <span class="badge text-dark mb-1" style="font-size: 0.75rem; background-color: #CBA135;">${employee.time_in}</span><br>
+          <small class="text-danger fw-bold" style="font-size: 0.75rem;"><i class="bi bi-exclamation-triangle-fill me-1"></i>${employee.late_display}</small>
         </div>
       `;
 
@@ -521,20 +531,27 @@ async function loadOnLeave(date = null) {
     container.innerHTML = '';
 
     if (onLeaveEmployees.length === 0) {
-      container.innerHTML = '<div class="text-center text-muted on-leave-empty">No employees on leave today</div>';
+      container.innerHTML = '<div class="text-center text-muted on-leave-empty my-auto w-100 py-4"><i class="bi bi-info-circle fs-1 text-secondary d-block mb-2"></i>No employees on leave today</div>';
       return;
     }
 
     // Populate on leave employees using the same template structure
     onLeaveEmployees.forEach(employee => {
       const item = document.createElement("div");
-      item.classList.add("d-flex", "align-items-center", "border-bottom", "py-2");
+      item.classList.add("d-flex", "align-items-center", "justify-content-between", "border-bottom", "py-2", "w-100");
 
       item.innerHTML = `
-        <img src="${employee.profile_photo}" class="profile-img me-3" alt="${employee.full_name}" onerror="this.src='../assets/profile_pic/user.png'">
-        <div>
-          <h6 class="mb-0">${employee.full_name}</h6>
-          <small>${employee.position} - ${employee.date_range}</small>
+        <div class="d-flex align-items-center">
+          <a href="../staffmanagement/staff_profile.php?id=${encodeURIComponent(employee.employee_code)}">
+            <img src="${employee.profile_photo}" class="profile-img me-3" alt="${employee.full_name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e0e0e0;" onerror="this.src='../assets/profile_pic/user.png'">
+          </a>
+          <div class="text-start">
+            <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;"><a href="../staffmanagement/staff_profile.php?id=${encodeURIComponent(employee.employee_code)}" class="text-decoration-none" style="color: #103932;">${employee.full_name}</a></h6>
+            <small class="text-muted" style="font-size: 0.8rem;">${employee.position}</small>
+          </div>
+        </div>
+        <div class="text-end">
+          <span class="badge mt-1" style="font-size: 0.75rem; background-color: #103932; color: #ffffff;"><i class="bi bi-calendar-event me-1"></i>${employee.date_range}</span>
         </div>
       `;
 

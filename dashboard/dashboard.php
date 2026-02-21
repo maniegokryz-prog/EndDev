@@ -317,22 +317,27 @@ $currentUser = getCurrentUser();
 
 
         <div class="col-md-6 col-12 mb-3">
-          <div
-            class="card p-4 shadow-sm h-100 d-flex flex-column justify-content-center align-items-center text-center late-card"
-            style="min-height: 200px;">
-            <h3 class="fw-bold mb-3" style="font-size: 1rem;">Late Today</h3>
-            <div class="late-list w-100 d-flex flex-column justify-content-center align-items-center">
+          <div class="card p-4 shadow-sm h-100 d-flex flex-column text-start late-card"
+            style="min-height: 200px; justify-content: flex-start; align-items: stretch;">
+            <div class="d-flex align-items-center mb-3 border-bottom pb-2">
+              <i class="bi bi-clock-history fs-4 me-2" style="color: #CBA135;"></i>
+              <h3 class="fw-bold mb-0" style="font-size: 1.1rem; color: #103932;">Late Today</h3>
+            </div>
+            <div class="late-list w-100 d-flex flex-column flex-grow-1" style="overflow-y: auto; max-height: 300px;">
               <!-- JavaScript will populate this dynamically -->
             </div>
           </div>
         </div>
 
         <div class="col-md-6 col-12 mb-3">
-          <div
-            class="card p-4 shadow-sm h-100 d-flex flex-column justify-content-center align-items-center text-center on-leave-card"
-            style="min-height: 200px;">
-            <h3 class="fw-bold mb-3" style="font-size: 1rem;">On Leave</h3>
-            <div class="on-leave-list w-100 d-flex flex-column justify-content-center align-items-center">
+          <div class="card p-4 shadow-sm h-100 d-flex flex-column text-start on-leave-card"
+            style="min-height: 200px; justify-content: flex-start; align-items: stretch;">
+            <div class="d-flex align-items-center mb-3 border-bottom pb-2">
+              <i class="bi bi-calendar2-x fs-4 me-2" style="color: #103932;"></i>
+              <h3 class="fw-bold mb-0" style="font-size: 1.1rem; color: #103932;">On Leave</h3>
+            </div>
+            <div class="on-leave-list w-100 d-flex flex-column flex-grow-1"
+              style="overflow-y: auto; max-height: 300px;">
               <!-- JavaScript will populate this dynamically -->
             </div>
           </div>
