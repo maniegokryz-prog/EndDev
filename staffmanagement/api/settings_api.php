@@ -26,12 +26,12 @@ try {
     if ($action === 'get_leave_settings') {
         $sql = "SELECT setting_value FROM system_settings WHERE setting_key = 'leave_notice_period_days'";
         $result = $conn->query($sql);
-        
+
         $days = 0;
         if ($result && $row = $result->fetch_assoc()) {
-            $days = (int)$row['setting_value'];
+            $days = (int) $row['setting_value'];
         }
-        
+
         echo json_encode(['success' => true, 'notice_period_days' => $days]);
         exit;
     }
@@ -43,12 +43,13 @@ try {
         }
 
         $days = $_POST['notice_period_days'] ?? 0;
-        $days = (int)$days;
-        if ($days < 0) $days = 0;
-        
+        $days = (int) $days;
+        if ($days < 0)
+            $days = 0;
+
         $stmt = $conn->prepare("UPDATE system_settings SET setting_value = ? WHERE setting_key = 'leave_notice_period_days'");
         $stmt->bind_param("s", $days);
-        
+
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'Settings updated']);
         } else {
@@ -60,35 +61,71 @@ try {
     if ($action === 'get_break_settings') {
         $sql = "SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'";
         $result = $conn->query($sql);
-        
+
         $minutes = 60; // Default
         if ($result && $row = $result->fetch_assoc()) {
-            $minutes = (int)$row['setting_value'];
+            $minutes = (int) $row['setting_value'];
         }
-        
+
         echo json_encode(['success' => true, 'break_deduction_minutes' => $minutes]);
         exit;
     }
 
     if ($action === 'update_break_settings') {
-        if (!isset($_SESSION['is_system_admin']) || $_SESSION['is_system_admin'] !== true) {
-            echo json_encode(['success' => false, 'error' => 'Unauthorized. System Admin privileges required.']);
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
             exit;
         }
 
         $minutes = $_POST['break_deduction_minutes'] ?? 60;
-        $minutes = (int)$minutes;
+        $minutes = (int) $minutes;
         if ($minutes < 0) {
             $minutes = 0; // Ensure non-negative
         }
-        
+
         // Use ON DUPLICATE KEY UPDATE logic if key might not exist?
         // But init script handled it. Let's stick to update, or better: INSERT ... ON DUPLICATE
         $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('break_deduction_minutes', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
         $stmt->bind_param("s", $minutes);
-        
+
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'Break settings updated']);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Update failed: ' . $conn->error]);
+        }
+        exit;
+    }
+
+    if ($action === 'get_grace_period') {
+        $sql = "SELECT setting_value FROM system_settings WHERE setting_key = 'grace_period_minutes'";
+        $result = $conn->query($sql);
+
+        $minutes = 0; // Default
+        if ($result && $row = $result->fetch_assoc()) {
+            $minutes = (int) $row['setting_value'];
+        }
+
+        echo json_encode(['success' => true, 'grace_period_minutes' => $minutes]);
+        exit;
+    }
+
+    if ($action === 'update_grace_period') {
+        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            exit;
+        }
+
+        $minutes = $_POST['grace_period_minutes'] ?? 0;
+        $minutes = (int) $minutes;
+        if ($minutes < 0) {
+            $minutes = 0; // Ensure non-negative
+        }
+
+        $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('grace_period_minutes', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+        $stmt->bind_param("s", $minutes);
+
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true, 'message' => 'Grace period updated']);
         } else {
             echo json_encode(['success' => false, 'error' => 'Update failed: ' . $conn->error]);
         }

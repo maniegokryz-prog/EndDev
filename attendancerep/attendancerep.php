@@ -16,9 +16,11 @@ class AttendanceReportViewer {
     private $db;
     private $attendanceRecords = [];
     private $errors = [];
+    private $gracePeriodMinutes = 0;
     
-    public function __construct($database) {
+    public function __construct($database, $gracePeriodMinutes = 0) {
         $this->db = $database;
+        $this->gracePeriodMinutes = $gracePeriodMinutes;
     }
     
     public function loadTodayAttendance($filters = []) {
@@ -198,7 +200,7 @@ class AttendanceReportViewer {
             
             // Has time_in but no time_out - check if late or on-time
             if (!empty($record['time_in']) && empty($record['time_out'])) {
-                if ($record['late_minutes'] > 0) {
+                if ($record['late_minutes'] > $this->gracePeriodMinutes) {
                     return [
                         'display' => 'Late',
                         'class' => 'status-late-dot'
@@ -232,8 +234,16 @@ class AttendanceReportViewer {
     }
 }
 
+// Fetch grace period setting from database
+$grace_period_minutes = 0;
+if ($grace_result = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'grace_period_minutes'")) {
+    if ($grace_row = $grace_result->fetch_assoc()) {
+        $grace_period_minutes = (int)$grace_row['setting_value'];
+    }
+}
+
 // Initialize the viewer
-$viewer = new AttendanceReportViewer($conn);
+$viewer = new AttendanceReportViewer($conn, $grace_period_minutes);
 
 // Fetch all unique departments from employees table
 $departmentQuery = "SELECT DISTINCT department FROM employees WHERE department IS NOT NULL AND department != '' ORDER BY department ASC";

@@ -225,8 +225,8 @@ function addManualAttendance($conn)
                 file_put_contents(
                     __DIR__ . '/debug_manual_calc.txt',
                     date('Y-m-d H:i:s') . " - Calc: In=" . $timeInObj->format('Y-m-d H:i:s') .
-                    ", Out=" . $tempTimeOut->format('Y-m-d H:i:s') .
-                    ", Mins=$actual_minutes, Val=$actual_hours\n",
+                    ", Out=" . $timeOutObj->format('Y-m-d H:i:s') .
+                    ", Val=$actual_hours\n",
                     FILE_APPEND
                 );
             }

@@ -40,25 +40,33 @@ try {
     $employeeId = $_GET['employee_id'] ?? null;
     $month = $_GET['month'] ?? null;
     $year = $_GET['year'] ?? date('Y');
-    
+
     if (!$employeeId) {
         throw new Exception('Employee ID is required');
     }
-    
+
     // Get employee's internal ID
     $stmt = $conn->prepare("SELECT id, first_name, middle_name, last_name FROM employees WHERE employee_id = ?");
     $stmt->bind_param("s", $employeeId);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows === 0) {
         throw new Exception('Employee not found');
     }
-    
+
     $employee = $result->fetch_assoc();
     $employeeInternalId = $employee['id'];
     $stmt->close();
-    
+
+    // Get Grace Period Setting
+    $grace_period_minutes = 0;
+    if ($grace_result = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'grace_period_minutes'")) {
+        if ($grace_row = $grace_result->fetch_assoc()) {
+            $grace_period_minutes = (int) $grace_row['setting_value'];
+        }
+    }
+
     // Build query for attendance metrics
     $query = "SELECT 
                 status,
@@ -66,10 +74,10 @@ try {
                 attendance_date
               FROM daily_attendance 
               WHERE employee_id = ?";
-    
+
     $params = [$employeeInternalId];
     $types = "i";
-    
+
     // Apply month and year filters
     if ($month && $year) {
         $query .= " AND MONTH(attendance_date) = ? AND YEAR(attendance_date) = ?";
@@ -81,34 +89,34 @@ try {
         $params[] = $year;
         $types .= "i";
     }
-    
+
     $stmt = $conn->prepare($query);
     $stmt->bind_param($types, ...$params);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     // Initialize counters
     $totalScheduledDays = 0;
     $completeCount = 0;      // Present days (status = complete or manual)
     $absentCount = 0;        // Absent days (status = absent)
     $onTimeCount = 0;        // Days arrived on time (late_minutes = 0 or NULL)
     $lateCount = 0;          // Days arrived late (late_minutes > 0)
-    
+
     // Process attendance records
     while ($row = $result->fetch_assoc()) {
         $status = strtolower(trim($row['status']));
         $lateMinutes = $row['late_minutes'];
-        
+
         $totalScheduledDays++;
-        
+
         // Count by status
         if ($status === 'complete' || $status === 'manual') {
             $completeCount++;
-            
+
             // Check if on time or late
-            if ($lateMinutes === null || $lateMinutes == 0) {
+            if ($lateMinutes === null || (int) $lateMinutes <= $grace_period_minutes) {
                 $onTimeCount++;
-            } else if ($lateMinutes > 0) {
+            } else if ((int) $lateMinutes > $grace_period_minutes) {
                 $lateCount++;
             }
         } elseif ($status === 'absent') {
@@ -116,15 +124,15 @@ try {
         }
         // Note: 'incomplete' status is not counted in any metric
     }
-    
+
     $stmt->close();
-    
+
     // Calculate percentages
     $presentPercentage = $totalScheduledDays > 0 ? round(($completeCount / $totalScheduledDays) * 100, 1) : 0;
     $absentPercentage = $totalScheduledDays > 0 ? round(($absentCount / $totalScheduledDays) * 100, 1) : 0;
     $onTimePercentage = $totalScheduledDays > 0 ? round(($onTimeCount / $totalScheduledDays) * 100, 1) : 0;
     $latePercentage = $totalScheduledDays > 0 ? round(($lateCount / $totalScheduledDays) * 100, 1) : 0;
-    
+
     // Prepare response
     $response = [
         'success' => true,
@@ -166,9 +174,9 @@ try {
             'total_late' => $lateCount
         ]
     ];
-    
+
     echo json_encode($response);
-    
+
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([

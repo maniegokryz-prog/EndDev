@@ -115,7 +115,7 @@ $csrfToken = $_SESSION['csrf_token'];
           </div>
         </div>
         <?php endif; ?>
-        
+
         <?php if ($isAdmin): ?>
         <div class="col-6 col-md-3">
           <div class="setting-card" id="breakSettings" style="cursor: pointer;">
@@ -123,6 +123,15 @@ $csrfToken = $_SESSION['csrf_token'];
               <i class="bi bi-clock-history"></i>
             </div>
             <h6>Break Deduction</h6>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="setting-card" id="gracePeriodSettings" style="cursor: pointer;">
+            <div class="setting-icon">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+            <h6>Grace Period</h6>
           </div>
         </div>
         <?php endif; ?>
@@ -137,7 +146,7 @@ $csrfToken = $_SESSION['csrf_token'];
               </div>
               <div class="modal-body px-4 pb-4 text-center">
                 <p class="text-muted mb-4">How would you like to verify your identity?</p>
-                
+
                 <div class="d-grid gap-3">
                   <button class="btn btn-outline-dark p-3 text-start d-flex align-items-center" id="btnSelectOTP">
                     <i class="bi bi-envelope-fill fs-4 me-3 text-primary"></i>
@@ -175,8 +184,10 @@ $csrfToken = $_SESSION['csrf_token'];
                 <div class="mb-3">
                   <label for="currentPasswordInput" class="form-label fw-semibold">Current Password</label>
                   <div class="input-group">
-                    <input type="password" class="form-control" id="currentPasswordInput" placeholder="Enter current password" required>
-                    <button class="btn btn-outline-secondary" type="button" id="toggleCurrentPassword"><i class="bi bi-eye"></i></button>
+                    <input type="password" class="form-control" id="currentPasswordInput"
+                      placeholder="Enter current password" required>
+                    <button class="btn btn-outline-secondary" type="button" id="toggleCurrentPassword"><i
+                        class="bi bi-eye"></i></button>
                   </div>
                 </div>
 
@@ -185,8 +196,10 @@ $csrfToken = $_SESSION['csrf_token'];
                 <div class="mb-3">
                   <label for="newPasswordInput" class="form-label fw-semibold">New Password</label>
                   <div class="input-group">
-                    <input type="password" class="form-control" id="newPasswordInput" placeholder="Enter new password" required>
-                    <button class="btn btn-outline-secondary" type="button" id="toggleNewPassword"><i class="bi bi-eye"></i></button>
+                    <input type="password" class="form-control" id="newPasswordInput" placeholder="Enter new password"
+                      required>
+                    <button class="btn btn-outline-secondary" type="button" id="toggleNewPassword"><i
+                        class="bi bi-eye"></i></button>
                   </div>
                   <small class="text-muted">At least 6 chars, must contain a number</small>
                 </div>
@@ -194,14 +207,17 @@ $csrfToken = $_SESSION['csrf_token'];
                 <div class="mb-3">
                   <label for="confirmNewPasswordInput" class="form-label fw-semibold">Confirm New Password</label>
                   <div class="input-group">
-                    <input type="password" class="form-control" id="confirmNewPasswordInput" placeholder="Confirm new password" required>
-                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmNewPassword"><i class="bi bi-eye"></i></button>
+                    <input type="password" class="form-control" id="confirmNewPasswordInput"
+                      placeholder="Confirm new password" required>
+                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmNewPassword"><i
+                        class="bi bi-eye"></i></button>
                   </div>
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
                   <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn text-white" style="background-color: #083c34;" id="btnSubmitCurrentPassChange">Change Password</button>
+                  <button type="button" class="btn text-white" style="background-color: #083c34;"
+                    id="btnSubmitCurrentPassChange">Change Password</button>
                 </div>
               </div>
             </div>
@@ -292,7 +308,8 @@ $csrfToken = $_SESSION['csrf_token'];
 
                 <div class="mb-3">
                   <label for="changeNewPassword" class="form-label fw-semibold">New Password</label>
-                  <input type="password" class="form-control" id="changeNewPassword" placeholder="Enter new password" required>
+                  <input type="password" class="form-control" id="changeNewPassword" placeholder="Enter new password"
+                    required>
                   <small class="text-muted">At least 6 chars, must contain a number</small>
                 </div>
 
@@ -405,7 +422,7 @@ $csrfToken = $_SESSION['csrf_token'];
                   <input type="number" class="form-control" id="noticePeriodInput" min="0" value="0">
                   <small class="text-muted">Users must request leave at least this many days in advance.</small>
                 </div>
-        
+
 
 
                 <div class="d-flex justify-content-end mt-4">
@@ -441,13 +458,52 @@ $csrfToken = $_SESSION['csrf_token'];
                     <option value="60" selected>1 Hour (60 mins)</option>
                     <option value="custom">Custom...</option>
                   </select>
-                  <input type="number" class="form-control mt-2" id="breakDurationCustom" placeholder="Enter minutes (e.g. 20)" style="display: none;" min="0">
+                  <input type="number" class="form-control mt-2" id="breakDurationCustom"
+                    placeholder="Enter minutes (e.g. 20)" style="display: none;" min="0">
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
                   <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" class="btn text-white" style="background-color: #083c34;"
                     id="saveBreakSettingsBtn">Save Changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ✅ Grace Period Modal -->
+        <div class="modal fade" id="gracePeriodModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+              <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Grace Period Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body px-4 pb-4">
+                <p class="text-muted mb-3">Set a grace period for employee time in.</p>
+                <div class="alert alert-info small">
+                  <i class="bi bi-info-circle me-1"></i> Employees arriving within the grace period will not be tagged
+                  as late. This applies only to the display tag.
+                </div>
+
+                <div class="mb-3">
+                  <label for="gracePeriodSelect" class="form-label fw-semibold">Grace Period</label>
+                  <select class="form-select" id="gracePeriodSelect">
+                    <option value="0">None (0 mins)</option>
+                    <option value="5">5 Minutes</option>
+                    <option value="10">10 Minutes</option>
+                    <option value="15" selected>15 Minutes</option>
+                    <option value="custom">Custom...</option>
+                  </select>
+                  <input type="number" class="form-control mt-2" id="gracePeriodCustom"
+                    placeholder="Enter minutes (e.g. 20)" style="display: none;" min="0">
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                  <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn text-white" style="background-color: #083c34;"
+                    id="saveGracePeriodBtn">Save Changes</button>
                 </div>
               </div>
             </div>
@@ -711,7 +767,7 @@ $csrfToken = $_SESSION['csrf_token'];
 
             // Toggle custom input visibility
             if (breakSelect && breakCustomInput) {
-              breakSelect.addEventListener('change', function() {
+              breakSelect.addEventListener('change', function () {
                 if (this.value === 'custom') {
                   breakCustomInput.style.display = 'block';
                   breakCustomInput.focus();
@@ -735,7 +791,7 @@ $csrfToken = $_SESSION['csrf_token'];
                     if (data.success) {
                       const minutes = parseInt(data.break_deduction_minutes);
                       const standardValues = [0, 15, 30, 60];
-                      
+
                       if (standardValues.includes(minutes)) {
                         breakSelect.value = minutes;
                         breakCustomInput.style.display = 'none';
@@ -803,6 +859,7 @@ $csrfToken = $_SESSION['csrf_token'];
                     return;
                   }
                 }
+
                 const formData = new FormData();
                 formData.append('action', 'update_break_settings');
                 formData.append('break_deduction_minutes', minutes);
@@ -811,22 +868,145 @@ $csrfToken = $_SESSION['csrf_token'];
                   .then(res => res.json())
                   .then(data => {
                     if (data.success) {
-                      // Close confirmation modal
-                      const confirmModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('breakConfirmationModal'));
-                      confirmModal.hide();
-
-                      // Close main modal
-                      const mainModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('breakSettingsModal'));
-                      mainModal.hide();
-
+                      bootstrap.Modal.getInstance(document.getElementById('breakConfirmationModal')).hide();
                       showPopupMessage('Break settings updated successfully');
                     } else {
                       alert('Failed to save: ' + (data.error || 'Unknown error'));
+                      // Reopen main modal on failure
+                      bootstrap.Modal.getOrCreateInstance(document.getElementById('breakSettingsModal')).show();
                     }
                   })
                   .catch(err => {
                     console.error('Save error:', err);
                     alert('An error occurred while saving.');
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('breakSettingsModal')).show();
+                  })
+                  .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                  });
+              });
+            }
+
+            // Grace Period Logic
+            const gracePeriodCard = document.getElementById('gracePeriodSettings');
+            const gracePeriodSelect = document.getElementById('gracePeriodSelect');
+            const gracePeriodCustomInput = document.getElementById('gracePeriodCustom');
+
+            // Toggle custom input visibility
+            if (gracePeriodSelect && gracePeriodCustomInput) {
+              gracePeriodSelect.addEventListener('change', function () {
+                if (this.value === 'custom') {
+                  gracePeriodCustomInput.style.display = 'block';
+                  gracePeriodCustomInput.focus();
+                } else {
+                  gracePeriodCustomInput.style.display = 'none';
+                }
+              });
+            }
+
+            if (gracePeriodCard) {
+              gracePeriodCard.addEventListener('click', function () {
+                const modalEl = document.getElementById('gracePeriodModal');
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+
+                // Load current setting in background
+                fetch('../staffmanagement/api/settings_api.php?action=get_grace_period')
+                  .then(res => res.json())
+                  .then(data => {
+                    if (data.success) {
+                      const minutes = parseInt(data.grace_period_minutes);
+                      const standardValues = [0, 5, 10, 15];
+
+                      if (standardValues.includes(minutes)) {
+                        gracePeriodSelect.value = minutes;
+                        gracePeriodCustomInput.style.display = 'none';
+                        gracePeriodCustomInput.value = '';
+                      } else {
+                        gracePeriodSelect.value = 'custom';
+                        gracePeriodCustomInput.style.display = 'block';
+                        gracePeriodCustomInput.value = minutes;
+                      }
+                    } else {
+                      console.error('Failed to load settings:', data.error);
+                    }
+                  })
+                  .catch(err => console.error('Fetch error:', err));
+              });
+            }
+
+            const saveGracePeriodBtn = document.getElementById('saveGracePeriodBtn');
+            if (saveGracePeriodBtn) {
+              saveGracePeriodBtn.addEventListener('click', function () {
+                // Hide main modal first
+                const mainModalEl = document.getElementById('gracePeriodModal');
+                const mainModal = bootstrap.Modal.getOrCreateInstance(mainModalEl);
+                mainModal.hide();
+
+                // Show confirmation modal
+                const confirmModalEl = document.getElementById('gracePeriodConfirmationModal');
+                const confirmModal = bootstrap.Modal.getOrCreateInstance(confirmModalEl);
+                confirmModal.show();
+              });
+            }
+
+            // Cancel Confirmation - Reopen Main Modal
+            const cancelGracePeriodBtn = document.getElementById('cancelGracePeriodChangeBtn');
+            if (cancelGracePeriodBtn) {
+              cancelGracePeriodBtn.addEventListener('click', function () {
+                // Hide confirmation modal
+                const confirmModalEl = document.getElementById('gracePeriodConfirmationModal');
+                const confirmModal = bootstrap.Modal.getOrCreateInstance(confirmModalEl);
+                confirmModal.hide();
+
+                // Reopen main modal
+                const mainModalEl = document.getElementById('gracePeriodModal');
+                const mainModal = bootstrap.Modal.getOrCreateInstance(mainModalEl);
+                mainModal.show();
+              });
+            }
+
+            // Confirm Save Action
+            const confirmGracePeriodBtn = document.getElementById('confirmGracePeriodChangeBtn');
+            if (confirmGracePeriodBtn) {
+              confirmGracePeriodBtn.addEventListener('click', function () {
+                const btn = this;
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
+
+                let minutes = document.getElementById('gracePeriodSelect').value;
+                if (minutes === 'custom') {
+                  minutes = document.getElementById('gracePeriodCustom').value;
+                  if (!minutes || minutes < 0) {
+                    alert('Please enter a valid number of minutes.');
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                    return;
+                  }
+                }
+
+                const formData = new FormData();
+                formData.append('action', 'update_grace_period');
+                formData.append('grace_period_minutes', minutes);
+
+                fetch('../staffmanagement/api/settings_api.php', { method: 'POST', body: formData })
+                  .then(res => res.json())
+                  .then(data => {
+                    if (data.success) {
+                      bootstrap.Modal.getInstance(document.getElementById('gracePeriodConfirmationModal')).hide();
+                      showPopupMessage('Grace period updated successfully');
+                    } else {
+                      alert('Failed to save: ' + (data.error || 'Unknown error'));
+                      // Reopen main modal on failure
+                      bootstrap.Modal.getOrCreateInstance(document.getElementById('gracePeriodModal')).show();
+                    }
+                  })
+                  .catch(err => {
+                    console.error('Save error:', err);
+                    alert('An error occurred while saving.');
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('gracePeriodModal')).show();
                   })
                   .finally(() => {
                     btn.disabled = false;
@@ -836,6 +1016,7 @@ $csrfToken = $_SESSION['csrf_token'];
             }
           });
         </script>
+
 
         <!-- Break Deduction Confirmation Modal -->
         <div class="modal fade" id="breakConfirmationModal" tabindex="-1" aria-hidden="true">
@@ -849,7 +1030,27 @@ $csrfToken = $_SESSION['csrf_token'];
               </div>
               <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary me-2" id="cancelBreakChangeBtn">Cancel</button>
-                <button type="button" class="btn text-white" style="background-color: #083c34;" id="confirmBreakChangeBtn">Yes, Save Changes</button>
+                <button type="button" class="btn text-white" style="background-color: #083c34;"
+                  id="confirmBreakChangeBtn">Yes, Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grace Period Confirmation Modal -->
+        <div class="modal fade" id="gracePeriodConfirmationModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header border-0">
+                <h5 class="modal-title w-100 text-center">Confirm Change</h5>
+              </div>
+              <div class="modal-body text-center">
+                This will update the grace period for employee time-ins. Are you sure?
+              </div>
+              <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary me-2" id="cancelGracePeriodChangeBtn">Cancel</button>
+                <button type="button" class="btn text-white" style="background-color: #083c34;"
+                  id="confirmGracePeriodChangeBtn">Yes, Save Changes</button>
               </div>
             </div>
           </div>

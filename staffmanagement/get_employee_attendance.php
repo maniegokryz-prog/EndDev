@@ -156,6 +156,14 @@ try {
 
     $schedule = getEmployeeSchedule($conn, $employee_id);
 
+    // Get Grace Period
+    $grace_period_minutes = 0;
+    if ($grace_result = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'grace_period_minutes'")) {
+        if ($grace_row = $grace_result->fetch_assoc()) {
+            $grace_period_minutes = (int) $grace_row['setting_value'];
+        }
+    }
+
     $attendance_records = [];
 
     while ($row = $result->fetch_assoc()) {
@@ -219,10 +227,21 @@ try {
         $status_lower = strtolower(trim($row['status']));
 
         if ($status_lower === 'complete' || $status_lower === 'present') {
-            $status_info['badge_class'] = 'success';
-            $status_info['badge_text'] = 'Present';
-            $status_info['icon_class'] = 'bg-success';
-            $status_info['icon'] = 'bi-check-lg';
+
+            // Check grace period instead of strictly > 0
+            if (isset($row['late_minutes']) && $row['late_minutes'] > $grace_period_minutes) {
+                // Return 'warning' badge so frontend treats it as "Late"
+                $status_info['badge_class'] = 'warning text-dark';
+                $status_info['badge_text'] = 'Late (' . $row['late_minutes'] . 'm)';
+                $status_info['icon_class'] = 'bg-warning';
+                $status_info['icon'] = 'bi-exclamation-circle-fill';
+            } else {
+                $status_info['badge_class'] = 'success';
+                $status_info['badge_text'] = 'On-time';
+                $status_info['icon_class'] = 'bg-success';
+                $status_info['icon'] = 'bi-check-lg';
+            }
+
         } elseif ($status_lower === 'visit') {
             $status_info['badge_class'] = 'info text-dark';
             $status_info['badge_text'] = 'Visit';

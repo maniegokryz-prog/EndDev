@@ -68,9 +68,16 @@ try {
     $response = [
         'success' => true,
         'date' => $date,
-        'server_time' => (new DateTime())->format('Y-m-d H:i:s'),
         'server_timezone' => date_default_timezone_get()
     ];
+
+    // Get Grace Period Setting
+    $grace_period_minutes = 0;
+    if ($grace_result = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'grace_period_minutes'")) {
+        if ($grace_row = $grace_result->fetch_assoc()) {
+            $grace_period_minutes = (int) $grace_row['setting_value'];
+        }
+    }
 
     // Helper function to format profile photo path
     function getProfilePhotoPath($profile_photo_path)
@@ -203,8 +210,8 @@ try {
             if ($log_type === 'visit') {
                 $status = 'Visitor';
             } elseif ($log_type === 'time_in') {
-                // For time_in, check late minutes from linked daily_attendance
-                if (!empty($row['late_minutes']) && $row['late_minutes'] > 0) {
+                // For time_in, check late minutes from linked daily_attendance against grace period
+                if (!empty($row['late_minutes']) && $row['late_minutes'] > $grace_period_minutes) {
                     $late_hours = floor($row['late_minutes'] / 60);
                     $late_mins = $row['late_minutes'] % 60;
                     if ($late_hours > 0) {
@@ -269,11 +276,11 @@ try {
                 FROM employees e
                 INNER JOIN daily_attendance da ON e.id = da.employee_id
                 WHERE da.attendance_date = ?
-                AND da.late_minutes > 0
+                AND da.late_minutes > ?
                 ORDER BY da.late_minutes DESC";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $date);
+        $stmt->bind_param("si", $date, $grace_period_minutes);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -429,21 +436,21 @@ try {
         $stmt->execute();
         $absent_count = $stmt->get_result()->fetch_assoc()['absent'];
 
-        // Get on-time count (has time_in AND late_minutes = 0)
+        // Get on-time count (has time_in AND late_minutes <= grace_period)
         $sql = "SELECT COUNT(*) as on_time 
                 FROM daily_attendance 
-                WHERE attendance_date = ? AND time_in IS NOT NULL AND late_minutes = 0";
+                WHERE attendance_date = ? AND time_in IS NOT NULL AND late_minutes <= ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $date);
+        $stmt->bind_param("si", $date, $grace_period_minutes);
         $stmt->execute();
         $on_time_count = $stmt->get_result()->fetch_assoc()['on_time'];
 
-        // Get late count (has time_in AND late_minutes > 0)
+        // Get late count (has time_in AND late_minutes > grace_period)
         $sql = "SELECT COUNT(*) as late 
                 FROM daily_attendance 
-                WHERE attendance_date = ? AND time_in IS NOT NULL AND late_minutes > 0";
+                WHERE attendance_date = ? AND time_in IS NOT NULL AND late_minutes > ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $date);
+        $stmt->bind_param("si", $date, $grace_period_minutes);
         $stmt->execute();
         $late_count = $stmt->get_result()->fetch_assoc()['late'];
 
