@@ -1014,7 +1014,7 @@ class AttendanceLogger:
             
             cursor.execute("""
                 SELECT id, employee_id, first_name, middle_name, last_name,
-                       email, phone, department, position, status, roles
+                       email, phone, department, position, status
                 FROM employees
                 WHERE id = ?
             """, (db_id,))
@@ -1034,8 +1034,7 @@ class AttendanceLogger:
                     'phone': row[6],
                     'department': row[7],
                     'position': row[8],
-                    'status': row[9],
-                    'role': row[10]
+                    'status': row[9]
                 }
             return None
             
