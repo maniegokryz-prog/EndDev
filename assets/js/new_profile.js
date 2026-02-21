@@ -528,6 +528,36 @@ function renderMobileSchedule(container, schedules) {
     const daysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     let html = '';
 
+    // Calculate Daily and Total Weekly Hours (same logic as Visual Schedule)
+    let totalWeeklyMinutes = 0;
+    let dailyMinutes = {
+        'Monday': 0, 'Tuesday': 0, 'Wednesday': 0, 'Thursday': 0,
+        'Friday': 0, 'Saturday': 0, 'Sunday': 0
+    };
+
+    schedules.forEach(sched => {
+        const start = parseTimeStr(sched.startTime);
+        const end = parseTimeStr(sched.endTime);
+        let duration = end - start;
+
+        // Apply configurable break deduction for Admin/Non-Teaching if worked > 5 hours
+        if (window.employeeRole && window.breakDeductionMinutes > 0) {
+            const role = window.employeeRole.toLowerCase();
+            if ((role.includes('admin') || role.includes('non-teaching') || role.includes('non_teaching')) && duration >= 300) {
+                duration = Math.max(0, duration - window.breakDeductionMinutes);
+            }
+        }
+
+        if (Array.isArray(sched.days)) {
+            totalWeeklyMinutes += duration * sched.days.length;
+            sched.days.forEach(day => {
+                if (dailyMinutes[day] !== undefined) {
+                    dailyMinutes[day] += duration;
+                }
+            });
+        }
+    });
+
     daysOrder.forEach(day => {
         // Find schedules for this day
         const dayScheds = schedules.filter(s => s.days.includes(day));
@@ -536,13 +566,17 @@ function renderMobileSchedule(container, schedules) {
             // Sort by start time
             dayScheds.sort((a, b) => parseTimeStr(a.startTime) - parseTimeStr(b.startTime));
 
+            const hrs = +(dailyMinutes[day] / 60).toFixed(2);
             html += `<div class="mobile-day-group mb-3">`;
-            html += `<h6 class="mobile-day-header text-primary border-bottom pb-1 mb-2 fw-bold">${day}</h6>`;
+            html += `<h6 class="mobile-day-header text-primary border-bottom pb-1 mb-2 fw-bold d-flex justify-content-between align-items-end">
+                        <span>${day}</span>
+                        <span class="text-secondary small fw-normal bg-light px-2 py-1 rounded" style="font-size: 0.8em;">Daily: <span class="fw-bold text-dark">${hrs} hrs</span></span>
+                     </h6>`;
             html += `<div class="d-flex flex-column gap-2">`;
 
             dayScheds.forEach(s => {
                 html += `
-                <div class="mobile-sched-card p-3 rounded" style="background-color: ${s.color}15; border-left: 4px solid ${s.color};">
+                <div class="mobile-sched-card p-3 rounded" style="background-color: ${s.color}15; border-left: 4px solid ${s.color}; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between">
                         <span class="fw-bold text-dark">${s.subject || 'Work'}</span>
                         <span class="badge bg-secondary">${s.class || 'N/A'}</span>
@@ -550,7 +584,7 @@ function renderMobileSchedule(container, schedules) {
                     <div class="small text-muted mt-1">
                         <i class="bi bi-clock me-1"></i> ${s.startTime} - ${s.endTime}
                     </div>
-                    ${s.room_num ? `<div class="small text-muted"><i class="bi bi-geo-alt me-1"></i> ${s.room_num}</div>` : ''}
+                    ${s.room_num ? `<div class="small text-muted mt-1"><i class="bi bi-geo-alt me-1"></i> ${s.room_num}</div>` : ''}
                 </div>`;
             });
 
@@ -560,6 +594,12 @@ function renderMobileSchedule(container, schedules) {
 
     if (html === '') {
         html = '<p class="text-muted text-center py-3">No schedule found for this week.</p>';
+    } else {
+        const totalWeeklyHours = +(totalWeeklyMinutes / 60).toFixed(2);
+        html += `
+        <div class="mt-4 pt-3 border-top text-center" style="background-color: #f8f9fa; border-radius: 8px; padding: 10px;">
+            <span class="fw-bold fs-6 text-dark">Total Weekly Hours: <span class="text-primary" style="font-size: 1.1em;">${totalWeeklyHours} hrs</span></span>
+        </div>`;
     }
 
     container.innerHTML = html;

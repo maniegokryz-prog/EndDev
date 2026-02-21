@@ -919,26 +919,40 @@ body {
         gap: 0.5rem !important;
     }
 
-    /* 7. Scheduled Leave Header: Stack Title and Button */
+    /* 7. Scheduled Leave Header: Row Layout */
     .leave-section-card>.d-flex {
-        flex-direction: column !important;
+        flex-direction: row !important;
         align-items: center !important;
+        justify-content: space-between !important;
         gap: 0.5rem !important;
     }
 
     .leave-section-card .card-title {
-        text-align: center !important;
-        white-space: nowrap !important;
-        width: 100% !important;
+        text-align: left !important;
+        white-space: normal !important;
+        width: auto !important;
         background: transparent;
-        /* Ensure no weird background */
     }
 
-    .leave-section-card .btn {
-        width: 100% !important;
-        /* Make button full width for easy tapping */
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    /* Force the button to not stretch to 100% width on mobile */
+    .leave-section-card>.d-flex .btn {
+        width: auto !important;
+        flex: 0 0 auto !important;
+        padding: 0.375rem 0.75rem !important;
+    }
+
+    /* 8. Fix Leave Item Content Centering */
+    #leaveList .card {
+        text-align: left !important;
+    }
+
+    #leaveList .card .d-flex {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+
+    #leaveList .card .d-flex>div {
+        text-align: left !important;
     }
 }
