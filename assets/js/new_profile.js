@@ -596,8 +596,13 @@ function renderVisualSchedule(container, schedules) {
         placeScheduleBlock(container, sched, days, timeStart, interval);
     });
 
-    // Calculate Total Weekly Hours
+    // Calculate Daily and Total Weekly Hours
     let totalWeeklyMinutes = 0;
+    let dailyMinutes = {
+        'Monday': 0, 'Tuesday': 0, 'Wednesday': 0, 'Thursday': 0,
+        'Friday': 0, 'Saturday': 0, 'Sunday': 0
+    };
+
     schedules.forEach(sched => {
         const start = parseTimeStr(sched.startTime);
         const end = parseTimeStr(sched.endTime);
@@ -614,8 +619,41 @@ function renderVisualSchedule(container, schedules) {
         // Check if days is array, just to be safe though expected
         if (Array.isArray(sched.days)) {
             totalWeeklyMinutes += duration * sched.days.length;
+            sched.days.forEach(day => {
+                if (dailyMinutes[day] !== undefined) {
+                    dailyMinutes[day] += duration;
+                }
+            });
         }
     });
+
+    // Append Daily Totals Row
+    const dummyCell = document.createElement('div');
+    dummyCell.style.padding = '10px 5px';
+    dummyCell.style.textAlign = 'right';
+    dummyCell.style.fontWeight = 'bold';
+    dummyCell.style.borderTop = '2px solid #cbd5e0';
+    dummyCell.style.backgroundColor = '#f8f9fa';
+    dummyCell.style.fontSize = '0.9em';
+    dummyCell.style.color = '#4a5568';
+    dummyCell.innerHTML = 'Daily:';
+    container.appendChild(dummyCell);
+
+    days.forEach(day => {
+        const dayTotalCell = document.createElement('div');
+        dayTotalCell.style.padding = '10px 5px';
+        dayTotalCell.style.textAlign = 'center';
+        dayTotalCell.style.fontWeight = 'bold';
+        dayTotalCell.style.borderTop = '2px solid #cbd5e0';
+        dayTotalCell.style.backgroundColor = '#f8f9fa';
+        dayTotalCell.style.color = '#2d3748';
+        dayTotalCell.style.fontSize = '0.9em';
+
+        const hrs = +(dailyMinutes[day] / 60).toFixed(2);
+        dayTotalCell.innerHTML = hrs > 0 ? `<span class="text-primary">${hrs}h</span>` : '<span class="text-muted">-</span>';
+        container.appendChild(dayTotalCell);
+    });
+
     const totalWeeklyHours = +(totalWeeklyMinutes / 60).toFixed(2);
 
     // Append Total Row (spans all columns)
@@ -625,7 +663,6 @@ function renderVisualSchedule(container, schedules) {
     totalRow.style.textAlign = 'center';
     totalRow.style.fontWeight = 'bold';
     totalRow.style.borderTop = '1px solid #e2e8f0';
-    totalRow.style.marginTop = '10px';
     totalRow.style.color = '#2d3748';
     totalRow.innerHTML = `Total Weekly Hours: <span class="text-primary" style="font-size: 1.1em;">${totalWeeklyHours} hrs</span>`;
     container.appendChild(totalRow);
