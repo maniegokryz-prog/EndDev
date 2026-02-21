@@ -307,11 +307,29 @@ function renderDTRForm($employee, $data, $isExcel = false)
 
 function renderExcelHistoryTable($employee, $attendanceRecords)
 {
+    // Determine the date range
+    $dateRangeStr = "";
+    if (!empty($attendanceRecords)) {
+        $dates = array_keys($attendanceRecords);
+        sort($dates);
+        $startDate = date('F j, Y', strtotime($dates[0]));
+        $endDate = date('F j, Y', strtotime($dates[count($dates) - 1]));
+        if ($startDate === $endDate) {
+            $dateRangeStr = $startDate;
+        } else {
+            $dateRangeStr = $startDate . " - " . $endDate;
+        }
+    }
+
     // Header Info
     echo '<table border="1">';
+    echo '<tr><td colspan="5" style="font-weight: bold; font-size: 14pt; text-align: center;">BULACAN POLYTECHNIC COLLEGE</td></tr>';
     echo '<tr><td colspan="5" style="font-weight: bold; font-size: 14pt; text-align: center;">ATTENDANCE HISTORY</td></tr>';
     echo '<tr><td colspan="5" style="font-weight: bold; text-align: center;">' . htmlspecialchars($employee['name']) . '</td></tr>';
     echo '<tr><td colspan="5" style="text-align: center;">' . htmlspecialchars($employee['role']) . '</td></tr>';
+    if ($dateRangeStr) {
+        echo '<tr><td colspan="5" style="text-align: center;">' . $dateRangeStr . '</td></tr>';
+    }
     echo '<tr><td colspan="5" style="height: 10px;"></td></tr>'; // Spacer
 
     // Table Header
@@ -363,6 +381,103 @@ function renderExcelHistoryTable($employee, $attendanceRecords)
         }
     }
     echo '</table>';
+}
+
+function renderXMLSpreadsheetHistoryWorksheet($employee, $attendanceRecords)
+{
+    // Determine sheet name (Excel limits to 31 chars, certain characters invalid)
+    $sheetName = substr(str_replace(['\\', '/', '?', '*', '[', ']'], '', $employee['name']), 0, 31);
+
+    echo '<Worksheet ss:Name="' . htmlspecialchars($sheetName) . '">';
+    echo '<Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="' . (count($attendanceRecords) + 6) . '" x:FullColumns="1" x:FullRows="1">';
+
+    // Column Widths
+    echo '<Column ss:Index="1" ss:Width="110"/>';
+    echo '<Column ss:Index="2" ss:Width="75"/>';
+    echo '<Column ss:Index="3" ss:Width="75"/>';
+    echo '<Column ss:Index="4" ss:Width="75"/>';
+    echo '<Column ss:Index="5" ss:Width="150"/>';
+
+    // Determine the date range
+    $dateRangeStr = "";
+    if (!empty($attendanceRecords)) {
+        $dates = array_keys($attendanceRecords);
+        sort($dates);
+        $startDate = date('F j, Y', strtotime($dates[0]));
+        $endDate = date('F j, Y', strtotime($dates[count($dates) - 1]));
+        if ($startDate === $endDate) {
+            $dateRangeStr = $startDate;
+        } else {
+            $dateRangeStr = $startDate . " - " . $endDate;
+        }
+    }
+
+    // Header Info
+    echo '<Row><Cell ss:MergeAcross="4" ss:StyleID="sTitle"><Data ss:Type="String">BULACAN POLYTECHNIC COLLEGE</Data></Cell></Row>';
+    echo '<Row><Cell ss:MergeAcross="4" ss:StyleID="sTitle"><Data ss:Type="String">ATTENDANCE HISTORY</Data></Cell></Row>';
+    echo '<Row><Cell ss:MergeAcross="4" ss:StyleID="sDataCenterBold"><Data ss:Type="String">' . htmlspecialchars($employee['name']) . '</Data></Cell></Row>';
+    echo '<Row><Cell ss:MergeAcross="4" ss:StyleID="sDataCenter"><Data ss:Type="String">' . htmlspecialchars($employee['role']) . '</Data></Cell></Row>';
+    if ($dateRangeStr) {
+        echo '<Row><Cell ss:MergeAcross="4" ss:StyleID="sDataCenter"><Data ss:Type="String">' . $dateRangeStr . '</Data></Cell></Row>';
+    }
+    echo '<Row><Cell ss:MergeAcross="4"><Data ss:Type="String"></Data></Cell></Row>';
+
+    // Table Header Row
+    echo '<Row>';
+    echo '<Cell ss:StyleID="sHeader"><Data ss:Type="String">Date</Data></Cell>';
+    echo '<Cell ss:StyleID="sHeader"><Data ss:Type="String">Time In</Data></Cell>';
+    echo '<Cell ss:StyleID="sHeader"><Data ss:Type="String">Time Out</Data></Cell>';
+    echo '<Cell ss:StyleID="sHeader"><Data ss:Type="String">Total Hours</Data></Cell>';
+    echo '<Cell ss:StyleID="sHeader"><Data ss:Type="String">Notes / Status</Data></Cell>';
+    echo '</Row>';
+
+    // Data Rows
+    if (empty($attendanceRecords)) {
+        echo '<Row><Cell ss:MergeAcross="4" ss:StyleID="sDataCenter"><Data ss:Type="String">No records found.</Data></Cell></Row>';
+    } else {
+        foreach ($attendanceRecords as $date => $data) {
+            $dateStr = $data['attendance_date'];
+            $timeIn = (!empty($data['time_in']) && $data['time_in'] !== '00:00:00') ? date('h:i A', strtotime($data['time_in'])) : '';
+            $timeOut = (!empty($data['time_out']) && $data['time_out'] !== '00:00:00') ? date('h:i A', strtotime($data['time_out'])) : '';
+
+            // Hours
+            $hours = '';
+            if (!empty($data['actual_hours'])) {
+                $h = floor($data['actual_hours'] / 60);
+                $m = (int) ($data['actual_hours']) % 60;
+                $hours = sprintf('%dh %dm', $h, $m);
+            }
+
+            // Notes / Status
+            $status = ucfirst($data['status']);
+            if ($data['status'] === 'manual') {
+                $notes = 'Manual Entry';
+            } elseif ($data['status'] === 'visit') {
+                $notes = 'Visit';
+            } else {
+                $notes = 'Biometric Scan'; // Default assumption
+            }
+            if (!empty($data['notes'])) {
+                $notes .= ' - ' . $data['notes'];
+            }
+
+            echo '<Row>';
+            echo '<Cell ss:StyleID="sDataCenter"><Data ss:Type="String">' . date('F j, Y', strtotime($dateStr)) . '</Data></Cell>';
+            echo '<Cell ss:StyleID="sDataCenter"><Data ss:Type="String">' . $timeIn . '</Data></Cell>';
+            echo '<Cell ss:StyleID="sDataCenter"><Data ss:Type="String">' . $timeOut . '</Data></Cell>';
+            echo '<Cell ss:StyleID="sDataCenter"><Data ss:Type="String">' . $hours . '</Data></Cell>';
+            echo '<Cell ss:StyleID="sDataCenter"><Data ss:Type="String">' . htmlspecialchars($notes) . '</Data></Cell>';
+            echo '</Row>';
+        }
+    }
+
+    echo '</Table>';
+    echo '<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">';
+    echo '<PageSetup><Header x:Margin="0.3"/><Footer x:Margin="0.3"/><PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/></PageSetup>';
+    echo '<FitToPage/><Print><FitHeight>0</FitHeight><ValidPrinterInfo/><HorizontalResolution>600</HorizontalResolution><VerticalResolution>600</VerticalResolution></Print>';
+    echo '<Selected/><ProtectObjects>False</ProtectObjects><ProtectScenarios>False</ProtectScenarios>';
+    echo '</WorksheetOptions>';
+    echo '</Worksheet>';
 }
 
 
@@ -492,8 +607,25 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
         }
     }
 
-    $role = strtolower($employeeRole);
-    if (strpos($role, 'admin') !== false || strpos($role, 'non-teaching') !== false || strpos($role, 'non_teaching') !== false) {
+    $roleLower = strtolower(str_replace(['-', '_'], ' ', $employeeRole));
+    $isDeductible = false;
+
+    if (
+        strpos($roleLower, 'admin') !== false ||
+        strpos($roleLower, 'non teaching') !== false ||
+        strpos($roleLower, 'non staff') !== false ||
+        strpos($roleLower, 'nonstaff') !== false
+    ) {
+        $isDeductible = true;
+    } elseif (
+        strpos($roleLower, 'staff') !== false &&
+        strpos($roleLower, 'teaching') === false &&
+        strpos($roleLower, 'faculty') === false
+    ) {
+        $isDeductible = true;
+    }
+
+    if ($isDeductible) {
         // If worked > 5 hours (300 mins), apply deduction
         if ($totalMinutes >= 300) {
             $totalMinutes = max(0, $totalMinutes - $deductionMinutes);

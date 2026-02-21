@@ -415,6 +415,22 @@ if (proceedBtn) {
   });
 }
 
+// Handle Export and Proceed
+const exportAndProceedBtn = document.getElementById("exportAndProceedBtn");
+if (exportAndProceedBtn) {
+  exportAndProceedBtn.addEventListener("click", () => {
+    // Trigger download
+    window.location.href = "processes/export_all_records.php";
+
+    // Switch modals
+    setTimeout(() => {
+      bootstrap.Modal.getInstance(document.getElementById("clearAllRecordsModal")).hide();
+      const secondModal = new bootstrap.Modal(document.getElementById("secondConfirmModal"));
+      secondModal.show();
+    }, 500);
+  });
+}
+
 // Handle final confirmation with password
 const confirmBtn = document.getElementById("confirmDeleteBtn");
 if (confirmBtn) {

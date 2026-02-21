@@ -534,10 +534,11 @@ $csrfToken = $_SESSION['csrf_token'];
                     (<span class="spinner-border spinner-border-sm" role="status"></span>)
                   </span>.
                 </h5>
-                <p class="text-muted">Are you sure you want to continue?</p>
-                <div class="d-flex justify-content-center gap-3 mt-3">
+                <p class="text-muted">Do you want to export all records before deleting them?</p>
+                <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
                   <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button class="btn btn-danger" id="proceedDeleteBtn">Continue</button>
+                  <button class="btn btn-success" id="exportAndProceedBtn">Export & Continue</button>
+                  <button class="btn btn-danger" id="proceedDeleteBtn">Delete Without Exporting</button>
                 </div>
               </div>
             </div>
@@ -631,6 +632,19 @@ $csrfToken = $_SESSION['csrf_token'];
             bootstrap.Modal.getInstance(document.getElementById("clearAllRecordsModal")).hide();
             const secondModal = new bootstrap.Modal(document.getElementById("secondConfirmModal"));
             secondModal.show();
+          });
+
+          // Handle Export and Proceed
+          document.getElementById("exportAndProceedBtn").addEventListener("click", () => {
+            // Trigger download of all records
+            window.location.href = "processes/export_all_records.php";
+            
+            // Wait briefly to allow download to start, then switch modals
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById("clearAllRecordsModal")).hide();
+                const secondModal = new bootstrap.Modal(document.getElementById("secondConfirmModal"));
+                secondModal.show();
+            }, 500);
           });
 
           // Handle final confirmation with password
