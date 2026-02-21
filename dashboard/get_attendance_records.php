@@ -50,6 +50,7 @@ date_default_timezone_set('Asia/Manila');
 
 header('Content-Type: application/json');
 require '../db_connection.php';
+require_once '../attendancerep/dtr_utils.php';
 
 try {
     // Get parameters
@@ -57,26 +58,27 @@ try {
     $type = isset($_GET['type']) ? $_GET['type'] : 'all';
     $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 50;
     $limit = min($limit, 100); // Max 100 records
-    
+
     // Validate date format
     $date_obj = DateTime::createFromFormat('Y-m-d', $date);
     if (!$date_obj || $date_obj->format('Y-m-d') !== $date) {
         throw new Exception('Invalid date format. Use Y-m-d format (e.g., 2025-11-12)');
     }
-    
+
     $response = [
         'success' => true,
         'date' => $date,
         'server_time' => (new DateTime())->format('Y-m-d H:i:s'),
         'server_timezone' => date_default_timezone_get()
     ];
-    
+
     // Helper function to format profile photo path
-    function getProfilePhotoPath($profile_photo_path) {
+    function getProfilePhotoPath($profile_photo_path)
+    {
         if (empty($profile_photo_path)) {
             return '../assets/profile_pic/user.png';
         }
-        
+
         if (strpos($profile_photo_path, 'assets/') === 0) {
             return '../' . $profile_photo_path;
         } elseif (strpos($profile_photo_path, '../') === 0) {
@@ -85,16 +87,17 @@ try {
             return '../' . $profile_photo_path;
         }
     }
-    
+
     // Helper function to calculate time ago
-    function getTimeAgo($datetime_string) {
+    function getTimeAgo($datetime_string)
+    {
         $log_time = new DateTime($datetime_string);
         $now = new DateTime();
         $interval = $now->diff($log_time);
-        
+
         // Calculate total minutes difference
         $total_minutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-        
+
         // Format time ago string (simplified)
         if ($interval->days > 0) {
             if ($interval->days == 1) {
@@ -109,7 +112,7 @@ try {
         } else {
             $time_ago = 'Just now';
         }
-        
+
         // Format detailed time ago for tooltip
         $parts = [];
         if ($interval->days > 0) {
@@ -124,16 +127,16 @@ try {
         if ($interval->s > 0 && empty($parts)) {
             $parts[] = $interval->s . ' second' . ($interval->s > 1 ? 's' : '');
         }
-        
+
         $detailed_time_ago = !empty($parts) ? implode(', ', $parts) . ' ago' : 'Just now';
-        
+
         return [
             'time_ago' => $time_ago,
             'detailed_time_ago' => $detailed_time_ago,
             'total_minutes' => $total_minutes
         ];
     }
-    
+
     // Fetch attendance feed (recent logs from attendance_logs table to include visits)
     if ($type === 'all' || $type === 'feed') {
         // Query attendance_logs table which has ALL scans (including visits)
@@ -158,47 +161,47 @@ try {
                 WHERE al.log_date = ?
                 ORDER BY al.log_time DESC
                 LIMIT ?";
-        
+
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new Exception("SQL prepare failed: " . $conn->error);
         }
-        
+
         $stmt->bind_param("si", $date, $limit);
-        
+
         if (!$stmt->execute()) {
             throw new Exception("SQL execute failed: " . $stmt->error);
         }
-        
+
         $result = $stmt->get_result();
-        
+
         $attendance_logs = [];
-        
+
         // Debug: Count total rows
         $total_rows = $result->num_rows;
-        
+
         while ($row = $result->fetch_assoc()) {
             // Build full name
             $full_name = trim($row['first_name'] . ' ' . $row['last_name']);
-            
+
             // Get profile photo path
             $profile_photo = getProfilePhotoPath($row['profile_photo']);
-            
+
             // Format time
             $log_time_obj = new DateTime($row['log_time']);
             $formatted_time = $log_time_obj->format('g:i A');
             $formatted_date = $log_time_obj->format('M j, Y');
             $time_ago_data = getTimeAgo($row['log_time']);
-            
+
             // Determine display text and status
             $log_type = $row['log_type'];
             $log_type_display = ucfirst(str_replace('_', ' ', $log_type));
-            
+
             // Status logic
             $status = '';
-            
+
             if ($log_type === 'visit') {
-                 $status = 'Visitor';
+                $status = 'Visitor';
             } elseif ($log_type === 'time_in') {
                 // For time_in, check late minutes from linked daily_attendance
                 if (!empty($row['late_minutes']) && $row['late_minutes'] > 0) {
@@ -214,9 +217,9 @@ try {
                 }
             } elseif ($log_type === 'time_out') {
                 // For time_out, we can show status from daily record or just generic
-               $status = 'Logged out';
+                $status = 'Logged out';
             }
-            
+
             $attendance_logs[] = [
                 'id' => $row['id'],
                 'employee_code' => $row['employee_code'],
@@ -236,7 +239,7 @@ try {
                 'notes' => $row['notes']
             ];
         }
-        
+
         $response['feed'] = [
             'count' => count($attendance_logs),
             'data' => $attendance_logs,
@@ -248,7 +251,7 @@ try {
             ]
         ];
     }
-    
+
     // Fetch late employees
     if ($type === 'all' || $type === 'late') {
         $sql = "SELECT DISTINCT
@@ -268,30 +271,30 @@ try {
                 WHERE da.attendance_date = ?
                 AND da.late_minutes > 0
                 ORDER BY da.late_minutes DESC";
-        
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $late_employees = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $full_name = trim($row['first_name'] . ' ' . $row['last_name']);
             $profile_photo = getProfilePhotoPath($row['profile_photo']);
-            
+
             // Format time_in
             $time_in = '';
             if (!empty($row['time_in'])) {
                 $time_obj = new DateTime($row['time_in']);
                 $time_in = $time_obj->format('g:i A');
             }
-            
+
             // Convert late_minutes to hours and minutes
             $late_minutes = intval($row['late_minutes']);
             $late_hours = floor($late_minutes / 60);
             $late_mins = $late_minutes % 60;
-            
+
             // Format late time display
             if ($late_hours > 0 && $late_mins > 0) {
                 $late_display = "Late {$late_hours}h {$late_mins}m";
@@ -300,7 +303,7 @@ try {
             } else {
                 $late_display = "Late {$late_mins}m";
             }
-            
+
             $late_employees[] = [
                 'id' => $row['id'],
                 'employee_code' => $row['employee_code'],
@@ -314,13 +317,13 @@ try {
                 'status' => $row['status']
             ];
         }
-        
+
         $response['late'] = [
             'count' => count($late_employees),
             'data' => $late_employees
         ];
     }
-    
+
     // Fetch employees on leave
     if ($type === 'all' || $type === 'on_leave') {
         $sql = "SELECT 
@@ -342,27 +345,27 @@ try {
                 WHERE el.status = 'approved'
                 AND ? BETWEEN el.start_date AND el.end_date
                 ORDER BY el.start_date ASC";
-        
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $on_leave_employees = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $full_name = trim($row['first_name'] . ' ' . $row['last_name']);
             $profile_photo = getProfilePhotoPath($row['profile_photo']);
-            
+
             // Format dates
             $start_date_obj = new DateTime($row['start_date']);
             $end_date_obj = new DateTime($row['end_date']);
-            
+
             // Format date range for display
             $start_formatted = $start_date_obj->format('M j');
             $end_formatted = $end_date_obj->format('M j, Y');
             $date_range = $start_formatted . ' to ' . $end_formatted;
-            
+
             // If same year, simplify format
             if ($start_date_obj->format('Y') === $end_date_obj->format('Y')) {
                 if ($start_date_obj->format('m') === $end_date_obj->format('m')) {
@@ -373,7 +376,7 @@ try {
                     $date_range = $start_date_obj->format('M j') . ' to ' . $end_date_obj->format('M j, Y');
                 }
             }
-            
+
             $on_leave_employees[] = [
                 'id' => $row['id'],
                 'employee_code' => $row['employee_code'],
@@ -389,13 +392,13 @@ try {
                 'status' => $row['status']
             ];
         }
-        
+
         $response['on_leave'] = [
             'count' => count($on_leave_employees),
             'data' => $on_leave_employees
         ];
     }
-    
+
     // Fetch summary statistics
     if ($type === 'all' || $type === 'summary') {
         // Get total daily_attendance records for this day (base for all calculations)
@@ -406,7 +409,7 @@ try {
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $total_records = $stmt->get_result()->fetch_assoc()['total'];
-        
+
         // Get present count (employees with time_in)
         // Present = Total users who timed in (regardless of late or on-time)
         $sql = "SELECT COUNT(*) as present 
@@ -416,7 +419,7 @@ try {
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $present_count = $stmt->get_result()->fetch_assoc()['present'];
-        
+
         // Get absent count (employees with NO time_in)
         $sql = "SELECT COUNT(*) as absent 
                 FROM daily_attendance 
@@ -425,7 +428,7 @@ try {
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $absent_count = $stmt->get_result()->fetch_assoc()['absent'];
-        
+
         // Get on-time count (has time_in AND late_minutes = 0)
         $sql = "SELECT COUNT(*) as on_time 
                 FROM daily_attendance 
@@ -434,7 +437,7 @@ try {
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $on_time_count = $stmt->get_result()->fetch_assoc()['on_time'];
-        
+
         // Get late count (has time_in AND late_minutes > 0)
         $sql = "SELECT COUNT(*) as late 
                 FROM daily_attendance 
@@ -443,13 +446,13 @@ try {
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $late_count = $stmt->get_result()->fetch_assoc()['late'];
-        
+
         // Calculate percentages based on total daily_attendance records
         $present_percentage = $total_records > 0 ? round(($present_count / $total_records) * 100, 1) : 0;
         $absent_percentage = $total_records > 0 ? round(($absent_count / $total_records) * 100, 1) : 0;
         $on_time_percentage = $total_records > 0 ? round(($on_time_count / $total_records) * 100, 1) : 0;
         $late_percentage = $total_records > 0 ? round(($late_count / $total_records) * 100, 1) : 0;
-        
+
         $response['summary'] = [
             'total_records' => $total_records,
             'present' => [
@@ -470,7 +473,7 @@ try {
             ]
         ];
     }
-    
+
     // Fetch daily attendance records
     if ($type === 'all' || $type === 'daily') {
         $sql = "SELECT 
@@ -487,30 +490,41 @@ try {
                 INNER JOIN employees e ON da.employee_id = e.id
                 WHERE da.attendance_date = ?
                 ORDER BY da.time_in DESC, e.last_name, e.first_name";
-        
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $date);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $daily_records = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $full_name = trim($row['first_name'] . ' ' . $row['last_name']);
             $profile_photo = getProfilePhotoPath($row['profile_photo']);
-            
+
             // Format times
             $time_in_formatted = !empty($row['time_in']) ? (new DateTime($row['time_in']))->format('g:i A') : null;
             $time_out_formatted = !empty($row['time_out']) ? (new DateTime($row['time_out']))->format('g:i A') : null;
-            
+
             // Format hours worked
+            // Dynamic recalculation to bypass DB log penalty for older records
+            if (!empty($row['time_in']) && !empty($row['time_out'])) {
+                $schedule = getEmployeeSchedule($conn, $row['employee_id']);
+                $row['actual_hours'] = calculateActualHoursWithClamping($row['time_in'], $row['time_out'], $schedule, $row['attendance_date'], $row['roles']);
+            }
+
             $hours_worked = null;
             if (!empty($row['actual_hours'])) {
-                $hours = floor($row['actual_hours']);
-                $minutes = round(($row['actual_hours'] - $hours) * 60);
-                $hours_worked = "{$hours}h {$minutes}m";
+                $total_minutes = $row['actual_hours'];
+                $hours = floor($total_minutes / 60);
+                $minutes = round($total_minutes % 60);
+                if ($hours > 0) {
+                    $hours_worked = "{$hours}h {$minutes}m";
+                } else {
+                    $hours_worked = "{$minutes}m";
+                }
             }
-            
+
             $daily_records[] = [
                 'id' => $row['id'],
                 'employee_id' => $row['employee_id'],
@@ -534,15 +548,15 @@ try {
                 'schedule_id' => $row['schedule_id'] ?? null
             ];
         }
-        
+
         $response['daily'] = [
             'count' => count($daily_records),
             'data' => $daily_records
         ];
     }
-    
+
     echo json_encode($response, JSON_PRETTY_PRINT);
-    
+
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([

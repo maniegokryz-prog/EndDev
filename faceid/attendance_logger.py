@@ -723,37 +723,10 @@ class AttendanceLogger:
                             se_h, se_m, se_s = map(int, sched_end_str.split(':'))
                             sched_end_dt = log_datetime.replace(hour=se_h, minute=se_m, second=se_s, microsecond=0)
 
-                            # CLAMP START / ROUND LATE START
+                            # CLAMP START
+                            calc_start_dt = max(t_in_dt, sched_start_dt)
                             if t_in_dt < sched_start_dt:
-                                # Early In: Clamp to Schedule Start
                                 print(f"     ✂️  Clipping Early In: {t_in_dt.strftime('%H:%M')} -> {sched_start_dt.strftime('%H:%M')}")
-                                calc_start_dt = sched_start_dt
-                            elif t_in_dt > sched_start_dt:
-                                # Late In: Round UP to next full hour
-                                # Logic: If 8:23 -> 9:00. If 8:00:01 -> 9:00.
-                                # Use timedelta to get to next hour
-                                delta_min = 60 - t_in_dt.minute
-                                # If minute is 0 but second > 0, we still need to round up? 
-                                # Let's assume strict next hour.
-                                # If already exactly on hour (minute=0, second=0), no rounding needed? 
-                                # But t_in_dt > sched_start_dt implies it IS late.
-                                # If sched 8:00, in 9:00 -> Late 1h. Start at 9:00.
-                                
-                                # If we strictly add minutes to reach :00
-                                current_min = t_in_dt.minute
-                                current_sec = t_in_dt.second
-                                
-                                if current_min == 0 and current_sec == 0:
-                                    # Exactly on an hour (but late). e.g. Sched 8:00, In 9:00.
-                                    # Do not add another hour.
-                                    calc_start_dt = t_in_dt
-                                else:
-                                    # Round up
-                                    # We can just add 1 hour and zero out min/sec?
-                                    # No, if 8:01 -> 9:00.
-                                    next_hour_dt = (t_in_dt + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
-                                    print(f"     ✂️  Rounding Late In: {t_in_dt.strftime('%H:%M:%S')} -> {next_hour_dt.strftime('%H:%M:%S')}")
-                                    calc_start_dt = next_hour_dt
                             
                             # CLAMP END: effectively ignores Overtime (Late Out)
                             if t_out_dt > sched_end_dt:

@@ -44,6 +44,7 @@ ini_set('error_log', __DIR__ . '/logs/attendance_errors.log');
 ob_start();
 
 require '../db_connection.php';
+require_once '../attendancerep/dtr_utils.php';
 
 // Clear any output that may have occurred
 ob_clean();
@@ -57,40 +58,40 @@ try {
     $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
     $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : $start_date;
     $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
-    
+
     // Validate parameters
     if ($employee_id <= 0) {
         throw new Exception('Invalid employee ID');
     }
-    
+
     // Two modes: limit mode (recent records) or date range mode
     $use_limit_mode = ($limit > 0 && empty($start_date));
-    
+
     if (!$use_limit_mode) {
         // Date range mode validation
         if (empty($start_date)) {
             throw new Exception('Start date is required');
         }
-        
+
         // Validate date formats
         $start_date_obj = DateTime::createFromFormat('Y-m-d', $start_date);
         if (!$start_date_obj || $start_date_obj->format('Y-m-d') !== $start_date) {
             throw new Exception('Invalid start date format. Use Y-m-d format (e.g., 2025-11-12)');
         }
-        
+
         $end_date_obj = DateTime::createFromFormat('Y-m-d', $end_date);
         if (!$end_date_obj || $end_date_obj->format('Y-m-d') !== $end_date) {
             throw new Exception('Invalid end date format. Use Y-m-d format (e.g., 2025-11-12)');
         }
-        
+
         // Validate date range (max 16 days)
         $interval = $start_date_obj->diff($end_date_obj);
         $days_diff = $interval->days + 1;
-        
+
         if ($days_diff > 16) {
             throw new Exception('Date range cannot exceed 16 days');
         }
-        
+
         if ($end_date_obj < $start_date_obj) {
             throw new Exception('End date cannot be before start date');
         }
@@ -101,23 +102,23 @@ try {
         }
         $days_diff = null; // Not applicable in limit mode
     }
-    
+
     // Fetch employee details
-    $sql = "SELECT employee_id as employee_code, first_name, last_name, position, department 
+    $sql = "SELECT employee_id as employee_code, first_name, last_name, position, department, roles 
             FROM employees 
             WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $employee_id);
     $stmt->execute();
     $employee_result = $stmt->get_result();
-    
+
     if ($employee_result->num_rows === 0) {
         throw new Exception('Employee not found');
     }
-    
+
     $employee_info = $employee_result->fetch_assoc();
     $stmt->close();
-    
+
     // Fetch attendance records - use different query based on mode
     if ($use_limit_mode) {
         // Limit mode: Get most recent N records from present to past
@@ -127,7 +128,7 @@ try {
                 WHERE da.employee_id = ?
                 ORDER BY da.attendance_date DESC
                 LIMIT ?";
-        
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $employee_id, $limit);
     } else {
@@ -138,23 +139,25 @@ try {
                 WHERE da.employee_id = ?
                 AND da.attendance_date BETWEEN ? AND ?
                 ORDER BY da.attendance_date DESC";
-        
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("iss", $employee_id, $start_date, $end_date);
     }
-    
+
     if (!$stmt->execute()) {
         throw new Exception('Query execution failed: ' . $stmt->error);
     }
-    
+
     $result = $stmt->get_result();
-    
+
     if (!$result) {
         throw new Exception('Failed to get result set: ' . $conn->error);
     }
-    
+
+    $schedule = getEmployeeSchedule($conn, $employee_id);
+
     $attendance_records = [];
-    
+
     while ($row = $result->fetch_assoc()) {
         // Format times
         $time_in_formatted = null;
@@ -162,28 +165,47 @@ try {
             $time_obj = new DateTime($row['time_in']);
             $time_in_formatted = $time_obj->format('g:i A');
         }
-        
+
         $time_out_formatted = null;
         if (!empty($row['time_out'])) {
             $time_obj = new DateTime($row['time_out']);
             $time_out_formatted = $time_obj->format('g:i A');
         }
-        
+
         // Format hours worked
-        // NOTE: actual_hours in database is stored in MINUTES, not hours
+        // Dynamic recalculation to bypass DB log penalty for older records
+        if (!empty($row['time_in']) && !empty($row['time_out'])) {
+            $row['actual_hours'] = calculateActualHoursWithClamping($row['time_in'], $row['time_out'], $schedule, $row['attendance_date'], $employee_info['roles']);
+        }
+
         $hours_worked = null;
         if (!empty($row['actual_hours'])) {
             $total_minutes = $row['actual_hours'];
             $hours = floor($total_minutes / 60);
-            $minutes = $total_minutes % 60;
+            $minutes = round($total_minutes % 60);
             $hours_worked = "{$hours}h {$minutes}m";
         }
-        
+
+        // Calculate exact raw duration in the establishment based purely on time in / time out
+        $raw_duration = null;
+        if (!empty($row['time_in']) && !empty($row['time_out'])) {
+            $t_in = new DateTime($row['time_in']);
+            $t_out = new DateTime($row['time_out']);
+            if ($t_out < $t_in) {
+                $t_out->modify('+1 day');
+            }
+            $diff_int = $t_in->diff($t_out);
+            $raw_minutes = ($diff_int->days * 24 * 60) + ($diff_int->h * 60) + $diff_int->i;
+            $raw_h = floor($raw_minutes / 60);
+            $raw_m = $raw_minutes % 60;
+            $raw_duration = "{$raw_h}h {$raw_m}m";
+        }
+
         // Format date
         $date_obj = new DateTime($row['attendance_date']);
         $formatted_date = $date_obj->format('l, F j, Y');
         $day_of_week = $date_obj->format('l');
-        
+
         // Determine status badge
         $status_info = [
             'status' => $row['status'],
@@ -192,10 +214,10 @@ try {
             'icon_class' => 'bg-secondary',
             'icon' => 'bi-dash'
         ];
-        
+
         // Trim and lowercase for comparison
         $status_lower = strtolower(trim($row['status']));
-        
+
         if ($status_lower === 'complete' || $status_lower === 'present') {
             $status_info['badge_class'] = 'success';
             $status_info['badge_text'] = 'Present';
@@ -222,7 +244,7 @@ try {
             $status_info['icon_class'] = 'bg-manual';
             $status_info['icon'] = 'bi-pencil-square';
         }
-        
+
         $attendance_records[] = [
             'id' => $row['id'],
             'attendance_date' => $row['attendance_date'],
@@ -236,12 +258,13 @@ try {
             'overtime_minutes' => $row['overtime_minutes'] ?? 0,
             'actual_hours' => $row['actual_hours'] ?? null,
             'hours_worked' => $hours_worked,
+            'raw_duration' => $raw_duration,
             'status' => $row['status'],
             'status_info' => $status_info,
             'notes' => $row['notes'] ?? ''
         ];
     }
-    
+
     $stmt->close();
 
     // --- NEW: Fetch VISIT logs from attendance_logs ---
@@ -250,7 +273,7 @@ try {
     $visit_sql = "";
     $visit_params = [];
     $visit_types = "";
-    
+
     if ($use_limit_mode) {
         // If limit mode, we just fetch the last N visits to be safe
         $visit_sql = "SELECT id, log_date, log_time, notes 
@@ -269,21 +292,21 @@ try {
         $visit_params = [$employee_id, $start_date, $end_date];
         $visit_types = "iss";
     }
-    
-    
+
+
     $stmt_visit = $conn->prepare($visit_sql);
     if ($stmt_visit) {
         $stmt_visit->bind_param($visit_types, ...$visit_params);
         if ($stmt_visit->execute()) {
             $visit_result = $stmt_visit->get_result();
             while ($v_row = $visit_result->fetch_assoc()) {
-                
+
                 // Format visit time
                 $visit_datetime = new DateTime($v_row['log_time']);
                 $visit_time_formatted = $visit_datetime->format('g:i A');
                 $visit_date_formatted = $visit_datetime->format('l, F j, Y');
                 $visit_day = $visit_datetime->format('l');
-                
+
                 // Construct visit record matching the structure
                 $visit_info = [
                     'status' => 'visit',
@@ -292,7 +315,7 @@ try {
                     'icon_class' => 'bg-purple', // Custom class, but handled by JS colors
                     'icon' => 'bi-person-badge-fill'
                 ];
-                
+
                 $attendance_records[] = [
                     'id' => 'visit_' . $v_row['id'], // Prefix to avoid ID collision
                     'attendance_date' => $v_row['log_date'],
@@ -320,7 +343,7 @@ try {
     */
 
     // Sort all records by date/time descending
-    usort($attendance_records, function($a, $b) {
+    usort($attendance_records, function ($a, $b) {
         // Use sort_time if available (for visits), else construct from date + time_in
         $t1 = isset($a['sort_time']) ? $a['sort_time'] : ($a['attendance_date'] . ' ' . ($a['time_in'] ?? '00:00:00'));
         $t2 = isset($b['sort_time']) ? $b['sort_time'] : ($b['attendance_date'] . ' ' . ($b['time_in'] ?? '00:00:00'));
@@ -332,7 +355,7 @@ try {
         $attendance_records = array_slice($attendance_records, 0, $limit);
     }
 
-    
+
     // Calculate summary statistics
     $summary = [
         'total_days' => count($attendance_records),
@@ -343,7 +366,7 @@ try {
         'total_late_minutes' => 0,
         'total_hours_worked' => 0 // This will be in minutes
     ];
-    
+
     foreach ($attendance_records as $record) {
         if ($record['status'] === 'complete') {
             $summary['present_days']++;
@@ -360,18 +383,18 @@ try {
                 $summary['total_late_minutes'] += $record['late_minutes'];
             }
         }
-        
+
         // actual_hours is stored in MINUTES in database
         if (!empty($record['actual_hours'])) {
             $summary['total_hours_worked'] += $record['actual_hours'];
         }
     }
-    
+
     // Format total hours worked (convert minutes to hours and minutes)
     $total_hours = floor($summary['total_hours_worked'] / 60);
     $total_minutes = $summary['total_hours_worked'] % 60;
     $summary['total_hours_worked_formatted'] = "{$total_hours}h {$total_minutes}m";
-    
+
     // Build response based on mode
     if ($use_limit_mode) {
         $response = [
@@ -398,19 +421,19 @@ try {
             'data' => $attendance_records
         ];
     }
-    
+
     echo json_encode($response, JSON_PRETTY_PRINT);
-    
+
     // End output buffering and flush
     ob_end_flush();
-    
+
 } catch (Exception $e) {
     // Clear any output buffer
     ob_clean();
-    
+
     // Log the error
     error_log("Get Employee Attendance Error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
-    
+
     http_response_code(400);
     echo json_encode([
         'success' => false,
@@ -421,7 +444,7 @@ try {
         'start_date' => isset($start_date) ? $start_date : null,
         'end_date' => isset($end_date) ? $end_date : null
     ], JSON_PRETTY_PRINT);
-    
+
     ob_end_flush();
 }
 

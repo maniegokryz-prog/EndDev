@@ -8,6 +8,7 @@ date_default_timezone_set('Asia/Manila');
 header('Content-Type: application/json');
 
 require '../../db_connection.php';
+require_once '../../attendancerep/dtr_utils.php';
 
 // Enable error reporting for debugging
 error_reporting(E_ALL);
@@ -70,11 +71,12 @@ function addManualAttendance($conn)
     }
 
     // Validate employee exists
-    $sql = "SELECT id, first_name, last_name FROM employees WHERE id = ?";
+    $sql = "SELECT id, first_name, last_name, roles FROM employees WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $employee_id);
     $stmt->execute();
     $employee = $stmt->get_result()->fetch_assoc();
+    $employeeRole = $employee['roles'] ?? '';
 
     if (!$employee) {
         throw new Exception('Employee not found');
@@ -208,19 +210,16 @@ function addManualAttendance($conn)
             // Calculate actual hours worked (in minutes, stored as decimal)
             $actual_hours = 0;
             if ($timeOutObj) {
-                // Check for overnight shift (if Time Out < Time In)
-                // Note: We are using the SAME date for both details above.
-                // If the user meant the next day, we should add a day to timeOutObj
-                // But generally manual entry implies the date selected.
-                // However, for correct diff, if Time Out is smaller than Time In, assume +1 day
-                $tempTimeOut = clone $timeOutObj;
-                if ($tempTimeOut < $timeInObj) {
-                    $tempTimeOut->modify('+1 day');
+                // Ensure time limits and breaks are respected accurately
+                $formatted_schedule = [];
+                foreach ($schedule_periods as $p) {
+                    $formatted_schedule[] = [
+                        'start' => $p['start_time'],
+                        'end' => $p['end_time']
+                    ];
                 }
-
-                $interval = $timeInObj->diff($tempTimeOut);
-                $actual_minutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
-                $actual_hours = round($actual_minutes, 2);
+                $scheduleToPass = [$dayOfWeekDb => $formatted_schedule];
+                $actual_hours = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole);
 
                 // Debug logging to a custom file
                 file_put_contents(
@@ -441,6 +440,14 @@ function updateTimeOut($conn)
             throw new Exception('Cannot add time out without time in');
         }
 
+        // Fetch employee role for actual_hours calculation
+        $emp_sql = "SELECT roles FROM employees WHERE id = ?";
+        $emp_stmt = $conn->prepare($emp_sql);
+        $emp_stmt->bind_param('i', $employee_id);
+        $emp_stmt->execute();
+        $emp_data = $emp_stmt->get_result()->fetch_assoc();
+        $employeeRole = $emp_data['roles'] ?? '';
+
         // Get employee's schedule for this date to calculate hours
         // Convert date to day of week (0=Monday, 6=Sunday to match database format)
         $dateObj = new DateTime($date);
@@ -461,19 +468,30 @@ function updateTimeOut($conn)
         $schedule_stmt->bind_param('iis', $employee_id, $dayOfWeekDb, $date);
         $schedule_stmt->execute();
         $schedule_result = $schedule_stmt->get_result();
-        $schedule_data = $schedule_result->fetch_assoc();
-        $scheduled_minutes = $schedule_data['scheduled_minutes'] ?? 480; // Default 8 hours
+        $schedule_data = $schedule_result->fetch_all(MYSQLI_ASSOC);
+
+        $scheduled_minutes = 0;
+        $formatted_schedule = [];
+        foreach ($schedule_data as $p) {
+            $start_parts = explode(':', $p['start_time']);
+            $end_parts = explode(':', $p['end_time']);
+            $scheduled_minutes += (($end_parts[0] * 60 + $end_parts[1]) - ($start_parts[0] * 60 + $start_parts[1]));
+
+            $formatted_schedule[] = [
+                'start' => $p['start_time'],
+                'end' => $p['end_time']
+            ];
+        }
 
         // Calculate actual hours worked (in minutes)
+        $scheduleToPass = [$dayOfWeekDb => $formatted_schedule];
+        $actual_minutes = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole);
+
         $time_in_dt = new DateTime($date . ' ' . $time_in);
         $time_out_dt = new DateTime($date . ' ' . $time_out);
-
-        // Handle overnight shifts
         if ($time_out_dt < $time_in_dt) {
             $time_out_dt->modify('+1 day');
         }
-
-        $actual_minutes = ($time_out_dt->getTimestamp() - $time_in_dt->getTimestamp()) / 60;
 
         // Calculate late minutes (compare time_in with first schedule start_time)
         $late_sql = "SELECT MIN(sp.start_time) as schedule_start

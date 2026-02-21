@@ -367,7 +367,8 @@ function renderExcelHistoryTable($employee, $attendanceRecords)
 
 
 // Helper to fetch schedule
-function getEmployeeSchedule($conn, $employeeInternalId) {
+function getEmployeeSchedule($conn, $employeeInternalId)
+{
     // Get active schedule periods
     // We fetch ALL active periods for simplicity, keyed by day_of_week
     $sql = "SELECT sp.day_of_week, sp.start_time, sp.end_time
@@ -375,12 +376,12 @@ function getEmployeeSchedule($conn, $employeeInternalId) {
             JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
             WHERE es.employee_id = ? AND es.is_active = 1 AND sp.is_active = 1
             ORDER BY sp.day_of_week, sp.start_time";
-    
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $employeeInternalId);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     $schedule = [];
     while ($row = $result->fetch_assoc()) {
         $dow = $row['day_of_week'];
@@ -397,7 +398,8 @@ function getEmployeeSchedule($conn, $employeeInternalId) {
 }
 
 
-function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '') {
+function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '')
+{
     if (empty($timeInStr) || empty($timeOutStr) || empty($schedule)) {
         return 0;
     }
@@ -410,7 +412,7 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
     // In PHP `date('w')`: 0=Sunday, 1=Monday.
     // We need to map PHP dow to DB dow.
     // DB dow: 0=Mon, 1=Tue... 6=Sun.
-    $phpDow = (int)date('w', strtotime($dateStr));
+    $phpDow = (int) date('w', strtotime($dateStr));
     $dbDow = ($phpDow == 0) ? 6 : $phpDow - 1;
 
     if (!isset($schedule[$dbDow])) {
@@ -422,51 +424,31 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
 
     $periods = $schedule[$dbDow];
     // Sort periods by start time to ensure correct First/Last logic
-    usort($periods, function($a, $b) { 
-        return strtotime($a['start']) - strtotime($b['start']); 
+    usort($periods, function ($a, $b) {
+        return strtotime($a['start']) - strtotime($b['start']);
     });
 
     $firstPeriodStart = $periods[0]['start'];
     $lastPeriodEnd = end($periods)['end'];
 
     $dateOnly = date('Y-m-d', strtotime($dateStr));
-    
+
     // Create timestamps for Day Bounds
     $schedStartTs = strtotime("$dateOnly $firstPeriodStart");
     $schedEndTs = strtotime("$dateOnly $lastPeriodEnd");
-    
+
     $tInTs = strtotime("$dateOnly " . date('H:i:s', strtotime($timeInStr)));
     $tOutTs = strtotime("$dateOnly " . date('H:i:s', strtotime($timeOutStr)));
 
     // 1. Determine Effective Global Start (Apply Lateness Rule)
-    $calcStartTs = $tInTs;
-    if ($tInTs < $schedStartTs) {
-        // Early In: Clamp to First Schedule Start
-        $calcStartTs = $schedStartTs;
-    } elseif ($tInTs > $schedStartTs) {
-        // Late In: Round UP to next full hour
-        $checkH = (int)date('H', $tInTs);
-        $checkM = (int)date('i', $tInTs);
-        $checkS = (int)date('s', $tInTs);
-        
-        if ($checkM == 0 && $checkS == 0) {
-            $calcStartTs = $tInTs;
-        } else {
-            // Round up to next hour
-            $calcStartTs = mktime($checkH + 1, 0, 0, date('n', $tInTs), date('j', $tInTs), date('Y', $tInTs));
-        }
-    }
+    $calcStartTs = max($tInTs, $schedStartTs);
 
     // 2. Determine Effective Global End (Apply Early Out / Overtime Rule)
-    $calcEndTs = $tOutTs;
-    if ($tOutTs > $schedEndTs) {
-        // Late Out: Clamp to Last Schedule End
-        $calcEndTs = $schedEndTs;
-    }
+    $calcEndTs = min($tOutTs, $schedEndTs);
 
     // 3. Sum Intersections with Each Period
     $totalSeconds = 0;
-    
+
     // If effective start is after effective end (e.g. extremely late), return 0
     if ($calcStartTs >= $calcEndTs) {
         return 0;
@@ -475,11 +457,11 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
     foreach ($periods as $period) {
         $pStartTs = strtotime("$dateOnly " . $period['start']);
         $pEndTs = strtotime("$dateOnly " . $period['end']);
-        
+
         // Calculate Intersection [calcStart, calcEnd] INT [pStart, pEnd]
         $intStart = max($calcStartTs, $pStartTs);
         $intEnd = min($calcEndTs, $pEndTs);
-        
+
         $duration = $intEnd - $intStart;
         if ($duration > 0) {
             $totalSeconds += $duration;
@@ -489,7 +471,7 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
     // Apply Break Deduction for Admin and Non-Teaching Personnel
     // 5 hours = 300 minutes
     $totalMinutes = $totalSeconds / 60;
-    
+
 
 
     // Apply Break Deduction for Admin and Non-Teaching Personnel
@@ -499,14 +481,14 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
 
     if ($deductionMinutes === null) {
         if (isset($conn)) {
-             $result = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'");
-             if ($result && $row = $result->fetch_assoc()) {
-                 $deductionMinutes = (int)$row['setting_value'];
-             } else {
-                 $deductionMinutes = 60; // Default if not found
-             }
+            $result = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'");
+            if ($result && $row = $result->fetch_assoc()) {
+                $deductionMinutes = (int) $row['setting_value'];
+            } else {
+                $deductionMinutes = 60; // Default if not found
+            }
         } else {
-             $deductionMinutes = 60; // Default fallback
+            $deductionMinutes = 60; // Default fallback
         }
     }
 

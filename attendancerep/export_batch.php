@@ -123,8 +123,13 @@ foreach ($employeeIds as $empId) {
         $stmt->execute();
         $res = $stmt->get_result();
 
+        $schedule = getEmployeeSchedule($conn, $employee['internal_id']);
+
         $attendanceMap = [];
         while ($r = $res->fetch_assoc()) {
+            if (!empty($r['time_in']) && !empty($r['time_out'])) {
+                $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role']);
+            }
             $d = (int) date('j', strtotime($r['attendance_date']));
             $attendanceMap[$d] = $r;
         }

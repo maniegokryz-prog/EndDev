@@ -472,7 +472,8 @@ function renderDTRList(records) {
                 <div class="dtr-time">
                     <span>In: ${record.time_in_formatted || '--'}</span> • 
                     <span>Out: ${record.time_out_formatted || '--'}</span>
-                    ${record.hours_worked !== 'N/A' ? ` • ${record.hours_worked} hrs` : ''}
+                    ${record.raw_duration ? ` • <strong>Duration:</strong> ${record.raw_duration}` : ''}
+                    ${record.hours_worked !== 'N/A' && record.hours_worked ? ` <span class="text-muted text-nowrap" style="font-size: 0.85em;">(Credited: ${record.hours_worked})</span>` : ''}
                 </div>
                 ${window.isAdmin ? `
                 <div class="mt-1 d-flex gap-2 align-items-center">
