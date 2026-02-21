@@ -98,36 +98,43 @@ $result = $conn->query($sql);
         <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 
 
-        <!-- Filters -->
-        <div class="row g-2 mb-3 align-items-end">
+        <!-- Toolbar: Filters & Search Layout -->
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 bg-light p-3 rounded border shadow-sm">
+          <div class="d-flex gap-3 align-items-end flex-wrap">
+            <div>
+              <button class="btn btn-outline-dark" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
+            </div>
+            <div style="width: 260px;">
+              <label for="dateRangePicker" class="form-label text-muted fw-semibold small mb-1"><i class="bi bi-funnel"></i> Date Range</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-calendar3"></i></span>
+                <input type="text" class="form-control" id="dateRangePicker" placeholder="Select Date Range">
+              </div>
+            </div>
 
-          <div class="col-md-2">
-            <label class="form-label d-block">&nbsp;</label>
-            <button class="btn btn-outline-dark w-100" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
+            <div style="width: 200px;">
+              <label for="sortBy" class="form-label text-muted fw-semibold small mb-1">Sort By</label>
+              <select class="form-select" id="sortBy">
+                <option value="">Default Order</option>
+                <option value="name">Name</option>
+                <option value="role">Role</option>
+                <option value="department">Department</option>
+              </select>
+            </div>
+
+            <div>
+              <button class="btn btn-dark px-4" style="background-color: #103932; border-color: #103932;" onclick="applyFilters()">Apply</button>
+              <button class="btn btn-warning px-3" onclick="resetFilters()">Reset</button>
+            </div>
           </div>
 
-          <div class="col-md-3">
-            <label for="dateRangePicker" class="form-label">Date Range</label>
-            <input type="text" class="form-control form-control-sm" id="dateRangePicker"
-              placeholder="Select Date Range">
+          <div style="width: 300px;">
+            <label for="searchInput" class="form-label text-muted fw-semibold small mb-1">Search Staff</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control" placeholder="Search by name, ID, email..." id="searchInput" onkeyup="searchTable()">
+            </div>
           </div>
-
-          <div class="col-md-2">
-            <label for="sortBy" class="form-label">Sort By</label>
-            <select class="form-select form-select-sm" id="sortBy" onchange="sortTable()">
-              <option value="">Sort By</option>
-              <option value="name">Name</option>
-              <option value="role">Role</option>
-              <option value="department">Department</option>
-            </select>
-          </div>
-
-          <div class="col-md-3">
-            <label for="searchInput" class="form-label">Search</label>
-            <input type="text" class="form-control form-control-sm" placeholder="Search by name, ID, email, etc."
-              id="searchInput" onkeyup="searchTable()">
-          </div>
-
         </div>
 
         <body class="p-4">
@@ -317,6 +324,38 @@ $result = $conn->query($sql);
                   row.style.display = 'none';
                 }
               }
+            }
+
+            function applyFilters() {
+              // Apply Sort
+              sortTable();
+
+              // Could add any future dynamic filters here
+            }
+
+            function resetFilters() {
+              // Reset Date Range
+              $('#dateRangePicker').val('');
+              selectedDateRange = null;
+
+              // Reset Sort By
+              document.getElementById('sortBy').value = '';
+
+              // Reset Search
+              document.getElementById('searchInput').value = '';
+
+              // Reset Select All State
+              const checkboxes = document.querySelectorAll('.employee-checkbox');
+              checkboxes.forEach(cb => cb.checked = false);
+              allSelected = false;
+              document.getElementById('selectAllBtn').textContent = 'Select All';
+
+              // Show all rows
+              searchTable();
+
+              // Resetting sort back to default order visually is slightly complex without full reload,
+              // but by clearing the value, the next sort will override. A page reload is simpler for full DB sort.
+              // To provide a smooth UX, we just filter normally.
             }
 
             // Sort functionality

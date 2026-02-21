@@ -160,22 +160,18 @@ foreach ($employeeIds as $empId) {
         renderExcelHistoryTable($employee, $allRecords);
         echo '<br><br>'; // Spacing between employees
     } else {
-        // PDF / Print - Chunk by 2
-        $chunks = array_chunk($employeeRenderData, 2);
-
-        foreach ($chunks as $chunk) {
+        // PDF / Print - Render 2 copies of the SAME month per page
+        foreach ($employeeRenderData as $monthData) {
             if (!$isFirstPage) {
                 echo '<div class="page-break"></div>';
             }
 
-            if (count($chunk) === 2) {
-                echo '<div class="dtr-side-by-side">';
-                renderDTRForm($employee, $chunk[0], false);
-                renderDTRForm($employee, $chunk[1], false);
-                echo '</div>';
-            } else {
-                renderDTRForm($employee, $chunk[0], false);
-            }
+            echo '<div class="dtr-side-by-side">';
+            // Render 2 copies of the SAME month
+            renderDTRForm($employee, $monthData, false);
+            renderDTRForm($employee, $monthData, false);
+            echo '</div>';
+
             $isFirstPage = false;
         }
     }

@@ -1384,10 +1384,11 @@ $profilePhoto .= '?v=' . microtime(true);
         window.isAdmin = <?php echo $isAdmin ? 'true' : 'false'; ?>;
         window.employeeRole = <?php echo json_encode($employee['roles']); ?>;
         <?php
-        $breakDedVal = 60; 
+        $breakDedVal = 60;
         if (isset($conn)) {
-             $bdRes = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'");
-             if ($bdRes && $bdRow = $bdRes->fetch_assoc()) $breakDedVal = (int)$bdRow['setting_value'];
+            $bdRes = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'");
+            if ($bdRes && $bdRow = $bdRes->fetch_assoc())
+                $breakDedVal = (int) $bdRow['setting_value'];
         }
         ?>
         window.breakDeductionMinutes = <?php echo $breakDedVal; ?>;
@@ -1673,7 +1674,7 @@ $profilePhoto .= '?v=' . microtime(true);
                     modalEl.addEventListener('show.bs.modal', function () {
                         // Set modal higher with !important to override staff.css
                         this.style.setProperty('z-index', '2050', 'important');
-                        
+
                         // Wait for backdrop to be inserted, then elevate it
                         setTimeout(() => {
                             const backdrops = document.querySelectorAll('.modal-backdrop');
@@ -1745,29 +1746,30 @@ $profilePhoto .= '?v=' . microtime(true);
     </style>
 </body>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check for update success
-            const updateStatus = '<?php echo $updateStatus; ?>';
-            if (updateStatus === 'updated') {
-                const successModal = new bootstrap.Modal(document.getElementById('saveSuccessModal'));
-                successModal.show();
-                // Clean up URL without reloading
-                const url = new URL(window.location);
-                url.searchParams.delete('status');
-                url.searchParams.delete('t');
-                window.history.replaceState({}, '', url);
-            }
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check for update success
+        const updateStatus = '<?php echo $updateStatus; ?>';
+        if (updateStatus === 'updated') {
+            const successModal = new bootstrap.Modal(document.getElementById('saveSuccessModal'));
+            successModal.show();
+            // Clean up URL without reloading
+            const url = new URL(window.location);
+            url.searchParams.delete('status');
+            url.searchParams.delete('t');
+            window.history.replaceState({}, '', url);
+        }
 
-            // Check for update error
-            const updateError = <?php echo json_encode($updateError); ?>;
-            if (updateError) {
-                const errorModalVal = new bootstrap.Modal(document.getElementById('errorRemoveModal'));
-                const msgEl = document.getElementById('errorRemoveMessage');
-                if (msgEl) msgEl.textContent = updateError;
-                // Update title to be generic if needed, but "Failed" works
-                errorModalVal.show();
-            }
-        });
-    </script>
+        // Check for update error
+        const updateError = <?php echo json_encode($updateError); ?>;
+        if (updateError) {
+            const errorModalVal = new bootstrap.Modal(document.getElementById('errorRemoveModal'));
+            const msgEl = document.getElementById('errorRemoveMessage');
+            if (msgEl) msgEl.textContent = updateError;
+            // Update title to be generic if needed, but "Failed" works
+            errorModalVal.show();
+        }
+    });
+</script>
+
 </html>
