@@ -190,6 +190,47 @@ def run_sync_manager():
         if process and process.poll() is None:
             process.terminate()
 
+def run_kiosk_api():
+    """
+    Run the Kiosk API server in a background thread.
+    This local server listens on 127.0.0.1:5001 for commands like clearing the DB.
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    api_script = os.path.join(script_dir, "kiosk_api.py")
+    
+    process = None
+    try:
+        process = subprocess.Popen(
+            [sys.executable, api_script],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            bufsize=1
+        )
+        
+        while not shutdown_event.is_set():
+            line = process.stdout.readline()
+            if line:
+                print(f"{line.rstrip()}")
+            elif process.poll() is not None:
+                break
+            time.sleep(0.1)
+            
+        if shutdown_event.is_set() and process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                
+    except Exception as e:
+        print(f"[WARN] Kiosk API error: {e}")
+    finally:
+        if process and process.poll() is None:
+            process.terminate()
+
 def main():
     print("=" * 70, flush=True)
     print("Kiosk Face ID System - Startup Diagnostics", flush=True)
@@ -473,6 +514,14 @@ def main():
         print("✓ Sync manager started")
     except Exception as e:
         print(f"⚠️  Warning: Could not start sync manager: {e}")
+        
+    api_thread = None
+    try:
+        api_thread = Thread(target=run_kiosk_api, daemon=True)
+        api_thread.start()
+        print("✓ Kiosk API server started")
+    except Exception as e:
+        print(f"⚠️  Warning: Could not start Kiosk API: {e}")
     
     # Launch Kiosk system
     print("\n" + "="*70)
@@ -515,6 +564,8 @@ def main():
         shutdown_event.set()
         if sync_thread and sync_thread.is_alive():
             sync_thread.join(timeout=3)
+        if api_thread and api_thread.is_alive():
+            api_thread.join(timeout=3)
             
         # FORCE UPDATE STATUS TO STOPPED
         try:
