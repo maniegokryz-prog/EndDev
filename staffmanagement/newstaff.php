@@ -297,9 +297,9 @@ try {
                                             <label for="position">Position:</label>
                                             <input type="text" id="position" name="position" required>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group" style="display: none;">
                                             <label for="hire_date">Hire Date:</label>
-                                            <input type="date" id="hire_date" name="hire_date" required>
+                                            <input type="date" id="hire_date" name="hire_date" disabled>
                                         </div>
                                     </div>
 
@@ -482,6 +482,7 @@ try {
                                                 <input type="text" id="designate_class" name="designate_class"
                                                     class="form-control" placeholder="Class Name" autocomplete="off"
                                                     style="text-transform: uppercase;" disabled>
+                                                <small style="color: #666; font-size: 0.8em; display: none;" class="faculty-helper">Click arrow or type to search</small>
                                             </div>
                                             <div class="col-md-4 form-group">
                                                 <label for="designate_subject">Subject <small
@@ -489,6 +490,7 @@ try {
                                                 <input type="text" id="designate_subject" name="designate_subject"
                                                     class="form-control" placeholder="Subject Code" autocomplete="off"
                                                     style="text-transform: uppercase;" disabled>
+                                                <small style="color: #666; font-size: 0.8em; display: none;" class="faculty-helper">Click arrow or type to search</small>
                                             </div>
                                             <div class="col-md-4 form-group">
                                                 <label for="room-number">Room Number <small class="text-muted">(Faculty
@@ -496,6 +498,7 @@ try {
                                                 <input type="text" id="room-number" name="room-number"
                                                     class="form-control" placeholder="Room #" autocomplete="off"
                                                     style="text-transform: uppercase;" disabled>
+                                                <small style="color: #666; font-size: 0.8em; display: none;" class="faculty-helper">Click arrow or type to search</small>
                                             </div>
                                         </div>
 
@@ -877,6 +880,11 @@ try {
                 if (el) {
                     el.disabled = !isFaculty;
                     if (!isFaculty) el.value = '';
+
+                    const helper = el.parentElement.querySelector('.faculty-helper');
+                    if (helper) {
+                        helper.style.display = isFaculty ? 'block' : 'none';
+                    }
                 }
             });
         }

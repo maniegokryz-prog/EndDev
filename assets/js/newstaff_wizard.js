@@ -557,6 +557,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const deptInput = document.getElementById('department');
     if (deptInput && window.existingDepartments) new CustomDropdown(deptInput, window.existingDepartments);
 
+    // Setup Dropdowns for Schedule Step
+    const classInput = document.getElementById('designate_class');
+    if (classInput && window.existingClasses) new CustomDropdown(classInput, window.existingClasses);
+
+    const subjectInput = document.getElementById('designate_subject');
+    if (subjectInput && window.existingSubjects) new CustomDropdown(subjectInput, window.existingSubjects);
+
+    const roomInput = document.getElementById('room-number');
+    if (roomInput && window.existingRooms) new CustomDropdown(roomInput, window.existingRooms);
+
     // Faculty Toggle Logic
     if (rolesInput) {
         rolesInput.addEventListener('change', () => {
