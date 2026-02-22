@@ -4,8 +4,12 @@
  * Generates role-based navigation links
  */
 
+// TOGGLE: Set to true to hide the Sync Settings navigation link (for VPS deployment)
+$hide_sync_settings = true;
+
 function getNavigationLinks()
 {
+    global $hide_sync_settings;
     $currentUser = getCurrentUser();
     $isAdmin = ($currentUser['role'] === 'admin' || ($currentUser['is_system_admin'] ?? false));
 
@@ -43,11 +47,14 @@ function getNavigationLinks()
             'icon' => 'bi-gear',
             'label' => 'Settings'
         ];
-        $links[] = [
-            'url' => '../settings/sync_cloud_settings.php',
-            'icon' => 'bi-cloud-arrow-up',
-            'label' => 'Sync Settings'
-        ];
+
+        if (!$hide_sync_settings) {
+            $links[] = [
+                'url' => '../settings/sync_cloud_settings.php',
+                'icon' => 'bi-cloud-arrow-up',
+                'label' => 'Sync Settings'
+            ];
+        }
     } else {
         // Regular user navigation
         $employeeId = $currentUser['employee_id'] ?? '';
