@@ -1104,7 +1104,7 @@ def run_verification():
     is_frontal_stable = False          # Whether face has been frontal long enough
     verification_done = False          # Whether we've completed a verification
     verification_status = ""           # Text to display (VERIFIED/UNAUTHORIZED)
-    verification_color = (255, 255, 255)  # Color for the status text
+    verification_color = (0, 0, 0)  # Color for the status text
     last_verification_time = None      # Timestamp of last verification
     matched_employee = None            # Store matched employee info for display
     attendance_log_info = None         # Store attendance log details (type and time)
@@ -1340,7 +1340,7 @@ def run_verification():
                                                         if has_logout:
                                                             can_log_attendance = False
                                                             restriction_message = "logout"
-                                                            verification_color = (0, 165, 255)
+                                                            verification_color = (0, 0, 255) # Red
 
                                                     if ENABLE_LOGIN_COOLDOWN and can_log_attendance:
                                                         if 'today_logs' not in locals():
@@ -1358,7 +1358,7 @@ def run_verification():
                                                                 can_log_attendance = False
                                                                 cooldown_end_time = last_login_time + timedelta(minutes=LOGIN_COOLDOWN_MINUTES)
                                                                 restriction_message = cooldown_end_time.strftime('%I:%M %p')
-                                                                verification_color = (0, 200, 200)
+                                                                verification_color = (0, 0, 255) # Red
 
                                         except Exception as e:
                                             print(f"Error checking restrictions: {e}")
@@ -1398,7 +1398,7 @@ def run_verification():
                                                         verification_color = (50, 205, 50) # Green
                                                     elif raw_log_type == 'time_out':
                                                         log_type_display = "Time out"
-                                                        verification_color = (0, 140, 255) # Orange/Gold-ish
+                                                        verification_color = (0, 0, 255) # Red
                                                     elif raw_log_type == 'visit':
                                                         log_type_display = "Visit"
                                                         verification_color = (255, 0, 255) # Magenta

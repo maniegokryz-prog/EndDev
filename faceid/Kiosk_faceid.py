@@ -381,7 +381,7 @@ def run_app():
     is_frontal_stable = False
     verification_done = False
     status_text = ""
-    status_color = (255, 255, 255)
+    status_color = (0, 0, 0)
     last_verify_time = None
     matched_emp = None
     
@@ -499,7 +499,7 @@ def run_app():
                  
                  # Draw text with outline/background for visibility
                  cv2.putText(canvas, guidance_text, (g_x, g_y), cv2.FONT_HERSHEY_SIMPLEX, g_scale, (0,0,0), g_thick+2)
-                 g_color = (0, 255, 255) # Yellow default
+                 g_color = (0, 0, 255) # Red default
                  if not is_real: g_color = (0, 0, 255) # Red for fake
                  cv2.putText(canvas, guidance_text, (g_x, g_y), cv2.FONT_HERSHEY_SIMPLEX, g_scale, g_color, g_thick)
              
@@ -544,17 +544,17 @@ def run_app():
                                       if res['success']:
                                            rt = res['log_type']
                                            if rt == 'time_in': status_text = "Verified - Time In"; status_color = (0, 255, 0)
-                                           elif rt == 'time_out': status_text = "Verified - Time Out"; status_color = (0, 140, 255)
+                                           elif rt == 'time_out': status_text = "Verified - Time Out"; status_color = (0, 0, 255)
                                            elif rt == 'visit': status_text = "Verified - Visit"; status_color = (255, 0, 255)
-                                           else: status_text = rt; status_color = (255, 255, 255)
+                                           else: status_text = rt; status_color = (0, 0, 0)
                                       elif res.get('status') == 'cooldown':
                                            # Cooldown Active - Show Info
                                            status_text = res.get('message', "Already Verified")
-                                           status_color = (0, 215, 255) # Gold/Orangey
+                                           status_color = (0, 0, 255) # Red
                                       elif res.get('status') == 'too_early':
                                            # Tried to Time Out too soon
                                            status_text = res.get('message', "Too Early to Time Out")
-                                           status_color = (255, 165, 0) # Orange
+                                           status_color = (0, 0, 255) # Red
                                       elif res.get('status') == 'completed':
                                            # Already finished for the day
                                            status_text = "Attendance Completed"

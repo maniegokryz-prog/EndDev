@@ -41,7 +41,7 @@ if ($recordId <= 0) {
 try {
     // 1. Verify the record exists and is actually a 'visit'
     // We check case-insensitive just in case, though usually lowercase in DB
-    $checkStmt = $conn->prepare("SELECT id, status, notes FROM daily_attendance WHERE id = ?");
+    $checkStmt = $conn->prepare("SELECT id, status, notes, time_in, time_out FROM daily_attendance WHERE id = ?");
     if (!$checkStmt) {
         throw new Exception("Prepare failed: " . $conn->error);
     }
@@ -59,6 +59,11 @@ try {
 
     if ($currentStatus !== 'visit') {
         echo json_encode(['success' => false, 'message' => 'Record is not a visit record (Current status: ' . $row['status'] . ').']);
+        exit;
+    }
+
+    if (empty($row['time_in']) || empty($row['time_out']) || trim($row['time_in']) === '00:00:00' || trim($row['time_out']) === '00:00:00' || trim($row['time_in']) === '00:00' || trim($row['time_out']) === '00:00') {
+        echo json_encode(['success' => false, 'message' => 'Cannot offset. The visit record must be complete with both Time In and Time Out.']);
         exit;
     }
 

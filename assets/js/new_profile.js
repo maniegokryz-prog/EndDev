@@ -196,11 +196,25 @@ function initCalendarWidget() {
                     // Optional: Show success
                     // alert('Visit successfully set as Offset.'); 
                 } else {
-                    alert('Failed: ' + result.message);
+                    const errorMsgEl = document.getElementById('errorRemoveMessage');
+                    if (errorMsgEl) {
+                        errorMsgEl.textContent = 'Failed: ' + result.message;
+                        const modal = new bootstrap.Modal(document.getElementById('errorRemoveModal'));
+                        modal.show();
+                    } else {
+                        alert('Failed: ' + result.message);
+                    }
                 }
             } catch (e) {
                 console.error(e);
-                alert('An error occurred.');
+                const errorMsgEl = document.getElementById('errorRemoveMessage');
+                if (errorMsgEl) {
+                    errorMsgEl.textContent = 'An error occurred while setting the offset.';
+                    const modal = new bootstrap.Modal(document.getElementById('errorRemoveModal'));
+                    modal.show();
+                } else {
+                    alert('An error occurred.');
+                }
             } finally {
                 pendingOffsetId = null;
             }
