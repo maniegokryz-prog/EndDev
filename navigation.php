@@ -136,5 +136,39 @@ function renderNavigation($currentPage = '')
         echo '<i class="bi ' . $link['icon'] . '"></i> ' . htmlspecialchars($link['label'], ENT_QUOTES, 'UTF-8');
         echo '</a>' . "\n";
     }
+
+    // --- Global Background Sync Engine ---
+    // Inject this script into every page to ensure instant cross-app syncing
+    echo "<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Only trigger the sync engine if we are on the Localhost server
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') return;
+        
+        function triggerGlobalSync() {
+            // Determine relative path to api directory
+            const pathSegments = window.location.pathname.split('/');
+            const apiPath = pathSegments.includes('EndDev') ? '/EndDev/api/run_sync.php' : '../api/run_sync.php';
+
+            fetch(apiPath)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && (data.stats.pushed > 0 || data.stats.pulled > 0)) {
+                        console.log('Global Background Auto-Sync:', data.stats);
+                        // If we are currently on the dashboard, gracefully refresh the feed when new data arrives
+                        if (typeof loadDefaultAttendanceFeed === 'function') {
+                            // Only reload feed if it's the dashboard
+                            if(document.getElementById('attendanceList')) loadDefaultAttendanceFeed();
+                        }
+                    }
+                }).catch(e => console.error('Sync Error:', e));
+        }
+
+        // Fire instantly when ANY page loads!
+        triggerGlobalSync();
+        
+        // Then fire every 30 seconds instead of 60 seconds for faster replication
+        setInterval(triggerGlobalSync, 30000);
+    });
+    </script>\n";
 }
 ?>
