@@ -1470,7 +1470,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 FROM employee_schedules es
                 JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
                 LEFT JOIN employee_assignments ea ON es.employee_id = ea.employee_id AND sp.id = ea.schedule_period_id
-                WHERE es.employee_id = ? AND es.is_active = 1";
+                WHERE es.employee_id = ? AND es.is_active = 1 AND sp.is_active = 1";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('i', $emp_id);
         $stmt->execute();

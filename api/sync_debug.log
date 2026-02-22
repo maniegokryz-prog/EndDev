@@ -116,3 +116,186 @@
 2026-02-22 09:59:04 - --- Sync Cycle Started ---
 2026-02-22 09:59:34 - --- Sync Cycle Started ---
 2026-02-22 10:00:04 - --- Sync Cycle Started ---
+2026-02-22 10:00:34 - --- Sync Cycle Started ---
+2026-02-22 10:01:04 - --- Sync Cycle Started ---
+2026-02-22 10:01:34 - --- Sync Cycle Started ---
+2026-02-22 10:02:04 - --- Sync Cycle Started ---
+2026-02-22 10:02:34 - --- Sync Cycle Started ---
+2026-02-22 10:02:59 - --- Sync Cycle Started ---
+2026-02-22 10:03:29 - --- Sync Cycle Started ---
+2026-02-22 10:03:53 - --- Sync Cycle Started ---
+2026-02-22 10:03:53 - Pulled tables from VPS: employee_leaves, notifications
+2026-02-22 10:03:53 - Successfully downloaded file from VPS: staffmanagement/leave_attachments/leave_1_1771754628_699ad4845038c.jpg
+2026-02-22 10:03:53 - Successfully pulled and updated local record on employee_leaves with VPS id 6
+2026-02-22 10:03:53 - Successfully pulled and updated local record on notifications with VPS id 16
+2026-02-22 10:04:04 - --- Sync Cycle Started ---
+2026-02-22 10:04:04 - Successfully uploaded file to VPS: staffmanagement/leave_attachments/leave_1_1771754628_699ad4845038c.jpg
+2026-02-22 10:04:34 - --- Sync Cycle Started ---
+2026-02-22 10:05:04 - --- Sync Cycle Started ---
+2026-02-22 10:05:16 - --- Sync Cycle Started ---
+2026-02-22 10:05:46 - --- Sync Cycle Started ---
+2026-02-22 10:06:04 - --- Sync Cycle Started ---
+2026-02-22 10:06:04 - Pulled tables from VPS: schedule_periods, employee_assignments, notifications
+2026-02-22 10:06:04 - Successfully pulled and updated local record on schedule_periods with VPS id 10
+2026-02-22 10:06:04 - Successfully pulled and updated local record on schedule_periods with VPS id 11
+2026-02-22 10:06:04 - Successfully pulled and updated local record on schedule_periods with VPS id 12
+2026-02-22 10:06:04 - Successfully pulled and updated local record on schedule_periods with VPS id 13
+2026-02-22 10:06:04 - Successfully pulled and updated local record on schedule_periods with VPS id 14
+2026-02-22 10:06:04 - Successfully pulled and updated local record on schedule_periods with VPS id 15
+2026-02-22 10:06:04 - Successfully pulled and updated local record on schedule_periods with VPS id 16
+2026-02-22 10:06:04 - Successfully pulled and updated local record on schedule_periods with VPS id 17
+2026-02-22 10:06:05 - Successfully pulled and updated local record on employee_assignments with VPS id 6
+2026-02-22 10:06:05 - Successfully pulled and updated local record on employee_assignments with VPS id 7
+2026-02-22 10:06:05 - Successfully pulled and updated local record on employee_assignments with VPS id 8
+2026-02-22 10:06:05 - Successfully pulled and updated local record on employee_assignments with VPS id 9
+2026-02-22 10:06:05 - Successfully pulled and updated local record on employee_assignments with VPS id 10
+2026-02-22 10:06:05 - Successfully pulled and updated local record on employee_assignments with VPS id 11
+2026-02-22 10:06:05 - Successfully pulled and updated local record on employee_assignments with VPS id 12
+2026-02-22 10:06:05 - Successfully pulled and updated local record on notifications with VPS id 19
+2026-02-22 10:06:08 - --- Sync Cycle Started ---
+2026-02-22 10:06:15 - --- Sync Cycle Started ---
+2026-02-22 10:06:45 - --- Sync Cycle Started ---
+2026-02-22 10:06:58 - --- Sync Cycle Started ---
+2026-02-22 10:06:59 - --- Sync Cycle Started ---
+2026-02-22 10:06:59 - --- Sync Cycle Started ---
+2026-02-22 10:07:30 - --- Sync Cycle Started ---
+2026-02-22 10:07:57 - --- Sync Cycle Started ---
+2026-02-22 10:07:57 - Pulled tables from VPS: schedule_periods, employee_assignments, notifications
+2026-02-22 10:07:57 - Successfully pulled and updated local record on schedule_periods with VPS id 23
+2026-02-22 10:07:57 - Successfully pulled and updated local record on schedule_periods with VPS id 24
+2026-02-22 10:07:57 - Successfully pulled and updated local record on schedule_periods with VPS id 25
+2026-02-22 10:07:57 - Successfully pulled and updated local record on schedule_periods with VPS id 26
+2026-02-22 10:07:57 - Successfully pulled and updated local record on schedule_periods with VPS id 27
+2026-02-22 10:07:57 - Successfully pulled and updated local record on schedule_periods with VPS id 28
+2026-02-22 10:07:57 - Successfully pulled and updated local record on schedule_periods with VPS id 29
+2026-02-22 10:07:57 - Successfully pulled and updated local record on employee_assignments with VPS id 18
+2026-02-22 10:07:57 - Successfully pulled and updated local record on employee_assignments with VPS id 19
+2026-02-22 10:07:57 - Successfully pulled and updated local record on employee_assignments with VPS id 20
+2026-02-22 10:07:57 - Successfully pulled and updated local record on employee_assignments with VPS id 21
+2026-02-22 10:07:57 - Successfully pulled and updated local record on employee_assignments with VPS id 22
+2026-02-22 10:07:57 - Successfully pulled and updated local record on employee_assignments with VPS id 23
+2026-02-22 10:07:57 - Successfully pulled and updated local record on notifications with VPS id 21
+2026-02-22 10:08:07 - --- Sync Cycle Started ---
+2026-02-22 10:08:10 - --- Sync Cycle Started ---
+2026-02-22 10:08:40 - --- Sync Cycle Started ---
+2026-02-22 10:09:03 - --- Sync Cycle Started ---
+2026-02-22 10:09:10 - --- Sync Cycle Started ---
+2026-02-22 10:09:40 - --- Sync Cycle Started ---
+2026-02-22 10:09:43 - --- Sync Cycle Started ---
+2026-02-22 10:09:59 - --- Sync Cycle Started ---
+2026-02-22 10:10:03 - --- Sync Cycle Started ---
+2026-02-22 10:10:04 - --- Sync Cycle Started ---
+2026-02-22 10:10:22 - --- Sync Cycle Started ---
+2026-02-22 10:10:24 - --- Sync Cycle Started ---
+2026-02-22 10:10:26 - --- Sync Cycle Started ---
+2026-02-22 10:10:56 - --- Sync Cycle Started ---
+2026-02-22 10:11:26 - --- Sync Cycle Started ---
+2026-02-22 10:11:56 - --- Sync Cycle Started ---
+2026-02-22 10:12:26 - --- Sync Cycle Started ---
+2026-02-22 10:12:56 - --- Sync Cycle Started ---
+2026-02-22 10:13:26 - --- Sync Cycle Started ---
+2026-02-22 10:13:56 - --- Sync Cycle Started ---
+2026-02-22 10:14:13 - --- Sync Cycle Started ---
+2026-02-22 10:14:41 - --- Sync Cycle Started ---
+2026-02-22 10:15:11 - --- Sync Cycle Started ---
+2026-02-22 10:15:40 - --- Sync Cycle Started ---
+2026-02-22 10:15:40 - Pulled tables from VPS: schedule_periods, employee_assignments, notifications
+2026-02-22 10:15:40 - Successfully pulled and updated local record on schedule_periods with VPS id 41
+2026-02-22 10:15:40 - Successfully pulled and updated local record on schedule_periods with VPS id 42
+2026-02-22 10:15:40 - Successfully pulled and updated local record on schedule_periods with VPS id 43
+2026-02-22 10:15:40 - Successfully pulled and updated local record on schedule_periods with VPS id 44
+2026-02-22 10:15:40 - Successfully pulled and updated local record on schedule_periods with VPS id 45
+2026-02-22 10:15:40 - Successfully pulled and updated local record on schedule_periods with VPS id 46
+2026-02-22 10:15:40 - Successfully pulled and updated local record on schedule_periods with VPS id 47
+2026-02-22 10:15:40 - Successfully pulled and updated local record on schedule_periods with VPS id 48
+2026-02-22 10:15:40 - Successfully pulled and updated local record on schedule_periods with VPS id 49
+2026-02-22 10:15:40 - Successfully pulled and updated local record on employee_assignments with VPS id 34
+2026-02-22 10:15:40 - Successfully pulled and updated local record on employee_assignments with VPS id 35
+2026-02-22 10:15:40 - Successfully pulled and updated local record on employee_assignments with VPS id 36
+2026-02-22 10:15:40 - Successfully pulled and updated local record on employee_assignments with VPS id 37
+2026-02-22 10:15:40 - Successfully pulled and updated local record on employee_assignments with VPS id 38
+2026-02-22 10:15:40 - Successfully pulled and updated local record on employee_assignments with VPS id 39
+2026-02-22 10:15:40 - Successfully pulled and updated local record on employee_assignments with VPS id 40
+2026-02-22 10:15:40 - Successfully pulled and updated local record on employee_assignments with VPS id 41
+2026-02-22 10:15:41 - Successfully pulled and updated local record on notifications with VPS id 24
+2026-02-22 10:15:47 - --- Sync Cycle Started ---
+2026-02-22 10:16:17 - --- Sync Cycle Started ---
+2026-02-22 10:16:47 - --- Sync Cycle Started ---
+2026-02-22 10:17:17 - --- Sync Cycle Started ---
+2026-02-22 10:17:47 - --- Sync Cycle Started ---
+2026-02-22 10:18:17 - --- Sync Cycle Started ---
+2026-02-22 10:18:47 - --- Sync Cycle Started ---
+2026-02-22 10:19:17 - --- Sync Cycle Started ---
+2026-02-22 10:19:47 - --- Sync Cycle Started ---
+2026-02-22 10:20:17 - --- Sync Cycle Started ---
+2026-02-22 10:20:47 - --- Sync Cycle Started ---
+2026-02-22 10:21:18 - --- Sync Cycle Started ---
+2026-02-22 10:21:19 - Pulled tables from VPS: schedule_periods, employee_assignments, notifications
+2026-02-22 10:21:19 - Successfully pulled and updated local record on schedule_periods with VPS id 50
+2026-02-22 10:21:19 - Successfully pulled and updated local record on schedule_periods with VPS id 51
+2026-02-22 10:21:19 - Successfully pulled and updated local record on schedule_periods with VPS id 52
+2026-02-22 10:21:19 - Successfully pulled and updated local record on schedule_periods with VPS id 53
+2026-02-22 10:21:19 - Successfully pulled and updated local record on schedule_periods with VPS id 54
+2026-02-22 10:21:19 - Successfully pulled and updated local record on schedule_periods with VPS id 55
+2026-02-22 10:21:19 - Successfully pulled and updated local record on schedule_periods with VPS id 56
+2026-02-22 10:21:19 - Successfully pulled and updated local record on schedule_periods with VPS id 57
+2026-02-22 10:21:19 - Successfully pulled and updated local record on schedule_periods with VPS id 58
+2026-02-22 10:21:19 - Successfully pulled and updated local record on employee_assignments with VPS id 42
+2026-02-22 10:21:19 - Successfully pulled and updated local record on employee_assignments with VPS id 43
+2026-02-22 10:21:19 - Successfully pulled and updated local record on employee_assignments with VPS id 44
+2026-02-22 10:21:19 - Successfully pulled and updated local record on employee_assignments with VPS id 45
+2026-02-22 10:21:19 - Successfully pulled and updated local record on employee_assignments with VPS id 46
+2026-02-22 10:21:19 - Successfully pulled and updated local record on employee_assignments with VPS id 47
+2026-02-22 10:21:19 - Successfully pulled and updated local record on employee_assignments with VPS id 48
+2026-02-22 10:21:19 - Successfully pulled and updated local record on employee_assignments with VPS id 49
+2026-02-22 10:21:19 - Successfully pulled and updated local record on notifications with VPS id 25
+2026-02-22 10:21:32 - --- Sync Cycle Started ---
+2026-02-22 10:22:02 - --- Sync Cycle Started ---
+2026-02-22 10:22:28 - --- Sync Cycle Started ---
+2026-02-22 10:22:29 - --- Sync Cycle Started ---
+2026-02-22 10:22:59 - --- Sync Cycle Started ---
+2026-02-22 10:23:16 - --- Sync Cycle Started ---
+2026-02-22 10:23:25 - --- Sync Cycle Started ---
+2026-02-22 10:23:26 - --- Sync Cycle Started ---
+2026-02-22 10:23:47 - --- Sync Cycle Started ---
+2026-02-22 10:23:48 - --- Sync Cycle Started ---
+2026-02-22 10:24:18 - --- Sync Cycle Started ---
+2026-02-22 10:24:19 - Pulled tables from VPS: schedule_periods, notifications
+2026-02-22 10:24:19 - Successfully pulled and updated local record on schedule_periods with VPS id 59
+2026-02-22 10:24:19 - Successfully pulled and updated local record on notifications with VPS id 26
+2026-02-22 10:24:21 - --- Sync Cycle Started ---
+2026-02-22 10:24:28 - --- Sync Cycle Started ---
+2026-02-22 10:24:55 - --- Sync Cycle Started ---
+2026-02-22 10:25:16 - --- Sync Cycle Started ---
+2026-02-22 10:25:46 - --- Sync Cycle Started ---
+2026-02-22 10:26:17 - --- Sync Cycle Started ---
+2026-02-22 10:26:47 - --- Sync Cycle Started ---
+2026-02-22 10:27:17 - --- Sync Cycle Started ---
+2026-02-22 10:27:46 - --- Sync Cycle Started ---
+2026-02-22 10:27:57 - --- Sync Cycle Started ---
+2026-02-22 10:28:27 - --- Sync Cycle Started ---
+2026-02-22 10:28:57 - --- Sync Cycle Started ---
+2026-02-22 10:29:27 - --- Sync Cycle Started ---
+2026-02-22 10:29:57 - --- Sync Cycle Started ---
+2026-02-22 10:30:27 - --- Sync Cycle Started ---
+2026-02-22 10:30:57 - --- Sync Cycle Started ---
+2026-02-22 10:31:27 - --- Sync Cycle Started ---
+2026-02-22 10:31:57 - --- Sync Cycle Started ---
+2026-02-22 10:32:27 - --- Sync Cycle Started ---
+2026-02-22 10:32:57 - --- Sync Cycle Started ---
+2026-02-22 10:33:27 - --- Sync Cycle Started ---
+2026-02-22 10:33:57 - --- Sync Cycle Started ---
+2026-02-22 10:34:27 - --- Sync Cycle Started ---
+2026-02-22 10:34:57 - --- Sync Cycle Started ---
+2026-02-22 10:35:27 - --- Sync Cycle Started ---
+2026-02-22 10:35:57 - --- Sync Cycle Started ---
+2026-02-22 10:36:27 - --- Sync Cycle Started ---
+2026-02-22 10:36:57 - --- Sync Cycle Started ---
+2026-02-22 10:37:27 - --- Sync Cycle Started ---
+2026-02-22 10:37:57 - --- Sync Cycle Started ---
+2026-02-22 10:38:27 - --- Sync Cycle Started ---
+2026-02-22 10:38:57 - --- Sync Cycle Started ---
+2026-02-22 10:39:27 - --- Sync Cycle Started ---
+2026-02-22 10:39:57 - --- Sync Cycle Started ---
+2026-02-22 10:40:27 - --- Sync Cycle Started ---
+2026-02-22 10:41:27 - --- Sync Cycle Started ---
