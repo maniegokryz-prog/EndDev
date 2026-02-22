@@ -951,3 +951,111 @@
 2026-02-22 13:22:43 - --- Sync Cycle Started ---
 2026-02-22 13:22:59 - --- Sync Cycle Started ---
 2026-02-22 13:23:00 - Successfully uploaded profile_photo to VPS: assets/profile_pic/MA22013612.jpg
+2026-02-22 13:23:30 - --- Sync Cycle Started ---
+2026-02-22 13:24:00 - --- Sync Cycle Started ---
+2026-02-22 13:24:27 - --- Sync Cycle Started ---
+2026-02-22 13:24:27 - Pulled tables from VPS: employees
+2026-02-22 13:24:27 - Successfully pulled and updated local record on employees with VPS id 1
+2026-02-22 13:24:30 - --- Sync Cycle Started ---
+2026-02-22 13:25:00 - --- Sync Cycle Started ---
+2026-02-22 13:25:30 - --- Sync Cycle Started ---
+2026-02-22 13:26:00 - --- Sync Cycle Started ---
+2026-02-22 13:26:30 - --- Sync Cycle Started ---
+2026-02-22 13:27:00 - --- Sync Cycle Started ---
+2026-02-22 13:27:30 - --- Sync Cycle Started ---
+2026-02-22 13:28:00 - --- Sync Cycle Started ---
+2026-02-22 13:28:14 - --- Sync Cycle Started ---
+2026-02-22 13:28:14 - Pulled tables from VPS: employees
+2026-02-22 13:28:15 - Successfully downloaded profile_photo from VPS: assets/profile_pic/MA22013612.png
+2026-02-22 13:28:15 - Successfully pulled and updated local record on employees with VPS id 1
+2026-02-22 13:28:16 - --- Sync Cycle Started ---
+2026-02-22 13:28:18 - --- Sync Cycle Started ---
+2026-02-22 13:28:20 - --- Sync Cycle Started ---
+2026-02-22 13:28:50 - --- Sync Cycle Started ---
+2026-02-22 13:29:20 - --- Sync Cycle Started ---
+2026-02-22 13:29:50 - --- Sync Cycle Started ---
+2026-02-22 13:30:20 - --- Sync Cycle Started ---
+2026-02-22 13:30:50 - --- Sync Cycle Started ---
+2026-02-22 13:31:20 - --- Sync Cycle Started ---
+2026-02-22 13:31:50 - --- Sync Cycle Started ---
+2026-02-22 13:32:20 - --- Sync Cycle Started ---
+2026-02-22 13:32:50 - --- Sync Cycle Started ---
+2026-02-22 13:33:20 - --- Sync Cycle Started ---
+2026-02-22 13:33:50 - --- Sync Cycle Started ---
+2026-02-22 13:34:20 - --- Sync Cycle Started ---
+2026-02-22 13:34:50 - --- Sync Cycle Started ---
+2026-02-22 13:35:20 - --- Sync Cycle Started ---
+2026-02-22 13:35:50 - --- Sync Cycle Started ---
+2026-02-22 13:36:20 - --- Sync Cycle Started ---
+2026-02-22 13:36:50 - --- Sync Cycle Started ---
+2026-02-22 13:37:20 - --- Sync Cycle Started ---
+2026-02-22 13:37:50 - --- Sync Cycle Started ---
+2026-02-22 13:38:20 - --- Sync Cycle Started ---
+2026-02-22 13:38:50 - --- Sync Cycle Started ---
+2026-02-22 13:39:20 - --- Sync Cycle Started ---
+2026-02-22 13:39:50 - --- Sync Cycle Started ---
+2026-02-22 13:40:20 - --- Sync Cycle Started ---
+2026-02-22 13:40:50 - --- Sync Cycle Started ---
+2026-02-22 13:41:20 - --- Sync Cycle Started ---
+2026-02-22 13:41:50 - --- Sync Cycle Started ---
+2026-02-22 13:42:20 - --- Sync Cycle Started ---
+2026-02-22 13:42:28 - --- Sync Cycle Started ---
+2026-02-22 13:42:28 - Successfully uploaded profile_photo to VPS: assets/profile_pic/MA22013612.jpg
+2026-02-22 13:42:31 - --- Sync Cycle Started ---
+2026-02-22 13:43:01 - --- Sync Cycle Started ---
+2026-02-22 13:43:31 - --- Sync Cycle Started ---
+2026-02-22 13:44:01 - --- Sync Cycle Started ---
+2026-02-22 13:44:31 - --- Sync Cycle Started ---
+2026-02-22 13:44:32 - Pulled tables from VPS: employees
+2026-02-22 13:44:32 - Successfully downloaded profile_photo from VPS: assets/profile_pic/MA22013612.png
+2026-02-22 13:44:32 - Successfully pulled and updated local record on employees with VPS id 1
+2026-02-22 13:44:36 - --- Sync Cycle Started ---
+2026-02-22 13:45:06 - --- Sync Cycle Started ---
+2026-02-22 13:45:36 - --- Sync Cycle Started ---
+2026-02-22 13:46:05 - --- Sync Cycle Started ---
+2026-02-22 13:46:05 - Pulled tables from VPS: employees
+2026-02-22 13:46:05 - Successfully pulled and updated local record on employees with VPS id 1
+2026-02-22 13:46:10 - --- Sync Cycle Started ---
+2026-02-22 13:46:14 - --- Sync Cycle Started ---
+2026-02-22 13:46:15 - --- Sync Cycle Started ---
+2026-02-22 13:46:16 - --- Sync Cycle Started ---
+2026-02-22 13:46:17 - --- Sync Cycle Started ---
+2026-02-22 13:46:19 - --- Sync Cycle Started ---
+2026-02-22 13:46:27 - --- Sync Cycle Started ---
+2026-02-22 13:46:28 - --- Sync Cycle Started ---
+2026-02-22 13:46:29 - --- Sync Cycle Started ---
+2026-02-22 13:46:30 - --- Sync Cycle Started ---
+2026-02-22 13:47:00 - --- Sync Cycle Started ---
+2026-02-22 13:47:30 - --- Sync Cycle Started ---
+2026-02-22 13:47:55 - --- Sync Cycle Started ---
+2026-02-22 13:47:56 - --- Sync Cycle Started ---
+2026-02-22 13:47:57 - --- Sync Cycle Started ---
+2026-02-22 13:47:58 - --- Sync Cycle Started ---
+2026-02-22 13:48:23 - --- Sync Cycle Started ---
+2026-02-22 13:48:23 - Pulled tables from VPS: employees
+2026-02-22 13:48:23 - Successfully downloaded profile_photo from VPS: assets/profile_pic/MA22013612.png
+2026-02-22 13:48:23 - Successfully pulled and updated local record on employees with VPS id 1
+2026-02-22 13:48:25 - --- Sync Cycle Started ---
+2026-02-22 13:48:27 - --- Sync Cycle Started ---
+2026-02-22 13:48:57 - --- Sync Cycle Started ---
+2026-02-22 13:49:27 - --- Sync Cycle Started ---
+2026-02-22 13:49:57 - --- Sync Cycle Started ---
+2026-02-22 13:50:27 - --- Sync Cycle Started ---
+2026-02-22 13:50:57 - --- Sync Cycle Started ---
+2026-02-22 13:51:27 - --- Sync Cycle Started ---
+2026-02-22 13:51:57 - --- Sync Cycle Started ---
+2026-02-22 13:52:27 - --- Sync Cycle Started ---
+2026-02-22 13:52:57 - --- Sync Cycle Started ---
+2026-02-22 13:53:27 - --- Sync Cycle Started ---
+2026-02-22 13:53:35 - --- Sync Cycle Started ---
+2026-02-22 13:53:35 - Pulled tables from VPS: employees
+2026-02-22 13:53:35 - Successfully downloaded profile_photo from VPS: assets/profile_pic/MA22013612.jpg
+2026-02-22 13:53:35 - Successfully pulled and updated local record on employees with VPS id 1
+2026-02-22 13:53:37 - --- Sync Cycle Started ---
+2026-02-22 13:53:38 - --- Sync Cycle Started ---
+2026-02-22 13:53:39 - --- Sync Cycle Started ---
+2026-02-22 13:54:10 - --- Sync Cycle Started ---
+2026-02-22 13:54:40 - --- Sync Cycle Started ---
+2026-02-22 13:55:10 - --- Sync Cycle Started ---
+2026-02-22 13:55:22 - --- Sync Cycle Started ---
+2026-02-22 13:55:52 - --- Sync Cycle Started ---

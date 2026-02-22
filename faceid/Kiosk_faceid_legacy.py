@@ -1434,6 +1434,18 @@ def run_verification():
                                     matched_employee = None
                                     attendance_log_info = None
                                 
+                                # Dynamically load the latest profile picture from disk for this session
+                                if matched_employee is not None:
+                                    matched_employee['dynamic_pic'] = None
+                                    emp_code = matched_employee.get('employee_code')
+                                    if emp_code:
+                                        user_profile_dir = os.path.join(script_dir, "database", "user_profile")
+                                        for ext in ['.jpg', '.png', '.jpeg']:
+                                            p = os.path.join(user_profile_dir, f"{emp_code}{ext}")
+                                            if os.path.exists(p):
+                                                matched_employee['dynamic_pic'] = cv2.imread(p)
+                                                break
+
                                 verification_done = True
                                 last_verification_time = time.time()
                                 is_frontal_stable = False
@@ -1505,7 +1517,9 @@ def run_verification():
                         pic_y = card_y + (card_h - pic_size) // 2
                         
                         emp_code = matched_employee.get('employee_code', '')
-                        profile_pic = profile_pictures.get(emp_code)
+                        profile_pic = matched_employee.get('dynamic_pic')
+                        if profile_pic is None:
+                            profile_pic = profile_pictures.get(emp_code)
                         
                         # Draw Pic Circle
                         if profile_pic is not None:

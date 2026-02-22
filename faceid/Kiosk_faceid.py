@@ -562,6 +562,17 @@ def run_app():
                                       else:
                                            status_text = "Included / Error"; status_color = (0, 0, 255)
                                            
+                                      # Dynamically load the latest profile picture from disk for this session
+                                      matched_emp['dynamic_pic'] = None
+                                      emp_code = matched_emp.get('employee_code')
+                                      if emp_code:
+                                          user_profile_dir = os.path.join(script_dir, "database", "user_profile")
+                                          for ext in ['.jpg', '.png', '.jpeg']:
+                                              p = os.path.join(user_profile_dir, f"{emp_code}{ext}")
+                                              if os.path.exists(p):
+                                                  matched_emp['dynamic_pic'] = cv2.imread(p)
+                                                  break
+                                                  
                                       verification_done = True
                                       last_verify_time = time.time()
                                       consecutive_failures = 0
@@ -626,7 +637,9 @@ def run_app():
                  pic_y = card_y + (card_h - pic_size) // 2
                  
                  code = matched_emp.get('employee_code')
-                 pic = profile_pics.get(code)
+                 pic = matched_emp.get('dynamic_pic')
+                 if pic is None:
+                      pic = profile_pics.get(code)
                  
                  if pic is not None:
                       try:

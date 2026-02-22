@@ -170,6 +170,7 @@ def sync_profile_pictures():
     copied_count = 0
     skipped_count = 0
     error_count = 0
+    deleted_count = 0
     
     try:
         # Get all files in source directory
@@ -180,10 +181,27 @@ def sync_profile_pictures():
         
         if not image_files:
             print("No image files found in source directory")
-            return True, 0, 0, 0
+            return True, 0, 0, 0, 0
         
         print(f"Found {len(image_files)} image file(s) in source directory")
         print()
+        
+        # --- TRUE MIRROR: DELETE OBSOLETE FILES ---
+        dest_files = [f for f in os.listdir(DEST_DIR) if os.path.isfile(os.path.join(DEST_DIR, f))]
+        dest_images = [f for f in dest_files if is_image_file(f)]
+        for d_file in dest_images:
+            # Check if this destination file exists in the source directory
+            if d_file not in image_files:
+                try:
+                    os.remove(os.path.join(DEST_DIR, d_file))
+                    print(f"Deleted obsolete file: {d_file}")
+                    deleted_count += 1
+                except Exception as e:
+                    print(f"Error deleting obsolete file {d_file}: {e}")
+                    error_count += 1
+        print()
+        
+        # --- COPY NEW/CHANGED FILES ---
         
         for filename in image_files:
             source_path = os.path.join(SOURCE_DIR, filename)
@@ -206,16 +224,16 @@ def sync_profile_pictures():
         
         print()
         print(f"{'=' * 70}")
-        print(f"Sync completed: {copied_count} copied, {skipped_count} skipped, {error_count} errors")
+        print(f"Sync completed: {copied_count} copied, {skipped_count} skipped, {deleted_count} deleted, {error_count} errors")
         print(f"{'=' * 70}")
         
-        return True, copied_count, skipped_count, error_count
+        return True, copied_count, skipped_count, deleted_count, error_count
         
     except Exception as e:
         print(f"Error during sync: {e}")
         import traceback
         traceback.print_exc()
-        return False, copied_count, skipped_count, error_count + 1
+        return False, copied_count, skipped_count, deleted_count, error_count + 1
 
 
 def run_continuous_sync(interval=60):
@@ -273,7 +291,7 @@ def main():
         run_continuous_sync(interval=60)
     else:
         # Run once
-        success, copied, skipped, errors = sync_profile_pictures()
+        success, copied, skipped, deleted, errors = sync_profile_pictures()
         
         if not success or errors > 0:
             sys.exit(1)

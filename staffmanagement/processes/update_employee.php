@@ -179,6 +179,16 @@ class EmployeeUpdater
             $newFilename = $employeeId . '.' . $fileExtension;
             $newFilepath = $uploadDir . $newFilename;
 
+            // Delete ANY existing profile pictures for this employee to prevent overlapping extensions (.jpg vs .png)
+            $existingFiles = glob($uploadDir . $employeeId . '.*');
+            if ($existingFiles) {
+                foreach ($existingFiles as $file) {
+                    if (is_file($file)) {
+                        unlink($file);
+                    }
+                }
+            }
+
             // Move the uploaded file (overwrites if exists)
             if (!move_uploaded_file($photo['tmp_name'], $newFilepath)) {
                 throw new Exception("Failed to save the uploaded profile picture.");
