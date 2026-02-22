@@ -13,3 +13,78 @@
 2026-02-22 09:27:10 - --- Sync Cycle Started ---
 2026-02-22 09:27:10 - Pulled tables from VPS: employees
 2026-02-22 09:27:10 - Successfully pulled and updated local record on employees with VPS id 1
+2026-02-22 09:32:35 - --- Sync Cycle Started ---
+2026-02-22 09:32:38 - --- Sync Cycle Started ---
+2026-02-22 09:32:45 - --- Sync Cycle Started ---
+2026-02-22 09:33:15 - --- Sync Cycle Started ---
+2026-02-22 09:33:16 - Pulled tables from VPS: employees
+2026-02-22 09:33:16 - Successfully pulled and updated local record on employees with VPS id 1
+2026-02-22 09:33:19 - --- Sync Cycle Started ---
+2026-02-22 09:33:25 - --- Sync Cycle Started ---
+2026-02-22 09:33:26 - --- Sync Cycle Started ---
+2026-02-22 09:33:28 - --- Sync Cycle Started ---
+2026-02-22 09:33:58 - --- Sync Cycle Started ---
+2026-02-22 09:34:25 - --- Sync Cycle Started ---
+2026-02-22 09:34:25 - Pulled tables from VPS: leave_types, employee_leaves, notifications
+2026-02-22 09:34:25 - Successfully pulled and updated local record on leave_types with VPS id 1
+2026-02-22 09:34:26 - Successfully pulled and updated local record on employee_leaves with VPS id 1
+2026-02-22 09:34:26 - Successfully pulled and updated local record on notifications with VPS id 3
+2026-02-22 09:34:28 - --- Sync Cycle Started ---
+2026-02-22 09:34:32 - --- Sync Cycle Started ---
+2026-02-22 09:34:40 - --- Sync Cycle Started ---
+2026-02-22 09:34:55 - --- Sync Cycle Started ---
+2026-02-22 09:35:25 - --- Sync Cycle Started ---
+2026-02-22 09:35:35 - --- Sync Cycle Started ---
+2026-02-22 09:35:35 - Pulled tables from VPS: notifications
+2026-02-22 09:35:35 - Successfully pulled and updated local record on notifications with VPS id 5
+2026-02-22 09:35:36 - --- Sync Cycle Started ---
+2026-02-22 09:35:37 - --- Sync Cycle Started ---
+2026-02-22 09:35:39 - --- Sync Cycle Started ---
+2026-02-22 09:35:41 - --- Sync Cycle Started ---
+2026-02-22 09:36:11 - --- Sync Cycle Started ---
+2026-02-22 09:36:41 - --- Sync Cycle Started ---
+2026-02-22 09:37:11 - --- Sync Cycle Started ---
+2026-02-22 09:37:41 - --- Sync Cycle Started ---
+2026-02-22 09:37:41 - Pulled tables from VPS: employee_leaves, notifications
+2026-02-22 09:37:41 - Successfully pulled and updated local record on employee_leaves with VPS id 2
+2026-02-22 09:37:41 - Successfully pulled and updated local record on notifications with VPS id 6
+2026-02-22 09:37:41 - --- Sync Cycle Started ---
+2026-02-22 09:37:44 - --- Sync Cycle Started ---
+2026-02-22 09:37:51 - --- Sync Cycle Started ---
+2026-02-22 09:38:21 - --- Sync Cycle Started ---
+2026-02-22 09:38:51 - --- Sync Cycle Started ---
+2026-02-22 09:39:21 - --- Sync Cycle Started ---
+2026-02-22 09:39:51 - --- Sync Cycle Started ---
+2026-02-22 09:40:21 - --- Sync Cycle Started ---
+2026-02-22 09:40:51 - --- Sync Cycle Started ---
+2026-02-22 09:41:21 - --- Sync Cycle Started ---
+2026-02-22 09:41:51 - --- Sync Cycle Started ---
+2026-02-22 09:42:21 - --- Sync Cycle Started ---
+2026-02-22 09:42:51 - --- Sync Cycle Started ---
+2026-02-22 09:43:21 - --- Sync Cycle Started ---
+2026-02-22 09:43:51 - --- Sync Cycle Started ---
+2026-02-22 09:43:52 - Pulled tables from VPS: notifications
+2026-02-22 09:43:52 - Successfully pulled and updated local record on notifications with VPS id 8
+2026-02-22 09:44:21 - --- Sync Cycle Started ---
+2026-02-22 09:44:51 - --- Sync Cycle Started ---
+2026-02-22 09:44:59 - --- Sync Cycle Started ---
+2026-02-22 09:45:26 - --- Sync Cycle Started ---
+2026-02-22 09:45:26 - Pulled tables from VPS: daily_attendance, notifications
+2026-02-22 09:45:26 - Successfully pulled and updated local record on daily_attendance with VPS id 3
+2026-02-22 09:45:26 - Successfully pulled and updated local record on notifications with VPS id 10
+2026-02-22 09:45:33 - --- Sync Cycle Started ---
+2026-02-22 09:46:03 - --- Sync Cycle Started ---
+2026-02-22 09:46:33 - --- Sync Cycle Started ---
+2026-02-22 09:47:03 - --- Sync Cycle Started ---
+2026-02-22 09:47:18 - --- Sync Cycle Started ---
+2026-02-22 09:47:48 - --- Sync Cycle Started ---
+2026-02-22 09:48:18 - --- Sync Cycle Started ---
+2026-02-22 09:48:48 - --- Sync Cycle Started ---
+2026-02-22 09:49:18 - --- Sync Cycle Started ---
+2026-02-22 09:49:48 - --- Sync Cycle Started ---
+2026-02-22 09:50:18 - --- Sync Cycle Started ---
+2026-02-22 09:50:48 - --- Sync Cycle Started ---
+2026-02-22 09:51:18 - --- Sync Cycle Started ---
+2026-02-22 09:51:48 - --- Sync Cycle Started ---
+2026-02-22 09:52:18 - --- Sync Cycle Started ---
+2026-02-22 09:52:48 - --- Sync Cycle Started ---

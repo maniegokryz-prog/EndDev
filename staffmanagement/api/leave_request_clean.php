@@ -39,7 +39,7 @@ if (!isset($conn) || $conn->connect_error) {
 
 try {
     $action = $_GET['action'] ?? $_POST['action'] ?? '';
-    
+
     switch ($action) {
         case 'submit_request':
             submitLeaveRequest($conn);
@@ -79,9 +79,10 @@ try {
 
 $conn->close();
 
-function submitLeaveRequest($conn) {
+function submitLeaveRequest($conn)
+{
     ob_end_clean();
-    
+
     try {
         $employee_id = $_POST['employee_id'] ?? 0;
         $leave_type = $_POST['leave_type'] ?? '';
@@ -92,7 +93,7 @@ function submitLeaveRequest($conn) {
         $reason = $_POST['reason'] ?? '';
         $is_admin = ($_POST['is_admin'] ?? '0') === '1';
         $auto_approve = ($_POST['auto_approve'] ?? '0') === '1';
-        
+
         if (!$employee_id || !$leave_type || !$start_date || !$end_date) {
             echo json_encode([
                 'success' => false,
@@ -109,135 +110,135 @@ function submitLeaveRequest($conn) {
         if ($end_time) {
             $end_date .= ' ' . $end_time;
         }
-    
-    // Handle file upload
-    $attachment_path = null;
-    if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
-        $allowed = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
-        $filename = $_FILES['attachment']['name'];
-        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        
-        if (!in_array($ext, $allowed)) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'Invalid file type. Allowed: JPG, PNG, PDF, DOC, DOCX'
-            ]);
-            return;
+
+        // Handle file upload
+        $attachment_path = null;
+        if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+            $allowed = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+            $filename = $_FILES['attachment']['name'];
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+            if (!in_array($ext, $allowed)) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Invalid file type. Allowed: JPG, PNG, PDF, DOC, DOCX'
+                ]);
+                return;
+            }
+
+            if ($_FILES['attachment']['size'] > 5242880) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'File too large. Maximum size: 5MB'
+                ]);
+                return;
+            }
+
+            $upload_dir = __DIR__ . '/../leave_attachments/';
+            if (!is_dir($upload_dir)) {
+                @mkdir($upload_dir, 0755, true);
+            }
+
+            $new_filename = 'leave_' . $employee_id . '_' . time() . '_' . uniqid() . '.' . $ext;
+            $upload_path = $upload_dir . $new_filename;
+
+            if (!move_uploaded_file($_FILES['attachment']['tmp_name'], $upload_path)) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Failed to upload file'
+                ]);
+                return;
+            }
+
+            $attachment_path = 'staffmanagement/leave_attachments/' . $new_filename;
         }
-        
-        if ($_FILES['attachment']['size'] > 5242880) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'File too large. Maximum size: 5MB'
-            ]);
-            return;
-        }
-        
-        $upload_dir = __DIR__ . '/../leave_attachments/';
-        if (!is_dir($upload_dir)) {
-            @mkdir($upload_dir, 0755, true);
-        }
-        
-        $new_filename = 'leave_' . $employee_id . '_' . time() . '_' . uniqid() . '.' . $ext;
-        $upload_path = $upload_dir . $new_filename;
-        
-        if (!move_uploaded_file($_FILES['attachment']['tmp_name'], $upload_path)) {
-            echo json_encode([
-                'success' => false,
-                'error' => 'Failed to upload file'
-            ]);
-            return;
-        }
-        
-        $attachment_path = 'staffmanagement/leave_attachments/' . $new_filename;
-    }
-    
-    // Get or create leave type
-    $stmt = $conn->prepare("SELECT id FROM leave_types WHERE type_name = ?");
-    $stmt->bind_param("s", $leave_type);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($row = $result->fetch_assoc()) {
-        $leave_type_id = $row['id'];
-    } else {
-        $stmt = $conn->prepare("INSERT INTO leave_types (type_name, description) VALUES (?, ?)");
-        $desc = $leave_type . " leave";
-        $stmt->bind_param("ss", $leave_type, $desc);
+
+        // Get or create leave type
+        $stmt = $conn->prepare("SELECT id FROM leave_types WHERE type_name = ?");
+        $stmt->bind_param("s", $leave_type);
         $stmt->execute();
-        $leave_type_id = $conn->insert_id;
-    }
-    
-    // Check if attachment column exists
-    $check_column = $conn->query("SHOW COLUMNS FROM employee_leaves LIKE 'attachment'");
-    $has_attachment_column = $check_column->num_rows > 0;
-    
-    // Determine initial status
-    $initial_status = ($is_admin && $auto_approve) ? 'approved' : 'pending';
-    
-    // Insert leave request
-    if ($has_attachment_column && $attachment_path) {
-        $sql = "INSERT INTO employee_leaves (employee_id, leave_type_id, start_date, end_date, reason, status, attachment) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iisssss", $employee_id, $leave_type_id, $start_date, $end_date, $reason, $initial_status, $attachment_path);
-    } else {
-        $sql = "INSERT INTO employee_leaves (employee_id, leave_type_id, start_date, end_date, reason, status) 
-                VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iissss", $employee_id, $leave_type_id, $start_date, $end_date, $reason, $initial_status);
-    }
-    
-    if ($stmt->execute()) {
-        $leave_id = $conn->insert_id;
-        
-        // Create notification for admin (only if not auto-approved)
-        if ($initial_status === 'pending') {
-            // Get employee name and code
-            $stmt_emp = $conn->prepare("SELECT first_name, last_name, employee_id FROM employees WHERE id = ?");
-            $stmt_emp->bind_param("i", $employee_id);
-            $stmt_emp->execute();
-            $emp_result = $stmt_emp->get_result();
-            $emp_name = "Employee";
-            $emp_code = "";
-            
-            if ($emp_row = $emp_result->fetch_assoc()) {
-                $emp_name = $emp_row['first_name'] . ' ' . $emp_row['last_name'];
-                $emp_code = $emp_row['employee_id'];
-            }
-            
-            // Check if notifications table exists
-            $check_table = $conn->query("SHOW TABLES LIKE 'notifications'");
-            if ($check_table->num_rows > 0) {
-                $message = $emp_name . " has submitted a leave request (Pending for approval)";
-                $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $emp_code;
-                
-                // Check if link column exists
-                $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
-                if ($check_column->num_rows > 0) {
-                    $stmt_notif = $conn->prepare("INSERT INTO notifications (employee_id, leave_id, type, message, link, target, is_read) VALUES (?, ?, 'leave_request', ?, ?, 'admin', 0)");
-                    $stmt_notif->bind_param("iiss", $employee_id, $leave_id, $message, $link);
-                } else {
-                    $stmt_notif = $conn->prepare("INSERT INTO notifications (employee_id, leave_id, type, message, target, is_read) VALUES (?, ?, 'leave_request', ?, 'admin', 0)");
-                    $stmt_notif->bind_param("iis", $employee_id, $leave_id, $message);
-                }
-                $stmt_notif->execute();
-            }
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            $leave_type_id = $row['id'];
+        } else {
+            $stmt = $conn->prepare("INSERT INTO leave_types (type_name, description) VALUES (?, ?)");
+            $desc = $leave_type . " leave";
+            $stmt->bind_param("ss", $leave_type, $desc);
+            $stmt->execute();
+            $leave_type_id = $conn->insert_id;
         }
-        
-        echo json_encode([
-            'success' => true,
-            'message' => 'Leave request submitted successfully',
-            'leave_id' => $leave_id,
-            'status' => $initial_status
-        ]);
-    } else {
-        echo json_encode([
-            'success' => false,
-            'error' => 'Failed to submit leave request: ' . $stmt->error
-        ]);
-    }
-    
+
+        // Check if attachment column exists
+        $check_column = $conn->query("SHOW COLUMNS FROM employee_leaves LIKE 'attachment'");
+        $has_attachment_column = $check_column->num_rows > 0;
+
+        // Determine initial status
+        $initial_status = ($is_admin && $auto_approve) ? 'approved' : 'pending';
+
+        // Insert leave request
+        if ($has_attachment_column && $attachment_path) {
+            $sql = "INSERT INTO employee_leaves (employee_id, leave_type_id, start_date, end_date, reason, status, attachment) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("iisssss", $employee_id, $leave_type_id, $start_date, $end_date, $reason, $initial_status, $attachment_path);
+        } else {
+            $sql = "INSERT INTO employee_leaves (employee_id, leave_type_id, start_date, end_date, reason, status) 
+                VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("iissss", $employee_id, $leave_type_id, $start_date, $end_date, $reason, $initial_status);
+        }
+
+        if ($stmt->execute()) {
+            $leave_id = $conn->insert_id;
+
+            // Create notification for admin (only if not auto-approved)
+            if ($initial_status === 'pending') {
+                // Get employee name and code
+                $stmt_emp = $conn->prepare("SELECT first_name, last_name, employee_id FROM employees WHERE id = ?");
+                $stmt_emp->bind_param("i", $employee_id);
+                $stmt_emp->execute();
+                $emp_result = $stmt_emp->get_result();
+                $emp_name = "Employee";
+                $emp_code = "";
+
+                if ($emp_row = $emp_result->fetch_assoc()) {
+                    $emp_name = $emp_row['first_name'] . ' ' . $emp_row['last_name'];
+                    $emp_code = $emp_row['employee_id'];
+                }
+
+                // Check if notifications table exists
+                $check_table = $conn->query("SHOW TABLES LIKE 'notifications'");
+                if ($check_table->num_rows > 0) {
+                    $message = $emp_name . " has submitted a leave request (Pending for approval)";
+                    $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $emp_code;
+
+                    // Check if link column exists
+                    $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
+                    if ($check_column->num_rows > 0) {
+                        $stmt_notif = $conn->prepare("INSERT INTO notifications (employee_id, leave_id, type, message, link, target, is_read) VALUES (?, ?, 'leave_request', ?, ?, 'admin', 0)");
+                        $stmt_notif->bind_param("iiss", $employee_id, $leave_id, $message, $link);
+                    } else {
+                        $stmt_notif = $conn->prepare("INSERT INTO notifications (employee_id, leave_id, type, message, target, is_read) VALUES (?, ?, 'leave_request', ?, 'admin', 0)");
+                        $stmt_notif->bind_param("iis", $employee_id, $leave_id, $message);
+                    }
+                    $stmt_notif->execute();
+                }
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Leave request submitted successfully',
+                'leave_id' => $leave_id,
+                'status' => $initial_status
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Failed to submit leave request: ' . $stmt->error
+            ]);
+        }
+
     } catch (Exception $e) {
         echo json_encode([
             'success' => false,
@@ -246,25 +247,26 @@ function submitLeaveRequest($conn) {
     }
 }
 
-function getEmployeeRequests($conn) {
+function getEmployeeRequests($conn)
+{
     ob_end_clean();
-    
+
     $employee_id = $_GET['employee_id'] ?? 0;
-    
+
     $sql = "SELECT el.*, el.rejection_reason, 1 as force_renew, lt.type_name as leave_type
             FROM employee_leaves el
             INNER JOIN leave_types lt ON el.leave_type_id = lt.id
             WHERE el.employee_id = ?
             ORDER BY el.created_at DESC";
-    
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $employee_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     $check_column = $conn->query("SHOW COLUMNS FROM employee_leaves LIKE 'attachment'");
     $has_attachment_column = $check_column->num_rows > 0;
-    
+
     $requests = [];
     while ($row = $result->fetch_assoc()) {
         $requests[] = [
@@ -279,7 +281,7 @@ function getEmployeeRequests($conn) {
             'formatted_dates' => formatDateRange($row['start_date'], $row['end_date'])
         ];
     }
-    
+
     echo json_encode([
         'success' => true,
         'count' => count($requests),
@@ -287,23 +289,25 @@ function getEmployeeRequests($conn) {
     ]);
 }
 
-function formatDateRange($start_date, $end_date) {
+function formatDateRange($start_date, $end_date)
+{
     $start = new DateTime($start_date);
     $end = new DateTime($end_date);
-    
+
     if ($start_date === $end_date) {
         return $start->format('M j, Y');
     }
-    
+
     return $start->format('M j') . ' - ' . $end->format('M j, Y');
 }
 
-function approveLeaveRequest($conn) {
+function approveLeaveRequest($conn)
+{
     ob_end_clean();
-    
+
     try {
         $leave_id = $_POST['leave_id'] ?? 0;
-        
+
         if (!$leave_id) {
             echo json_encode([
                 'success' => false,
@@ -311,7 +315,7 @@ function approveLeaveRequest($conn) {
             ]);
             return;
         }
-        
+
         // Get leave details and employee info
         $sql = "SELECT el.employee_id, el.start_date, el.end_date, lt.type_name as leave_type, 
                        e.first_name, e.last_name, e.employee_id as emp_code 
@@ -324,7 +328,7 @@ function approveLeaveRequest($conn) {
         $stmt->execute();
         $result = $stmt->get_result();
         $leave = $result->fetch_assoc();
-        
+
         if (!$leave) {
             echo json_encode([
                 'success' => false,
@@ -332,19 +336,19 @@ function approveLeaveRequest($conn) {
             ]);
             return;
         }
-        
+
         // Update leave status
         $sql = "UPDATE employee_leaves SET status = 'approved' WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $leave_id);
-        
+
         if ($stmt->execute()) {
             // ------------------------------------------------------------------
             // Insert/Update daily_attendance for each day of the leave
             // ------------------------------------------------------------------
             $startDate = new DateTime($leave['start_date']);
             $endDate = new DateTime($leave['end_date']);
-            
+
             // Iterate through each date
             while ($startDate <= $endDate) {
                 $currDateStr = $startDate->format('Y-m-d');
@@ -355,17 +359,17 @@ function approveLeaveRequest($conn) {
                 $check->bind_param("is", $leave['employee_id'], $currDateStr);
                 $check->execute();
                 if ($check->get_result()->num_rows > 0) {
-                     // Update existing
-                     $upsert = $conn->prepare("UPDATE daily_attendance SET status = 'leave', notes = ? WHERE employee_id = ? AND attendance_date = ?");
-                     $upsert->bind_param("sis", $reason, $leave['employee_id'], $currDateStr);
-                     $upsert->execute();
+                    // Update existing
+                    $upsert = $conn->prepare("UPDATE daily_attendance SET status = 'leave', notes = ? WHERE employee_id = ? AND attendance_date = ?");
+                    $upsert->bind_param("sis", $reason, $leave['employee_id'], $currDateStr);
+                    $upsert->execute();
                 } else {
-                     // Insert new
-                     $upsert = $conn->prepare("INSERT INTO daily_attendance (employee_id, attendance_date, status, notes) VALUES (?, ?, 'leave', ?)");
-                     $upsert->bind_param("iss", $leave['employee_id'], $currDateStr, $reason);
-                     $upsert->execute();
+                    // Insert new
+                    $upsert = $conn->prepare("INSERT INTO daily_attendance (employee_id, attendance_date, status, notes) VALUES (?, ?, 'leave', ?)");
+                    $upsert->bind_param("iss", $leave['employee_id'], $currDateStr, $reason);
+                    $upsert->execute();
                 }
-                
+
                 $startDate->modify('+1 day');
             }
             // ------------------------------------------------------------------
@@ -376,7 +380,7 @@ function approveLeaveRequest($conn) {
                 $emp_name = $leave['first_name'] . ' ' . $leave['last_name'];
                 $message = $emp_name . ", Your leave request has been Approved";
                 $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $leave['emp_code'];
-                
+
                 // Check if link column exists
                 $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
                 if ($check_column->num_rows > 0) {
@@ -388,7 +392,11 @@ function approveLeaveRequest($conn) {
                 }
                 $stmt_notif->execute();
             }
-            
+
+            // Flag local record for sync
+            require_once __DIR__ . '/../../db_cloud_sync.php';
+            syncToCloud('employee_leaves', ['status' => 'approved'], 'update', "id = $leave_id");
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Leave request approved successfully'
@@ -407,12 +415,13 @@ function approveLeaveRequest($conn) {
     }
 }
 
-function rejectLeaveRequest($conn) {
+function rejectLeaveRequest($conn)
+{
     ob_end_clean();
-    
+
     try {
         $leave_id = $_POST['leave_id'] ?? 0;
-        
+
         if (!$leave_id) {
             echo json_encode([
                 'success' => false,
@@ -420,7 +429,7 @@ function rejectLeaveRequest($conn) {
             ]);
             return;
         }
-        
+
         // Get leave details and employee info
         $sql = "SELECT el.employee_id, e.first_name, e.last_name, e.employee_id as emp_code
                 FROM employee_leaves el
@@ -431,7 +440,7 @@ function rejectLeaveRequest($conn) {
         $stmt->execute();
         $result = $stmt->get_result();
         $leave = $result->fetch_assoc();
-        
+
         if (!$leave) {
             echo json_encode([
                 'success' => false,
@@ -439,14 +448,14 @@ function rejectLeaveRequest($conn) {
             ]);
             return;
         }
-        
+
         // Update leave status and save reason
         $rejection_reason = $_POST['rejection_reason'] ?? null;
-        
+
         $sql = "UPDATE employee_leaves SET status = 'rejected', rejection_reason = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("si", $rejection_reason, $leave_id);
-        
+
         if ($stmt->execute()) {
             // Create notification for employee
             $check_table = $conn->query("SHOW TABLES LIKE 'notifications'");
@@ -454,7 +463,7 @@ function rejectLeaveRequest($conn) {
                 $emp_name = $leave['first_name'] . ' ' . $leave['last_name'];
                 $message = $emp_name . ", Your leave request has been Rejected";
                 $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $leave['emp_code'];
-                
+
                 // Check if link column exists
                 $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
                 if ($check_column->num_rows > 0) {
@@ -466,7 +475,11 @@ function rejectLeaveRequest($conn) {
                 }
                 $stmt_notif->execute();
             }
-            
+
+            // Flag local record for sync
+            require_once __DIR__ . '/../../db_cloud_sync.php';
+            syncToCloud('employee_leaves', ['status' => 'rejected'], 'update', "id = $leave_id");
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Leave request rejected successfully'
@@ -485,13 +498,14 @@ function rejectLeaveRequest($conn) {
     }
 }
 
-function cancelLeaveRequest($conn) {
+function cancelLeaveRequest($conn)
+{
     ob_end_clean();
-    
+
     try {
         $leave_id = $_POST['leave_id'] ?? 0;
         $cancelled_by = $_POST['cancelled_by'] ?? 'user';
-        
+
         if (!$leave_id) {
             echo json_encode([
                 'success' => false,
@@ -499,14 +513,14 @@ function cancelLeaveRequest($conn) {
             ]);
             return;
         }
-        
+
         // Get leave details
         $sql = "SELECT employee_id, start_date, end_date, status FROM employee_leaves WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $leave_id);
         $stmt->execute();
         $leave = $stmt->get_result()->fetch_assoc();
-        
+
         if (!$leave) {
             echo json_encode([
                 'success' => false,
@@ -514,12 +528,12 @@ function cancelLeaveRequest($conn) {
             ]);
             return;
         }
-        
+
         // Delete the leave request
         $sql = "DELETE FROM employee_leaves WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $leave_id);
-        
+
         if ($stmt->execute()) {
             echo json_encode([
                 'success' => true,
@@ -539,14 +553,15 @@ function cancelLeaveRequest($conn) {
     }
 }
 
-function getAdminNotifications($conn) {
+function getAdminNotifications($conn)
+{
     ob_end_clean();
-    
+
     try {
         // Get user info from session
         $user_id = $_SESSION['user_id'] ?? null;
         $user_role = $_SESSION['user_role'] ?? 'employee';
-        
+
         if (!$user_id) {
             echo json_encode([
                 'success' => true,
@@ -556,7 +571,7 @@ function getAdminNotifications($conn) {
             ]);
             return;
         }
-        
+
         // Check if notifications table exists
         $check_table = $conn->query("SHOW TABLES LIKE 'notifications'");
         if ($check_table->num_rows == 0) {
@@ -568,7 +583,7 @@ function getAdminNotifications($conn) {
             ]);
             return;
         }
-        
+
         // Load notifications based on role
         if ($user_role === 'admin') {
             $sql = "SELECT n.*, e.first_name, e.last_name
@@ -585,12 +600,12 @@ function getAdminNotifications($conn) {
                     ORDER BY n.is_read ASC, n.created_at DESC
                     LIMIT 50";
         }
-        
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $notifications = [];
         while ($row = $result->fetch_assoc()) {
             $notifications[] = [
@@ -603,12 +618,13 @@ function getAdminNotifications($conn) {
                 'leave_id' => $row['leave_id']
             ];
         }
-        
+
         $unread_count = 0;
         foreach ($notifications as $n) {
-            if ($n['is_read'] == 0) $unread_count++;
+            if ($n['is_read'] == 0)
+                $unread_count++;
         }
-        
+
         echo json_encode([
             'success' => true,
             'count' => count($notifications),
@@ -623,12 +639,13 @@ function getAdminNotifications($conn) {
     }
 }
 
-function markNotificationRead($conn) {
+function markNotificationRead($conn)
+{
     ob_end_clean();
-    
+
     try {
         $notification_id = $_POST['notification_id'] ?? 0;
-        
+
         if (!$notification_id) {
             echo json_encode([
                 'success' => false,
@@ -636,11 +653,11 @@ function markNotificationRead($conn) {
             ]);
             return;
         }
-        
+
         $sql = "UPDATE notifications SET is_read = 1 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $notification_id);
-        
+
         if ($stmt->execute()) {
             echo json_encode(['success' => true]);
         } else {
@@ -651,7 +668,8 @@ function markNotificationRead($conn) {
     }
 }
 
-function getPendingRequests($conn) {
+function getPendingRequests($conn)
+{
     ob_end_clean();
     echo json_encode(['success' => true, 'count' => 0, 'data' => []]);
 }
