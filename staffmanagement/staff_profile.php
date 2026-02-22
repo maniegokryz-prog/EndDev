@@ -4,6 +4,9 @@ require_once '../auth_guard.php';
 require_once '../navigation.php';
 require '../db_connection.php';
 
+// TOGGLE: Set to true to hide the Re-register Face button entirely (for VPS deployment)
+$hide_re_register_face_button = false;
+
 // Get current user info
 $currentUser = getCurrentUser();
 
@@ -494,11 +497,13 @@ $profilePhoto .= '?v=' . microtime(true);
                                         data-bs-target="#removeEmployeeModal">
                                         <i class="bi bi-trash"></i> Remove
                                     </button>
-                                    <a href="re_register_face.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>"
-                                        class="btn-modern btn-outline text-warning border-warning btn-compact"
-                                        title="Re-register Face Data">
-                                        <i class="bi bi-person-bounding-box"></i> Re-register Face
-                                    </a>
+                                    <?php if (!$hide_re_register_face_button): ?>
+                                        <a href="re_register_face.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>"
+                                            class="btn-modern btn-outline text-warning border-warning btn-compact"
+                                            title="Re-register Face Data">
+                                            <i class="bi bi-person-bounding-box"></i> Re-register Face
+                                        </a>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </div>

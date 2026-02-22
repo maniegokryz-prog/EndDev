@@ -3,6 +3,9 @@
 require_once '../auth_guard.php';
 require_once '../navigation.php';
 
+// TOGGLE: Set to true to hide the Sync Status widget entirely (for VPS deployment)
+$hide_sync_status = false;
+
 // Get current user info
 $currentUser = getCurrentUser();
 ?>
@@ -45,8 +48,10 @@ $currentUser = getCurrentUser();
     <div class="d-flex align-items-center">
       <?php
       // Sync Status Widget
-      if (file_exists('../admin/includes/sync_status_topbar.php')) {
-        include '../admin/includes/sync_status_topbar.php';
+      if (!$hide_sync_status) {
+        if (file_exists('../admin/includes/sync_status_topbar.php')) {
+          include '../admin/includes/sync_status_topbar.php';
+        }
       }
       ?>
       <?php include '../includes/notification_bell.php'; ?>

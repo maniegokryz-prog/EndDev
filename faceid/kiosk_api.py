@@ -11,6 +11,8 @@ import os
 import sys
 import json
 import sqlite3
+import shutil
+from pathlib import Path
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # Add the database directory to path
@@ -43,14 +45,29 @@ class KioskAPIHandler(BaseHTTPRequestHandler):
                 cursor.execute("DELETE FROM attendance_logs")
                 cursor.execute("DELETE FROM daily_attendance")
                 
+                # Reset Auto-Increment Counters
+                cursor.execute("DELETE FROM sqlite_sequence WHERE name IN ('attendance_logs', 'daily_attendance')")
+                
                 # Update sync status to prevent trying to sync wiped records
                 cursor.execute("UPDATE sync_status SET last_push_time = datetime('now') WHERE table_name IN ('attendance_logs', 'daily_attendance')")
 
                 conn.commit()
+                conn.execute("VACUUM") # Shrink database file and defragment
                 conn.close()
 
-                print("[KIOSK API] Successfully cleared local attendance records")
-                self._send_json_response(200, {"success": True, "message": "Local kiosk attendance records cleared"})
+                # --- Clear Python Cache ---
+                # Recursively discover and delete all __pycache__ directories in the faceid folder
+                pycache_count = 0
+                for path in Path(SCRIPT_DIR).rglob('__pycache__'):
+                    if path.is_dir():
+                        try:
+                            shutil.rmtree(path)
+                            pycache_count += 1
+                        except Exception as e:
+                            print(f"[KIOSK API] Failed to delete cache {path}: {e}")
+
+                print(f"[KIOSK API] Successfully cleared local attendance records, vacuumed DB, and deleted {pycache_count} pycache folders.")
+                self._send_json_response(200, {"success": True, "message": f"Local records cleared & {pycache_count} cache folders deleted"})
                 
             except Exception as e:
                 print(f"[KIOSK API] Error clearing records: {e}")
