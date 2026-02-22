@@ -154,7 +154,7 @@ function exportToPDF($employee, $renderData)
         renderDTRForm($employee, $monthData, false);
         renderDTRForm($employee, $monthData, false);
         echo '</div>';
-        
+
         $isFirstPage = false;
     }
 
@@ -163,28 +163,11 @@ function exportToPDF($employee, $renderData)
 
 function exportToExcel($employee, $renderData)
 {
-    header('Content-Type: application/vnd.ms-excel');
-    header('Content-Disposition: attachment;filename="Attendance_History_' . $employee['employee_id'] . '.xls"');
-    header('Cache-Control: max-age=0');
-
-    echo '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
-    echo '<head>';
-    echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-    echo '<style>
-            body { font-family: Arial, sans-serif; font-size: 10pt; }
-            table { border-collapse: collapse; width: 100%; }
-            th, td { border: 1px solid #000; padding: 5px; }
-          </style>';
-    echo '</head><body>';
-
     // Flatten the month-based chunks into a single list of records
     $allRecords = [];
     foreach ($renderData as $monthData) {
         if (!empty($monthData['attendance'])) {
-            // $monthData['attendance'] is keyed by DAY (1..31)
-            // We want to sort by date.
             foreach ($monthData['attendance'] as $day => $record) {
-                // Key it by full date for sorting if needed, or just append
                 $allRecords[$record['attendance_date']] = $record;
             }
         }
@@ -192,8 +175,17 @@ function exportToExcel($employee, $renderData)
     // Sort by date
     ksort($allRecords);
 
-    renderExcelHistoryTable($employee, $allRecords);
+    $allExcelData = [
+        [
+            'employee' => $employee,
+            'records' => $allRecords
+        ]
+    ];
 
-    echo '</body></html>';
+    // ob_end_clean() to ensure no accidental whitespace breaks the ZIP/XLSX file output
+    if (ob_get_length())
+        ob_end_clean();
+
+    exportNativeXLSXHistoryWorkbook($allExcelData, 'Attendance_History_' . $employee['employee_id'] . '.xlsx');
 }
 ?>

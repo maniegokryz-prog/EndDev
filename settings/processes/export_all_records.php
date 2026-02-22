@@ -32,26 +32,7 @@ if (empty($employees)) {
     die("No employees found.");
 }
 
-// Prepare file download
-header('Content-Type: application/vnd.ms-excel');
-header('Content-Disposition: attachment;filename="All_Records_Backup_' . date('Ymd_His') . '.xls"');
-header('Cache-Control: max-age=0');
-
-echo '<?xml version="1.0"?>';
-echo '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ';
-echo 'xmlns:o="urn:schemas-microsoft-com:office:office" ';
-echo 'xmlns:x="urn:schemas-microsoft-com:office:excel" ';
-echo 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" ';
-echo 'xmlns:html="http://www.w3.org/TR/REC-html40">';
-echo '<Styles>';
-echo '<Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Bottom"/><Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/></Style>';
-echo '<Style ss:ID="sTitle"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="14" ss:Color="#000000" ss:Bold="1"/></Style>';
-echo '<Style ss:ID="sHeader"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000" ss:Bold="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/></Borders><Interior ss:Color="#F0F0F0" ss:Pattern="Solid"/></Style>';
-echo '<Style ss:ID="sDataCenter"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
-echo '<Style ss:ID="sDataCenterBold"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000" ss:Bold="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
-echo '</Styles>';
-
-$hasAnyWorksheet = false;
+$allExcelData = [];
 
 foreach ($employees as $row) {
     $fullName = strtoupper($row['last_name'] . ', ' . $row['first_name'] . ' ' . ($row['middle_name'] ?? ''));
@@ -83,15 +64,15 @@ foreach ($employees as $row) {
     }
     $stmt->close();
 
-    // Always render a worksheet even if there are no records so they are accounted for
-    renderXMLSpreadsheetHistoryWorksheet($employee, $attendanceRecords);
-    $hasAnyWorksheet = true;
+    $allExcelData[] = [
+        'employee' => $employee,
+        'records' => $attendanceRecords
+    ];
 }
 
-if (!$hasAnyWorksheet) {
-    // Excel requires at least one worksheet
-    echo '<Worksheet ss:Name="No Data"><Table><Row><Cell><Data ss:Type="String">No records found</Data></Cell></Row></Table></Worksheet>';
-}
+// ob_end_clean() to ensure no accidental whitespace breaks the ZIP/XLSX file output
+if (ob_get_length())
+    ob_end_clean();
 
-echo '</Workbook>';
+exportNativeXLSXHistoryWorkbook($allExcelData, 'All_Records_Backup_' . date('Ymd_His') . '.xlsx');
 ?>

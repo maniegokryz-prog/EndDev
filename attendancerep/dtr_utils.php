@@ -635,3 +635,185 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
     return round($totalMinutes, 2);
 }
 
+// ======================================================================================
+// NATIVE XLSX EXPORT GENERATOR (PHP_XLSXWriter)
+// ======================================================================================
+
+function exportNativeXLSXHistoryWorkbook($allExcelData, $filename)
+{
+    if (!class_exists('ZipArchive')) {
+        die('
+            <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px; color: #333;">
+                <h2 style="color: #d9534f;">Excel Export Failed</h2>
+                <p>The PHP <strong>ZipArchive</strong> extension is missing or disabled on the server.</p>
+                <p>Please enable the <code>php_zip</code> extension in your <code>php.ini</code> configuration file and restart your web server / IIS to use the Native XLSX Export feature.</p>
+            </div>
+        ');
+    }
+
+    require_once __DIR__ . '/xlsxwriter.class.php';
+
+    // Output headers for Native XLSX
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+
+    $writer = new XLSXWriter();
+    $writer->setAuthor('EndDev Attendance System');
+
+    // Define styles mapping similar to previous export
+    $styleTitle = [
+        'font' => 'Calibri',
+        'font-size' => 14,
+        'font-style' => 'bold',
+        'halign' => 'center',
+        'valign' => 'center',
+    ];
+
+    $styleDataCenterBold = [
+        'font' => 'Calibri',
+        'font-size' => 11,
+        'font-style' => 'bold',
+        'halign' => 'center',
+        'valign' => 'center',
+    ];
+
+    $styleDataCenter = [
+        'font' => 'Calibri',
+        'font-size' => 11,
+        'halign' => 'center',
+        'valign' => 'center',
+    ];
+
+    $styleHeader = [
+        'font' => 'Calibri',
+        'font-size' => 11,
+        'font-style' => 'bold',
+        'halign' => 'center',
+        'valign' => 'center',
+        'fill' => '#F0F0F0',
+        'border' => 'left,right,top,bottom',
+        'border-style' => 'thin'
+    ];
+
+    $styleDataCell = [
+        'font' => 'Calibri',
+        'font-size' => 11,
+        'halign' => 'center',
+        'valign' => 'center',
+        'border' => 'left,right,top,bottom',
+        'border-style' => 'thin'
+    ];
+
+    // Col widths: Date(18), TimeIn(12), TimeOut(12), Hours(12), Status(25)
+    $col_options = ['widths' => [18, 12, 12, 12, 25]];
+
+    foreach ($allExcelData as $employeeGroup) {
+        $employee = $employeeGroup['employee'];
+        $attendanceRecords = $employeeGroup['records'];
+
+        // Determine sheet name (Excel limits to 31 chars, certain characters invalid)
+        $sheetName = substr(str_replace(['\\', '/', '?', '*', '[', ']', ':'], '', $employee['name']), 0, 31);
+        if (empty(trim($sheetName))) {
+            $sheetName = 'Sheet_' . rand(1000, 9999);
+        }
+
+        // Determine the date range
+        $dateRangeStr = "";
+        if (!empty($attendanceRecords)) {
+            $dates = array_keys($attendanceRecords);
+            sort($dates);
+            $startDate = date('F j, Y', strtotime($dates[0]));
+            $endDate = date('F j, Y', strtotime($dates[count($dates) - 1]));
+            if ($startDate === $endDate) {
+                $dateRangeStr = $startDate;
+            } else {
+                $dateRangeStr = $startDate . " - " . $endDate;
+            }
+        }
+
+        // Add headers (merged cells: 0-indexed [row_start, col_start, row_end, col_end])
+        $writer->writeSheetRow($sheetName, ["BULACAN POLYTECHNIC COLLEGE"], $styleTitle);
+        $writer->writeSheetRow($sheetName, ["ATTENDANCE HISTORY"], $styleTitle);
+        $writer->writeSheetRow($sheetName, [$employee['name']], $styleDataCenterBold);
+        $writer->writeSheetRow($sheetName, [$employee['role']], $styleDataCenter);
+        if ($dateRangeStr) {
+            $writer->writeSheetRow($sheetName, [$dateRangeStr], $styleDataCenter);
+        }
+        $writer->writeSheetRow($sheetName, [""], $styleDataCenter); // Spacer
+
+        // Merge the top rows across 5 columns
+        $writer->markMergedCell($sheetName, 0, 0, 0, 4);
+        $writer->markMergedCell($sheetName, 1, 0, 1, 4);
+        $writer->markMergedCell($sheetName, 2, 0, 2, 4);
+        $writer->markMergedCell($sheetName, 3, 0, 3, 4);
+        if ($dateRangeStr) {
+            $writer->markMergedCell($sheetName, 4, 0, 4, 4);
+            $writer->markMergedCell($sheetName, 5, 0, 5, 4); // Spacer merge
+        } else {
+            $writer->markMergedCell($sheetName, 4, 0, 4, 4); // Spacer merge if no date range
+        }
+
+
+        // Table Header Setup using suppress_row because we write a styled row manually next
+        $writer->writeSheetHeader($sheetName, [
+            'Date' => 'string',
+            'Time In' => 'string',
+            'Time Out' => 'string',
+            'Total Hours' => 'string',
+            'Notes / Status' => 'string',
+        ], array_merge($col_options, ['suppress_row' => true]));
+
+        // Write Styled Table Header
+        $writer->writeSheetRow($sheetName, ['Date', 'Time In', 'Time Out', 'Total Hours', 'Notes / Status'], $styleHeader);
+
+        if (empty($attendanceRecords)) {
+            $writer->writeSheetRow($sheetName, ['No records found.', '', '', '', ''], $styleDataCell);
+            $rowNum = $dateRangeStr ? 7 : 6;
+            $writer->markMergedCell($sheetName, $rowNum, 0, $rowNum, 4);
+        } else {
+            foreach ($attendanceRecords as $date => $data) {
+                $dateStr = $data['attendance_date'];
+                $timeIn = (!empty($data['time_in']) && $data['time_in'] !== '00:00:00') ? date('h:i A', strtotime($data['time_in'])) : '-';
+                $timeOut = (!empty($data['time_out']) && $data['time_out'] !== '00:00:00') ? date('h:i A', strtotime($data['time_out'])) : '-';
+
+                // Hours
+                $hours = '-';
+                if (!empty($data['actual_hours'])) {
+                    $h = floor($data['actual_hours'] / 60);
+                    $m = (int) ($data['actual_hours']) % 60;
+                    $hours = sprintf('%dh %dm', $h, $m);
+                }
+
+                // Notes / Status
+                $status = ucfirst($data['status']);
+                if ($data['status'] === 'manual') {
+                    $notes = 'Manual Entry';
+                } elseif ($data['status'] === 'visit') {
+                    $notes = 'Visit';
+                } else {
+                    $notes = 'Biometric Scan';
+                }
+                if (!empty($data['notes'])) {
+                    $notes .= ' - ' . $data['notes'];
+                }
+
+                $writer->writeSheetRow($sheetName, [
+                    date('F j, Y', strtotime($dateStr)),
+                    $timeIn,
+                    $timeOut,
+                    $hours,
+                    $notes
+                ], $styleDataCell);
+            }
+        }
+    }
+
+    $writer->writeToStdOut();
+    exit;
+}
+?>

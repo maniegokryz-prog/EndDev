@@ -53,26 +53,7 @@ if ($startDateParam && $endDateParam) {
 
 ob_start();
 
-if ($exportType === 'excel') {
-    // XML Spreadsheet 2003 Header
-    header('Content-Type: application/vnd.ms-excel');
-    header('Content-Disposition: attachment;filename="Batch_DTR_' . date('Ymd_His') . '.xls"');
-    header('Cache-Control: max-age=0');
-
-    echo '<?xml version="1.0"?>';
-    echo '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ';
-    echo 'xmlns:o="urn:schemas-microsoft-com:office:office" ';
-    echo 'xmlns:x="urn:schemas-microsoft-com:office:excel" ';
-    echo 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" ';
-    echo 'xmlns:html="http://www.w3.org/TR/REC-html40">';
-    echo '<Styles>';
-    echo '<Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Bottom"/><Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/></Style>';
-    echo '<Style ss:ID="sTitle"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="14" ss:Color="#000000" ss:Bold="1"/></Style>';
-    echo '<Style ss:ID="sHeader"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000" ss:Bold="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/></Borders><Interior ss:Color="#F0F0F0" ss:Pattern="Solid"/></Style>';
-    echo '<Style ss:ID="sDataCenter"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
-    echo '<Style ss:ID="sDataCenterBold"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000" ss:Bold="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
-    echo '</Styles>';
-} else {
+if ($exportType !== 'excel') {
     // PDF (HTML) Header
     echo '<!DOCTYPE html>';
     echo '<html lang="en">';
@@ -91,6 +72,7 @@ if ($exportType === 'excel') {
 }
 
 $isFirstPage = true;
+$allExcelData = [];
 
 // Process Each Employee
 foreach ($employeeIds as $empId) {
@@ -165,8 +147,11 @@ foreach ($employeeIds as $empId) {
         }
         ksort($allRecords);
 
-        // XML Spreadsheet Worksheet for this employee
-        renderXMLSpreadsheetHistoryWorksheet($employee, $allRecords);
+        // Accumulate data for XLSX later
+        $allExcelData[] = [
+            'employee' => $employee,
+            'records' => $allRecords
+        ];
     } else {
         // PDF / Print - Render 2 copies of the SAME month per page
         foreach ($employeeRenderData as $monthData) {
@@ -186,9 +171,11 @@ foreach ($employeeIds as $empId) {
 }
 
 if ($exportType === 'excel') {
-    echo '</Workbook>';
+    ob_end_clean(); // Discard any empty space or outputs printed before this
+    exportNativeXLSXHistoryWorkbook($allExcelData, 'Batch_DTR_' . date('Ymd_His') . '.xlsx');
 } else {
-    echo '</body></html>';
+    echo '</body>';
+    echo '</html>';
 }
 ob_end_flush();
 ?>
