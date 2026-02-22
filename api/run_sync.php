@@ -57,15 +57,18 @@ foreach ($tables_to_sync as $table) {
     if ($local_changes && $local_changes->num_rows > 0) {
         while ($record = $local_changes->fetch_assoc()) {
 
-            // If the record has a physical file attachment, upload it to the VPS first
-            if (isset($record['attachment']) && !empty($record['attachment'])) {
-                $local_file_path = __DIR__ . '/../' . ltrim($record['attachment'], '/');
-                if (file_exists($local_file_path)) {
-                    $filePushResponse = sendFileToVPS($record['attachment'], $local_file_path);
-                    if ($filePushResponse && isset($filePushResponse['success']) && $filePushResponse['success']) {
-                        logSync("Successfully uploaded file to VPS: " . $record['attachment']);
-                    } else {
-                        logSync("Failed to upload file: " . ($filePushResponse['error'] ?? 'Network error'));
+            // If the record has physical file(s), upload them to the VPS first
+            $file_columns = ['attachment', 'profile_photo'];
+            foreach ($file_columns as $col) {
+                if (isset($record[$col]) && !empty($record[$col]) && $record[$col] !== 'N/A') {
+                    $local_file_path = __DIR__ . '/../' . ltrim($record[$col], '/');
+                    if (file_exists($local_file_path)) {
+                        $filePushResponse = sendFileToVPS($record[$col], $local_file_path);
+                        if ($filePushResponse && isset($filePushResponse['success']) && $filePushResponse['success']) {
+                            logSync("Successfully uploaded $col to VPS: " . $record[$col]);
+                        } else {
+                            logSync("Failed to upload $col: " . ($filePushResponse['error'] ?? 'Network error'));
+                        }
                     }
                 }
             }
@@ -98,30 +101,33 @@ if ($pullResponse && isset($pullResponse['success']) && $pullResponse['success']
         $synced_ids = [];
         foreach ($records as $record) {
 
-            // If the record has a physical file attachment, download it from the VPS first
-            if (isset($record['attachment']) && !empty($record['attachment'])) {
-                $local_file_path = __DIR__ . '/../' . ltrim($record['attachment'], '/');
-                if (!file_exists($local_file_path)) {
-                    $vps_file_url = 'http://76.13.210.68/' . ltrim($record['attachment'], '/');
+            // If the record has physical file(s), download them from the VPS first
+            $file_columns = ['attachment', 'profile_photo'];
+            foreach ($file_columns as $col) {
+                if (isset($record[$col]) && !empty($record[$col]) && $record[$col] !== 'N/A') {
+                    $local_file_path = __DIR__ . '/../' . ltrim($record[$col], '/');
+                    if (!file_exists($local_file_path)) {
+                        $vps_file_url = 'http://76.13.210.68/' . ltrim($record[$col], '/');
 
-                    $ch_dl = curl_init($vps_file_url);
-                    curl_setopt($ch_dl, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch_dl, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($ch_dl, CURLOPT_SSL_VERIFYHOST, false);
-                    curl_setopt($ch_dl, CURLOPT_TIMEOUT, 30);
-                    $file_data = curl_exec($ch_dl);
-                    $http_code = curl_getinfo($ch_dl, CURLINFO_HTTP_CODE);
-                    curl_close($ch_dl);
+                        $ch_dl = curl_init($vps_file_url);
+                        curl_setopt($ch_dl, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch_dl, CURLOPT_SSL_VERIFYPEER, false);
+                        curl_setopt($ch_dl, CURLOPT_SSL_VERIFYHOST, false);
+                        curl_setopt($ch_dl, CURLOPT_TIMEOUT, 30);
+                        $file_data = curl_exec($ch_dl);
+                        $http_code = curl_getinfo($ch_dl, CURLINFO_HTTP_CODE);
+                        curl_close($ch_dl);
 
-                    if ($http_code == 200 && $file_data !== false) {
-                        $target_dir = dirname($local_file_path);
-                        if (!is_dir($target_dir)) {
-                            mkdir($target_dir, 0777, true);
+                        if ($http_code == 200 && $file_data !== false) {
+                            $target_dir = dirname($local_file_path);
+                            if (!is_dir($target_dir)) {
+                                mkdir($target_dir, 0777, true);
+                            }
+                            file_put_contents($local_file_path, $file_data);
+                            logSync("Successfully downloaded $col from VPS: " . $record[$col]);
+                        } else {
+                            logSync("Failed to download $col from VPS: " . $record[$col] . " (HTTP $http_code)");
                         }
-                        file_put_contents($local_file_path, $file_data);
-                        logSync("Successfully downloaded file from VPS: " . $record['attachment']);
-                    } else {
-                        logSync("Failed to download file from VPS: " . $record['attachment'] . " (HTTP $http_code)");
                     }
                 }
             }
