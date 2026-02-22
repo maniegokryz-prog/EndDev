@@ -17,6 +17,12 @@ if (!$isLocalhost && !isset($_GET['force'])) {
     die(json_encode(['success' => false, 'message' => 'Sync engine should only be triggered on Localhost.']));
 }
 
+function logSync($msg)
+{
+    file_put_contents(__DIR__ . '/sync_debug.log', date('Y-m-d H:i:s') . ' - ' . $msg . "\n", FILE_APPEND);
+}
+logSync("--- Sync Cycle Started ---");
+
 require_once '../db_connection.php'; // Connects to local DB
 
 define('VPS_ENDPOINT', 'http://76.13.210.68/api/sync_endpoint.php');
@@ -70,6 +76,7 @@ $pullResponse = sendToVPS('pull_updates', '', []);
 
 if ($pullResponse && isset($pullResponse['success']) && $pullResponse['success'] && !empty($pullResponse['data'])) {
     $vps_changes = $pullResponse['data'];
+    logSync("Pulled tables from VPS: " . implode(', ', array_keys($vps_changes)));
 
     foreach ($vps_changes as $table => $records) {
         if (!checkSyncColumnExists($conn, $table))
@@ -110,8 +117,11 @@ if ($pullResponse && isset($pullResponse['success']) && $pullResponse['success']
                 if ($stmt->execute()) {
                     $synced_ids[] = (int) $record['id'];
                     $results['pulled']++;
+                    logSync("Successfully pulled and updated local record on $table with VPS id {$record['id']}");
                 } else {
-                    $results['errors'][] = "Local pull execute error on $table: " . $stmt->error;
+                    $err = $stmt->error;
+                    $results['errors'][] = "Local pull execute error on $table: " . $err;
+                    logSync("Execute Error on $table: $err");
                 }
             } else {
                 $results['errors'][] = "Local pull prepare error on $table: " . $conn->error;
