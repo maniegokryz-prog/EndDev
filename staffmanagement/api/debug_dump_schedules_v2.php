@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "Confirmp@ssword123", "database_records");
+$conn = new mysqli("localhost", "attendance_admin", "Confirmp@ssword123", "database_records");
 if ($conn->connect_error) die("Conn failed");
 
 echo "<h3>Dump Employee Schedules (Hardcoded Conn)</h3>";

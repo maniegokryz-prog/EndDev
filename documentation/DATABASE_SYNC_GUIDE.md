@@ -1,7 +1,7 @@
 # Database Sync Guide - Localhost to IONOS
 
 ## Current Setup:
-- **Localhost Database:** `database_records` (root@localhost)
+- **Localhost Database:** `database_records` (attendance_admin@localhost)
 - **IONOS Database:** `dbs14970485` (dbu58088@localhost on IONOS)
 - **Problem:** They are separate databases with no automatic sync
 
@@ -14,7 +14,7 @@ The best approach is to **work directly on IONOS** instead of trying to sync:
 ### Step 1: Deploy Your Code to IONOS
 1. Upload all your files to IONOS web hosting
 2. Upload your database using phpMyAdmin:
-   - Export from localhost: `mysqldump -u root -p database_records > backup.sql`
+   - Export from localhost: `mysqldump -u attendance_admin -p database_records > backup.sql`
    - Import to IONOS phpMyAdmin
 
 ### Step 2: Use IONOS as Your Primary System
@@ -31,7 +31,7 @@ If you want to keep developing on localhost and sync occasionally:
 ### Method 1: Export/Import Database
 ```bash
 # 1. Export localhost database
-mysqldump -u root -pConfirmp@ssword123 database_records > database_export.sql
+mysqldump -u attendance_admin -pConfirmp@ssword123 database_records > database_export.sql
 
 # 2. Login to IONOS phpMyAdmin (from hosting control panel)
 # 3. Select database: dbs14970485
@@ -43,7 +43,7 @@ mysqldump -u root -pConfirmp@ssword123 database_records > database_export.sql
 ### Method 2: Sync Specific Tables Only
 ```bash
 # Export only employees table
-mysqldump -u root -pConfirmp@ssword123 database_records employees > employees_only.sql
+mysqldump -u attendance_admin -pConfirmp@ssword123 database_records employees > employees_only.sql
 
 # Import to IONOS via phpMyAdmin
 ```
@@ -83,22 +83,22 @@ mysqldump -u root -pConfirmp@ssword123 database_records employees > employees_on
 
 ### Export entire database:
 ```bash
-mysqldump -u root -pConfirmp@ssword123 database_records > full_backup.sql
+mysqldump -u attendance_admin -pConfirmp@ssword123 database_records > full_backup.sql
 ```
 
 ### Export with date:
 ```bash
-mysqldump -u root -pConfirmp@ssword123 database_records > backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%.sql
+mysqldump -u attendance_admin -pConfirmp@ssword123 database_records > backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%.sql
 ```
 
 ### Export structure only (no data):
 ```bash
-mysqldump -u root -pConfirmp@ssword123 --no-data database_records > structure_only.sql
+mysqldump -u attendance_admin -pConfirmp@ssword123 --no-data database_records > structure_only.sql
 ```
 
 ### Export data only (no structure):
 ```bash
-mysqldump -u root -pConfirmp@ssword123 --no-create-info database_records > data_only.sql
+mysqldump -u attendance_admin -pConfirmp@ssword123 --no-create-info database_records > data_only.sql
 ```
 
 ---

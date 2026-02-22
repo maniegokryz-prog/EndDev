@@ -616,7 +616,7 @@ class EmployeeProcessor
 
         // Database credentials
         $dbHost = 'localhost';
-        $dbUser = 'root';
+        $dbUser = 'attendance_admin';
         $dbPassword = 'Confirmp@ssword123';
         $dbName = 'database_records';
 

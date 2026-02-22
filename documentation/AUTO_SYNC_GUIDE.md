@@ -120,7 +120,7 @@ pip install requests mysql-connector-python
 
 ### Database connection error
 - Check LOCAL_DB_CONFIG credentials
-- Verify MySQL is running: `mysql -u root -p`
+- Verify MySQL is running: `mysql -u attendance_admin -p`
 
 ### No records syncing
 - Check that records were created/updated in last hour

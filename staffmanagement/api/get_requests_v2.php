@@ -3,7 +3,7 @@
 // get_requests_v2.php
 header('Content-Type: application/json');
 $servername = "localhost";
-$username = "root";
+$username = "attendance_admin";
 $password = "Confirmp@ssword123";
 $dbname = "database_records";
 

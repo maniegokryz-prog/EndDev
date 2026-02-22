@@ -8,7 +8,7 @@ sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
 
 MYSQL_CONFIG = {
     'host': 'localhost',
-    'user': 'root',
+    'user': 'attendance_admin',
     'password': 'Confirmp@ssword123',
     'database': 'database_records',
     'charset': 'utf8mb4'

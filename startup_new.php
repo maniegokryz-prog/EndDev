@@ -30,7 +30,7 @@ if (!isset($_SESSION['csrf_token'])) {
 }
 
 $servername = "localhost";
-$username = "root"; // Default XAMPP username
+$username = "attendance_admin"; // Default XAMPP username
 $password = "Confirmp@ssword123"; // Default XAMPP password
 $dbname = "database_records";
 

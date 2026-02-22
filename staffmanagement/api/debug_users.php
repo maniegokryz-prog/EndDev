@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "Confirmp@ssword123", "database_records");
+$conn = new mysqli("localhost", "attendance_admin", "Confirmp@ssword123", "database_records");
 
 echo "<h3>Employees:</h3>";
 $res = $conn->query("SELECT id, employee_id, first_name, last_name FROM employees");

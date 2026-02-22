@@ -61,7 +61,7 @@ def update_status_file(status, message):
 # Local Database Configuration
 LOCAL_DB_CONFIG = {
     'host': 'localhost',
-    'user': 'root',
+    'user': 'attendance_admin',
     'password': 'Confirmp@ssword123',
     'database': 'database_records'
 }

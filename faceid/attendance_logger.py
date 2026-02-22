@@ -1066,7 +1066,7 @@ class AttendanceLogger:
             # Connect to MySQL server
             mysql_conn = mysql.connector.connect(
                 host='localhost',
-                user='root',
+                user='attendance_admin',
                 password='Confirmp@ssword123',
                 database='database_records'
             )

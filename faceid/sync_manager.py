@@ -58,7 +58,7 @@ from init_local_db import get_db_connection, DB_PATH
 # MySQL Server Configuration
 MYSQL_CONFIG = {
     'host': 'localhost',
-    'user': 'root',
+    'user': 'attendance_admin',
     'password': 'Confirmp@ssword123',
     'database': 'database_records',
     'charset': 'utf8mb4',

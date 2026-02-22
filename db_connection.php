@@ -36,7 +36,7 @@ if (!isset($_SESSION['csrf_token'])) {
 
 // Database configuration
 $servername = "localhost";
-$username = "root";
+$username = "attendance_admin";
 $password = "Confirmp@ssword123";
 $dbname = "database_records";
 

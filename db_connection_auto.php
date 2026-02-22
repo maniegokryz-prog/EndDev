@@ -11,7 +11,7 @@ $isLocalhost = in_array($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'loc
 if ($isLocalhost) {
     // LOCALHOST CONFIGURATION
     $servername = "localhost";
-    $username = "root";
+    $username = "attendance_admin";
     $password = "Confirmp@ssword123";
     $dbname = "database_records";
 } else {
