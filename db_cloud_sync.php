@@ -14,13 +14,15 @@ class CloudSync
             return true;
         }
 
-        // For updates, we flag the local record as needing a sync (sync_status = 0)
         global $conn;
         $db = $conn;
 
         if (!$db) {
-            // Attempt to create a local connection
-            $db = new mysqli("localhost", "attendance_admin", "Confirmp@ssword123", "database_records");
+            // Include connection script relative to this file to ensure proper credentials (Hostinger vs Local)
+            if (file_exists(__DIR__ . '/db_connection.php')) {
+                require __DIR__ . '/db_connection.php';
+                $db = $conn; // $conn will be set by db_connection.php
+            }
         }
 
         if (empty($whereCondition) || !is_object($db))
