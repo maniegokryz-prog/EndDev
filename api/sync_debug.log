@@ -88,3 +88,31 @@
 2026-02-22 09:51:48 - --- Sync Cycle Started ---
 2026-02-22 09:52:18 - --- Sync Cycle Started ---
 2026-02-22 09:52:48 - --- Sync Cycle Started ---
+2026-02-22 09:53:18 - --- Sync Cycle Started ---
+2026-02-22 09:53:48 - --- Sync Cycle Started ---
+2026-02-22 09:54:05 - --- Sync Cycle Started ---
+2026-02-22 09:54:15 - --- Sync Cycle Started ---
+2026-02-22 09:54:16 - --- Sync Cycle Started ---
+2026-02-22 09:54:28 - --- Sync Cycle Started ---
+2026-02-22 09:54:37 - --- Sync Cycle Started ---
+2026-02-22 09:55:07 - --- Sync Cycle Started ---
+2026-02-22 09:55:08 - Pulled tables from VPS: leave_types, employee_leaves, notifications
+2026-02-22 09:55:08 - Successfully pulled and updated local record on leave_types with VPS id 3
+2026-02-22 09:55:08 - Successfully pulled and updated local record on employee_leaves with VPS id 4
+2026-02-22 09:55:08 - Successfully pulled and updated local record on notifications with VPS id 12
+2026-02-22 09:55:23 - --- Sync Cycle Started ---
+2026-02-22 09:55:26 - --- Sync Cycle Started ---
+2026-02-22 09:55:34 - --- Sync Cycle Started ---
+2026-02-22 09:55:48 - --- Sync Cycle Started ---
+2026-02-22 09:56:18 - --- Sync Cycle Started ---
+2026-02-22 09:56:48 - --- Sync Cycle Started ---
+2026-02-22 09:57:18 - --- Sync Cycle Started ---
+2026-02-22 09:57:34 - --- Sync Cycle Started ---
+2026-02-22 09:57:34 - Pulled tables from VPS: employee_leaves, notifications
+2026-02-22 09:57:34 - Successfully pulled and updated local record on employee_leaves with VPS id 5
+2026-02-22 09:57:34 - Successfully pulled and updated local record on notifications with VPS id 14
+2026-02-22 09:58:04 - --- Sync Cycle Started ---
+2026-02-22 09:58:34 - --- Sync Cycle Started ---
+2026-02-22 09:59:04 - --- Sync Cycle Started ---
+2026-02-22 09:59:34 - --- Sync Cycle Started ---
+2026-02-22 10:00:04 - --- Sync Cycle Started ---

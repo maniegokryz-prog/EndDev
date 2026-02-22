@@ -54,6 +54,10 @@ switch ($action) {
         syncMarkSynced($conn, $table, $ids);
         break;
 
+    case 'upload_file': // Localhost uploading a physical file to VPS
+        syncUploadFile();
+        break;
+
     case 'insert': // Legacy fallback for auto_sync.py
         syncPush($conn, $table, $data);
         break;
@@ -80,7 +84,8 @@ function syncPush($conn, $table, $record)
     $values = array_values($record);
 
     $columnNames = implode(', ', array_map(function ($col) {
-        return "`$col`"; }, $columns));
+        return "`$col`";
+    }, $columns));
     $placeholders = implode(', ', array_fill(0, count($values), '?'));
 
     // Handle both inserts and updates gracefully based on Primary Key
@@ -167,6 +172,34 @@ function syncMarkSynced($conn, $table, $ids)
         echo json_encode(['success' => true, 'message' => 'Marked synced']);
     } else {
         echo json_encode(['success' => false, 'error' => $conn->error]);
+    }
+}
+
+function syncUploadFile()
+{
+    $path = $_POST['path'] ?? '';
+    if (empty($path) || !isset($_FILES['file'])) {
+        echo json_encode(['success' => false, 'error' => 'Missing path or physical file']);
+        return;
+    }
+
+    // Safety check to prevent directory traversal
+    if (strpos($path, '..') !== false) {
+        echo json_encode(['success' => false, 'error' => 'Invalid path structure']);
+        return;
+    }
+
+    $target_file = __DIR__ . '/../' . ltrim($path, '/');
+    $target_dir = dirname($target_file);
+
+    if (!is_dir($target_dir)) {
+        mkdir($target_dir, 0777, true);
+    }
+
+    if (move_uploaded_file($_FILES['file']['tmp_name'], $target_file)) {
+        echo json_encode(['success' => true, 'message' => 'File uploaded successfully']);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Failed to save uploaded file']);
     }
 }
 ?>

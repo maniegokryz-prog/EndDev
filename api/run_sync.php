@@ -57,6 +57,19 @@ foreach ($tables_to_sync as $table) {
     if ($local_changes && $local_changes->num_rows > 0) {
         while ($record = $local_changes->fetch_assoc()) {
 
+            // If the record has a physical file attachment, upload it to the VPS first
+            if (isset($record['attachment']) && !empty($record['attachment'])) {
+                $local_file_path = __DIR__ . '/../' . ltrim($record['attachment'], '/');
+                if (file_exists($local_file_path)) {
+                    $filePushResponse = sendFileToVPS($record['attachment'], $local_file_path);
+                    if ($filePushResponse && isset($filePushResponse['success']) && $filePushResponse['success']) {
+                        logSync("Successfully uploaded file to VPS: " . $record['attachment']);
+                    } else {
+                        logSync("Failed to upload file: " . ($filePushResponse['error'] ?? 'Network error'));
+                    }
+                }
+            }
+
             // Push to VPS
             $response = sendToVPS('push', $table, $record);
 
@@ -84,6 +97,34 @@ if ($pullResponse && isset($pullResponse['success']) && $pullResponse['success']
 
         $synced_ids = [];
         foreach ($records as $record) {
+
+            // If the record has a physical file attachment, download it from the VPS first
+            if (isset($record['attachment']) && !empty($record['attachment'])) {
+                $local_file_path = __DIR__ . '/../' . ltrim($record['attachment'], '/');
+                if (!file_exists($local_file_path)) {
+                    $vps_file_url = 'http://76.13.210.68/' . ltrim($record['attachment'], '/');
+
+                    $ch_dl = curl_init($vps_file_url);
+                    curl_setopt($ch_dl, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch_dl, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch_dl, CURLOPT_SSL_VERIFYHOST, false);
+                    curl_setopt($ch_dl, CURLOPT_TIMEOUT, 30);
+                    $file_data = curl_exec($ch_dl);
+                    $http_code = curl_getinfo($ch_dl, CURLINFO_HTTP_CODE);
+                    curl_close($ch_dl);
+
+                    if ($http_code == 200 && $file_data !== false) {
+                        $target_dir = dirname($local_file_path);
+                        if (!is_dir($target_dir)) {
+                            mkdir($target_dir, 0777, true);
+                        }
+                        file_put_contents($local_file_path, $file_data);
+                        logSync("Successfully downloaded file from VPS: " . $record['attachment']);
+                    } else {
+                        logSync("Failed to download file from VPS: " . $record['attachment'] . " (HTTP $http_code)");
+                    }
+                }
+            }
 
             // Insert or Update Local DB
             $record['sync_status'] = 1; // Mark as synced once saved locally
@@ -181,5 +222,38 @@ function sendToVPS($action, $table, $data)
     }
 
     return json_decode($result, true) ?: ['success' => false, 'error' => 'Invalid JSON from VPS: ' . substr($result, 0, 100)];
+}
+
+function sendFileToVPS($relative_path, $local_file_path)
+{
+    if (!class_exists('CURLFile'))
+        return ['success' => false, 'error' => 'CURLFile not supported'];
+
+    $ch = curl_init(VPS_ENDPOINT);
+    $cfile = new CURLFile($local_file_path);
+    $data = [
+        'action' => 'upload_file',
+        'path' => $relative_path,
+        'file' => $cfile
+    ];
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'X-API-KEY: ' . API_KEY
+    ]);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30); // Need more time for files
+
+    $result = curl_exec($ch);
+    $error = curl_error($ch);
+    curl_close($ch);
+
+    if ($error) {
+        return ['success' => false, 'error' => $error];
+    }
+    return json_decode($result, true) ?: ['success' => false, 'error' => 'Invalid file response'];
 }
 ?>
