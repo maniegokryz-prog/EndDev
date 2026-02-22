@@ -215,16 +215,7 @@ class SyncManager:
 
                     mysql_conn.commit()
 
-                    # Push to Cloud API
-                    cloud_data = {
-                        'employee_id': employee_id,
-                        'log_date': str(log_date),
-                        'log_time': str(log_time),
-                        'log_type': log_type,
-                        'source': source,
-                        'notes': notes
-                    }
-                    self._sync_to_cloud_api('insert', 'attendance_logs', cloud_data)
+                    # Local DB is now the source of truth for the background sync engine.
                     
                     # Mark as synced in local database
                     synced_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -361,7 +352,8 @@ class SyncManager:
                                 scheduled_hours = %s, actual_hours = %s,
                                 late_minutes = %s, early_departure_minutes = %s,
                                 overtime_minutes = %s, break_time_minutes = %s,
-                                status = %s, notes = %s, calculated_at = %s
+                                status = %s, notes = %s, calculated_at = %s,
+                                sync_status = 0
                             WHERE employee_id = %s AND attendance_date = %s
                         """, (final_time_in, final_time_out, scheduled_hours, final_actual_hours,
                               late_minutes, early_departure_minutes, overtime_minutes,
@@ -369,22 +361,7 @@ class SyncManager:
                               employee_id, attendance_date))
                         print(f"  ✓ Updated: Employee {employee_id}, Date {attendance_date}, Status: {final_status}")
                         
-                        # Sync Update to Cloud
-                        cloud_data = {
-                            'time_in': str(time_in) if time_in else None,
-                            'time_out': str(time_out) if time_out else None,
-                            'scheduled_hours': scheduled_hours,
-                            'actual_hours': actual_hours,
-                            'late_minutes': late_minutes,
-                            'early_departure_minutes': early_departure_minutes,
-                            'overtime_minutes': overtime_minutes,
-                            'break_time_minutes': break_time_minutes,
-                            'status': status,
-                            'notes': notes,
-                            'calculated_at': str(calculated_at)
-                        }
-                        self._sync_to_cloud_api('update', 'daily_attendance', cloud_data, 
-                                              f"employee_id = '{employee_id}' AND attendance_date = '{attendance_date}'")
+                        # Local DB is now the source of truth for the background sync engine.
 
                     else:
                         # Insert new record into MySQL
@@ -401,23 +378,7 @@ class SyncManager:
                               status, notes, calculated_at))
                         print(f"  ✓ Inserted: Employee {employee_id}, Date {attendance_date}, Status: {status}")
                         
-                        # Sync Insert to Cloud
-                        cloud_data = {
-                            'employee_id': employee_id,
-                            'attendance_date': str(attendance_date),
-                            'time_in': str(time_in) if time_in else None,
-                            'time_out': str(time_out) if time_out else None,
-                            'scheduled_hours': scheduled_hours,
-                            'actual_hours': actual_hours,
-                            'late_minutes': late_minutes,
-                            'early_departure_minutes': early_departure_minutes,
-                            'overtime_minutes': overtime_minutes,
-                            'break_time_minutes': break_time_minutes,
-                            'status': status,
-                            'notes': notes,
-                            'calculated_at': str(calculated_at)
-                        }
-                        self._sync_to_cloud_api('insert', 'daily_attendance', cloud_data)
+                        # Local DB is now the source of truth for the background sync engine.
                     
                     mysql_conn.commit()
                     success_count += 1
