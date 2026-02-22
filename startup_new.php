@@ -53,7 +53,8 @@ if ($conn->query($sql) === TRUE) {
 // Select the database
 $conn->select_db($dbname);
 
-function createTable($conn, $sql, $tableName) {
+function createTable($conn, $sql, $tableName)
+{
     if ($conn->query($sql) === TRUE) {
         // echo "Table '$tableName' created successfully or already exists<br>";
     } else {
@@ -293,7 +294,7 @@ if ($admin_exists->num_rows == 0) {
     $default_password = password_hash('admin123', PASSWORD_DEFAULT);
     $insert_admin = "INSERT INTO admin_users (username, email, password_hash, role, is_active) 
                      VALUES ('admin', 'admin@system.local', '$default_password', 'admin', 1)";
-    
+
     if ($conn->query($insert_admin) === TRUE) {
         // echo "Default admin account created successfully (username: admin, password: admin123)<br>";
     } else {
@@ -314,6 +315,40 @@ if ($check_link->num_rows == 0) {
     $conn->query("ALTER TABLE notifications ADD COLUMN link VARCHAR(255) NULL AFTER message");
 }
 
+// Check and add sync_status and last_sync to all syncable tables
+$tables_to_sync = [
+    'employees',
+    'schedules',
+    'schedule_periods',
+    'employee_schedules',
+    'attendance_logs',
+    'daily_attendance',
+    'holidays',
+    'leave_types',
+    'employee_leaves',
+    'employee_assignments',
+    'notifications'
+];
+
+foreach ($tables_to_sync as $table) {
+    // Check if sync_status exists
+    $check_sync = $conn->query("SHOW COLUMNS FROM `$table` LIKE 'sync_status'");
+    if ($check_sync->num_rows == 0) {
+        $conn->query("ALTER TABLE `$table` ADD COLUMN `sync_status` TINYINT DEFAULT 0");
+    }
+
+    // Check if last_sync exists
+    $check_last = $conn->query("SHOW COLUMNS FROM `$table` LIKE 'last_sync'");
+    if ($check_last->num_rows == 0) {
+        $conn->query("ALTER TABLE `$table` ADD COLUMN `last_sync` DATETIME DEFAULT NULL");
+    }
+
+    // Add index on sync_status for faster queries
+    $check_idx = $conn->query("SHOW INDEX FROM `$table` WHERE Key_name = 'idx_sync_status'");
+    if ($check_idx->num_rows == 0) {
+        $conn->query("CREATE INDEX `idx_sync_status` ON `$table`(`sync_status`)");
+    }
+}
 
 header('Location: dashboard/dashboard.php');
 // echo "All tables and indexes created successfully.<br>";

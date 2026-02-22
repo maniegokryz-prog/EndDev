@@ -7,7 +7,8 @@ $currentUser = getCurrentUser();
 // Default values
 $config = [
     'sync_enabled' => true,
-    'api_url' => 'http://bpcfaceid.com/api/sync_endpoint.php',
+    // For Hostinger VPS, use the IP or domain pointing to VPS
+    'api_url' => 'http://76.13.210.68/api/sync_endpoint.php',
     'api_key' => 'lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo',
     'sync_interval' => 60
 ];

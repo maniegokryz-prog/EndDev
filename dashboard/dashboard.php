@@ -377,6 +377,26 @@ $currentUser = getCurrentUser();
         var modal = new bootstrap.Modal(document.getElementById('logoutModal'));
         modal.show();
       }
+
+      // Background Auto-Sync Trigger
+      document.addEventListener("DOMContentLoaded", function () {
+        function triggerSync() {
+          fetch('../api/run_sync.php')
+            .then(response => response.json())
+            .then(data => {
+              if (data.success && (data.stats.pushed > 0 || data.stats.pulled > 0)) {
+                console.log('Background Sync:', data.stats);
+              }
+            })
+            .catch(err => console.error('Sync Error:', err));
+        }
+
+        // Trigger once 5 seconds after dashboard load
+        setTimeout(triggerSync, 5000);
+
+        // Trigger every 60 seconds thereafter
+        setInterval(triggerSync, 60000);
+      });
     </script>
 
 </body>
