@@ -6,16 +6,19 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require '../../db_connection.php';
 
-class EmployeeUpdater {
+class EmployeeUpdater
+{
     private $db;
     private $errors = [];
     private $validatedData = [];
 
-    public function __construct($database) {
+    public function __construct($database)
+    {
         $this->db = $database;
     }
 
-    public function handleRequest() {
+    public function handleRequest()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->sendErrorResponse('Method not allowed.', 405);
             return;
@@ -23,7 +26,7 @@ class EmployeeUpdater {
 
         try {
             $this->logActivity('Employee update request started');
-            
+
             // Check if current user is admin
             $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
 
@@ -34,7 +37,7 @@ class EmployeeUpdater {
             $this->validatedData['last_name'] = $_POST['last_name'] ?? '';
             $this->validatedData['email'] = $_POST['email'] ?? '';
             $this->validatedData['phone'] = $_POST['phone'] ?? '';
-            
+
             // Only allow admin to update role, department, and position
             if ($isAdmin) {
                 $this->validatedData['roles'] = $_POST['roles'] ?? '';
@@ -51,7 +54,7 @@ class EmployeeUpdater {
                     $this->logActivity('Non-admin user attempted to update - role/dept/position preserved', 'Employee ID: ' . $this->validatedData['employee_id_string']);
                 }
             }
-            
+
             $this->validatedData['hire_date'] = $_POST['hire_date'] ?? '';
             $this->validatedData['status'] = $_POST['status'] ?? 'Active';
 
@@ -82,12 +85,12 @@ class EmployeeUpdater {
             $this->db->commit();
 
             $this->logActivity('Employee updated successfully', 'Employee ID: ' . $this->validatedData['employee_id_string']);
-            
+
             // Add cache control headers to prevent caching
             header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
             header('Pragma: no-cache');
             header('Expires: 0');
-            
+
             // Add timestamp to force browser reload
             header('Location: ../staff_profile.php?id=' . urlencode($this->validatedData['employee_id_string']) . '&status=updated&t=' . time());
             exit;
@@ -102,15 +105,17 @@ class EmployeeUpdater {
         }
     }
 
-    private function getEmployeeByStringId($employeeIdString) {
+    private function getEmployeeByStringId($employeeIdString)
+    {
         $stmt = $this->db->prepare("SELECT id, profile_photo, hire_date FROM employees WHERE employee_id = ?");
         $stmt->bind_param('s', $employeeIdString);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
-    
-    private function getFullEmployeeData($employeeId) {
+
+    private function getFullEmployeeData($employeeId)
+    {
         $stmt = $this->db->prepare("SELECT roles, department, position FROM employees WHERE id = ?");
         $stmt->bind_param('i', $employeeId);
         $stmt->execute();
@@ -118,7 +123,8 @@ class EmployeeUpdater {
         return $result->fetch_assoc();
     }
 
-    private function handleProfilePictureUpload($employee) {
+    private function handleProfilePictureUpload($employee)
+    {
         if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPLOAD_ERR_OK) {
             $photo = $_FILES['profile_photo'];
 
@@ -156,7 +162,7 @@ class EmployeeUpdater {
                     $this->logActivity('Old profile picture deleted', "File: " . basename($file));
                 }
             }
-            
+
             // Also delete exact match if exists (e.g., MA22013613.jpg)
             $extensions = ['jpg', 'jpeg', 'png', 'gif'];
             foreach ($extensions as $ext) {
@@ -191,16 +197,16 @@ class EmployeeUpdater {
                 unlink($newFilepath);
                 throw new Exception("Failed to update profile picture path in the database.");
             }
-            
+
             // Update session if this is the current user's profile
-            if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $employee['id']) {
+            if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $employee['id'] && empty($_SESSION['is_system_admin'])) {
                 $_SESSION['profile_photo'] = $relativePath;
                 // Force session write to ensure it persists
                 session_write_close();
                 session_start();
                 $this->logActivity('Session profile_photo updated', "New path: {$relativePath}");
             }
-            
+
             // Sync profile photo update to cloud
             require_once __DIR__ . '/../../db_cloud_sync.php';
             syncToCloud('employees', [
@@ -211,7 +217,8 @@ class EmployeeUpdater {
         }
     }
 
-    private function updateEmployeeDetails($employeeId) {
+    private function updateEmployeeDetails($employeeId)
+    {
         $stmt = $this->db->prepare("
             UPDATE employees SET
                 first_name = ?, middle_name = ?, last_name = ?, email = ?, phone = ?,
@@ -219,18 +226,26 @@ class EmployeeUpdater {
                 updated_at = NOW()
             WHERE id = ?
         ");
-        $stmt->bind_param('ssssssssssi',
-            $this->validatedData['first_name'], $this->validatedData['middle_name'], $this->validatedData['last_name'],
-            $this->validatedData['email'], $this->validatedData['phone'], $this->validatedData['roles'],
-            $this->validatedData['department'], $this->validatedData['position'], $this->validatedData['hire_date'],
-            $this->validatedData['status'], $employeeId
+        $stmt->bind_param(
+            'ssssssssssi',
+            $this->validatedData['first_name'],
+            $this->validatedData['middle_name'],
+            $this->validatedData['last_name'],
+            $this->validatedData['email'],
+            $this->validatedData['phone'],
+            $this->validatedData['roles'],
+            $this->validatedData['department'],
+            $this->validatedData['position'],
+            $this->validatedData['hire_date'],
+            $this->validatedData['status'],
+            $employeeId
         );
         if (!$stmt->execute()) {
             throw new Exception("Failed to update employee details: " . $stmt->error);
         }
-        
+
         // Update session if this is the current user's profile
-        if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $employeeId) {
+        if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $employeeId && empty($_SESSION['is_system_admin'])) {
             $_SESSION['user_name'] = trim($this->validatedData['first_name'] . ' ' . $this->validatedData['last_name']);
             $_SESSION['department'] = $this->validatedData['department'];
             $_SESSION['position'] = $this->validatedData['position'];
@@ -239,7 +254,7 @@ class EmployeeUpdater {
             session_start();
             $this->logActivity('Session user info updated', "Name: {$_SESSION['user_name']}");
         }
-        
+
         // Sync employee update to cloud
         require_once __DIR__ . '/../../db_cloud_sync.php';
         syncToCloud('employees', [
@@ -255,19 +270,22 @@ class EmployeeUpdater {
             'hire_date' => $this->validatedData['hire_date'],
             'status' => $this->validatedData['status']
         ], 'update', "employee_id = '{$this->validatedData['employee_id_string']}'");
-        
+
         $this->logActivity('Employee details updated', "ID: {$employeeId}");
     }
 
-    private function logActivity($activity, $reference = '') {
+    private function logActivity($activity, $reference = '')
+    {
         // Logging implementation...
     }
 
-    private function logError($context, $message) {
+    private function logError($context, $message)
+    {
         file_put_contents('../../update_error.log', date('Y-m-d H:i:s') . " - $context: $message\n", FILE_APPEND);
     }
 
-    private function sendErrorResponse($message, $code = 400) {
+    private function sendErrorResponse($message, $code = 400)
+    {
         http_response_code($code);
         echo json_encode(['success' => false, 'message' => $message]);
     }
