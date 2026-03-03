@@ -171,18 +171,17 @@ window.addSchedule = async function () {
     // Check if user is looking at faculty enabled fields
     const isFaculty = !document.getElementById('designate_class').disabled;
 
-    if (isFaculty && (!designateClass || !designateSubject || !roomNumber)) {
-        showAppAlert('Faculty members must enter class, subject, and room number!');
-        return;
+    if (isFaculty) {
+        // Faculty fields are now optional
     }
 
     const scheduleData = {
         days: [...selectedDays],
         startTime: shiftStart,
         endTime: shiftEnd,
-        class: isFaculty ? designateClass.toUpperCase() : 'N/A',
-        subject: isFaculty ? designateSubject.toUpperCase() : 'GENERAL',
-        room_num: isFaculty ? roomNumber.toUpperCase() : 'TBD', // Fixed typo 'room_bum' in some versions? No, standard is room_num
+        class: (isFaculty && designateClass) ? designateClass.toUpperCase() : 'N/A',
+        subject: (isFaculty && designateSubject) ? designateSubject.toUpperCase() : 'GENERAL',
+        room_num: (isFaculty && roomNumber) ? roomNumber.toUpperCase() : 'TBD', // Fixed typo 'room_bum' in some versions? No, standard is room_num
         color: getRandomScheduleColor()
     };
 

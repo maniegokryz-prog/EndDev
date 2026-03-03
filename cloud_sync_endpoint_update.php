@@ -48,7 +48,7 @@ try {
     
     // Allowed tables
     $allowed_tables = [
-        'employees', 'schedules', 'schedule_periods', 'employee_schedules', 
+        'employees', 'schedules', 'schedule_requests', 'schedule_periods', 'employee_schedules', 
         'employee_assignments', 'daily_attendance', 'attendance_logs', 
         'holidays', 'leave_types', 'employee_leaves', 'notifications'
     ];

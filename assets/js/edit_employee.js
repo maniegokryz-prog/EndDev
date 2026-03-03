@@ -460,6 +460,9 @@ class EmployeeIDValidator {
  * Handles schedule clearing and confirmation dialogs.
  */
 function initializeFacultyFieldToggle() {
+    // Skip if on staff_profile.php as PHP handles the enabling/disabling
+    if (window.location.pathname.includes('staff_profile.php')) return;
+
     const rolesInput = document.getElementById('roles');
     const facultyFields = ['designate_class', 'designate_subject', 'room-number'];
     let previousRole = rolesInput ? rolesInput.value.trim() : '';
@@ -727,7 +730,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Submit via AJAX
-            fetch('processes/update_employee_schedule.php', {
+            const submitUrl = editScheduleForm.action || 'processes/update_employee_schedule.php';
+            fetch(submitUrl, {
                 method: 'POST',
                 body: formData
             })
@@ -1030,7 +1034,7 @@ function initializeCalendar() {
     }
 
     console.log('Edit schedule calendar element found:', calendar);
-    const timeSlots = generateTimeSlots('07:00', '24:00', 30); // 7AM to 12AM (midnight), 30-minute intervals
+    const timeSlots = generateTimeSlots('07:00', '21:30', 30); // 7AM to 9PM, 30-minute intervals
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     // Clear existing grid content (keep headers)
@@ -1148,7 +1152,7 @@ function renderScheduleBlock(schedule, scheduleIndex) {
 
     schedule.days.forEach(day => {
         const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(day);
-        if (startSlotIndex >= 0 && endSlotIndex <= 34) {
+        if (startSlotIndex >= 0 && endSlotIndex <= 29) {
             // Search within the edit calendar only
             const targetCell = editCalendar.querySelector(`[data-day="${day}"][data-time-index="${startSlotIndex}"]`);
             if (targetCell) {
@@ -1360,32 +1364,14 @@ function addSchedule() {
     const currentRole = rolesInput ? rolesInput.value.trim() : '';
     const isFaculty = currentRole === 'Faculty_Member';
 
-    if (isFaculty && (!designateClass || !designateSubject || !roomNumber)) {
-        const msgEl = document.getElementById('scheduleFacultyMissingMsg');
-        if (msgEl) msgEl.textContent = 'Faculty members must enter class, subject, and room number for schedules!';
-        const modalEl = document.getElementById('scheduleFacultyMissingModal');
-        if (modalEl) {
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-            document.body.classList.remove('modal-open');
-            modalEl.style.zIndex = 20000;
-            setTimeout(() => {
-                const m = new bootstrap.Modal(modalEl);
-                m.show();
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-            }, 40);
-            setTimeout(() => {
-                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                document.body.classList.remove('modal-open');
-            }, 3000);
-        }
-        return;
+    if (isFaculty) {
+        // Validation removed: Faculty fields are optional
     }
 
-    // For non-faculty, use default values
-    const finalClass = isFaculty ? designateClass : 'N/A';
-    const finalSubject = isFaculty ? designateSubject : 'General';
-    const finalRoom = isFaculty ? roomNumber : 'TBD';
+    // For non-faculty, or if left blank by faculty, use default values
+    const finalClass = (isFaculty && designateClass) ? designateClass : 'N/A';
+    const finalSubject = (isFaculty && designateSubject) ? designateSubject : 'GENERAL';
+    const finalRoom = (isFaculty && roomNumber) ? roomNumber : 'TBD';
 
     // Create schedule object
     const scheduleData = {

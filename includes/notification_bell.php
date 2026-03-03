@@ -301,8 +301,8 @@
           method: 'POST',
           body: formData
         }).then(() => {
-          // Redirect to the link if it exists
-          if (link && link.trim() !== '') {
+          // Redirect to the link if it exists and is not just a hash
+          if (link && link.trim() !== '' && link.trim() !== '#') {
             window.location.href = link;
           } else {
             // If no link, just mark as read and update UI
@@ -314,7 +314,7 @@
         }).catch(error => {
           console.error('Error handling notification click:', error);
           // Still redirect even if marking as read fails
-          if (link && link.trim() !== '') {
+          if (link && link.trim() !== '' && link.trim() !== '#') {
             window.location.href = link;
           }
         });

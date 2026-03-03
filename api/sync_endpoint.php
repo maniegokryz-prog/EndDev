@@ -124,6 +124,7 @@ function syncPullUpdates($conn)
     $tables_to_sync = [
         'employees',
         'schedules',
+        'schedule_requests',
         'schedule_periods',
         'employee_schedules',
         'attendance_logs',

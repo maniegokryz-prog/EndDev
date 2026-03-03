@@ -344,12 +344,24 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
 
 <body>
  <body>
+  <!-- Top Navbar -->
   <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
-  <div class="menu-toggle">
-    <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
+
+    <!-- Left: Menu & Welcome -->
+    <div class="d-flex align-items-center">
+      <div class="menu-toggle me-3">
+        <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
+      </div>
+      <div class="welcome-message d-none d-md-block">
+        <h5 class="mb-0 text-white">Attendance Reports</h5>
+      </div>
+    </div>
+
+    <!-- Right: Sync Status & Notifications -->
+    <div class="d-flex align-items-center">
+      <?php include '../includes/notification_bell.php'; ?>
+    </div>
   </div>
-  <?php include '../includes/notification_bell.php'; ?>
-</div>
 
   <!-- Sidebar -->
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">

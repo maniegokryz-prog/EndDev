@@ -48,6 +48,7 @@ try {
     $allowed_tables = [
         'employees',
         'schedules',
+        'schedule_requests',
         'schedule_periods',
         'employee_schedules',
         'employee_assignments',

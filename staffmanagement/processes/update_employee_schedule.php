@@ -1,5 +1,5 @@
 <?php
-require '../../db_connection.php';
+require_once '../../db_connection.php';
 require_once __DIR__ . '/../../db_cloud_sync.php';
 
 class EmployeeScheduleUpdater
@@ -35,12 +35,27 @@ class EmployeeScheduleUpdater
 
             $this->db->begin_transaction();
 
+            // Check if user is an admin
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
+
             // Get internal employee ID
             $employee = $this->getEmployeeByStringId($this->validatedData['employee_id_string']);
             if (!$employee) {
                 throw new Exception("Employee with ID '{$this->validatedData['employee_id_string']}' not found.");
             }
             $employeeId = $employee['id'];
+
+            if (!$isAdmin) {
+                // If not admin, save as pending request and notify admin
+                $this->savePendingRequest($employeeId);
+                $this->db->commit();
+                return;
+            }
+
+            // If admin, update schedule directly
 
             // Update schedule
             $this->updateEmployeeSchedule($employeeId);
@@ -327,6 +342,67 @@ class EmployeeScheduleUpdater
         $this->createScheduleChangeNotification($employeeId);
     }
 
+    private function savePendingRequest($employeeId)
+    {
+        // Insert into schedule_requests table
+        $stmt = $this->db->prepare("
+            INSERT INTO schedule_requests 
+            (employee_id, employee_id_string, first_name, last_name, schedule_data, status) 
+            VALUES (?, ?, ?, ?, ?, 'pending')
+        ");
+        
+        $stmt->bind_param(
+            'issss',
+            $employeeId,
+            $this->validatedData['employee_id_string'],
+            $this->validatedData['first_name'],
+            $this->validatedData['last_name'],
+            $this->validatedData['schedule_data']
+        );
+        $stmt->execute();
+        
+        $requestId = $this->db->insert_id;
+        $this->logActivity('Pending schedule request created', "Request ID: {$requestId}, Employee: {$this->validatedData['employee_id_string']}");
+
+        // Create notification for admin
+        $this->createAdminApprovalNotification($this->validatedData['first_name'] . ' ' . $this->validatedData['last_name']);
+
+        // Return pending response
+        echo json_encode([
+            'success' => true,
+            'message' => 'Schedule update requested successfully. Pending admin approval.',
+            'employee_id' => $this->validatedData['employee_id_string']
+        ]);
+    }
+
+    private function createAdminApprovalNotification($employeeName)
+    {
+        try {
+            // Check if notifications table exists
+            $check_table = $this->db->query("SHOW TABLES LIKE 'notifications'");
+            if ($check_table->num_rows == 0) {
+                return;
+            }
+
+            $message = "New schedule edit request from {$employeeName} requires your approval.";
+            $link = "/EndDev/staffmanagement/review_schedule_request.php";
+
+            // Check if link column exists
+            $check_column = $this->db->query("SHOW COLUMNS FROM notifications LIKE 'link'");
+            if ($check_column->num_rows > 0) {
+                $stmt = $this->db->prepare("INSERT INTO notifications (type, message, link, target, is_read) VALUES ('schedule_approval', ?, ?, 'admin', 0)");
+                $stmt->bind_param("ss", $message, $link);
+            } else {
+                $stmt = $this->db->prepare("INSERT INTO notifications (type, message, target, is_read) VALUES ('schedule_approval', ?, 'admin', 0)");
+                $stmt->bind_param("s", $message);
+            }
+            $stmt->execute();
+
+        } catch (Exception $e) {
+            $this->logError('Admin Notification Creation Failed', $e->getMessage());
+        }
+    }
+
     private function createScheduleChangeNotification($employeeId)
     {
         try {
@@ -338,7 +414,7 @@ class EmployeeScheduleUpdater
             }
 
             // Get employee details
-            $stmt = $this->db->prepare("SELECT first_name, last_name FROM employees WHERE id = ?");
+            $stmt = $this->db->prepare("SELECT id, employee_id as string_id, first_name, last_name, roles FROM employees WHERE id = ?");
             $stmt->bind_param("i", $employeeId);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -347,7 +423,13 @@ class EmployeeScheduleUpdater
             if ($employee) {
                 $emp_name = $employee['first_name'] . ' ' . $employee['last_name'];
                 $message = $emp_name . ", There are some changes to your schedule";
-                $link = "/EndDev/staffmanagement/staff_profile.php";
+                
+                // If the employee is an admin, link them to their profile page. Otherwise use #.
+                if (stripos(strtolower($employee['roles']), 'admin') !== false) {
+                    $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
+                } else {
+                    $link = "#";
+                }
 
                 // Check if link column exists
                 $check_column = $this->db->query("SHOW COLUMNS FROM notifications LIKE 'link'");

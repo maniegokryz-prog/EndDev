@@ -319,6 +319,7 @@ if ($check_link->num_rows == 0) {
 $tables_to_sync = [
     'employees',
     'schedules',
+    'schedule_requests',
     'schedule_periods',
     'employee_schedules',
     'attendance_logs',

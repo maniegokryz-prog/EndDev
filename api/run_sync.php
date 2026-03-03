@@ -33,6 +33,7 @@ $tables_to_sync = [
     'leave_types',
     'holidays',
     'schedules',
+    'schedule_requests',
     'schedule_periods',
     'employee_schedules',
     'employee_assignments',

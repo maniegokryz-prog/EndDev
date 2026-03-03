@@ -71,6 +71,10 @@
      cursor: pointer;
    }
 
+   .top-navbar .notification {
+     position: relative;
+   }
+
    /* desktop: sidebar pushes content */
    @media (min-width: 768px) {
      .menu-toggle {

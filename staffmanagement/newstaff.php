@@ -477,24 +477,21 @@ try {
 
                                         <div class="row mt-3" id="faculty-fields">
                                             <div class="col-md-4 form-group">
-                                                <label for="designate_class">Designate Class <small
-                                                        class="text-muted">(Faculty Only)</small></label>
+                                                <label for="designate_class" style="min-height: 45px;">Designate Class <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
                                                 <input type="text" id="designate_class" name="designate_class"
                                                     class="form-control" placeholder="Class Name" autocomplete="off"
                                                     style="text-transform: uppercase;" disabled>
                                                 <small style="color: #666; font-size: 0.8em; display: none;" class="faculty-helper">Click arrow or type to search</small>
                                             </div>
                                             <div class="col-md-4 form-group">
-                                                <label for="designate_subject">Subject <small
-                                                        class="text-muted">(Faculty Only)</small></label>
+                                                <label for="designate_subject" style="min-height: 45px;">Subject <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
                                                 <input type="text" id="designate_subject" name="designate_subject"
                                                     class="form-control" placeholder="Subject Code" autocomplete="off"
                                                     style="text-transform: uppercase;" disabled>
                                                 <small style="color: #666; font-size: 0.8em; display: none;" class="faculty-helper">Click arrow or type to search</small>
                                             </div>
                                             <div class="col-md-4 form-group">
-                                                <label for="room-number">Room Number <small class="text-muted">(Faculty
-                                                        Only)</small></label>
+                                                <label for="room-number" style="min-height: 45px;">Room Number <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
                                                 <input type="text" id="room-number" name="room-number"
                                                     class="form-control" placeholder="Room #" autocomplete="off"
                                                     style="text-transform: uppercase;" disabled>

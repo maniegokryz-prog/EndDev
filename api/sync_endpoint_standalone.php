@@ -154,7 +154,7 @@ function syncInsert($conn, $table, $data) {
     
     // Validate table name (prevent SQL injection)
     $allowedTables = [
-        'employees', 'schedules', 'schedule_periods', 'employee_schedules', 
+        'employees', 'schedules', 'schedule_requests', 'schedule_periods', 'employee_schedules', 
         'employee_assignments', 'attendance_logs', 'daily_attendance',
         'holidays', 'leave_types', 'employee_leaves', 'admin_users', 'face_embeddings'
     ];

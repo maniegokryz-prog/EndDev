@@ -464,6 +464,30 @@ $profilePhoto .= '?v=' . microtime(true);
     <div class="content pt-3" id="content">
         <div class="container-fluid p-4">
 
+            <?php
+            // Check for pending schedule requests
+            $hasPendingRequest = false;
+            try {
+                $stmt = $conn->prepare("SELECT id FROM schedule_requests WHERE employee_id = ? AND status = 'pending' LIMIT 1");
+                $stmt->bind_param("i", $employee['id']);
+                $stmt->execute();
+                $stmt->store_result();
+                if ($stmt->num_rows > 0) {
+                    $hasPendingRequest = true;
+                }
+                $stmt->close();
+            } catch (Exception $e) {}
+            ?>
+            
+            <?php if ($hasPendingRequest): ?>
+            <div class="alert alert-warning d-flex align-items-center mb-4 border-0 shadow-sm" role="alert">
+                <i class="bi bi-hourglass-split fs-4 me-3"></i>
+                <div>
+                    <strong>Pending Schedule Request:</strong> You have submitted a schedule edit request that is currently waiting for Admin approval. Your previous active schedule is shown below until the new one is approved.
+                </div>
+            </div>
+            <?php endif; ?>
+
             <!-- Top Section: Info & Metrics Grid -->
             <div class="top-section-grid">
 
@@ -647,12 +671,10 @@ $profilePhoto .= '?v=' . microtime(true);
                 <div class="profile-card schedule-section-card">
                     <div class="card-header-custom">
                         <h3 class="card-title">Schedule</h3>
-                        <?php if ($isAdmin && !$is_ionos_server): ?>
                             <button class="btn-modern btn-outline btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#editScheduleModal">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
-                        <?php endif; ?>
                     </div>
                     <div class="schedule-container">
                         <!-- Desktop View (d-none d-md-grid) -->
@@ -1164,33 +1186,34 @@ $profilePhoto .= '?v=' . microtime(true);
                                     <input type="time" id="shift_end" name="shift_end">
                                 </div>
                             </div>
-                            <div class="form-row" id="faculty-fields">
-                                <div class="form-group">
-                                    <label for="designate_class">Designate Class <span style="color: #999;">(Faculty
-                                            Only)</span></label>
+                            <?php 
+                            $isFacultyProfile = (strpos(strtolower($employee['roles']), 'faculty') !== false); 
+                            $disabledAttr = $isFacultyProfile ? '' : 'disabled';
+                            $opacityStyle = $isFacultyProfile ? '1' : '0.6';
+                            $cursorStyle = $isFacultyProfile ? 'text' : 'not-allowed';
+                            $pointerEvents = $isFacultyProfile ? 'auto' : 'none';
+                            ?>
+                            <div class="form-row" id="faculty-fields" style="opacity: <?php echo $opacityStyle; ?>;">
+                                <div class="form-group custom-dropdown" style="opacity: <?php echo $opacityStyle; ?>; pointer-events: <?php echo $pointerEvents; ?>;">
+                                    <label for="designate_class" style="min-height: 45px;">Designate Class <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
                                     <input type="text" id="designate_class" name="designate_class"
-                                        placeholder="Available for Faculty_Members only" autocomplete="off"
-                                        style="text-transform: uppercase;" disabled>
-                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing
-                                        to see existing classes</small>
+                                        placeholder="<?php echo $isFacultyProfile ? 'Select or type class name' : 'Available for Faculty_Members only'; ?>" 
+                                        autocomplete="off" style="text-transform: uppercase; cursor: <?php echo $cursorStyle; ?>;" <?php echo $disabledAttr; ?>>
+                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing classes</small>
                                 </div>
-                                <div class="form-group">
-                                    <label for="designate_subject">Subject <span style="color: #999;">(Faculty
-                                            Only)</span></label>
+                                <div class="form-group custom-dropdown" style="opacity: <?php echo $opacityStyle; ?>; pointer-events: <?php echo $pointerEvents; ?>;">
+                                    <label for="designate_subject" style="min-height: 45px;">Subject <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
                                     <input type="text" id="designate_subject" name="designate_subject"
-                                        placeholder="Available for Faculty_Members only" autocomplete="off"
-                                        style="text-transform: uppercase;" disabled>
-                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing
-                                        to see existing subjects</small>
+                                        placeholder="<?php echo $isFacultyProfile ? 'Select or type subject' : 'Available for Faculty_Members only'; ?>" 
+                                        autocomplete="off" style="text-transform: uppercase; cursor: <?php echo $cursorStyle; ?>;" <?php echo $disabledAttr; ?>>
+                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing subjects</small>
                                 </div>
-                                <div class="form-group">
-                                    <label for="room-number">Room Number <span style="color: #999;">(Faculty
-                                            Only)</span></label>
+                                <div class="form-group custom-dropdown" style="opacity: <?php echo $opacityStyle; ?>; pointer-events: <?php echo $pointerEvents; ?>;">
+                                    <label for="room-number" style="min-height: 45px;">Room Number <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
                                     <input type="text" id="room-number" name="room-number"
-                                        placeholder="Available for Faculty_Members only" autocomplete="off"
-                                        style="text-transform: uppercase;" disabled>
-                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing
-                                        to see existing rooms</small>
+                                        placeholder="<?php echo $isFacultyProfile ? 'Select or type room number' : 'Available for Faculty_Members only'; ?>" 
+                                        autocomplete="off" style="text-transform: uppercase; cursor: <?php echo $cursorStyle; ?>;" <?php echo $disabledAttr; ?>>
+                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing rooms</small>
                                 </div>
                             </div>
 
