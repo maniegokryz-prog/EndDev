@@ -259,6 +259,19 @@ $sql_system_settings = "CREATE TABLE IF NOT EXISTS system_settings (
 )";
 createTable($conn, $sql_system_settings, "system_settings");
 
+// Schedule Requests table
+$sql_schedule_requests = "CREATE TABLE IF NOT EXISTS schedule_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    employee_id_string VARCHAR(50) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    schedule_data TEXT NOT NULL,
+    status ENUM('pending','approved','rejected') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+createTable($conn, $sql_schedule_requests, "schedule_requests");
+
 // Insert default settings if they don't exist
 $check_setting = $conn->query("SELECT id FROM system_settings WHERE setting_key = 'leave_notice_period_days'");
 if ($check_setting->num_rows == 0) {
