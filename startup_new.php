@@ -17,6 +17,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
+set_time_limit(300);
 
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
@@ -358,9 +359,21 @@ foreach ($tables_to_sync as $table) {
     }
 
     // Add index on sync_status for faster queries
-    $check_idx = $conn->query("SHOW INDEX FROM `$table` WHERE Key_name = 'idx_sync_status'");
-    if ($check_idx->num_rows == 0) {
-        $conn->query("CREATE INDEX `idx_sync_status` ON `$table`(`sync_status`)");
+    $index_name = "idx_" . $table . "_sync_status";
+    
+    $check_idx = $conn->query("SHOW INDEX FROM `$table`");
+    $index_exists = false;
+    if ($check_idx) {
+        while ($row = $check_idx->fetch_assoc()) {
+            if ($row['Key_name'] === 'idx_sync_status' || $row['Key_name'] === $index_name) {
+                $index_exists = true;
+                break;
+            }
+        }
+    }
+    
+    if (!$index_exists) {
+        $conn->query("CREATE INDEX `$index_name` ON `$table`(`sync_status`)");
     }
 }
 
