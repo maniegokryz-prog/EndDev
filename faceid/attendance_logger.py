@@ -1104,7 +1104,7 @@ class AttendanceLogger:
             message = f"{employee_name}, You are late by {time_desc}"
             
             # Link to profile page
-            link = "/EndDev/staffmanagement/staffinfo.php"
+            link = "/staffmanagement/staffinfo.php"
             
             # Insert notification
             mysql_cursor.execute("""

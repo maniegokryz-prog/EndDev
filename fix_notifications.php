@@ -10,7 +10,7 @@ $updated = 0;
 while ($row = $result->fetch_assoc()) {
     if (stripos(strtolower($row['roles']), 'admin') !== false) {
         // staff_profile.php expects the custom string 'employee_id' (e.g. 111111 or EMP-01) not the DB auto-increment ID
-        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $row['string_id'];
+        $link = "/staffmanagement/staff_profile.php?id=" . $row['string_id'];
     } else {
         $link = "#";
     }

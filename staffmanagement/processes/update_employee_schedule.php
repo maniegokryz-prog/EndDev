@@ -402,7 +402,7 @@ class EmployeeScheduleUpdater
             }
 
             $message = "New schedule edit request from {$employeeName} requires your approval.";
-            $link = "/EndDev/staffmanagement/review_schedule_request.php";
+            $link = "/staffmanagement/review_schedule_request.php";
 
             // Check if link column exists
             $check_column = $this->db->query("SHOW COLUMNS FROM notifications LIKE 'link'");
@@ -443,7 +443,7 @@ class EmployeeScheduleUpdater
                 
                 // If the employee is an admin, link them to their profile page. Otherwise use #.
                 if (stripos(strtolower($employee['roles']), 'admin') !== false) {
-                    $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
+                    $link = "/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
                 } else {
                     $link = "#";
                 }

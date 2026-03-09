@@ -977,7 +977,7 @@ class EmployeeProcessor
             if ($employee) {
                 $emp_name = $employee['first_name'] . ' ' . $employee['last_name'];
                 $message = $emp_name . ", Your schedule has been created";
-                $link = "/EndDev/staffmanagement/staffinfo.php";
+                $link = "/staffmanagement/staffinfo.php";
 
                 // Check if link column exists
                 $check_column = $this->db->query("SHOW COLUMNS FROM notifications LIKE 'link'");

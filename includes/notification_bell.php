@@ -345,6 +345,18 @@
           return;
         }
 
+        // Helper to resolve hardcoded /EndDev paths for Hostinger
+        const getDynamicLink = (origLink) => {
+          if (!origLink || origLink.trim() === '' || origLink.trim() === '#') return null;
+          let dynamicLink = origLink.trim();
+          if (dynamicLink.startsWith('/EndDev/') && !window.location.pathname.includes('/EndDev/')) {
+             dynamicLink = dynamicLink.replace('/EndDev/', '/');
+          }
+          return dynamicLink;
+        };
+
+        const resolvedLink = getDynamicLink(link);
+
         // Mark as read first
         const formData = new FormData();
         formData.append('action', 'mark_notification_read');
@@ -354,9 +366,9 @@
           method: 'POST',
           body: formData
         }).then(() => {
-          // Redirect to the link if it exists and is not just a hash
-          if (link && link.trim() !== '' && link.trim() !== '#') {
-            window.location.href = link;
+          // Redirect to the link if it exists
+          if (resolvedLink) {
+            window.location.href = resolvedLink;
           } else {
             // If no link, just mark as read and update UI
             const notif = notifications.find(n => n.id == notificationId);
@@ -367,8 +379,8 @@
         }).catch(error => {
           console.error('Error handling notification click:', error);
           // Still redirect even if marking as read fails
-          if (link && link.trim() !== '' && link.trim() !== '#') {
-            window.location.href = link;
+          if (resolvedLink) {
+            window.location.href = resolvedLink;
           }
         });
       }

@@ -75,7 +75,7 @@ try {
         }
 
         // Notify employee with a link that references the request so we can show the schedule
-        $notifLink = "/EndDev/staffmanagement/staff_profile.php?id=" . $request['employee_id_string'];
+        $notifLink = "/staffmanagement/staff_profile.php?id=" . $request['employee_id_string'];
         sendEmployeeNotification($conn, $request['employee_id'], $notifMessage, $notifLink, $requestId);
 
         echo json_encode(['success' => true, 'message' => 'Request rejected successfully']);
@@ -134,7 +134,7 @@ function sendEmployeeNotification($db, $employeeId, $message, $linkOverride = nu
             $result = $stmt->get_result();
             $employee = $result->fetch_assoc();
             if ($employee && stripos(strtolower($employee['roles']), 'admin') !== false) {
-                $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
+                $link = "/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
             }
         }
 

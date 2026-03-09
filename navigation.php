@@ -154,7 +154,8 @@ function renderNavigation($currentPage = '')
         function triggerGlobalSync() {
             // Determine relative path to api directory
             const pathSegments = window.location.pathname.split('/');
-            const apiPath = pathSegments.includes('EndDev') ? '/EndDev/api/run_sync.php' : '../api/run_sync.php';
+            const baseFolder = pathSegments.length > 1 && pathSegments[1] ? '/' + pathSegments[1] : '';
+            const apiPath = baseFolder + '/api/run_sync.php';
 
             fetch(apiPath)
                 .then(r => r.json())

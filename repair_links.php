@@ -3,11 +3,11 @@ require_once 'db_connection.php';
 
 echo "<h2>Repairing Notification Links</h2>";
 
-// 1. Fix links that are exactly '/EndDev/staffmanagement/staffinfo.php' (missing ID)
+// 1. Fix links that are exactly '/staffmanagement/staffinfo.php' (missing ID)
 $sql1 = "UPDATE notifications n 
          INNER JOIN employees e ON n.employee_id = e.id 
-         SET n.link = CONCAT('/EndDev/staffmanagement/staffinfo.php?id=', e.employee_id) 
-         WHERE n.link = '/EndDev/staffmanagement/staffinfo.php' 
+         SET n.link = CONCAT('/staffmanagement/staffinfo.php?id=', e.employee_id) 
+         WHERE n.link = '/staffmanagement/staffinfo.php' 
          OR n.link = '../staffmanagement/staffinfo.php'";
 
 if ($conn->query($sql1)) {
@@ -19,7 +19,7 @@ if ($conn->query($sql1)) {
 // 2. Fix NULL links for leave_request, leave_approved, leave_rejected types
 $sql2 = "UPDATE notifications n 
          INNER JOIN employees e ON n.employee_id = e.id 
-         SET n.link = CONCAT('/EndDev/staffmanagement/staffinfo.php?id=', e.employee_id) 
+         SET n.link = CONCAT('/staffmanagement/staffinfo.php?id=', e.employee_id) 
          WHERE (n.link IS NULL OR n.link = '') 
          AND n.type IN ('leave_request', 'leave_approved', 'leave_rejected', 'admin_request')";
 

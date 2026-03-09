@@ -115,7 +115,7 @@ ob_end_flush();
     <div style="margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #ddd;">
         <h3>How to use this script:</h3>
         <ol>
-            <li>Run this script by navigating to: <code>http://localhost/EndDev/staffmanagement/processes/fix_employee_passwords.php</code></li>
+            <li>Run this script by navigating to: <code>http://yourdomain.com/staffmanagement/processes/fix_employee_passwords.php</code></li>
             <li>It will automatically detect and fix all employees with NULL passwords</li>
             <li>Default password will be set to the employee's ID</li>
             <li>Employees can use their Employee ID as password to login</li>

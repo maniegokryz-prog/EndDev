@@ -55,7 +55,7 @@ try {
         
         $link = "#";
         if ($employee && stripos(strtolower($employee['roles']), 'admin') !== false) {
-            $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
+            $link = "/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
         }
         
         $check_column = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
