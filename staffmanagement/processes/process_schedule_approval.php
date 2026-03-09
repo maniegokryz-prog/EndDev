@@ -50,6 +50,8 @@ try {
     }
 
     if ($action === 'reject') {
+        $remarks = trim($_POST['remarks'] ?? '');
+
         // Update status to rejected
         $updateQuery = $hasSyncColumn ? 
             "UPDATE schedule_requests SET status = 'rejected', sync_status = 0 WHERE id = ?" : 
@@ -66,8 +68,15 @@ try {
             exit;
         }
 
-        // Notify employee
-        sendEmployeeNotification($conn, $request['employee_id'], "Your schedule edit request has been rejected by the admin.");
+        // Build notification message with remarks if provided
+        $notifMessage = "Your schedule edit request has been rejected by the admin.";
+        if (!empty($remarks)) {
+            $notifMessage .= " Reason: " . $remarks;
+        }
+
+        // Notify employee with a link that references the request so we can show the schedule
+        $notifLink = "/EndDev/staffmanagement/staff_profile.php?id=" . $request['employee_id_string'];
+        sendEmployeeNotification($conn, $request['employee_id'], $notifMessage, $notifLink, $requestId);
 
         echo json_encode(['success' => true, 'message' => 'Request rejected successfully']);
         exit;
@@ -110,30 +119,45 @@ try {
     echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
 }
 
-function sendEmployeeNotification($db, $employeeId, $message) {
+function sendEmployeeNotification($db, $employeeId, $message, $linkOverride = null, $scheduleRequestId = null) {
     try {
         $check_table = $db->query("SHOW TABLES LIKE 'notifications'");
         if ($check_table->num_rows == 0) return;
 
-        // Determine if employee is admin to set proper link
-        $stmt = $db->prepare("SELECT employee_id as string_id, roles FROM employees WHERE id = ?");
-        $stmt->bind_param("i", $employeeId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $employee = $result->fetch_assoc();
-        
-        $link = "#";
-        if ($employee && stripos(strtolower($employee['roles']), 'admin') !== false) {
-            $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
+        // Determine link
+        $link = $linkOverride ?? "#";
+        if (!$linkOverride) {
+            // Fallback: derive from employee record
+            $stmt = $db->prepare("SELECT employee_id as string_id, roles FROM employees WHERE id = ?");
+            $stmt->bind_param("i", $employeeId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $employee = $result->fetch_assoc();
+            if ($employee && stripos(strtolower($employee['roles']), 'admin') !== false) {
+                $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
+            }
         }
-        
+
+        // Check if schedule_request_id column exists in notifications
+        $has_req_col = $db->query("SHOW COLUMNS FROM notifications LIKE 'schedule_request_id'")->num_rows > 0;
         $check_column = $db->query("SHOW COLUMNS FROM notifications LIKE 'link'");
-        if ($check_column->num_rows > 0) {
-            $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'schedule_change', ?, ?, 'employee', 0)");
-            $stmt->bind_param("iss", $employeeId, $message, $link);
+
+        if ($has_req_col) {
+            if ($check_column->num_rows > 0) {
+                $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, link, target, is_read, schedule_request_id) VALUES (?, 'schedule_change', ?, ?, 'employee', 0, ?)");
+                $stmt->bind_param("issi", $employeeId, $message, $link, $scheduleRequestId);
+            } else {
+                $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, target, is_read, schedule_request_id) VALUES (?, 'schedule_change', ?, 'employee', 0, ?)");
+                $stmt->bind_param("isi", $employeeId, $message, $scheduleRequestId);
+            }
         } else {
-            $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, target, is_read) VALUES (?, 'schedule_change', ?, 'employee', 0)");
-            $stmt->bind_param("is", $employeeId, $message);
+            if ($check_column->num_rows > 0) {
+                $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'schedule_change', ?, ?, 'employee', 0)");
+                $stmt->bind_param("iss", $employeeId, $message, $link);
+            } else {
+                $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, target, is_read) VALUES (?, 'schedule_change', ?, 'employee', 0)");
+                $stmt->bind_param("is", $employeeId, $message);
+            }
         }
         $stmt->execute();
     } catch (Exception $e) {

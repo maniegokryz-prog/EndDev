@@ -253,7 +253,7 @@ try {
                                             <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#confirmActionModal" onclick="setupConfirmModal(<?php echo $request['id']; ?>, 'approve')">
                                                 <i class="bi bi-check-circle"></i> Approve
                                             </button>
-                                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmActionModal" onclick="setupConfirmModal(<?php echo $request['id']; ?>, 'reject')">
+                                            <button class="btn btn-danger" onclick="openRejectModal(<?php echo $request['id']; ?>)">
                                                 <i class="bi bi-x-circle"></i> Reject
                                             </button>
                                         </div>
@@ -301,21 +301,45 @@ try {
         </div>
     </div>
 
-    <!-- Confirm Action Modal -->
+    <!-- Confirm Action Modal (Approve) -->
     <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
                 <div class="modal-header border-0 pb-0">
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center pt-0">
-                    <i id="confirmActionIcon" class="bi bi-question-circle text-warning mb-3" style="font-size: 3rem;"></i>
-                    <h5 class="modal-title mb-3" id="confirmActionTitle">Confirm Action</h5>
-                    <p id="confirmActionMessage" class="text-muted"></p>
+                    <div class="mb-3">
+                        <i id="confirmActionIcon" class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="modal-title fw-bold mb-3 text-success" id="confirmActionTitle">Confirm Request Approval</h4>
+                    <p id="confirmActionMessage" class="text-secondary fs-5 px-3">Are you sure you want to approve this schedule request? This will automatically update the employee's active schedule.</p>
                 </div>
-                <div class="modal-footer border-0 justify-content-center pt-0">
+                <div class="modal-footer border-0 justify-content-center pb-4 pt-0 gap-3">
+                    <button type="button" class="btn btn-light px-4 py-2 text-secondary fw-semibold" style="border-radius: 8px;" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success px-4 py-2 fw-bold" style="border-radius: 8px;" id="confirmActionButton">Yes, Approve Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject with Remarks Modal -->
+    <div class="modal fade" id="rejectRemarksModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-danger"><i class="bi bi-x-circle me-2"></i>Reject Schedule Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <p class="text-muted small mb-3">Provide a reason for rejecting this schedule request. The employee will be notified with your remarks.</p>
+                    <label for="rejectRemarksInput" class="form-label fw-semibold">Remarks <span class="text-danger">*</span></label>
+                    <textarea id="rejectRemarksInput" class="form-control" rows="4" placeholder="e.g. Schedule conflicts with existing assignments..."></textarea>
+                    <div id="rejectRemarksError" class="text-danger small mt-1" style="display:none;">Please provide a reason for rejection.</div>
+                </div>
+                <div class="modal-footer border-0 justify-content-end pt-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmActionButton">Proceed</button>
+                    <button type="button" class="btn btn-danger" id="confirmRejectBtn"><i class="bi bi-x-circle me-1"></i>Confirm Reject</button>
                 </div>
             </div>
         </div>
@@ -873,25 +897,32 @@ try {
         function setupConfirmModal(requestId, action) {
             currentRequestId = requestId;
             currentAction = action;
-
-            const modalTitle = document.getElementById('confirmActionTitle');
-            const alertIcon = document.getElementById('confirmActionIcon');
-            const confirmBtn = document.getElementById('confirmActionButton');
-
-            document.getElementById('confirmActionMessage').innerHTML = `Are you sure you want to <strong>${action}</strong> this schedule edit request?`;
-            
-            if (action === 'approve') {
-                modalTitle.textContent = 'Approve Schedule';
-                alertIcon.className = 'bi bi-check-circle text-success mb-3';
-                confirmBtn.className = 'btn btn-success';
-                confirmBtn.textContent = 'Yes, Approve';
-            } else {
-                modalTitle.textContent = 'Reject Schedule';
-                alertIcon.className = 'bi bi-x-circle text-danger mb-3';
-                confirmBtn.className = 'btn btn-danger';
-                confirmBtn.textContent = 'Yes, Reject';
-            }
         }
+
+        function openRejectModal(requestId) {
+            currentRequestId = requestId;
+            currentAction = 'reject';
+            // Reset state
+            document.getElementById('rejectRemarksInput').value = '';
+            document.getElementById('rejectRemarksError').style.display = 'none';
+            const modal = new bootstrap.Modal(document.getElementById('rejectRemarksModal'));
+            modal.show();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('confirmRejectBtn').addEventListener('click', function() {
+                const remarks = document.getElementById('rejectRemarksInput').value.trim();
+                if (!remarks) {
+                    document.getElementById('rejectRemarksError').style.display = 'block';
+                    return;
+                }
+                document.getElementById('rejectRemarksError').style.display = 'none';
+                const modalEl = document.getElementById('rejectRemarksModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                executeProcessRequest(currentRequestId, 'reject', remarks);
+            });
+        });
 
         document.getElementById('confirmActionButton').addEventListener('click', function() {
             const modalEl = document.getElementById('confirmActionModal');
@@ -903,13 +934,16 @@ try {
             executeProcessRequest(currentRequestId, currentAction);
         });
 
-        function executeProcessRequest(requestId, action) {
+        function executeProcessRequest(requestId, action, remarks) {
             document.getElementById('loadingOverlay').style.display = 'flex';
             document.getElementById('loadingText').textContent = action === 'approve' ? 'Approving...' : 'Rejecting...';
 
             const formData = new FormData();
             formData.append('request_id', requestId);
             formData.append('action', action);
+            if (remarks) {
+                formData.append('remarks', remarks);
+            }
 
             fetch('processes/process_schedule_approval.php', {
                 method: 'POST',
@@ -941,6 +975,29 @@ try {
                 console.error(error);
             });
         }
+        function showLogoutModal() {
+            var modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+            modal.show();
+        }
     </script>
+
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <h5 class="mb-3">Confirm Logout</h5>
+                    <p class="mb-0">Are you sure you want to log out?</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <form method="POST" action="logout.php" style="display:inline;">
+                        <input type="hidden" name="confirm_logout" value="1">
+                        <button type="submit" class="btn btn-danger">Yes, Log out</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

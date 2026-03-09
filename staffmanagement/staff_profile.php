@@ -467,25 +467,126 @@ $profilePhoto .= '?v=' . microtime(true);
             <?php
             // Check for pending schedule requests
             $hasPendingRequest = false;
+            $pendingScheduleData = '[]';
+            $pendingRequestId = null;
             try {
-                $stmt = $conn->prepare("SELECT id FROM schedule_requests WHERE employee_id = ? AND status = 'pending' LIMIT 1");
+                $stmt = $conn->prepare("SELECT id, schedule_data FROM schedule_requests WHERE employee_id = ? AND status = 'pending' ORDER BY created_at DESC LIMIT 1");
                 $stmt->bind_param("i", $employee['id']);
                 $stmt->execute();
-                $stmt->store_result();
-                if ($stmt->num_rows > 0) {
+                $result = $stmt->get_result();
+                if ($row = $result->fetch_assoc()) {
                     $hasPendingRequest = true;
+                    $pendingScheduleData = $row['schedule_data'];
+                    $pendingRequestId = $row['id'];
                 }
                 $stmt->close();
             } catch (Exception $e) {}
             ?>
             
-            <?php if ($hasPendingRequest): ?>
-            <div class="alert alert-warning d-flex align-items-center mb-4 border-0 shadow-sm" role="alert">
+            <?php if ($hasPendingRequest && isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']): ?>
+            <div class="alert alert-warning d-flex align-items-center mb-4 border-0 shadow-sm flex-wrap" role="alert">
                 <i class="bi bi-hourglass-split fs-4 me-3"></i>
-                <div>
+                <div class="flex-grow-1 mb-2 mb-md-0">
                     <strong>Pending Schedule Request:</strong> You have submitted a schedule edit request that is currently waiting for Admin approval. Your previous active schedule is shown below until the new one is approved.
                 </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#viewPendingRequestModal" onclick="try { renderPendingRequestCalendar(); } catch(e) { alert('Function error: ' + e.message); console.error(e); }">
+                        <i class="bi bi-eye"></i> View Request
+                    </button>
+                </div>
             </div>
+            
+            <script>
+                window.pendingRequestScheduleData = <?php 
+                    $decoded_data = json_decode($pendingScheduleData, true);
+                    $json_out = json_encode(is_array($decoded_data) ? $decoded_data : []); 
+                    echo $json_out !== false ? $json_out : '[]';
+                ?>;
+
+                window.renderPendingRequestCalendar = function() {
+                    console.log("Rendering pending request calendar...");
+                    const container = document.getElementById('pending-request-calendar-view');
+                    if (!container) return; // Exit if no container
+                    
+                    try {
+                        const scheduleBlocks = window.pendingRequestScheduleData || [];
+                        if (!Array.isArray(scheduleBlocks)) {
+                            container.innerHTML = `<h5 class="text-danger">Error: Data format incorrect.</h5>`;
+                            return;
+                        }
+                        if (scheduleBlocks.length === 0) {
+                            container.innerHTML = '<p class="text-center text-muted py-4">No schedule data found.</p>';
+                            return;
+                        }
+
+                        if (typeof renderVisualSchedule === 'function') {
+                            // Reset the container first
+                            container.innerHTML = '';
+                            container.style.cssText = 'min-height: 200px; display: grid; gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 8px; min-width: 800px; overflow-x: auto;';
+                            // Call the main schedule render function defined in new_profile.js
+                            renderVisualSchedule(container, scheduleBlocks);
+                        } else {
+                            throw new Error("renderVisualSchedule is not defined.");
+                        }
+                    } catch (error) {
+                        container.innerHTML = `<div class="alert alert-danger"><strong>Error Rendering Schedule:</strong><br/>${error.message}</div>`;
+                        console.error("Rendering failed:", error);
+                        alert("Rendering warning check console: " + error.message);
+                    }
+                };
+
+                window.cancelPendingRequest = function(requestId) {
+                    const modalEl = document.getElementById('cancelPendingRequestConfirmModal');
+                    const btn = document.getElementById('cancelPendingRequestConfirmBtn');
+                    
+                    if (!modalEl || !btn) {
+                        alert("Error: Confirmation modal not found.");
+                        return;
+                    }
+                    
+                    // Create new modal instance or get existing
+                    let modal = bootstrap.Modal.getInstance(modalEl);
+                    if (!modal) {
+                        modal = new bootstrap.Modal(modalEl);
+                    }
+                    
+                    // Remove old listeners to prevent multiple triggers
+                    const newBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(newBtn, btn);
+                    
+                    newBtn.addEventListener('click', function() {
+                        const originalHtml = newBtn.innerHTML;
+                        newBtn.disabled = true;
+                        newBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Canceling...';
+                        
+                        const csrfToken = '<?php echo $_SESSION["csrf_token"] ?? ""; ?>';
+                        fetch('processes/cancel_schedule_request.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `request_id=${requestId}&csrf_token=${csrfToken}`
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.success) {
+                                modal.hide();
+                                window.location.reload();
+                            } else {
+                                alert("Error: " + data.message);
+                                newBtn.disabled = false;
+                                newBtn.innerHTML = originalHtml;
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Error canceling request:", err);
+                            alert("An error occurred viewing the console.");
+                            newBtn.disabled = false;
+                            newBtn.innerHTML = originalHtml;
+                        });
+                    });
+                    
+                    modal.show();
+                };
+            </script>
             <?php endif; ?>
 
             <!-- Top Section: Info & Metrics Grid -->
@@ -671,10 +772,17 @@ $profilePhoto .= '?v=' . microtime(true);
                 <div class="profile-card schedule-section-card">
                     <div class="card-header-custom">
                         <h3 class="card-title">Schedule</h3>
+                        <?php if ($isAdmin && isset($pendingRequestId) && $pendingRequestId): ?>
+                            <button class="btn-modern btn-outline btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#adminPendingRequestWarningModal">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                        <?php else: ?>
                             <button class="btn-modern btn-outline btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#editScheduleModal">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
+                        <?php endif; ?>
                     </div>
                     <div class="schedule-container">
                         <!-- Desktop View (d-none d-md-grid) -->
@@ -1259,7 +1367,9 @@ $profilePhoto .= '?v=' . microtime(true);
 
                         <div class="form-actions">
                             <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn-save">Save Changes</button>
+                            <button type="submit" class="btn-save">
+                                <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'Save Schedule' : 'Submit Request'; ?>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -1273,10 +1383,10 @@ $profilePhoto .= '?v=' . microtime(true);
     <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
+                <h5 class="fw-bold mb-3 text-danger">No Working Day Selected</h5>
                 <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -1285,10 +1395,10 @@ $profilePhoto .= '?v=' . microtime(true);
     <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
+                <h5 class="fw-bold mb-3 text-danger">Missing Information</h5>
                 <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -1309,11 +1419,10 @@ $profilePhoto .= '?v=' . microtime(true);
     <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-warning">Required Fields</h5>
-                <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for
-                    schedules!</p>
+                <h5 class="fw-bold mb-3 text-danger">Required Fields</h5>
+                <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for schedules!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -1326,6 +1435,44 @@ $profilePhoto .= '?v=' . microtime(true);
                 <p id="scheduleAddedSuccessMsg">Your schedule has been added.</p>
                 <div class="mt-3">
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Request Conflict Modal -->
+    <div class="modal fade" id="schedulePendingConflictModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
+                <p id="schedulePendingConflictMsg">You already have a pending schedule request. Please wait for it to be approved or rejected, or cancel it before submitting a new one.</p>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Understood</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Warning: Pending Request Exists -->
+    <div class="modal fade" id="adminPendingRequestWarningModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
+                <p>This account currently has a pending schedule request. You cannot edit their schedule directly until the pending request is approved or rejected.</p>
+                <style>
+                    #adminPendingRequestWarningModal .btn {
+                        width: auto !important;
+                        min-width: 120px !important; /* Give them a sensible minimum width instead of 100% */
+                        flex: 0 0 auto !important;
+                        margin: 0 !important;
+                        padding: 8px 16px !important;
+                    }
+                </style>
+                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <?php if (isset($pendingRequestId) && $pendingRequestId): ?>
+                        <a href="review_schedule_request.php?id=<?php echo urlencode($pendingRequestId); ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>" class="btn btn-danger">View Request</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -1384,8 +1531,12 @@ $profilePhoto .= '?v=' . microtime(true);
     <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
-                <p id="scheduleSavedSuccessMsg">Schedule updated successfully!</p>
+                <h5 class="fw-bold mb-3 text-success">
+                    <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'Schedule Updated Successfully' : 'Request Submitted'; ?>
+                </h5>
+                <p>
+                    <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'The schedule has been updated directly.' : 'Your request has been submitted.'; ?>
+                </p>
                 <div class="mt-3">
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
                 </div>
@@ -1400,6 +1551,28 @@ $profilePhoto .= '?v=' . microtime(true);
                 <p id="scheduleNoDataMsg">No schedules to clear!</p>
                 <div class="mt-3">
                     <button type="button" class="btn btn-info text-white" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Pending Request Modal -->
+    <div class="modal fade" id="viewPendingRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-warning bg-opacity-10 border-bottom-0 pb-0">
+                    <h5 class="fw-bold mb-0" style="color: #664d03;"><i class="bi bi-hourglass-split me-2"></i>Pending Schedule Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 pt-3">
+                    <p class="text-muted small mb-3">This is the schedule you requested. It is currently waiting for admin approval.</p>
+                    <div id="pending-request-calendar-view" class="schedule-calendar-preview overflow-auto" style="min-height: 200px;"></div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-danger fw-semibold" onclick="cancelPendingRequest(<?php echo $pendingRequestId; ?>)">
+                        <i class="bi bi-x-circle"></i> Cancel Request
+                    </button>
                 </div>
             </div>
         </div>
@@ -1483,6 +1656,20 @@ $profilePhoto .= '?v=' . microtime(true);
                 <div class="d-flex justify-content-center gap-3">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Cancel</button>
                     <button type="button" class="btn btn-primary" id="btnConfirmAction">Yes, Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Pending Request Confirm Modal -->
+    <div class="modal fade" id="cancelPendingRequestConfirmModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h5 class="fw-bold mb-3 text-danger">Confirm Cancel</h5>
+                <p id="cancelPendingRequestConfirmMsg">Are you sure you want to cancel this pending schedule request?</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep It</button>
+                    <button type="button" class="btn btn-danger" id="cancelPendingRequestConfirmBtn">Yes, Cancel Request</button>
                 </div>
             </div>
         </div>
@@ -1847,10 +2034,10 @@ $profilePhoto .= '?v=' . microtime(true);
             const errorModalVal = new bootstrap.Modal(document.getElementById('errorRemoveModal'));
             const msgEl = document.getElementById('errorRemoveMessage');
             if (msgEl) msgEl.textContent = updateError;
-            // Update title to be generic if needed, but "Failed" works
             errorModalVal.show();
         }
     });
+
 </script>
 
 </html>

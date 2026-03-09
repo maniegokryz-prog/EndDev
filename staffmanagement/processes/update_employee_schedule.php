@@ -49,7 +49,24 @@ class EmployeeScheduleUpdater
             $employeeId = $employee['id'];
 
             if (!$isAdmin) {
-                // If not admin, save as pending request and notify admin
+                // Before saving an employee's request, check if they already have one pending
+                $checkStmt = $this->db->prepare("SELECT id FROM schedule_requests WHERE employee_id = ? AND status = 'pending'");
+                $checkStmt->bind_param('i', $employeeId);
+                $checkStmt->execute();
+                $checkResult = $checkStmt->get_result();
+                
+                if ($checkResult && $checkResult->num_rows > 0) {
+                    $this->db->rollback();
+                    // Return a specific 409 Conflict status with a friendly user message
+                    http_response_code(409);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'You already have a pending schedule request. Please wait for it to be approved or rejected, or cancel it before submitting a new one.'
+                    ]);
+                    exit;
+                }
+                
+                // If not admin and no pending requests, save as pending request and notify admin
                 $this->savePendingRequest($employeeId);
                 $this->db->commit();
                 return;

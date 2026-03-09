@@ -475,6 +475,94 @@ def sync_all_tables():
         log_message(f"❌ Database error syncing other tables: {str(e)}")
         return 0
 
+def sync_schedule_requests():
+    """Sync schedule_requests table (pending/approved/rejected) to Hostinger"""
+    try:
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        
+        # Sync all schedule_requests with sync_status = 0 (unsynced changes)
+        cursor.execute("""
+            SELECT * FROM schedule_requests 
+            WHERE sync_status = 0 OR created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            ORDER BY created_at DESC
+            LIMIT 100
+        """)
+        records = cursor.fetchall()
+        synced_count = 0
+        synced_ids = []
+        
+        for record in records:
+            data = convert_to_json_serializable(record)
+            record_id = data.get('id')
+            # Keep the id so ON DUPLICATE KEY UPDATE works correctly on Hostinger
+            if sync_to_cloud('schedule_requests', data, 'insert'):
+                synced_count += 1
+                if record_id:
+                    synced_ids.append(record_id)
+        
+        # Mark synced locally
+        if synced_ids:
+            placeholders = ','.join(['%s'] * len(synced_ids))
+            cursor.execute(f"UPDATE schedule_requests SET sync_status = 1 WHERE id IN ({placeholders})", synced_ids)
+            conn.commit()
+        
+        cursor.close()
+        conn.close()
+        
+        if synced_count > 0:
+            log_message(f"✅ Synced {synced_count} schedule_requests records")
+        
+        return synced_count
+        
+    except pymysql.Error as e:
+        log_message(f"❌ Database error syncing schedule_requests: {str(e)}")
+        return 0
+
+def sync_notifications():
+    """Sync notifications table to Hostinger so employees see alerts on both sides"""
+    try:
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        
+        # Sync notifications created in the last hour or flagged as unsynced
+        cursor.execute("""
+            SELECT * FROM notifications 
+            WHERE sync_status = 0 OR created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            ORDER BY created_at DESC
+            LIMIT 200
+        """)
+        records = cursor.fetchall()
+        synced_count = 0
+        synced_ids = []
+        
+        for record in records:
+            data = convert_to_json_serializable(record)
+            record_id = data.get('id')
+            # Keep the id so ON DUPLICATE KEY UPDATE works correctly on Hostinger
+            if sync_to_cloud('notifications', data, 'insert'):
+                synced_count += 1
+                if record_id:
+                    synced_ids.append(record_id)
+        
+        # Mark synced locally
+        if synced_ids:
+            placeholders = ','.join(['%s'] * len(synced_ids))
+            cursor.execute(f"UPDATE notifications SET sync_status = 1 WHERE id IN ({placeholders})", synced_ids)
+            conn.commit()
+        
+        cursor.close()
+        conn.close()
+        
+        if synced_count > 0:
+            log_message(f"✅ Synced {synced_count} notification records")
+        
+        return synced_count
+        
+    except pymysql.Error as e:
+        log_message(f"❌ Database error syncing notifications: {str(e)}")
+        return 0
+
 def fetch_cloud_pending_leaves():
     """Fetch pending leave requests from Cloud and save to Local DB"""
     try:
@@ -713,8 +801,10 @@ def main():
             c4 = sync_all_tables()
             c5 = fetch_cloud_pending_leaves()
             c6 = fetch_cloud_employees()
+            c7 = sync_schedule_requests()
+            c8 = sync_notifications()
             
-            total_synced = c1 + c2 + c3 + c4 + c5 + c6
+            total_synced = c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8
             if total_synced > 0:
                 msg = f"Synced {total_synced} records"
                 update_status_file("success", msg)

@@ -78,6 +78,10 @@ try {
             cancelLeaveRequest($conn);
             break;
 
+        case 'get_rejected_schedule_detail':
+            getRejectedScheduleDetail($conn);
+            break;
+
         default:
             throw new Exception('Invalid action');
     }
@@ -563,6 +567,12 @@ function getAdminNotifications($conn)
     // Ensure notifications table exists
     ensureNotificationsTable($conn);
 
+    // Auto-add schedule_request_id column if it doesn't exist yet
+    $col_check = $conn->query("SHOW COLUMNS FROM notifications LIKE 'schedule_request_id'");
+    if ($col_check && $col_check->num_rows === 0) {
+        $conn->query("ALTER TABLE notifications ADD COLUMN schedule_request_id INT NULL DEFAULT NULL");
+    }
+
     // Admin sees all admin-targeted notifications (leave requests from others)
     // AND their own employee-targeted notifications (their leave request status)
     // Employees see only their own employee-targeted notifications
@@ -581,6 +591,7 @@ function getAdminNotifications($conn)
                         n.is_read,
                         n.created_at,
                         n.leave_id,
+                        n.schedule_request_id,
                         el.start_date,
                         el.end_date,
                         e.first_name,
@@ -607,6 +618,7 @@ function getAdminNotifications($conn)
                         n.is_read,
                         n.created_at,
                         n.leave_id,
+                        n.schedule_request_id,
                         el.start_date,
                         el.end_date,
                         e.first_name,
@@ -634,6 +646,7 @@ function getAdminNotifications($conn)
                     n.is_read,
                     n.created_at,
                     n.leave_id,
+                    n.schedule_request_id,
                     el.start_date,
                     el.end_date,
                     e.first_name,
@@ -665,7 +678,8 @@ function getAdminNotifications($conn)
             'employee_name' => trim($row['first_name'] . ' ' . $row['last_name']),
             'employee_code' => $row['employee_code'],
             'leave_id' => $row['leave_id'],
-            'link' => $row['link']
+            'link' => $row['link'],
+            'schedule_request_id' => $row['schedule_request_id'] ?? null
         ];
     }
 
@@ -774,6 +788,82 @@ function deleteAllNotifications($conn)
         'success' => true,
         'message' => "Deleted {$deleted_count} notification(s)",
         'deleted_count' => $deleted_count
+    ]);
+}
+
+/**
+ * Get rejected schedule request detail for display in notification modal
+ */
+function getRejectedScheduleDetail($conn)
+{
+    $notification_id = $_GET['notification_id'] ?? 0;
+    $user_id = $_SESSION['user_id'] ?? null;
+
+    if (!$notification_id || !$user_id) {
+        throw new Exception('Missing parameters');
+    }
+
+    // Auto-add schedule_request_id column if it does not exist
+    $col_check = $conn->query("SHOW COLUMNS FROM notifications LIKE 'schedule_request_id'");
+    if ($col_check->num_rows === 0) {
+        $conn->query("ALTER TABLE notifications ADD COLUMN schedule_request_id INT NULL DEFAULT NULL");
+    }
+
+    // Fetch the notification and verify it belongs to this user
+    $stmt = $conn->prepare(
+        "SELECT n.message, n.schedule_request_id, n.employee_id
+         FROM notifications n
+         LEFT JOIN employees e ON n.employee_id = e.id
+         WHERE n.id = ? AND n.employee_id = ?"
+    );
+    $stmt->bind_param("ii", $notification_id, $user_id);
+    $stmt->execute();
+    $notif = $stmt->get_result()->fetch_assoc();
+
+    if (!$notif) {
+        throw new Exception('Notification not found or access denied');
+    }
+
+    $scheduleData = null;
+    $remarks = '';
+
+    // Parse remarks from the message (format: "...rejected... Reason: <remarks>")
+    $message = $notif['message'];
+    if (strpos($message, 'Reason: ') !== false) {
+        $remarks = trim(substr($message, strpos($message, 'Reason: ') + 8));
+    }
+
+    // Fetch schedule data from schedule_requests using stored request ID
+    if (!empty($notif['schedule_request_id'])) {
+        $stmt2 = $conn->prepare("SELECT schedule_data FROM schedule_requests WHERE id = ?");
+        $stmt2->bind_param("i", $notif['schedule_request_id']);
+        $stmt2->execute();
+        $req = $stmt2->get_result()->fetch_assoc();
+        if ($req) {
+            $scheduleData = json_decode($req['schedule_data'], true);
+        }
+    }
+
+    // If no specific request found, try to get the most recent rejected request for this employee
+    if ($scheduleData === null) {
+        $stmt3 = $conn->prepare(
+            "SELECT schedule_data FROM schedule_requests
+             WHERE employee_id = ? AND status = 'rejected'
+             ORDER BY updated_at DESC LIMIT 1"
+        );
+        $stmt3->bind_param("i", $notif['employee_id']);
+        $stmt3->execute();
+        $req3 = $stmt3->get_result()->fetch_assoc();
+        if ($req3) {
+            $scheduleData = json_decode($req3['schedule_data'], true);
+        }
+    }
+
+    echo json_encode([
+        'success' => true,
+        'schedule_data' => $scheduleData ?? [],
+        'remarks' => $remarks,
+        'message' => $message
     ]);
 }
 

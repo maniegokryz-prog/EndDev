@@ -718,7 +718,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const saveBtn = editScheduleForm.querySelector('.btn-save');
             const originalBtnText = saveBtn.innerHTML;
             saveBtn.disabled = true;
-            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Submitting...';
 
             // Create FormData object
             const formData = new FormData(editScheduleForm);
@@ -735,14 +735,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 body: formData
             })
-                .then(response => response.json())
+                .then(async response => {
+                    // Check if response is 409 Conflict (Pending request exists)
+                    if (response.status === 409) {
+                        const data = await response.json();
+                        throw new Error(data.message || 'You already have a pending schedule request.');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Server response:', data);
 
                     if (data.success) {
                         // Show success modal
                         const msgEl = document.getElementById('scheduleSavedSuccessMsg');
-                        if (msgEl) msgEl.textContent = 'Schedule updated successfully!';
+                        if (msgEl) msgEl.textContent = 'Your request has been submitted.';
                         const modalEl = document.getElementById('scheduleSavedSuccessModal');
                         if (modalEl) {
                             // Close existing backdrops to prevent stacking issues (optional, but keeping for safety if multiple layers exist)
@@ -773,7 +780,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     saveBtn.innerHTML = originalBtnText;
 
                     console.error('Error submitting form:', error);
-                    alert('Error updating schedule. Please check the console for details.');
+
+                    // Show our specific conflict modal if it's the pending request error
+                    if (error.message && error.message.includes('pending schedule request') && document.getElementById('schedulePendingConflictModal')) {
+                        const conflictModal = new bootstrap.Modal(document.getElementById('schedulePendingConflictModal'));
+                        conflictModal.show();
+                    } else {
+                        // Use the error message directly or a generic error
+                        alert(error.message || 'Error updating schedule. Please check the console for details.');
+                    }
                 });
         });
     }
