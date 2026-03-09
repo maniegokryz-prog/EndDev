@@ -5230,3 +5230,153 @@
 2026-03-09 12:47:30 - --- Sync Cycle Started ---
 2026-03-09 12:48:00 - --- Sync Cycle Started ---
 2026-03-09 12:48:30 - --- Sync Cycle Started ---
+2026-03-09 12:49:00 - --- Sync Cycle Started ---
+2026-03-09 12:50:05 - --- Sync Cycle Started ---
+2026-03-09 12:50:05 - Pulled tables from VPS: schedule_requests, schedule_periods, employee_assignments, notifications
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_requests with VPS id 3
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_periods with VPS id 1
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_periods with VPS id 2
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_periods with VPS id 3
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_periods with VPS id 4
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_periods with VPS id 5
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_periods with VPS id 8
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_periods with VPS id 9
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_periods with VPS id 10
+2026-03-09 12:50:05 - Successfully pulled and updated local record on schedule_periods with VPS id 11
+2026-03-09 12:50:06 - Successfully pulled and updated local record on schedule_periods with VPS id 12
+2026-03-09 12:50:06 - Successfully pulled and updated local record on schedule_periods with VPS id 13
+2026-03-09 12:50:06 - Successfully pulled and updated local record on employee_assignments with VPS id 1
+2026-03-09 12:50:06 - Successfully pulled and updated local record on employee_assignments with VPS id 2
+2026-03-09 12:50:06 - Successfully pulled and updated local record on employee_assignments with VPS id 3
+2026-03-09 12:50:06 - Successfully pulled and updated local record on employee_assignments with VPS id 4
+2026-03-09 12:50:06 - Successfully pulled and updated local record on employee_assignments with VPS id 5
+2026-03-09 12:50:06 - Successfully pulled and updated local record on notifications with VPS id 8
+2026-03-09 12:50:07 - Successfully pulled and updated local record on notifications with VPS id 9
+2026-03-09 12:50:24 - --- Sync Cycle Started ---
+2026-03-09 12:50:26 - --- Sync Cycle Started ---
+2026-03-09 12:50:37 - --- Sync Cycle Started ---
+2026-03-09 12:51:07 - --- Sync Cycle Started ---
+2026-03-09 12:51:37 - --- Sync Cycle Started ---
+2026-03-09 12:52:07 - --- Sync Cycle Started ---
+2026-03-09 12:52:32 - --- Sync Cycle Started ---
+2026-03-09 12:53:03 - --- Sync Cycle Started ---
+2026-03-09 12:53:33 - --- Sync Cycle Started ---
+2026-03-09 12:54:03 - --- Sync Cycle Started ---
+2026-03-09 12:54:10 - --- Sync Cycle Started ---
+2026-03-09 12:54:41 - --- Sync Cycle Started ---
+2026-03-09 12:55:11 - --- Sync Cycle Started ---
+2026-03-09 12:55:41 - --- Sync Cycle Started ---
+2026-03-09 12:56:11 - --- Sync Cycle Started ---
+2026-03-09 12:56:41 - --- Sync Cycle Started ---
+2026-03-09 12:57:11 - --- Sync Cycle Started ---
+2026-03-09 12:57:56 - --- Sync Cycle Started ---
+2026-03-09 12:57:58 - --- Sync Cycle Started ---
+2026-03-09 12:58:29 - --- Sync Cycle Started ---
+2026-03-09 12:58:59 - --- Sync Cycle Started ---
+2026-03-09 12:59:29 - --- Sync Cycle Started ---
+2026-03-09 12:59:59 - --- Sync Cycle Started ---
+2026-03-09 12:59:59 - Pulled tables from VPS: schedule_requests
+2026-03-09 12:59:59 - Successfully pulled and updated local record on schedule_requests with VPS id 4
+2026-03-09 13:00:29 - --- Sync Cycle Started ---
+2026-03-09 13:00:59 - --- Sync Cycle Started ---
+2026-03-09 13:02:05 - --- Sync Cycle Started ---
+2026-03-09 13:02:32 - --- Sync Cycle Started ---
+2026-03-09 13:02:59 - --- Sync Cycle Started ---
+2026-03-09 13:03:29 - --- Sync Cycle Started ---
+2026-03-09 13:04:05 - --- Sync Cycle Started ---
+2026-03-09 13:04:42 - --- Sync Cycle Started ---
+2026-03-09 13:04:45 - --- Sync Cycle Started ---
+2026-03-09 13:04:47 - --- Sync Cycle Started ---
+2026-03-09 13:05:18 - --- Sync Cycle Started ---
+2026-03-09 13:05:48 - --- Sync Cycle Started ---
+2026-03-09 13:06:25 - --- Sync Cycle Started ---
+2026-03-09 13:06:56 - --- Sync Cycle Started ---
+2026-03-09 13:07:26 - --- Sync Cycle Started ---
+2026-03-09 13:07:55 - --- Sync Cycle Started ---
+2026-03-09 13:08:26 - --- Sync Cycle Started ---
+2026-03-09 13:08:56 - --- Sync Cycle Started ---
+2026-03-09 13:09:26 - --- Sync Cycle Started ---
+2026-03-09 13:09:57 - --- Sync Cycle Started ---
+2026-03-09 13:10:26 - --- Sync Cycle Started ---
+2026-03-09 13:10:56 - --- Sync Cycle Started ---
+2026-03-09 13:11:57 - --- Sync Cycle Started ---
+2026-03-09 13:12:00 - --- Sync Cycle Started ---
+2026-03-09 13:12:15 - --- Sync Cycle Started ---
+2026-03-09 13:12:18 - --- Sync Cycle Started ---
+2026-03-09 13:12:21 - --- Sync Cycle Started ---
+2026-03-09 13:12:52 - --- Sync Cycle Started ---
+2026-03-09 13:13:13 - --- Sync Cycle Started ---
+2026-03-09 13:13:43 - --- Sync Cycle Started ---
+2026-03-09 13:14:13 - --- Sync Cycle Started ---
+2026-03-09 13:14:43 - --- Sync Cycle Started ---
+2026-03-09 13:14:55 - --- Sync Cycle Started ---
+2026-03-09 13:14:58 - --- Sync Cycle Started ---
+2026-03-09 13:14:59 - --- Sync Cycle Started ---
+2026-03-09 13:15:30 - --- Sync Cycle Started ---
+2026-03-09 13:16:00 - --- Sync Cycle Started ---
+2026-03-09 13:16:14 - --- Sync Cycle Started ---
+2026-03-09 13:16:45 - --- Sync Cycle Started ---
+2026-03-09 13:17:15 - --- Sync Cycle Started ---
+2026-03-09 13:17:41 - --- Sync Cycle Started ---
+2026-03-09 13:17:42 - --- Sync Cycle Started ---
+2026-03-09 13:18:13 - --- Sync Cycle Started ---
+2026-03-09 13:18:43 - --- Sync Cycle Started ---
+2026-03-09 13:19:13 - --- Sync Cycle Started ---
+2026-03-09 13:19:43 - --- Sync Cycle Started ---
+2026-03-09 13:20:13 - --- Sync Cycle Started ---
+2026-03-09 13:20:29 - --- Sync Cycle Started ---
+2026-03-09 13:20:31 - --- Sync Cycle Started ---
+2026-03-09 13:21:02 - --- Sync Cycle Started ---
+2026-03-09 13:21:32 - --- Sync Cycle Started ---
+2026-03-09 13:21:56 - --- Sync Cycle Started ---
+2026-03-09 13:22:27 - --- Sync Cycle Started ---
+2026-03-09 13:22:57 - --- Sync Cycle Started ---
+2026-03-09 13:23:27 - --- Sync Cycle Started ---
+2026-03-09 13:23:57 - --- Sync Cycle Started ---
+2026-03-09 13:24:26 - --- Sync Cycle Started ---
+2026-03-09 13:24:57 - --- Sync Cycle Started ---
+2026-03-09 13:25:27 - --- Sync Cycle Started ---
+2026-03-09 13:25:54 - --- Sync Cycle Started ---
+2026-03-09 13:26:25 - --- Sync Cycle Started ---
+2026-03-09 13:26:55 - --- Sync Cycle Started ---
+2026-03-09 13:27:24 - --- Sync Cycle Started ---
+2026-03-09 13:27:54 - --- Sync Cycle Started ---
+2026-03-09 13:28:24 - --- Sync Cycle Started ---
+2026-03-09 13:28:54 - --- Sync Cycle Started ---
+2026-03-09 13:29:24 - --- Sync Cycle Started ---
+2026-03-09 13:29:54 - --- Sync Cycle Started ---
+2026-03-09 13:30:01 - --- Sync Cycle Started ---
+2026-03-09 13:30:31 - --- Sync Cycle Started ---
+2026-03-09 13:31:01 - --- Sync Cycle Started ---
+2026-03-09 13:31:31 - --- Sync Cycle Started ---
+2026-03-09 13:32:01 - --- Sync Cycle Started ---
+2026-03-09 13:32:31 - --- Sync Cycle Started ---
+2026-03-09 13:32:49 - --- Sync Cycle Started ---
+2026-03-09 13:33:19 - --- Sync Cycle Started ---
+2026-03-09 13:33:50 - --- Sync Cycle Started ---
+2026-03-09 13:34:20 - --- Sync Cycle Started ---
+2026-03-09 13:34:50 - --- Sync Cycle Started ---
+2026-03-09 13:35:20 - --- Sync Cycle Started ---
+2026-03-09 13:35:50 - --- Sync Cycle Started ---
+2026-03-09 13:36:37 - --- Sync Cycle Started ---
+2026-03-09 13:36:48 - --- Sync Cycle Started ---
+2026-03-09 13:37:19 - --- Sync Cycle Started ---
+2026-03-09 13:37:48 - --- Sync Cycle Started ---
+2026-03-09 13:38:19 - --- Sync Cycle Started ---
+2026-03-09 13:38:49 - --- Sync Cycle Started ---
+2026-03-09 13:39:06 - --- Sync Cycle Started ---
+2026-03-09 13:39:20 - --- Sync Cycle Started ---
+2026-03-09 13:39:24 - --- Sync Cycle Started ---
+2026-03-09 13:39:26 - --- Sync Cycle Started ---
+2026-03-09 13:39:56 - --- Sync Cycle Started ---
+2026-03-09 13:40:26 - --- Sync Cycle Started ---
+2026-03-09 13:40:57 - --- Sync Cycle Started ---
+2026-03-09 13:41:27 - --- Sync Cycle Started ---
+2026-03-09 13:41:37 - --- Sync Cycle Started ---
+2026-03-09 13:42:03 - --- Sync Cycle Started ---
+2026-03-09 13:42:34 - --- Sync Cycle Started ---
+2026-03-09 13:43:04 - --- Sync Cycle Started ---
+2026-03-09 13:43:33 - --- Sync Cycle Started ---
+2026-03-09 13:44:03 - --- Sync Cycle Started ---
+2026-03-09 13:44:33 - --- Sync Cycle Started ---
+2026-03-09 13:44:50 - --- Sync Cycle Started ---

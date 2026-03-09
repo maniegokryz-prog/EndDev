@@ -461,8 +461,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Main Content -->
-    <div class="content pt-3" id="content">
-        <div class="container-fluid p-4">
+    <div class="content pt-2" id="content">
+        <div class="container-fluid px-4 pb-4 pt-2">
 
             <?php
             // Check for pending schedule requests
@@ -483,18 +483,32 @@ $profilePhoto .= '?v=' . microtime(true);
             } catch (Exception $e) {}
             ?>
             
-            <?php if ($hasPendingRequest && isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']): ?>
-            <div class="alert alert-warning d-flex align-items-center mb-4 border-0 shadow-sm flex-wrap" role="alert">
-                <i class="bi bi-hourglass-split fs-4 me-3"></i>
-                <div class="flex-grow-1 mb-2 mb-md-0">
-                    <strong>Pending Schedule Request:</strong> You have submitted a schedule edit request that is currently waiting for Admin approval. Your previous active schedule is shown below until the new one is approved.
+            <?php if ($hasPendingRequest): ?>
+                <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']): ?>
+                <div class="alert alert-warning d-flex align-items-center mb-4 border-0 shadow-sm flex-wrap" role="alert">
+                    <i class="bi bi-hourglass-split fs-4 me-3"></i>
+                    <div class="flex-grow-1 mb-2 mb-md-0">
+                        <strong>Pending Schedule Request:</strong> You have submitted a schedule edit request that is currently waiting for Admin approval. Your previous active schedule is shown below until the new one is approved.
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#viewPendingRequestModal" onclick="try { renderPendingRequestCalendar(); } catch(e) { alert('Function error: ' + e.message); console.error(e); }">
+                            <i class="bi bi-eye"></i> View Request
+                        </button>
+                    </div>
                 </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#viewPendingRequestModal" onclick="try { renderPendingRequestCalendar(); } catch(e) { alert('Function error: ' + e.message); console.error(e); }">
-                        <i class="bi bi-eye"></i> View Request
-                    </button>
+                <?php elseif ($isAdmin): ?>
+                <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex align-items-center justify-content-center flex-wrap gap-3 px-4 py-3" role="alert">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-circle fs-4 m-0 text-warning-emphasis"></i>
+                        <div class="lh-sm m-0">
+                            <strong>Pending Schedule Request:</strong> This user has submitted a schedule request. The previous active schedule is shown below until the new one is approved.
+                        </div>
+                    </div>
+                    <a href="review_schedule_request.php?id=<?php echo $pendingRequestId; ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>" class="btn btn-dark btn-sm fw-semibold text-nowrap m-0 px-4 py-2">
+                        <i class="bi bi-pencil-square"></i> Review Request
+                    </a>
                 </div>
-            </div>
+                <?php endif; ?>
             
             <script>
                 window.pendingRequestScheduleData = <?php 
