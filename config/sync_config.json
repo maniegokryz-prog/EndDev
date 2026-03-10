@@ -1,0 +1,7 @@
+{
+    "sync_enabled": true,
+    "api_url": "http:\/\/76.13.210.68\/api\/sync_endpoint.php",
+    "api_key": "lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo",
+    "sync_interval": 60,
+    "updated_at": "2026-03-10 13:24:31"
+}

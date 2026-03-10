@@ -332,6 +332,58 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
             height: 100%;
             object-fit: cover;
         }
+
+        /* Modern Outline Button Styles */
+        .btn-modern {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .btn-outline {
+            background: transparent !important;
+        }
+
+        .btn-outline.text-success {
+            color: #198754 !important;
+            border-color: #198754 !important;
+        }
+
+        .btn-outline.text-warning {
+            color: #ffc107 !important;
+            border-color: #ffc107 !important;
+        }
+
+        .btn-outline.text-primary {
+            color: #0d6efd !important;
+            border-color: #0d6efd !important;
+        }
+
+        .btn-outline.text-success:hover {
+            background: #e2e8f0 !important;
+            color: #198754 !important;
+            border-color: #198754 !important;
+        }
+
+        .btn-outline.text-warning:hover {
+            background: #e2e8f0 !important;
+            color: #ffc107 !important;
+            border-color: #ffc107 !important;
+        }
+
+        .btn-outline.text-primary:hover {
+            background: #e2e8f0 !important;
+            color: #0d6efd !important;
+            border-color: #0d6efd !important;
+        }
     </style>
 </head>
 
@@ -435,9 +487,10 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
                     <h4 id="current-angle">Step 1 of 5: Face Forward</h4>
                     <p id="angle-instruction" class="mb-3">Look directly at the camera with a neutral expression</p>
                     <div class="d-flex justify-content-start gap-2">
-                        <button type="button" id="capture-btn" class="btn btn-success px-4"
-                            style="background-color: #28a745;">Capture Photo</button>
-                        <button type="button" id="skip-btn" class="btn btn-warning px-4 text-white">Skip This
+                        <button type="button" id="capture-btn"
+                            class="btn-modern btn-outline text-primary border-primary px-4">Capture Photo</button>
+                        <button type="button" id="skip-btn"
+                            class="btn-modern btn-outline text-warning border-warning px-4">Skip This
                             Angle</button>
                     </div>
                 </div>
@@ -448,7 +501,8 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
                 </div>
 
                 <div class="mt-4 pt-3 border-top d-flex justify-content-end">
-                    <button type="button" id="save-faces-btn" class="btn btn-success px-5 py-2 fw-bold" disabled
+                    <button type="button" id="save-faces-btn"
+                        class="btn-modern btn-outline text-success border-success px-5 py-2 fw-bold" disabled
                         onclick="submitFaceData()">
                         Save Face Registration
                     </button>
@@ -477,6 +531,27 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
                         class="btn btn-primary px-4 rounded-pill">
                         Return to Profile Now
                     </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Info Modal (for No Face Detected, etc) -->
+    <div class="modal fade" id="appInfoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-warning text-dark border-0">
+                    <h5 class="modal-title fw-bold" data-app-info-title>Notice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-exclamation-circle text-warning fs-1"></i>
+                        <span data-app-info-message class="fs-6"></span>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>

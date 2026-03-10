@@ -888,8 +888,10 @@ $profilePhoto .= '?v=' . microtime(true);
                                     </div>
                                 <?php endif; ?>
                                 <div class="mt-4 d-flex flex-column flex-md-row justify-content-md-end gap-2">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn-modern btn-outline text-danger border-danger"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn-modern btn-outline text-success border-success">Save
+                                        Changes</button>
                                 </div>
                             </form>
                         <?php else: ?>
