@@ -349,6 +349,13 @@
         const getDynamicLink = (origLink) => {
           if (!origLink || origLink.trim() === '' || origLink.trim() === '#') return null;
           let dynamicLink = origLink.trim();
+          
+          // If we are in the local /EndDev/ environment but the link is missing it, prepend it.
+          if (window.location.pathname.includes('/EndDev/') && dynamicLink.startsWith('/') && !dynamicLink.startsWith('/EndDev/')) {
+              dynamicLink = '/EndDev' + dynamicLink;
+          }
+          
+          // If we are NOT in /EndDev/ (e.g., Hostinger) but the link has it, remove it.
           if (dynamicLink.startsWith('/EndDev/') && !window.location.pathname.includes('/EndDev/')) {
              dynamicLink = dynamicLink.replace('/EndDev/', '/');
           }

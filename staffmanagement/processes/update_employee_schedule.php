@@ -382,7 +382,7 @@ class EmployeeScheduleUpdater
         $this->logActivity('Pending schedule request created', "Request ID: {$requestId}, Employee: {$this->validatedData['employee_id_string']}");
 
         // Create notification for admin
-        $this->createAdminApprovalNotification($this->validatedData['first_name'] . ' ' . $this->validatedData['last_name']);
+        $this->createAdminApprovalNotification($this->validatedData['first_name'] . ' ' . $this->validatedData['last_name'], $requestId);
 
         // Return pending response
         echo json_encode([
@@ -392,7 +392,7 @@ class EmployeeScheduleUpdater
         ]);
     }
 
-    private function createAdminApprovalNotification($employeeName)
+    private function createAdminApprovalNotification($employeeName, $requestId)
     {
         try {
             // Check if notifications table exists
@@ -402,7 +402,7 @@ class EmployeeScheduleUpdater
             }
 
             $message = "New schedule edit request from {$employeeName} requires your approval.";
-            $link = "/staffmanagement/review_schedule_request.php";
+            $link = "/EndDev/staffmanagement/review_schedule_request.php?id=" . $requestId;
 
             // Check if link column exists
             $check_column = $this->db->query("SHOW COLUMNS FROM notifications LIKE 'link'");
@@ -443,7 +443,7 @@ class EmployeeScheduleUpdater
                 
                 // If the employee is an admin, link them to their profile page. Otherwise use #.
                 if (stripos(strtolower($employee['roles']), 'admin') !== false) {
-                    $link = "/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
+                    $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
                 } else {
                     $link = "#";
                 }

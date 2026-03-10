@@ -7,16 +7,33 @@ include '../navigation.php';
 
 // Fetch pending schedule requests
 $requests = [];
+$specific_id = isset($_GET['id']) ? intval($_GET['id']) : null;
+
 try {
-    $stmt = $conn->query("
+    $query = "
         SELECT sr.*, e.department, e.position 
         FROM schedule_requests sr
         LEFT JOIN employees e ON sr.employee_id = e.id
         WHERE sr.status = 'pending'
-        ORDER BY sr.created_at DESC
-    ");
-    if ($stmt) {
-        while ($row = $stmt->fetch_assoc()) {
+    ";
+    
+    if ($specific_id) {
+        $query .= " AND sr.id = ?";
+    }
+    
+    $query .= " ORDER BY sr.created_at DESC";
+    
+    $stmt = $conn->prepare($query);
+    
+    if ($specific_id) {
+        $stmt->bind_param("i", $specific_id);
+    }
+    
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
             $requests[] = $row;
         }
     }
@@ -41,6 +58,14 @@ try {
     <link rel="stylesheet" href="../assets/css/styles.css">
 
     <style>
+        .hover-scale {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hover-scale:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+        }
+
         .request-card {
             background: #fff;
             border-radius: 8px;
@@ -269,7 +294,14 @@ try {
     <div class="content pt-3" id="content">
         <div class="container-fluid">
             <div class="container py-4 mt-5" style="margin-top: -5px !important;">
-                <h3 class="fw-bold mb-4 pt-4">Pending Schedule Edits</h3>
+                <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
+                    <h3 class="fw-bold mb-0">Pending Schedule Edits</h3>
+                    <?php if ($specific_id): ?>
+                        <a href="review_schedule_request.php" class="btn btn-outline-primary shadow-sm hover-scale">
+                            <i class="bi bi-arrow-left me-2"></i>View All Pending Requests
+                        </a>
+                    <?php endif; ?>
+                </div>
 
                 <?php if (empty($requests)): ?>
                     <div class="alert alert-info border-0 shadow-sm text-center py-4">
