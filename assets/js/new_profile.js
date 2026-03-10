@@ -572,24 +572,29 @@ function renderMobileSchedule(container, schedules) {
         }
     });
 
+    let hasSchedule = false;
+
+    // Compute schedules html
+    let daysHtml = '';
     daysOrder.forEach(day => {
         // Find schedules for this day
         const dayScheds = schedules.filter(s => s.days.includes(day));
 
         if (dayScheds.length > 0) {
+            hasSchedule = true;
             // Sort by start time
             dayScheds.sort((a, b) => parseTimeStr(a.startTime) - parseTimeStr(b.startTime));
 
             const hrs = +(dailyMinutes[day] / 60).toFixed(2);
-            html += `<div class="mobile-day-group mb-3">`;
-            html += `<h6 class="mobile-day-header text-primary border-bottom pb-1 mb-2 fw-bold d-flex justify-content-between align-items-end">
+            daysHtml += `<div class="mobile-day-group mb-3">`;
+            daysHtml += `<h6 class="mobile-day-header text-primary border-bottom pb-1 mb-2 fw-bold d-flex justify-content-between align-items-end">
                         <span>${day}</span>
                         <span class="text-secondary small fw-normal bg-light px-2 py-1 rounded" style="font-size: 0.8em;">Daily: <span class="fw-bold text-dark">${hrs} hrs</span></span>
                      </h6>`;
-            html += `<div class="d-flex flex-column gap-2">`;
+            daysHtml += `<div class="d-flex flex-column gap-2">`;
 
             dayScheds.forEach(s => {
-                html += `
+                daysHtml += `
                 <div class="mobile-sched-card p-3 rounded" style="background-color: ${s.color}15; border-left: 4px solid ${s.color}; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between">
                         <span class="fw-bold text-dark">${s.subject || 'Work'}</span>
@@ -602,18 +607,22 @@ function renderMobileSchedule(container, schedules) {
                 </div>`;
             });
 
-            html += `</div></div>`;
+            daysHtml += `</div></div>`;
         }
     });
 
-    if (html === '') {
+    if (!hasSchedule) {
         html = '<p class="text-muted text-center py-3">No schedule found for this week.</p>';
     } else {
         const totalWeeklyHours = +(totalWeeklyMinutes / 60).toFixed(2);
+
+        // Add total weekly hours at the TOP instead of bottom
         html += `
-        <div class="mt-4 pt-3 border-top text-center" style="background-color: #f8f9fa; border-radius: 8px; padding: 10px;">
+        <div class="mb-4 pb-3 border-bottom text-center" style="background-color: #f8f9fa; border-radius: 8px; padding: 10px;">
             <span class="fw-bold fs-6 text-dark">Total Weekly Hours: <span class="text-primary" style="font-size: 1.1em;">${totalWeeklyHours} hrs</span></span>
         </div>`;
+
+        html += daysHtml;
     }
 
     container.innerHTML = html;
@@ -626,29 +635,6 @@ function renderVisualSchedule(container, schedules) {
     const timeEnd = 21 * 60 + 30; // 9:30 PM
     const interval = 30; // minutes
     const totalSlots = (timeEnd - timeStart) / interval;
-
-    let gridHtml = '';
-    gridHtml += `<div class="schedule-header-cell">Time</div>`;
-    days.forEach(day => {
-        gridHtml += `<div class="schedule-header-cell">${day}</div>`;
-    });
-
-    for (let i = 0; i < totalSlots; i++) {
-        const currentMinutes = timeStart + (i * interval);
-        const timeLabel = formatMinutesToTime(currentMinutes);
-        gridHtml += `<div class="time-slot-label">${timeLabel}</div>`;
-        days.forEach(day => {
-            gridHtml += `<div class="schedule-grid-cell" data-day="${day}" data-time="${currentMinutes}"></div>`;
-        });
-    }
-
-    container.innerHTML = gridHtml;
-    container.style.display = 'grid';
-    container.style.gridTemplateColumns = '85px repeat(7, 1fr)';
-
-    schedules.forEach(sched => {
-        placeScheduleBlock(container, sched, days, timeStart, interval);
-    });
 
     // Calculate Daily and Total Weekly Hours
     let totalWeeklyMinutes = 0;
@@ -681,6 +667,37 @@ function renderVisualSchedule(container, schedules) {
         }
     });
 
+    const totalWeeklyHours = +(totalWeeklyMinutes / 60).toFixed(2);
+
+    let gridHtml = '';
+
+    // Append Total Row (spans all columns) at the top
+    gridHtml += `<div style="grid-column: 1 / -1; padding: 15px; text-align: center; font-weight: bold; border-bottom: 1px solid #e2e8f0; color: #2d3748; background-color: #f8f9fa;">
+        Total Weekly Hours: <span class="text-primary" style="font-size: 1.1em;">${totalWeeklyHours} hrs</span>
+    </div>`;
+
+    gridHtml += `<div class="schedule-header-cell">Time</div>`;
+    days.forEach(day => {
+        gridHtml += `<div class="schedule-header-cell">${day}</div>`;
+    });
+
+    for (let i = 0; i < totalSlots; i++) {
+        const currentMinutes = timeStart + (i * interval);
+        const timeLabel = formatMinutesToTime(currentMinutes);
+        gridHtml += `<div class="time-slot-label">${timeLabel}</div>`;
+        days.forEach(day => {
+            gridHtml += `<div class="schedule-grid-cell" data-day="${day}" data-time="${currentMinutes}"></div>`;
+        });
+    }
+
+    container.innerHTML = gridHtml;
+    container.style.display = 'grid';
+    container.style.gridTemplateColumns = '85px repeat(7, 1fr)';
+
+    schedules.forEach(sched => {
+        placeScheduleBlock(container, sched, days, timeStart, interval);
+    });
+
     // Append Daily Totals Row
     const dummyCell = document.createElement('div');
     dummyCell.style.padding = '10px 5px';
@@ -707,19 +724,6 @@ function renderVisualSchedule(container, schedules) {
         dayTotalCell.innerHTML = hrs > 0 ? `<span class="text-primary">${hrs}h</span>` : '<span class="text-muted">-</span>';
         container.appendChild(dayTotalCell);
     });
-
-    const totalWeeklyHours = +(totalWeeklyMinutes / 60).toFixed(2);
-
-    // Append Total Row (spans all columns)
-    const totalRow = document.createElement('div');
-    totalRow.style.gridColumn = '1 / -1';
-    totalRow.style.padding = '15px';
-    totalRow.style.textAlign = 'center';
-    totalRow.style.fontWeight = 'bold';
-    totalRow.style.borderTop = '1px solid #e2e8f0';
-    totalRow.style.color = '#2d3748';
-    totalRow.innerHTML = `Total Weekly Hours: <span class="text-primary" style="font-size: 1.1em;">${totalWeeklyHours} hrs</span>`;
-    container.appendChild(totalRow);
 }
 
 function placeScheduleBlock(container, schedule, days, gridStartMinutes, interval) {
