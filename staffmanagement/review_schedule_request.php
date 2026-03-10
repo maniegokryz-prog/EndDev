@@ -27,6 +27,7 @@ try {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Review Schedule Requests</title>
@@ -43,10 +44,11 @@ try {
         .request-card {
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             margin-bottom: 20px;
             border: 1px solid #dee2e6;
         }
+
         .request-header {
             background-color: #f8f9fa;
             padding: 15px;
@@ -56,9 +58,11 @@ try {
             justify-content: space-between;
             align-items: center;
         }
+
         .request-body {
             padding: 20px;
         }
+
         .schedule-table th {
             background-color: #f1f3f5;
         }
@@ -146,6 +150,7 @@ try {
         }
     </style>
 </head>
+
 <body>
     <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
         <div class="menu-toggle">
@@ -163,53 +168,57 @@ try {
                 onerror="this.src='../assets/profile_pic/user.png';">
             <h5 class="mb-0"><?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?></h5>
             <?php
-// Check for status messages from redirect
-$updateStatus = $_GET['status'] ?? '';
+            // Check for status messages from redirect
+            $updateStatus = $_GET['status'] ?? '';
 
-// Fetch unique classes, subjects, and rooms for the dropdowns
-$existing_classes = [];
-$existing_subjects = [];
-$existing_rooms = [];
+            // Fetch unique classes, subjects, and rooms for the dropdowns
+            $existing_classes = [];
+            $existing_subjects = [];
+            $existing_rooms = [];
 
-$ignore_list = ['work shift', 'work_shift', 'n/a', 'na', 'tba', 'tbd', 'none'];
+            $ignore_list = ['work shift', 'work_shift', 'n/a', 'na', 'tba', 'tbd', 'none'];
 
-try {
-    $res = $conn->query("SELECT DISTINCT designate_class FROM employee_assignments WHERE designate_class IS NOT NULL AND designate_class != '' ORDER BY designate_class");
-    if ($res) {
-        while ($row = $res->fetch_assoc()) {
-            $val = trim($row['designate_class']);
-            if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
-                $existing_classes[] = $val;
+            try {
+                $res = $conn->query("SELECT DISTINCT designate_class FROM employee_assignments WHERE designate_class IS NOT NULL AND designate_class != '' ORDER BY designate_class");
+                if ($res) {
+                    while ($row = $res->fetch_assoc()) {
+                        $val = trim($row['designate_class']);
+                        if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                            $existing_classes[] = $val;
+                        }
+                    }
+                }
+            } catch (Exception $e) {
             }
-        }
-    }
-} catch (Exception $e) {}
 
-try {
-    $res = $conn->query("SELECT DISTINCT subject_code FROM employee_assignments WHERE subject_code IS NOT NULL AND subject_code != '' ORDER BY subject_code");
-    if ($res) {
-        while ($row = $res->fetch_assoc()) {
-            $val = trim($row['subject_code']);
-            if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
-                $existing_subjects[] = $val;
+            try {
+                $res = $conn->query("SELECT DISTINCT subject_code FROM employee_assignments WHERE subject_code IS NOT NULL AND subject_code != '' ORDER BY subject_code");
+                if ($res) {
+                    while ($row = $res->fetch_assoc()) {
+                        $val = trim($row['subject_code']);
+                        if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                            $existing_subjects[] = $val;
+                        }
+                    }
+                }
+            } catch (Exception $e) {
             }
-        }
-    }
-} catch (Exception $e) {}
 
-try {
-    $res = $conn->query("SELECT DISTINCT room_num FROM employee_assignments WHERE room_num IS NOT NULL AND room_num != '' ORDER BY room_num");
-    if ($res) {
-        while ($row = $res->fetch_assoc()) {
-            $val = trim($row['room_num']);
-            if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
-                $existing_rooms[] = $val;
+            try {
+                $res = $conn->query("SELECT DISTINCT room_num FROM employee_assignments WHERE room_num IS NOT NULL AND room_num != '' ORDER BY room_num");
+                if ($res) {
+                    while ($row = $res->fetch_assoc()) {
+                        $val = trim($row['room_num']);
+                        if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                            $existing_rooms[] = $val;
+                        }
+                    }
+                }
+            } catch (Exception $e) {
             }
-        }
-    }
-} catch (Exception $e) {}
-?>
-            <small class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
+            ?>
+            <small
+                class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
         </div>
         <nav class="nav flex-column px-2">
             <?php renderNavigation('Staff'); ?>
@@ -220,7 +229,7 @@ try {
         <div class="container-fluid">
             <div class="container py-4 mt-5" style="margin-top: -5px !important;">
                 <h3 class="fw-bold mb-4 pt-4">Pending Schedule Edits</h3>
-                
+
                 <?php if (empty($requests)): ?>
                     <div class="alert alert-info border-0 shadow-sm text-center py-4">
                         <i class="bi bi-calendar-check fs-1 d-block mb-2"></i>
@@ -229,31 +238,37 @@ try {
                     </div>
                 <?php else: ?>
                     <div class="row">
-                        <?php foreach($requests as $request): ?>
+                        <?php foreach ($requests as $request): ?>
                             <?php $scheduleData = json_decode($request['schedule_data'], true); ?>
                             <div class="col-12" id="request-card-<?php echo $request['id']; ?>">
                                 <div class="request-card">
                                     <div class="request-header">
                                         <div>
-                                            <h5 class="mb-1 fw-bold"><?php echo htmlspecialchars($request['first_name'] . ' ' . $request['last_name']); ?></h5>
+                                            <h5 class="mb-1 fw-bold">
+                                                <?php echo htmlspecialchars($request['first_name'] . ' ' . $request['last_name']); ?>
+                                            </h5>
                                             <div class="text-muted small">
-                                                ID: <?php echo htmlspecialchars($request['employee_id_string']); ?> | 
-                                                Department: <?php echo htmlspecialchars($request['department'] ?? 'N/A'); ?> | 
-                                                Requested: <?php echo date('M d, Y h:i A', strtotime($request['created_at'])); ?>
+                                                ID: <?php echo htmlspecialchars($request['employee_id_string']); ?> |
+                                                Department: <?php echo htmlspecialchars($request['department'] ?? 'N/A'); ?> |
+                                                Requested:
+                                                <?php echo date('M d, Y h:i A', strtotime($request['created_at'])); ?>
                                             </div>
                                         </div>
-                                        <div>
-                                            <button type="button" class="btn btn-primary me-2 edit-request-btn"
+                                        <div class="d-flex flex-column flex-md-row gap-2 mt-3 mt-md-0">
+                                            <button type="button" class="btn btn-primary edit-request-btn"
                                                 data-req-id="<?php echo $request['id']; ?>"
                                                 data-emp-id="<?php echo htmlspecialchars($request['employee_id_string'], ENT_QUOTES); ?>"
                                                 data-first="<?php echo htmlspecialchars($request['first_name'], ENT_QUOTES); ?>"
                                                 data-last="<?php echo htmlspecialchars($request['last_name'], ENT_QUOTES); ?>">
                                                 <i class="bi bi-pencil-square"></i> Edit
                                             </button>
-                                            <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#confirmActionModal" onclick="setupConfirmModal(<?php echo $request['id']; ?>, 'approve')">
+                                            <button class="btn btn-success" data-bs-toggle="modal"
+                                                data-bs-target="#confirmActionModal"
+                                                onclick="setupConfirmModal(<?php echo $request['id']; ?>, 'approve')">
                                                 <i class="bi bi-check-circle"></i> Approve
                                             </button>
-                                            <button class="btn btn-danger" onclick="openRejectModal(<?php echo $request['id']; ?>)">
+                                            <button class="btn btn-danger"
+                                                onclick="openRejectModal(<?php echo $request['id']; ?>)">
                                                 <i class="bi bi-x-circle"></i> Reject
                                             </button>
                                         </div>
@@ -261,8 +276,9 @@ try {
                                     <div class="request-body">
                                         <h6 class="fw-bold mb-3">Requested Schedule:</h6>
                                         <!-- Container for JS rendered calendar -->
-                                        <div id="calendar-view-<?php echo $request['id']; ?>" class="schedule-calendar-preview" style="min-height: 200px;"></div>
-                                        
+                                        <div id="calendar-view-<?php echo $request['id']; ?>" class="schedule-calendar-preview"
+                                            style="min-height: 200px;"></div>
+
                                         <!-- Pass raw JSON for this specific request to JS -->
                                         <script>
                                             window.requestSchedules = window.requestSchedules || {};
@@ -279,7 +295,8 @@ try {
     </div>
 
     <!-- Processing Overlay -->
-    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; color:white; flex-direction:column;">
+    <div id="loadingOverlay"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; color:white; flex-direction:column;">
         <div class="spinner-border text-light mb-3" role="status"></div>
         <h4 id="loadingText">Processing...</h4>
     </div>
@@ -310,14 +327,19 @@ try {
                 </div>
                 <div class="modal-body text-center pt-0">
                     <div class="mb-3">
-                        <i id="confirmActionIcon" class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        <i id="confirmActionIcon" class="bi bi-check-circle-fill text-success"
+                            style="font-size: 4rem;"></i>
                     </div>
-                    <h4 class="modal-title fw-bold mb-3 text-success" id="confirmActionTitle">Confirm Request Approval</h4>
-                    <p id="confirmActionMessage" class="text-secondary fs-5 px-3">Are you sure you want to approve this schedule request? This will automatically update the employee's active schedule.</p>
+                    <h4 class="modal-title fw-bold mb-3 text-success" id="confirmActionTitle">Confirm Request Approval
+                    </h4>
+                    <p id="confirmActionMessage" class="text-secondary fs-5 px-3">Are you sure you want to approve this
+                        schedule request? This will automatically update the employee's active schedule.</p>
                 </div>
                 <div class="modal-footer border-0 justify-content-center pb-4 pt-0 gap-3">
-                    <button type="button" class="btn btn-light px-4 py-2 text-secondary fw-semibold" style="border-radius: 8px;" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success px-4 py-2 fw-bold" style="border-radius: 8px;" id="confirmActionButton">Yes, Approve Request</button>
+                    <button type="button" class="btn btn-light px-4 py-2 text-secondary fw-semibold"
+                        style="border-radius: 8px;" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success px-4 py-2 fw-bold" style="border-radius: 8px;"
+                        id="confirmActionButton">Yes, Approve Request</button>
                 </div>
             </div>
         </div>
@@ -328,18 +350,24 @@ try {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold text-danger"><i class="bi bi-x-circle me-2"></i>Reject Schedule Request</h5>
+                    <h5 class="modal-title fw-bold text-danger"><i class="bi bi-x-circle me-2"></i>Reject Schedule
+                        Request</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pt-2">
-                    <p class="text-muted small mb-3">Provide a reason for rejecting this schedule request. The employee will be notified with your remarks.</p>
-                    <label for="rejectRemarksInput" class="form-label fw-semibold">Remarks <span class="text-danger">*</span></label>
-                    <textarea id="rejectRemarksInput" class="form-control" rows="4" placeholder="e.g. Schedule conflicts with existing assignments..."></textarea>
-                    <div id="rejectRemarksError" class="text-danger small mt-1" style="display:none;">Please provide a reason for rejection.</div>
+                    <p class="text-muted small mb-3">Provide a reason for rejecting this schedule request. The employee
+                        will be notified with your remarks.</p>
+                    <label for="rejectRemarksInput" class="form-label fw-semibold">Remarks <span
+                            class="text-danger">*</span></label>
+                    <textarea id="rejectRemarksInput" class="form-control" rows="4"
+                        placeholder="e.g. Schedule conflicts with existing assignments..."></textarea>
+                    <div id="rejectRemarksError" class="text-danger small mt-1" style="display:none;">Please provide a
+                        reason for rejection.</div>
                 </div>
                 <div class="modal-footer border-0 justify-content-end pt-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmRejectBtn"><i class="bi bi-x-circle me-1"></i>Confirm Reject</button>
+                    <button type="button" class="btn btn-danger" id="confirmRejectBtn"><i
+                            class="bi bi-x-circle me-1"></i>Confirm Reject</button>
                 </div>
             </div>
         </div>
@@ -358,7 +386,7 @@ try {
             });
         }
     </script>
-        
+
     <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel"
         aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered edit-schedule-modal-dialog">
@@ -410,25 +438,34 @@ try {
                             <!-- Faculty specific styling is handled via CSS or JS in this unified modal -->
                             <div class="form-row" id="faculty-fields">
                                 <div class="form-group custom-dropdown">
-                                    <label for="designate_class" style="min-height: 45px;">Designate Class <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
+                                    <label for="designate_class" style="min-height: 45px;">Designate Class <span
+                                            style="display: block; color: #999; font-size: 0.9em;">(Faculty Only -
+                                            Optional)</span></label>
                                     <input type="text" id="designate_class" name="designate_class"
-                                        placeholder="Select or type class name" 
-                                        autocomplete="off" style="text-transform: uppercase;">
-                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing classes</small>
+                                        placeholder="Select or type class name" autocomplete="off"
+                                        style="text-transform: uppercase;">
+                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing
+                                        to see existing classes</small>
                                 </div>
                                 <div class="form-group custom-dropdown">
-                                    <label for="designate_subject" style="min-height: 45px;">Subject <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
+                                    <label for="designate_subject" style="min-height: 45px;">Subject <span
+                                            style="display: block; color: #999; font-size: 0.9em;">(Faculty Only -
+                                            Optional)</span></label>
                                     <input type="text" id="designate_subject" name="designate_subject"
-                                        placeholder="Select or type subject" 
-                                        autocomplete="off" style="text-transform: uppercase;">
-                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing subjects</small>
+                                        placeholder="Select or type subject" autocomplete="off"
+                                        style="text-transform: uppercase;">
+                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing
+                                        to see existing subjects</small>
                                 </div>
                                 <div class="form-group custom-dropdown">
-                                    <label for="room-number" style="min-height: 45px;">Room Number <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
+                                    <label for="room-number" style="min-height: 45px;">Room Number <span
+                                            style="display: block; color: #999; font-size: 0.9em;">(Faculty Only -
+                                            Optional)</span></label>
                                     <input type="text" id="room-number" name="room-number"
-                                        placeholder="Select or type room number" 
-                                        autocomplete="off" style="text-transform: uppercase;">
-                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing rooms</small>
+                                        placeholder="Select or type room number" autocomplete="off"
+                                        style="text-transform: uppercase;">
+                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing
+                                        to see existing rooms</small>
                                 </div>
                             </div>
 
@@ -602,7 +639,8 @@ try {
                 <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
                 <p id="scheduleSavedSuccessMsg">Schedule request updated successfully!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="window.location.reload();">OK</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                        onclick="window.location.reload();">OK</button>
                 </div>
             </div>
         </div>
@@ -619,28 +657,28 @@ try {
             </div>
         </div>
     </div>
-    
-    
+
+
     <script src="../assets/js/edit_employee.js?v=<?php echo time(); ?>"></script>
     <script>
         // Options for User Dropdowns inside the Edit Modal
         window.existingClasses = <?php echo json_encode($existing_classes); ?>;
         window.existingSubjects = <?php echo json_encode($existing_subjects); ?>;
         window.existingRooms = <?php echo json_encode($existing_rooms); ?>;
-        
+
         // Define function to open modal with specifics
-        window.openEditRequestModal = function(requestId, employeeIdString, firstName, lastName) {
-            
+        window.openEditRequestModal = function (requestId, employeeIdString, firstName, lastName) {
+
             // Set fields inside form
             const idField = document.getElementById('edit_request_id');
-            if(idField) idField.value = requestId;
+            if (idField) idField.value = requestId;
             const empIdField = document.getElementById('edit_employee_id');
-            if(empIdField) empIdField.value = employeeIdString;
+            if (empIdField) empIdField.value = employeeIdString;
             const fnameField = document.getElementById('edit_first_name');
-            if(fnameField) fnameField.value = firstName;
+            if (fnameField) fnameField.value = firstName;
             const lnameField = document.getElementById('edit_last_name');
-            if(lnameField) lnameField.value = lastName;
-            
+            if (lnameField) lnameField.value = lastName;
+
             // Re-populate modal's logic arrays directly to memory without breaking the reference used by edit_employee.js
             if (window.editAddedSchedules) {
                 window.editAddedSchedules.length = 0;
@@ -655,18 +693,18 @@ try {
                 window.editAddedSchedules = [...(window.requestSchedules[requestId] || [])];
             }
             window.existingSchedules = [...window.editAddedSchedules];
-            
+
             // Clear inputs using edit_employee.js standard function
             if (typeof clearScheduleForm === 'function') {
                 clearScheduleForm();
             }
-            
+
             // Open modal
             const editModalEl = document.getElementById('editScheduleModal');
             if (editModalEl) {
                 const editModal = new bootstrap.Modal(editModalEl);
                 editModal.show();
-                
+
                 // Initialize calendars (this will setup grid and render schedules)
                 setTimeout(() => {
                     if (typeof initializeCalendar === 'function') {
@@ -674,10 +712,10 @@ try {
                     } else if (typeof renderSchedules === 'function') {
                         renderSchedules();
                     }
-                    
+
                     const cal = document.getElementById('edit-schedule-calendar');
-                    if(cal) cal.style.display = 'grid'; // Ensure grid is visible
-                    
+                    if (cal) cal.style.display = 'grid'; // Ensure grid is visible
+
                     const noSchMsg = document.getElementById('noScheduleMsg');
                     if (noSchMsg && window.editAddedSchedules.length > 0) {
                         noSchMsg.style.display = 'none';
@@ -689,17 +727,17 @@ try {
                 alert('Edit modal not found.');
             }
         };
-        
+
         // Add click listeners to all Edit buttons
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const editBtns = document.querySelectorAll('.edit-request-btn');
             editBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     console.log('Edit button clicked for request:', this.dataset.reqId);
                     window.openEditRequestModal(
-                        this.dataset.reqId, 
-                        this.dataset.empId, 
-                        this.dataset.first, 
+                        this.dataset.reqId,
+                        this.dataset.empId,
+                        this.dataset.first,
                         this.dataset.last
                     );
                 });
@@ -817,18 +855,18 @@ try {
                 // Get min/max times to bound the grid, defaulting to 7AM to 5PM
                 let minHour = 7;
                 let maxHour = 17;
-                
+
                 scheduleBlocks.forEach(b => {
                     if (b.startTime) minHour = Math.min(minHour, parseInt(b.startTime.split(':')[0], 10));
-                    if (b.endTime) maxHour = Math.max(maxHour, Math.ceil(parseInt(b.endTime.split(':')[0], 10) + (parseInt(b.endTime.split(':')[1], 10)>0?1:0)));
+                    if (b.endTime) maxHour = Math.max(maxHour, Math.ceil(parseInt(b.endTime.split(':')[0], 10) + (parseInt(b.endTime.split(':')[1], 10) > 0 ? 1 : 0)));
                 });
-                
+
                 minHour = Math.max(0, minHour - 1); // 1 hr padding
                 maxHour = Math.min(24, maxHour + 1);
 
                 // Build time column
                 html += `<div class="vs-col" style="background-color: var(--bg-light, #f8fafc);">`;
-                for(let h=minHour; h<=maxHour; h++) {
+                for (let h = minHour; h <= maxHour; h++) {
                     const timeLabel = formatAmPm(`${h.toString().padStart(2, '0')}:00`);
                     html += `<div class="vs-time-label" style="height:60px;">${timeLabel}</div>`;
                 }
@@ -837,9 +875,9 @@ try {
                 // Build Day Columns
                 dayNames.forEach(day => {
                     html += `<div class="vs-col">`;
-                    
+
                     // Add background grid lines
-                    for(let h=minHour; h<=maxHour; h++) {
+                    for (let h = minHour; h <= maxHour; h++) {
                         html += `<div class="vs-cell" style="height:60px;"></div>`;
                     }
 
@@ -848,7 +886,7 @@ try {
                     dayBlocks.forEach((block, idx) => {
                         const startParts = block.startTime.split(':');
                         const endParts = block.endTime.split(':');
-                        
+
                         const startHour = parseInt(startParts[0], 10);
                         const startMin = parseInt(startParts[1], 10);
                         const endHour = parseInt(endParts[0], 10);
@@ -858,7 +896,7 @@ try {
                         const startPos = ((startHour - minHour) * 60) + (startMin / 60 * 60);
                         const endPos = ((endHour - minHour) * 60) + (endMin / 60 * 60);
                         const height = endPos - startPos;
-                        
+
                         const color = block.color || colors[idx % colors.length];
 
                         let blockContent = '';
@@ -909,8 +947,8 @@ try {
             modal.show();
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('confirmRejectBtn').addEventListener('click', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('confirmRejectBtn').addEventListener('click', function () {
                 const remarks = document.getElementById('rejectRemarksInput').value.trim();
                 if (!remarks) {
                     document.getElementById('rejectRemarksError').style.display = 'block';
@@ -924,7 +962,7 @@ try {
             });
         });
 
-        document.getElementById('confirmActionButton').addEventListener('click', function() {
+        document.getElementById('confirmActionButton').addEventListener('click', function () {
             const modalEl = document.getElementById('confirmActionModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
             if (modal) {
@@ -949,31 +987,31 @@ try {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loadingOverlay').style.display = 'none';
-                if (data.success) {
-                    // Remove card from UI
-                    const card = document.getElementById('request-card-' + requestId);
-                    card.style.transition = "opacity 0.4s";
-                    card.style.opacity = "0";
-                    setTimeout(() => {
-                        card.remove();
-                        // Check if it was the last one
-                        const remaining = document.querySelectorAll('.request-card');
-                        if (remaining.length === 0) {
-                            location.reload(); // Reload to show empty state
-                        }
-                    }, 400);
-                } else {
-                    showAppAlert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                document.getElementById('loadingOverlay').style.display = 'none';
-                showAppAlert('An error occurred while processing the request.');
-                console.error(error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    if (data.success) {
+                        // Remove card from UI
+                        const card = document.getElementById('request-card-' + requestId);
+                        card.style.transition = "opacity 0.4s";
+                        card.style.opacity = "0";
+                        setTimeout(() => {
+                            card.remove();
+                            // Check if it was the last one
+                            const remaining = document.querySelectorAll('.request-card');
+                            if (remaining.length === 0) {
+                                location.reload(); // Reload to show empty state
+                            }
+                        }, 400);
+                    } else {
+                        showAppAlert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    showAppAlert('An error occurred while processing the request.');
+                    console.error(error);
+                });
         }
         function showLogoutModal() {
             var modal = new bootstrap.Modal(document.getElementById('logoutModal'));
@@ -1000,4 +1038,5 @@ try {
         </div>
     </div>
 </body>
+
 </html>
