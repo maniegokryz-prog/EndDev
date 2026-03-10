@@ -2451,19 +2451,13 @@ $schedules = $viewer->getSchedules();
                     if (errEl) errEl.textContent = validationMessage || 'Please fill out all records before saving.';
                     const errModalEl = document.getElementById('attendanceErrorModal');
                     if (errModalEl) {
-                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                      document.body.classList.remove('modal-open');
                       errModalEl.style.zIndex = 20000;
-                      setTimeout(() => {
-                        const em = new bootstrap.Modal(errModalEl);
-                        em.show();
-                        document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-                      }, 40);
+                      errModalEl.setAttribute('data-bs-backdrop', 'false');
+                      const em = new bootstrap.Modal(errModalEl);
+                      em.show();
                       // Auto-hide after 5s
                       setTimeout(() => {
-                        try { const em = bootstrap.Modal.getInstance(errModalEl); if (em) em.hide(); } catch (e) { }
-                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                        document.body.classList.remove('modal-open');
+                        try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) { }
                         saveBtn.disabled = false;
                         saveBtn.textContent = 'Save Records';
                       }, 5000);
@@ -2509,20 +2503,14 @@ $schedules = $viewer->getSchedules();
                       const successModalEl = document.getElementById('attendanceSuccessModal');
                       if (successModalEl) {
                         successModalEl.style.zIndex = 20000;
-                        setTimeout(() => {
-                          const sm = new bootstrap.Modal(successModalEl);
-                          sm.show();
-                          // ensure backdrop z-index is behind modal
-                          document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-                        }, 60);
+                        successModalEl.setAttribute('data-bs-backdrop', 'false');
+                        const sm = new bootstrap.Modal(successModalEl);
+                        sm.show();
                       }
 
                       // Auto-close after short delay and reload
                       setTimeout(() => {
-                        try { const sm = bootstrap.Modal.getInstance(document.getElementById('attendanceSuccessModal')); if (sm) sm.hide(); } catch (e) { }
-                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                        document.body.classList.remove('modal-open');
-                        document.body.style.overflow = '';
+                        try { const smInst = bootstrap.Modal.getInstance(document.getElementById('attendanceSuccessModal')); if (smInst) smInst.hide(); } catch (e) { }
                         window.location.reload();
                       }, 5000);
 
@@ -2539,21 +2527,14 @@ $schedules = $viewer->getSchedules();
                       if (errEl) errEl.textContent = errMsg;
                       const errModalEl = document.getElementById('attendanceErrorModal');
                       if (errModalEl) {
-                        // remove existing backdrops and ensure error modal appears on top
-                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                        document.body.classList.remove('modal-open');
                         errModalEl.style.zIndex = 20000;
+                        errModalEl.setAttribute('data-bs-backdrop', 'false');
+                        const em = new bootstrap.Modal(errModalEl);
+                        em.show();
+                        // Auto-hide after 8 seconds to give time to read the message
                         setTimeout(() => {
-                          const em = new bootstrap.Modal(errModalEl);
-                          em.show();
-                          document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-                          // Auto-hide after 8 seconds to give time to read the message
-                          setTimeout(() => {
-                            try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) { }
-                            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                            document.body.classList.remove('modal-open');
-                          }, 8000);
-                        }, 40);
+                          try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) { }
+                        }, 8000);
                       }
                       saveBtn.disabled = false;
                       saveBtn.textContent = 'Save Records';
@@ -2565,20 +2546,14 @@ $schedules = $viewer->getSchedules();
                     if (errEl) errEl.textContent = errMsg;
                     const errModalEl = document.getElementById('attendanceErrorModal');
                     if (errModalEl) {
-                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                      document.body.classList.remove('modal-open');
                       errModalEl.style.zIndex = 20000;
+                      errModalEl.setAttribute('data-bs-backdrop', 'false');
+                      const em = new bootstrap.Modal(errModalEl);
+                      em.show();
+                      // Auto-hide after 8 seconds
                       setTimeout(() => {
-                        const em = new bootstrap.Modal(errModalEl);
-                        em.show();
-                        document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-                        // Auto-hide after 8 seconds
-                        setTimeout(() => {
-                          try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) { }
-                          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                          document.body.classList.remove('modal-open');
-                        }, 8000);
-                      }, 40);
+                        try { const inst = bootstrap.Modal.getInstance(errModalEl); if (inst) inst.hide(); } catch (e) { }
+                      }, 8000);
                     }
                     saveBtn.disabled = false;
                     saveBtn.textContent = 'Save Records';
@@ -3655,17 +3630,22 @@ $schedules = $viewer->getSchedules();
 
                   <div class="form-row">
                     <div class="form-group" style="display: flex; gap: 10px;">
-                      <button type="button" class="add-schedule-btn" onclick="addSchedule()">Add Schedule</button>
-                      <button type="button" id="edit-schedule-btn" class="edit-schedule-btn" onclick="editSchedule()"
-                        disabled>Update Selected Schedule</button>
-                      <button type="button" class="btn-cancel" onclick="clearScheduleForm()">Cancel</button>
+                      <button type="button" id="add-schedule-btn"
+                        class="btn-modern btn-outline text-success border-success" style="min-width: 140px;"
+                        onclick="addSchedule()">Add Schedule</button>
+                      <button type="button" id="edit-schedule-btn"
+                        class="btn-modern btn-outline text-secondary border-secondary" style="min-width: 140px;"
+                        onclick="editSchedule()" disabled>Update Selected Schedule</button>
+                      <button type="button" class="btn-modern btn-outline text-danger border-danger"
+                        style="min-width: 140px;" onclick="clearScheduleForm()">Cancel</button>
                     </div>
                   </div>
 
                   <div class="schedule-calendar-section">
                     <div class="schedule-header">
                       <h3>Schedule</h3>
-                      <button type="button" class="clear-schedules-btn" onclick="clearAllSchedules()">
+                      <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold"
+                        style="min-width: 200px;" onclick="clearAllSchedules()">
                         Clear All Schedules
                       </button>
                     </div>
@@ -3690,9 +3670,11 @@ $schedules = $viewer->getSchedules();
 
                 </div>
 
-                <div class="form-actions">
-                  <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                  <button type="submit" class="btn-save">Save Changes</button>
+                <div class="form-actions text-end mt-4">
+                  <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn-modern btn-outline btn-save text-success border-success px-4"
+                    style="min-width: 150px;">Save Changes</button>
                 </div>
               </form>
             </div>
@@ -3742,44 +3724,60 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
           <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
+          <div class="mt-3">
+            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+              data-bs-dismiss="modal">OK</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
           <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
+          <div class="mt-3">
+            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+              data-bs-dismiss="modal">OK</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
           <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
+          <div class="mt-3">
+            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+              data-bs-dismiss="modal">OK</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-warning">Required Fields</h5>
           <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for schedules!
           </p>
+          <div class="mt-3">
+            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+              data-bs-dismiss="modal">OK</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
@@ -3788,7 +3786,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
@@ -3797,20 +3795,22 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
-          <h5 class="fw-bold mb-3 text-warning">Confirm Clear All</h5>
+          <h5 class="fw-bold mb-3 text-danger">Confirm Clear All</h5>
           <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
           <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-            <button type="button" class="btn btn-danger" id="scheduleClearConfirmBtn">Yes, Clear All</button>
+            <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4"
+              data-bs-dismiss="modal">No</button>
+            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+              id="scheduleClearConfirmBtn">Yes, Clear All</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
@@ -3823,7 +3823,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
@@ -3832,7 +3832,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
@@ -3860,7 +3860,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-info">No Schedules</h5>

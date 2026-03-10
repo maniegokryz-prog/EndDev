@@ -1303,19 +1303,9 @@ function addSchedule() {
         if (msgEl) msgEl.textContent = 'Please select at least one working day first!';
         const modalEl = document.getElementById('scheduleNoWorkDayModal');
         if (modalEl) {
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-            document.body.classList.remove('modal-open');
             modalEl.style.zIndex = 20000;
-            setTimeout(() => {
-                const m = new bootstrap.Modal(modalEl);
-                m.show();
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-            }, 40);
-            setTimeout(() => {
-                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                document.body.classList.remove('modal-open');
-            }, 3000);
+            const m = new bootstrap.Modal(modalEl);
+            m.show();
         }
         return;
     }
@@ -1329,19 +1319,9 @@ function addSchedule() {
         if (msgEl) msgEl.textContent = 'Please select both start and end times!';
         const modalEl = document.getElementById('scheduleMissingTimeModal');
         if (modalEl) {
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-            document.body.classList.remove('modal-open');
             modalEl.style.zIndex = 20000;
-            setTimeout(() => {
-                const m = new bootstrap.Modal(modalEl);
-                m.show();
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-            }, 40);
-            setTimeout(() => {
-                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                document.body.classList.remove('modal-open');
-            }, 3000);
+            const m = new bootstrap.Modal(modalEl);
+            m.show();
         }
         return;
     }
@@ -1352,19 +1332,9 @@ function addSchedule() {
         if (msgEl) msgEl.textContent = 'Start time must be before end time!';
         const modalEl = document.getElementById('scheduleInvalidTimeModal');
         if (modalEl) {
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-            document.body.classList.remove('modal-open');
             modalEl.style.zIndex = 20000;
-            setTimeout(() => {
-                const m = new bootstrap.Modal(modalEl);
-                m.show();
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.style.zIndex = 19999);
-            }, 40);
-            setTimeout(() => {
-                try { const inst = bootstrap.Modal.getInstance(modalEl); if (inst) inst.hide(); } catch (e) { }
-                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                document.body.classList.remove('modal-open');
-            }, 3000);
+            const m = new bootstrap.Modal(modalEl);
+            m.show();
         }
         return;
     }

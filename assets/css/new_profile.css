@@ -730,6 +730,22 @@ body {
     border-color: #ffc107 !important;
 }
 
+.btn-outline.text-primary:hover {
+    background: #e2e8f0 !important;
+    /* Light Gray */
+    color: #0d6efd !important;
+    /* Keep the 'Details / Export' word readable (blue) */
+    border-color: #0d6efd !important;
+}
+
+.btn-outline.text-secondary:hover {
+    background: #e2e8f0 !important;
+    /* Light Gray */
+    color: #6c757d !important;
+    /* Keep the 'Filter Dates' word readable (gray) */
+    border-color: #6c757d !important;
+}
+
 /* Helper classes */
 .text-muted {
     color: var(--text-secondary) !important;

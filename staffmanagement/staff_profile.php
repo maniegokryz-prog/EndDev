@@ -304,6 +304,24 @@ $profilePhoto .= '?v=' . microtime(true);
             width: auto;
             min-width: 140px;
             padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        /* Add Schedule Button - Green Outline */
+        #editScheduleModal .add-schedule-btn {
+            background: transparent !important;
+            color: #198754 !important;
+            border: 1px solid #198754 !important;
+            box-shadow: none !important;
+        }
+
+        /* Update Selected Schedule Button - Gray Outline */
+        #editScheduleModal .edit-schedule-btn {
+            background: transparent !important;
+            color: #6c757d !important;
+            border: 1px solid #6c757d !important;
+            box-shadow: none !important;
         }
 
         /* Clear All & Cancel Buttons - Lighter Red & Shared Sizing */
@@ -311,37 +329,20 @@ $profilePhoto .= '?v=' . microtime(true);
         #editScheduleModal .btn-cancel,
         #editScheduleModal .btn-save {
             min-width: 200px;
-            /* Uniform width */
             padding: 10px 20px;
-        }
-
-        #editScheduleModal .clear-schedules-btn,
-        #editScheduleModal .btn-cancel {
-            background-color: #ef5350 !important;
-            /* Keeping distinct red, user might perceive #ef5350 as normal red. Trying #ff6b6b for 'light red' */
-            background-color: #ff6b6b !important;
-            color: white !important;
-            border: none !important;
             border-radius: 6px;
             transition: all 0.2s ease;
         }
 
-        /* Unified Hover Effect: Light Gray for ALL buttons */
-        #editScheduleModal button:hover,
-        #editScheduleModal .btn:hover:not(:disabled),
-        #editScheduleModal .add-schedule-btn:hover,
-        #editScheduleModal .edit-schedule-btn:hover:not(:disabled),
-        #editScheduleModal .btn-cancel:hover,
-        #editScheduleModal .clear-schedules-btn:hover,
-        #editScheduleModal .btn-save:hover {
-            background-color: #e2e8f0 !important;
-            /* Light Gray */
-            color: #1e293b !important;
-            /* Dark text for contrast */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
-            transform: translateY(-1px);
-            cursor: pointer;
+        /* Clear/Cancel - Red Outline */
+        #editScheduleModal .clear-schedules-btn,
+        #editScheduleModal .btn-cancel {
+            background-color: transparent !important;
+            color: #dc3545 !important;
+            border: 1px solid #dc3545 !important;
+            box-shadow: none !important;
         }
+
 
         /* Responsive Fixes for Modal */
         @media (max-width: 768px) {
@@ -729,7 +730,8 @@ $profilePhoto .= '?v=' . microtime(true);
                             <h4 class="card-title mb-0">Daily Time Record</h4>
                             <!-- Popup Date Picker Trigger -->
                             <div class="position-relative">
-                                <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
+                                <button
+                                    class="btn-modern btn-outline btn-sm text-secondary border-secondary d-flex align-items-center gap-2"
                                     id="dateRangeTrigger" title="Select Dates">
                                     <i class="bi bi-calendar3"></i>
                                     <span>Filter Dates</span>
@@ -757,12 +759,13 @@ $profilePhoto .= '?v=' . microtime(true);
                         <!-- Compact Actions -->
                         <div class="d-flex gap-2 mb-3">
                             <?php if ($isAdmin && !$is_ionos_server): ?>
-                                <button class="btn btn-sm btn-outline-success flex-grow-1" data-bs-toggle="modal"
-                                    data-bs-target="#attendanceModal">
+                                <button class="btn-modern btn-outline btn-sm text-success border-success flex-grow-1"
+                                    data-bs-toggle="modal" data-bs-target="#attendanceModal">
                                     <i class="bi bi-plus-lg"></i> Add
                                 </button>
                             <?php endif; ?>
-                            <button class="btn btn-sm btn-outline-primary flex-grow-1" id="exportDtrBtn">
+                            <button class="btn-modern btn-outline btn-sm text-primary border-primary flex-grow-1"
+                                id="exportDtrBtn">
                                 <i class="bi bi-box-arrow-up-right"></i> Details / Export
                             </button>
                         </div>
@@ -775,11 +778,11 @@ $profilePhoto .= '?v=' . microtime(true);
 
                     <!-- Leave Request Section (Restored) -->
                     <?php if (canRequestLeave($employee['roles'])): ?>
-                        <div class="profile-card leave-section-card" style="border-left: 4px solid var(--secondary-color);">
+                        <div class="profile-card leave-section-card">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="card-title mb-0">Scheduled Leave</h4>
-                                <button class="btn btn-sm btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#addLeaveModal" title="Add Request">
+                                <button class="btn-modern btn-outline btn-sm text-success border-success"
+                                    data-bs-toggle="modal" data-bs-target="#addLeaveModal" title="Add Request">
                                     <i class="bi bi-plus-lg"></i>
                                 </button>
                             </div>
@@ -1366,20 +1369,25 @@ $profilePhoto .= '?v=' . microtime(true);
 
                             <div class="form-row">
                                 <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
-                                    <button type="button" id="add-schedule-btn" class="add-schedule-btn"
-                                        onclick="addSchedule()">Add
+                                    <button type="button" id="add-schedule-btn"
+                                        class="btn-modern btn-outline text-success border-success"
+                                        style="min-width: 140px;" onclick="addSchedule()">Add
                                         Schedule</button>
-                                    <button type="button" id="edit-schedule-btn" class="edit-schedule-btn"
-                                        onclick="editSchedule()" disabled>Update Selected Schedule</button>
-                                    <button type="button" class="btn-cancel"
-                                        onclick="clearScheduleForm()">Cancel</button>
+                                    <button type="button" id="edit-schedule-btn"
+                                        class="btn-modern btn-outline text-secondary border-secondary"
+                                        style="min-width: 140px;" onclick="editSchedule()" disabled>Update Selected
+                                        Schedule</button>
+                                    <button type="button" class="btn-modern btn-outline text-danger border-danger"
+                                        style="min-width: 140px;" onclick="clearScheduleForm()">Cancel</button>
                                 </div>
                             </div>
 
                             <div class="schedule-calendar-section">
                                 <div class="schedule-header">
                                     <h3>Schedule</h3>
-                                    <button type="button" class="clear-schedules-btn" onclick="clearAllSchedules()">
+                                    <button type="button"
+                                        class="btn-modern btn-outline text-danger border-danger fw-bold"
+                                        style="min-width: 200px;" onclick="clearAllSchedules()">
                                         Clear All Schedules
                                     </button>
                                 </div>
@@ -1404,9 +1412,12 @@ $profilePhoto .= '?v=' . microtime(true);
 
                         </div>
 
-                        <div class="form-actions">
-                            <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn-save">
+                        <div class="form-actions text-end mt-4">
+                            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                                style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit"
+                                class="btn-modern btn-outline btn-save text-success border-success px-4"
+                                style="min-width: 150px;">
                                 <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'Save Schedule' : 'Submit Request'; ?>
                             </button>
                         </div>
@@ -1419,56 +1430,60 @@ $profilePhoto .= '?v=' . microtime(true);
 
 
     <!-- HELPER MODALS FOR EDIT SCHEDULE (Moved to end for z-index stacking) -->
-    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">No Working Day Selected</h5>
                 <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                        data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Missing Information</h5>
                 <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                        data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
                 <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                        data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Required Fields</h5>
                 <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for
                     schedules!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                        data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
@@ -1481,7 +1496,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Pending Request Conflict Modal -->
-    <div class="modal fade" id="schedulePendingConflictModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal fade" id="schedulePendingConflictModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"
+        data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
@@ -1495,8 +1511,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Admin Warning: Pending Request Exists -->
-    <div class="modal fade" id="adminPendingRequestWarningModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 1060;">
+    <div class="modal fade" id="adminPendingRequestWarningModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"
+        data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
@@ -1523,7 +1539,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
@@ -1535,20 +1551,22 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-warning">Confirm Clear All</h5>
+                <h5 class="fw-bold mb-3 text-danger">Confirm Clear All</h5>
                 <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-danger" id="scheduleClearConfirmBtn">Yes, Clear All</button>
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4"
+                        data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                        id="scheduleClearConfirmBtn">Yes, Clear All</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
@@ -1561,7 +1579,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
@@ -1573,7 +1591,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">
@@ -1589,7 +1607,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
@@ -1992,20 +2010,10 @@ $profilePhoto .= '?v=' . microtime(true);
                         }
                     });
 
-                    // 2. When helper modal shows, force it ABOVE the edit modal (z-index 2000 from css)
+                    // 2. When helper modal shows, force it ABOVE the edit modal (z-index 2050 from inline style works)
                     modalEl.addEventListener('show.bs.modal', function () {
                         // Set modal higher with !important to override staff.css
                         this.style.setProperty('z-index', '2050', 'important');
-
-                        // Wait for backdrop to be inserted, then elevate it
-                        setTimeout(() => {
-                            const backdrops = document.querySelectorAll('.modal-backdrop');
-                            if (backdrops.length > 0) {
-                                // The new backdrop is usually the last one
-                                const lastBackdrop = backdrops[backdrops.length - 1];
-                                lastBackdrop.style.setProperty('z-index', '2040', 'important');
-                            }
-                        }, 0);
                     });
                 }
             });

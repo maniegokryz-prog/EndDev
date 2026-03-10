@@ -1021,7 +1021,7 @@ function loadEmployeeLeaves() {
                             <strong>${leave.leave_type}</strong> ${badge}
                             <div class="small text-muted">${leave.formatted_dates}</div>
                         </div>
-                        <button class="btn btn-sm btn-link text-primary" onclick='openLeaveDetails(${JSON.stringify(leave)})'>
+                        <button class="btn-modern btn-outline btn-sm text-success border-success" onclick='openLeaveDetails(${JSON.stringify(leave)})'>
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
