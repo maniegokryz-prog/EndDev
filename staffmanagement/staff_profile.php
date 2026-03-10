@@ -480,127 +480,135 @@ $profilePhoto .= '?v=' . microtime(true);
                     $pendingRequestId = $row['id'];
                 }
                 $stmt->close();
-            } catch (Exception $e) {}
+            } catch (Exception $e) {
+            }
             ?>
-            
+
             <?php if ($hasPendingRequest): ?>
                 <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']): ?>
-                <div class="alert alert-warning d-flex align-items-center mb-4 border-0 shadow-sm flex-wrap" role="alert">
-                    <i class="bi bi-hourglass-split fs-4 me-3"></i>
-                    <div class="flex-grow-1 mb-2 mb-md-0">
-                        <strong>Pending Schedule Request:</strong> You have submitted a schedule edit request that is currently waiting for Admin approval. Your previous active schedule is shown below until the new one is approved.
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-outline-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#viewPendingRequestModal" onclick="try { renderPendingRequestCalendar(); } catch(e) { alert('Function error: ' + e.message); console.error(e); }">
-                            <i class="bi bi-eye"></i> View Request
-                        </button>
-                    </div>
-                </div>
-                <?php elseif ($isAdmin): ?>
-                <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex align-items-center justify-content-center flex-wrap gap-3 px-4 py-3" role="alert">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-exclamation-circle fs-4 m-0 text-warning-emphasis"></i>
-                        <div class="lh-sm m-0">
-                            <strong>Pending Schedule Request:</strong> This user has submitted a schedule request. The previous active schedule is shown below until the new one is approved.
+                    <div class="alert alert-warning d-flex align-items-center mb-4 border-0 shadow-sm flex-wrap" role="alert">
+                        <i class="bi bi-hourglass-split fs-4 me-3"></i>
+                        <div class="flex-grow-1 mb-2 mb-md-0">
+                            <strong>Pending Schedule Request:</strong> You have submitted a schedule edit request that is
+                            currently waiting for Admin approval. Your previous active schedule is shown below until the new one
+                            is approved.
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-dark fw-semibold" data-bs-toggle="modal"
+                                data-bs-target="#viewPendingRequestModal"
+                                onclick="try { renderPendingRequestCalendar(); } catch(e) { alert('Function error: ' + e.message); console.error(e); }">
+                                <i class="bi bi-eye"></i> View Request
+                            </button>
                         </div>
                     </div>
-                    <a href="review_schedule_request.php?id=<?php echo $pendingRequestId; ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>" class="btn btn-dark btn-sm fw-semibold text-nowrap m-0 px-4 py-2">
-                        <i class="bi bi-pencil-square"></i> Review Request
-                    </a>
-                </div>
+                <?php elseif ($isAdmin): ?>
+                    <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex align-items-center justify-content-center flex-wrap gap-3 px-4 py-3"
+                        role="alert">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-circle fs-4 m-0 text-warning-emphasis"></i>
+                            <div class="lh-sm m-0">
+                                <strong>Pending Schedule Request:</strong> This user has submitted a schedule request. The
+                                previous active schedule is shown below until the new one is approved.
+                            </div>
+                        </div>
+                        <a href="review_schedule_request.php?id=<?php echo $pendingRequestId; ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>"
+                            class="btn btn-dark btn-sm fw-semibold text-nowrap m-0 px-4 py-2">
+                            <i class="bi bi-pencil-square"></i> Review Request
+                        </a>
+                    </div>
                 <?php endif; ?>
-            
-            <script>
-                window.pendingRequestScheduleData = <?php 
+
+                <script>
+                    window.pendingRequestScheduleData = <?php
                     $decoded_data = json_decode($pendingScheduleData, true);
-                    $json_out = json_encode(is_array($decoded_data) ? $decoded_data : []); 
+                    $json_out = json_encode(is_array($decoded_data) ? $decoded_data : []);
                     echo $json_out !== false ? $json_out : '[]';
-                ?>;
+                    ?>;
 
-                window.renderPendingRequestCalendar = function() {
-                    console.log("Rendering pending request calendar...");
-                    const container = document.getElementById('pending-request-calendar-view');
-                    if (!container) return; // Exit if no container
-                    
-                    try {
-                        const scheduleBlocks = window.pendingRequestScheduleData || [];
-                        if (!Array.isArray(scheduleBlocks)) {
-                            container.innerHTML = `<h5 class="text-danger">Error: Data format incorrect.</h5>`;
-                            return;
-                        }
-                        if (scheduleBlocks.length === 0) {
-                            container.innerHTML = '<p class="text-center text-muted py-4">No schedule data found.</p>';
-                            return;
-                        }
+                    window.renderPendingRequestCalendar = function () {
+                        console.log("Rendering pending request calendar...");
+                        const container = document.getElementById('pending-request-calendar-view');
+                        if (!container) return; // Exit if no container
 
-                        if (typeof renderVisualSchedule === 'function') {
-                            // Reset the container first
-                            container.innerHTML = '';
-                            container.style.cssText = 'min-height: 200px; display: grid; gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 8px; min-width: 800px; overflow-x: auto;';
-                            // Call the main schedule render function defined in new_profile.js
-                            renderVisualSchedule(container, scheduleBlocks);
-                        } else {
-                            throw new Error("renderVisualSchedule is not defined.");
-                        }
-                    } catch (error) {
-                        container.innerHTML = `<div class="alert alert-danger"><strong>Error Rendering Schedule:</strong><br/>${error.message}</div>`;
-                        console.error("Rendering failed:", error);
-                        alert("Rendering warning check console: " + error.message);
-                    }
-                };
-
-                window.cancelPendingRequest = function(requestId) {
-                    const modalEl = document.getElementById('cancelPendingRequestConfirmModal');
-                    const btn = document.getElementById('cancelPendingRequestConfirmBtn');
-                    
-                    if (!modalEl || !btn) {
-                        alert("Error: Confirmation modal not found.");
-                        return;
-                    }
-                    
-                    // Create new modal instance or get existing
-                    let modal = bootstrap.Modal.getInstance(modalEl);
-                    if (!modal) {
-                        modal = new bootstrap.Modal(modalEl);
-                    }
-                    
-                    // Remove old listeners to prevent multiple triggers
-                    const newBtn = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(newBtn, btn);
-                    
-                    newBtn.addEventListener('click', function() {
-                        const originalHtml = newBtn.innerHTML;
-                        newBtn.disabled = true;
-                        newBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Canceling...';
-                        
-                        const csrfToken = '<?php echo $_SESSION["csrf_token"] ?? ""; ?>';
-                        fetch('processes/cancel_schedule_request.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: `request_id=${requestId}&csrf_token=${csrfToken}`
-                        })
-                        .then(r => r.json())
-                        .then(data => {
-                            if (data.success) {
-                                modal.hide();
-                                window.location.reload();
-                            } else {
-                                alert("Error: " + data.message);
-                                newBtn.disabled = false;
-                                newBtn.innerHTML = originalHtml;
+                        try {
+                            const scheduleBlocks = window.pendingRequestScheduleData || [];
+                            if (!Array.isArray(scheduleBlocks)) {
+                                container.innerHTML = `<h5 class="text-danger">Error: Data format incorrect.</h5>`;
+                                return;
                             }
-                        })
-                        .catch(err => {
-                            console.error("Error canceling request:", err);
-                            alert("An error occurred viewing the console.");
-                            newBtn.disabled = false;
-                            newBtn.innerHTML = originalHtml;
+                            if (scheduleBlocks.length === 0) {
+                                container.innerHTML = '<p class="text-center text-muted py-4">No schedule data found.</p>';
+                                return;
+                            }
+
+                            if (typeof renderVisualSchedule === 'function') {
+                                // Reset the container first
+                                container.innerHTML = '';
+                                container.style.cssText = 'min-height: 200px; display: grid; gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 8px; min-width: 800px;';
+                                // Call the main schedule render function defined in new_profile.js
+                                renderVisualSchedule(container, scheduleBlocks);
+                            } else {
+                                throw new Error("renderVisualSchedule is not defined.");
+                            }
+                        } catch (error) {
+                            container.innerHTML = `<div class="alert alert-danger"><strong>Error Rendering Schedule:</strong><br/>${error.message}</div>`;
+                            console.error("Rendering failed:", error);
+                            alert("Rendering warning check console: " + error.message);
+                        }
+                    };
+
+                    window.cancelPendingRequest = function (requestId) {
+                        const modalEl = document.getElementById('cancelPendingRequestConfirmModal');
+                        const btn = document.getElementById('cancelPendingRequestConfirmBtn');
+
+                        if (!modalEl || !btn) {
+                            alert("Error: Confirmation modal not found.");
+                            return;
+                        }
+
+                        // Create new modal instance or get existing
+                        let modal = bootstrap.Modal.getInstance(modalEl);
+                        if (!modal) {
+                            modal = new bootstrap.Modal(modalEl);
+                        }
+
+                        // Remove old listeners to prevent multiple triggers
+                        const newBtn = btn.cloneNode(true);
+                        btn.parentNode.replaceChild(newBtn, btn);
+
+                        newBtn.addEventListener('click', function () {
+                            const originalHtml = newBtn.innerHTML;
+                            newBtn.disabled = true;
+                            newBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Canceling...';
+
+                            const csrfToken = '<?php echo $_SESSION["csrf_token"] ?? ""; ?>';
+                            fetch('processes/cancel_schedule_request.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: `request_id=${requestId}&csrf_token=${csrfToken}`
+                            })
+                                .then(r => r.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        modal.hide();
+                                        window.location.reload();
+                                    } else {
+                                        alert("Error: " + data.message);
+                                        newBtn.disabled = false;
+                                        newBtn.innerHTML = originalHtml;
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error("Error canceling request:", err);
+                                    alert("An error occurred viewing the console.");
+                                    newBtn.disabled = false;
+                                    newBtn.innerHTML = originalHtml;
+                                });
                         });
-                    });
-                    
-                    modal.show();
-                };
-            </script>
+
+                        modal.show();
+                    };
+                </script>
             <?php endif; ?>
 
             <!-- Top Section: Info & Metrics Grid -->
@@ -1308,34 +1316,49 @@ $profilePhoto .= '?v=' . microtime(true);
                                     <input type="time" id="shift_end" name="shift_end">
                                 </div>
                             </div>
-                            <?php 
-                            $isFacultyProfile = (strpos(strtolower($employee['roles']), 'faculty') !== false); 
+                            <?php
+                            $isFacultyProfile = (strpos(strtolower($employee['roles']), 'faculty') !== false);
                             $disabledAttr = $isFacultyProfile ? '' : 'disabled';
                             $opacityStyle = $isFacultyProfile ? '1' : '0.6';
                             $cursorStyle = $isFacultyProfile ? 'text' : 'not-allowed';
                             $pointerEvents = $isFacultyProfile ? 'auto' : 'none';
                             ?>
                             <div class="form-row" id="faculty-fields" style="opacity: <?php echo $opacityStyle; ?>;">
-                                <div class="form-group custom-dropdown" style="opacity: <?php echo $opacityStyle; ?>; pointer-events: <?php echo $pointerEvents; ?>;">
-                                    <label for="designate_class" style="min-height: 45px;">Designate Class <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
+                                <div class="form-group custom-dropdown"
+                                    style="opacity: <?php echo $opacityStyle; ?>; pointer-events: <?php echo $pointerEvents; ?>;">
+                                    <label for="designate_class" style="min-height: 45px;">Designate Class <span
+                                            style="display: block; color: #999; font-size: 0.9em;">(Faculty Only -
+                                            Optional)</span></label>
                                     <input type="text" id="designate_class" name="designate_class"
-                                        placeholder="<?php echo $isFacultyProfile ? 'Select or type class name' : 'Available for Faculty_Members only'; ?>" 
-                                        autocomplete="off" style="text-transform: uppercase; cursor: <?php echo $cursorStyle; ?>;" <?php echo $disabledAttr; ?>>
-                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing classes</small>
+                                        placeholder="<?php echo $isFacultyProfile ? 'Select or type class name' : 'Available for Faculty_Members only'; ?>"
+                                        autocomplete="off"
+                                        style="text-transform: uppercase; cursor: <?php echo $cursorStyle; ?>;" <?php echo $disabledAttr; ?>>
+                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing
+                                        to see existing classes</small>
                                 </div>
-                                <div class="form-group custom-dropdown" style="opacity: <?php echo $opacityStyle; ?>; pointer-events: <?php echo $pointerEvents; ?>;">
-                                    <label for="designate_subject" style="min-height: 45px;">Subject <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
+                                <div class="form-group custom-dropdown"
+                                    style="opacity: <?php echo $opacityStyle; ?>; pointer-events: <?php echo $pointerEvents; ?>;">
+                                    <label for="designate_subject" style="min-height: 45px;">Subject <span
+                                            style="display: block; color: #999; font-size: 0.9em;">(Faculty Only -
+                                            Optional)</span></label>
                                     <input type="text" id="designate_subject" name="designate_subject"
-                                        placeholder="<?php echo $isFacultyProfile ? 'Select or type subject' : 'Available for Faculty_Members only'; ?>" 
-                                        autocomplete="off" style="text-transform: uppercase; cursor: <?php echo $cursorStyle; ?>;" <?php echo $disabledAttr; ?>>
-                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing subjects</small>
+                                        placeholder="<?php echo $isFacultyProfile ? 'Select or type subject' : 'Available for Faculty_Members only'; ?>"
+                                        autocomplete="off"
+                                        style="text-transform: uppercase; cursor: <?php echo $cursorStyle; ?>;" <?php echo $disabledAttr; ?>>
+                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing
+                                        to see existing subjects</small>
                                 </div>
-                                <div class="form-group custom-dropdown" style="opacity: <?php echo $opacityStyle; ?>; pointer-events: <?php echo $pointerEvents; ?>;">
-                                    <label for="room-number" style="min-height: 45px;">Room Number <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
+                                <div class="form-group custom-dropdown"
+                                    style="opacity: <?php echo $opacityStyle; ?>; pointer-events: <?php echo $pointerEvents; ?>;">
+                                    <label for="room-number" style="min-height: 45px;">Room Number <span
+                                            style="display: block; color: #999; font-size: 0.9em;">(Faculty Only -
+                                            Optional)</span></label>
                                     <input type="text" id="room-number" name="room-number"
-                                        placeholder="<?php echo $isFacultyProfile ? 'Select or type room number' : 'Available for Faculty_Members only'; ?>" 
-                                        autocomplete="off" style="text-transform: uppercase; cursor: <?php echo $cursorStyle; ?>;" <?php echo $disabledAttr; ?>>
-                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing to see existing rooms</small>
+                                        placeholder="<?php echo $isFacultyProfile ? 'Select or type room number' : 'Available for Faculty_Members only'; ?>"
+                                        autocomplete="off"
+                                        style="text-transform: uppercase; cursor: <?php echo $cursorStyle; ?>;" <?php echo $disabledAttr; ?>>
+                                    <small style="color: #666; font-size: 0.8em;">Click dropdown arrow or start typing
+                                        to see existing rooms</small>
                                 </div>
                             </div>
 
@@ -1434,7 +1457,8 @@ $profilePhoto .= '?v=' . microtime(true);
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Required Fields</h5>
-                <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for schedules!</p>
+                <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for
+                    schedules!</p>
                 <div class="mt-3">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
                 </div>
@@ -1459,7 +1483,8 @@ $profilePhoto .= '?v=' . microtime(true);
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
-                <p id="schedulePendingConflictMsg">You already have a pending schedule request. Please wait for it to be approved or rejected, or cancel it before submitting a new one.</p>
+                <p id="schedulePendingConflictMsg">You already have a pending schedule request. Please wait for it to be
+                    approved or rejected, or cancel it before submitting a new one.</p>
                 <div class="mt-3">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Understood</button>
                 </div>
@@ -1468,15 +1493,18 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Admin Warning: Pending Request Exists -->
-    <div class="modal fade" id="adminPendingRequestWarningModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal fade" id="adminPendingRequestWarningModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 1060;">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
-                <p>This account currently has a pending schedule request. You cannot edit their schedule directly until the pending request is approved or rejected.</p>
+                <p>This account currently has a pending schedule request. You cannot edit their schedule directly until
+                    the pending request is approved or rejected.</p>
                 <style>
                     #adminPendingRequestWarningModal .btn {
                         width: auto !important;
-                        min-width: 120px !important; /* Give them a sensible minimum width instead of 100% */
+                        min-width: 120px !important;
+                        /* Give them a sensible minimum width instead of 100% */
                         flex: 0 0 auto !important;
                         margin: 0 !important;
                         padding: 8px 16px !important;
@@ -1485,7 +1513,8 @@ $profilePhoto .= '?v=' . microtime(true);
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <?php if (isset($pendingRequestId) && $pendingRequestId): ?>
-                        <a href="review_schedule_request.php?id=<?php echo urlencode($pendingRequestId); ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>" class="btn btn-danger">View Request</a>
+                        <a href="review_schedule_request.php?id=<?php echo urlencode($pendingRequestId); ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>"
+                            class="btn btn-danger">View Request</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1575,16 +1604,22 @@ $profilePhoto .= '?v=' . microtime(true);
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content shadow-lg border-0">
                 <div class="modal-header bg-warning bg-opacity-10 border-bottom-0 pb-0">
-                    <h5 class="fw-bold mb-0" style="color: #664d03;"><i class="bi bi-hourglass-split me-2"></i>Pending Schedule Request</h5>
+                    <h5 class="fw-bold mb-0" style="color: #664d03;"><i class="bi bi-hourglass-split me-2"></i>Pending
+                        Schedule Request</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4 pt-3">
-                    <p class="text-muted small mb-3">This is the schedule you requested. It is currently waiting for admin approval.</p>
-                    <div id="pending-request-calendar-view" class="schedule-calendar-preview overflow-auto" style="min-height: 200px;"></div>
+                    <p class="text-muted small mb-3">This is the schedule you requested. It is currently waiting for
+                        admin approval.</p>
+                    <div class="table-responsive" style="overflow-x: auto; padding-bottom: 15px;">
+                        <div id="pending-request-calendar-view" class="schedule-calendar-preview"
+                            style="min-height: 200px;"></div>
+                    </div>
                 </div>
                 <div class="modal-footer border-top-0 pt-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-danger fw-semibold" onclick="cancelPendingRequest(<?php echo $pendingRequestId; ?>)">
+                    <button type="button" class="btn btn-outline-danger fw-semibold"
+                        onclick="cancelPendingRequest(<?php echo $pendingRequestId; ?>)">
                         <i class="bi bi-x-circle"></i> Cancel Request
                     </button>
                 </div>
@@ -1676,14 +1711,17 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Cancel Pending Request Confirm Modal -->
-    <div class="modal fade" id="cancelPendingRequestConfirmModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal fade" id="cancelPendingRequestConfirmModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 1060;">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Confirm Cancel</h5>
-                <p id="cancelPendingRequestConfirmMsg">Are you sure you want to cancel this pending schedule request?</p>
+                <p id="cancelPendingRequestConfirmMsg">Are you sure you want to cancel this pending schedule request?
+                </p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep It</button>
-                    <button type="button" class="btn btn-danger" id="cancelPendingRequestConfirmBtn">Yes, Cancel Request</button>
+                    <button type="button" class="btn btn-danger" id="cancelPendingRequestConfirmBtn">Yes, Cancel
+                        Request</button>
                 </div>
             </div>
         </div>
