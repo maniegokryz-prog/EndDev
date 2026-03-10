@@ -148,6 +148,47 @@ try {
                 max-width: 95%;
             }
         }
+
+        /* Sidebar Toggle Styles (Matched to settings.css) - Using IDs for Specificity */
+        @media (min-width: 992px) {
+            #sidebar {
+                left: 0;
+                transition: all 0.3s;
+            }
+
+            #content {
+                margin-left: 250px;
+                transition: margin-left 0.3s;
+            }
+
+            #sidebar.collapsed {
+                left: -250px !important;
+            }
+
+            #content.shift {
+                margin-left: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+        }
+
+        @media (max-width: 991px) {
+            #sidebar {
+                margin-left: -250px;
+                left: -250px;
+                transition: all 0.3s;
+            }
+
+            #sidebar.active {
+                margin-left: 0 !important;
+                left: 0 !important;
+            }
+
+            #content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+        }
     </style>
 </head>
 
@@ -380,9 +421,21 @@ try {
         const content = document.getElementById('content');
 
         if (menuBtn && sidebar && content) {
-            menuBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('collapsed');
-                content.classList.toggle('expanded');
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('active');
+                content.classList.toggle('shift');
+            });
+
+            // Close sidebar when clicking outside
+            document.addEventListener('click', (e) => {
+                // Only on mobile widths (where 'active' class is used)
+                if (window.innerWidth <= 991) {
+                    if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                        sidebar.classList.remove('active');
+                        content.classList.remove('shift');
+                    }
+                }
             });
         }
     </script>
