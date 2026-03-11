@@ -174,7 +174,7 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
             /* Aligned with open sidebar */
             transition: margin-left 0.3s;
             min-height: calc(100vh - 60px);
-            padding: 30px;
+            padding: 1rem 20px 20px 20px;
         }
 
         /* Expanded state (when sidebar is collapsed) */
@@ -337,7 +337,7 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
         .btn-modern {
             padding: 0.5rem 1rem;
             border-radius: 6px;
-            font-weight: 500;
+            font-weight: bold;
             transition: all 0.2s;
             border: 1px solid transparent;
             cursor: pointer;
@@ -368,20 +368,20 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
         }
 
         .btn-outline.text-success:hover {
-            background: #e2e8f0 !important;
-            color: #198754 !important;
+            background: #198754 !important;
+            color: #fff !important;
             border-color: #198754 !important;
         }
 
         .btn-outline.text-warning:hover {
-            background: #e2e8f0 !important;
-            color: #ffc107 !important;
+            background: #ffc107 !important;
+            color: #000 !important;
             border-color: #ffc107 !important;
         }
 
         .btn-outline.text-primary:hover {
-            background: #e2e8f0 !important;
-            color: #0d6efd !important;
+            background: #0d6efd !important;
+            color: #fff !important;
             border-color: #0d6efd !important;
         }
     </style>
@@ -399,12 +399,13 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
         <div class="d-flex align-items-center gap-3">
             <!-- Notification Bell -->
             <?php
-            if (file_exists('../includes/notification_bell.php')) {
-                include '../includes/notification_bell.php';
-            } else {
-                echo '<i class="bi bi-bell-fill fs-5 icon-btn"></i>';
-            }
-            ?>
+if (file_exists('../includes/notification_bell.php')) {
+    include '../includes/notification_bell.php';
+}
+else {
+    echo '<i class="bi bi-bell-fill fs-5 icon-btn"></i>';
+}
+?>
             <!-- User Profile NOT in Navbar per screenshot, only Sidebar -->
         </div>
     </div>
@@ -415,7 +416,7 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
 
         <!-- Profile Section -->
         <div class="profile">
-            <img src="<?php echo (!empty($currentUser['profile_photo']) && $currentUser['profile_photo'] !== 'N/A') ? '../' . htmlspecialchars($currentUser['profile_photo']) . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
+            <img src="<?php echo(!empty($currentUser['profile_photo']) && $currentUser['profile_photo'] !== 'N/A') ? '../' . htmlspecialchars($currentUser['profile_photo']) . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
                 alt="Profile" onerror="this.src='../assets/profile_pic/user.png';">
             <h5 class="mb-0 mt-2 fw-bold"><?php echo htmlspecialchars($currentUser['name'] ?? 'User'); ?></h5>
             <small

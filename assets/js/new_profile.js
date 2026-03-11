@@ -1055,13 +1055,13 @@ window.openLeaveDetails = function (leave) {
 
     // Buttons
     const actionContainer = document.getElementById('viewLeaveActions');
-    let btns = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+    let btns = '<button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold" data-bs-dismiss="modal">Close</button>';
 
     if (window.isAdmin && leave.status === 'pending') {
-        btns += `<button class="btn btn-success ms-2" onclick="showConfirmModal('Approve Leave', 'Are you sure?', 'approve', ${leave.id})">Approve</button>`;
-        btns += `<button class="btn btn-danger ms-2" onclick="showConfirmModal('Reject Leave', 'Are you sure?', 'reject', ${leave.id})">Reject</button>`;
+        btns += `<button class="btn-modern btn-outline text-success border-success fw-bold ms-2" onclick="showConfirmModal('Approve Leave', 'Are you sure?', 'approve', ${leave.id})">Approve</button>`;
+        btns += `<button class="btn-modern btn-outline text-danger border-danger fw-bold ms-2" onclick="showConfirmModal('Reject Leave', 'Are you sure?', 'reject', ${leave.id})">Reject</button>`;
     } else if (!window.isAdmin && leave.status === 'pending') {
-        btns += `<button class="btn btn-warning ms-2" onclick="showConfirmModal('Cancel Request', 'Cancel this pending request?', 'cancel', ${leave.id})">Cancel</button>`;
+        btns += `<button class="btn-modern btn-outline text-warning border-warning fw-bold ms-2" onclick="showConfirmModal('Cancel Request', 'Cancel this pending request?', 'cancel', ${leave.id})">Cancel</button>`;
     }
 
     actionContainer.innerHTML = btns;
@@ -1438,7 +1438,7 @@ function initManualAttendance() {
     // Add another day
     addDayBtn.addEventListener('click', () => {
         const newRow = document.createElement('div');
-        newRow.classList.add('attendance-row', 'row', 'mb-3', 'align-items-start');
+        newRow.classList.add('attendance-row', 'row', 'mb-3', 'align-items-end');
         newRow.innerHTML = '<div class=\'col-md-3\'>' +
             '<label>Date:</label>' +
             '<input type=\'date\' class=\'form-control\'>' +
@@ -1455,9 +1455,9 @@ function initManualAttendance() {
             '<input type=\'time\' class=\'form-control\'>' +
             '</div>' +
             '<div class=\'col-md-3\'>' +
-            '<div style=\'margin-top: 32px;\'>' +
-            '<button class=\'btn btn-warning btn-sm me-1 clearRow\' title=\'Clear Times\'><i class=\'bi bi-eraser\'></i></button>' +
-            '<button class=\'btn btn-danger btn-sm removeRow\'><i class=\'bi bi-dash-lg\'></i></button>' +
+            '<div class=\'pb-1\'>' +
+            '<button class=\'btn-modern btn-outline text-warning border-warning btn-sm me-1 clearRow\' title=\'Clear Times\'><i class=\'bi bi-eraser\'></i></button>' +
+            '<button class=\'btn-modern btn-outline text-danger border-danger btn-sm removeRow\' title=\'Remove Row\'><i class=\'bi bi-x-lg\'></i></button>' +
             '</div>' +
             '</div>';
         attendanceContainer.appendChild(newRow);

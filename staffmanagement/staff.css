@@ -1349,3 +1349,74 @@
      /* Higher than sidebar (1200) */
      position: relative;
    }
+
+   /* Add New Staff Button Styling */
+   .btn-add-staff {
+     background-color: transparent !important;
+     color: #000 !important;
+     border: 2px solid #ffc107 !important;
+     transition: all 0.1s ease-in-out;
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     font-weight: bold;
+   }
+
+   .btn-add-staff:hover {
+     background-color: #ffc107 !important;
+     color: #000 !important;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   }
+
+   /* Save Schedule Button Styling */
+   .btn-save-schedule {
+     background-color: transparent !important;
+     color: #198754 !important;
+     border: 2px solid #198754 !important;
+     transition: all 0.1s ease-in-out;
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     font-weight: bold;
+     border-radius: 8px;
+   }
+
+   .btn-save-schedule:hover {
+     background-color: #198754 !important;
+     color: #fff !important;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   }
+
+   /* Modal OK Button Styling */
+   .btn-modal-ok {
+     background-color: transparent !important;
+     color: #0d6efd !important;
+     border: 2px solid #0d6efd !important;
+     transition: all 0.1s ease-in-out;
+     font-weight: bold;
+     border-radius: 8px;
+     min-width: 80px;
+   }
+
+   .btn-modal-ok:hover {
+     background-color: #0d6efd !important;
+     color: #fff !important;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   }
+
+   /* Pending list item styles */
+   .list-group-item-action:hover {
+     background-color: rgba(13, 110, 253, 0.1) !important; /* Slightly more opaque blue-ish hover */
+     transition: background-color 0.2s ease;
+   }
+
+   .list-group-item-action.active {
+     background-color: rgba(13, 110, 253, 0.2) !important; /* Stronger highlight for active selection */
+     border-color: rgba(13, 110, 253, 0.3) !important;
+     color: #000 !important;
+   }
+
+   .list-group-item-action .badge:hover {
+     transform: scale(1.1);
+     transition: transform 0.2s ease;
+   }

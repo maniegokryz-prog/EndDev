@@ -246,7 +246,7 @@ try {
                 class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
         </div>
         <nav class="nav flex-column px-2">
-            <?php renderNavigation('Staff'); ?>
+            <?php renderNavigation('Staff Management'); ?>
         </nav>
     </div>
 
@@ -593,7 +593,7 @@ try {
                                         </div>
 
                                         <div class="mt-4 pt-3 border-top d-flex justify-content-center">
-                                            <button type="button" class="btn btn-success px-5"
+                                            <button type="button" class="btn btn-save-schedule px-5"
                                                 onclick="submitSchedule()">Save Schedule</button>
                                         </div>
                                     </div>
@@ -642,7 +642,7 @@ try {
                     <!-- Message injected via JS -->
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-primary btn-modal-ok" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -660,7 +660,7 @@ try {
                 </div>
                 <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-secondary" data-confirm-cancel>Cancel</button>
-                    <button type="button" class="btn btn-primary" data-confirm-ok>OK</button>
+                    <button type="button" class="btn btn-primary btn-modal-ok" data-confirm-ok>OK</button>
                 </div>
             </div>
         </div>
@@ -721,7 +721,7 @@ try {
                     <p id="appAlertModalMessage" class="mb-0"></p>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-primary btn-modal-ok" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -740,7 +740,7 @@ try {
                 </div>
                 <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-secondary" id="appConfirmCancel">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="appConfirmOk">OK</button>
+                    <button type="button" class="btn btn-primary btn-modal-ok" id="appConfirmOk">OK</button>
                 </div>
             </div>
         </div>

@@ -30,7 +30,7 @@
  /* Content */
  .content {
    transition: margin-left 0.3s;
-   margin-top: 60px;
+   margin-top: 55px;
    /* offset top nav */
  }
 
@@ -365,17 +365,30 @@
    background-color: #ffc107;
  }
 
- /* Hover effect for dropdown buttons */
+ /* Button Styling - Bold and Color-Matched Hover */
+ .btn-outline-primary,
+ .btn-outline-success,
+ .btn-outline-secondary,
+ #filterBtn {
+   font-weight: bold !important;
+ }
+
  .btn-outline-primary:hover {
-   background-color: #0d6efd;
-   color: #fff;
-   border-color: #0d6efd;
+   background-color: #0d6efd !important;
+   color: #fff !important;
+   border-color: #0d6efd !important;
  }
 
  .btn-outline-success:hover {
-   background-color: #198754;
-   color: #fff;
-   border-color: #198754;
+   background-color: #198754 !important;
+   color: #fff !important;
+   border-color: #198754 !important;
+ }
+
+ .btn-outline-secondary:hover {
+   background-color: #6c757d !important;
+   color: #fff !important;
+   border-color: #6c757d !important;
  }
 
  /* Optional: dropdown-item hover */
@@ -396,6 +409,7 @@
  #dateRangePicker {
    cursor: pointer;
    background-color: white;
+   font-weight: bold;
  }
 
  #dateRangePicker:focus {
@@ -403,15 +417,47 @@
    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
  }
 
- /* Filter Button Styling */
+ /* DateRangePicker Buttons - Bold and Hover */
+ .daterangepicker .drp-buttons .btn {
+   font-weight: bold !important;
+ }
+
+ .daterangepicker .applyBtn {
+   background-color: transparent !important;
+   color: #0d6efd !important;
+   border: 1px solid #0d6efd !important;
+   transition: all 0.2s ease;
+ }
+
+ .daterangepicker .applyBtn:hover {
+   background-color: #0d6efd !important;
+   color: #fff !important;
+ }
+
+ .daterangepicker .cancelBtn {
+   background-color: transparent !important;
+   color: #6c757d !important;
+   border: 1px solid #6c757d !important;
+   transition: all 0.2s ease;
+ }
+
+ .daterangepicker .cancelBtn:hover {
+   background-color: #6c757d !important;
+   color: #fff !important;
+ }
+
+ /* Filter Button Styling - Outline Style */
  #filterBtn {
-   background-color: #103932;
-   border-color: #103932;
+   background-color: transparent !important;
+   color: #103932 !important;
+   border: 1px solid #103932 !important;
+   transition: all 0.2s ease;
  }
 
  #filterBtn:hover {
-   background-color: #0d2d27;
-   border-color: #0d2d27;
+   background-color: #103932 !important;
+   color: #fff !important;
+   border-color: #103932 !important;
  }
 
  /* Reset Button Styling */
@@ -563,4 +609,21 @@
  .btn-custom-apply:hover {
    background-color: #103932 !important;
    color: white !important;
+ }
+
+ /* Batch Export DTR Button Styling */
+ .btn-batch-export {
+   background-color: transparent !important;
+   color: #000 !important;
+   border: 2px solid #ffc107 !important;
+   transition: all 0.1s ease-in-out;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+ }
+
+ .btn-batch-export:hover {
+   background-color: #ffc107 !important;
+   color: #000 !important;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
  }

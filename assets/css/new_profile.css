@@ -535,14 +535,18 @@ body {
 
 .calendar-nav-btn {
     background: none;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #198754;
+    color: #198754;
     border-radius: 6px;
     padding: 0.25rem 0.5rem;
     cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
 }
 
 .calendar-nav-btn:hover {
-    background: #f1f5f9;
+    background: #198754 !important;
+    color: white !important;
 }
 
 .calendar-days {
@@ -660,7 +664,7 @@ body {
 .btn-modern {
     padding: 0.5rem 1rem;
     border-radius: 6px;
-    font-weight: 500;
+    font-weight: bold;
     transition: all 0.2s;
     border: none;
     cursor: pointer;
@@ -707,42 +711,32 @@ body {
 }
 
 .btn-outline.text-success:hover {
-    background: #e2e8f0 !important;
-    /* Light Gray */
-    color: #198754 !important;
-    /* Keep the 'Edit' word readable (green) */
+    background: #198754 !important;
+    color: #fff !important;
     border-color: #198754 !important;
 }
 
 .btn-outline.text-danger:hover {
-    background: #e2e8f0 !important;
-    /* Light Gray */
-    color: #dc3545 !important;
-    /* Keep the 'Remove' word readable (red) */
+    background: #dc3545 !important;
+    color: #fff !important;
     border-color: #dc3545 !important;
 }
 
 .btn-outline.text-warning:hover {
-    background: #e2e8f0 !important;
-    /* Light Gray */
-    color: #ffc107 !important;
-    /* Keep the 'Re-register Face' word readable (yellow) */
+    background: #ffc107 !important;
+    color: #000 !important; /* Black text for yellow background */
     border-color: #ffc107 !important;
 }
 
 .btn-outline.text-primary:hover {
-    background: #e2e8f0 !important;
-    /* Light Gray */
-    color: #0d6efd !important;
-    /* Keep the 'Details / Export' word readable (blue) */
+    background: #0d6efd !important;
+    color: #fff !important;
     border-color: #0d6efd !important;
 }
 
 .btn-outline.text-secondary:hover {
-    background: #e2e8f0 !important;
-    /* Light Gray */
-    color: #6c757d !important;
-    /* Keep the 'Filter Dates' word readable (gray) */
+    background: #6c757d !important;
+    color: #fff !important;
     border-color: #6c757d !important;
 }
 
@@ -800,6 +794,33 @@ body {
     overflow-y: auto;
     /* Scroll if content exceeds card height */
     padding-right: 5px;
+}
+
+/* Calendar Popup Buttons */
+#clearDatesBtn {
+    background: transparent !important;
+    border: 1px solid #6c757d !important;
+    color: #6c757d !important;
+    font-weight: bold !important;
+    transition: all 0.2s;
+}
+
+#clearDatesBtn:hover {
+    background: #6c757d !important;
+    color: white !important;
+}
+
+.close-calendar-btn {
+    background: transparent !important;
+    border: 1px solid #103932 !important; /* Primary theme color */
+    color: #103932 !important;
+    font-weight: bold !important;
+    transition: all 0.2s;
+}
+
+.close-calendar-btn:hover {
+    background: #103932 !important;
+    color: white !important;
 }
 
 /* =========================================

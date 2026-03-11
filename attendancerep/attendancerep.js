@@ -3,33 +3,59 @@ const menuBtn = document.getElementById("menu-btn");
 const sidebar = document.getElementById("sidebar");
 const content = document.getElementById("content");
 
-if (menuBtn && sidebar && content) {
-  menuBtn.addEventListener('click', () => {
-    if (window.innerWidth <= 767) {
-      sidebar.classList.toggle('mobile-nav');
-      document.body.classList.toggle('lock-scroll');
+// Toggle Sidebar
+function toggleSidebar() {
+  if (window.innerWidth <= 767) {
+    sidebar.classList.toggle('mobile-nav');
+    document.body.classList.toggle('lock-scroll');
 
-      if (sidebar.classList.contains('mobile-nav')) {
+    if (sidebar.classList.contains('mobile-nav')) {
+      // Only create backdrop if it doesn't exist
+      if (!document.getElementById('mobileBackdrop')) {
         const backdrop = document.createElement('div');
         backdrop.classList.add('mobile-backdrop');
         backdrop.setAttribute('id', 'mobileBackdrop');
         document.body.appendChild(backdrop);
 
         backdrop.addEventListener('click', () => {
-          sidebar.classList.remove('mobile-nav');
-          document.body.classList.remove('lock-scroll');
-          backdrop.remove();
+          closeSidebar();
         });
-      } else {
-        const existing = document.getElementById('mobileBackdrop');
-        if (existing) existing.remove();
       }
     } else {
-      sidebar.classList.toggle('collapsed');
-      content.classList.toggle('shift');
+      removeBackdrop();
     }
+  } else {
+    sidebar.classList.toggle('collapsed');
+    content.classList.toggle('shift');
+  }
+}
+
+function closeSidebar() {
+  sidebar.classList.remove('mobile-nav');
+  document.body.classList.remove('lock-scroll');
+  removeBackdrop();
+}
+
+function removeBackdrop() {
+  const existing = document.getElementById('mobileBackdrop');
+  if (existing) existing.remove();
+}
+
+if (menuBtn && sidebar && content) {
+  menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent immediate closing from the document click listener
+    toggleSidebar();
   });
 }
+
+// Close sidebar when clicking anywhere outside of it
+document.addEventListener('click', (e) => {
+  if (window.innerWidth <= 767 && sidebar.classList.contains('mobile-nav')) {
+    if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+      closeSidebar();
+    }
+  }
+});
 //----------------------------------------------------------------------------------------------//
 
 // Filter handlers

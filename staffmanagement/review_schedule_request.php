@@ -276,7 +276,7 @@ try {
                 class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
         </div>
         <nav class="nav flex-column px-2">
-            <?php renderNavigation('Staff'); ?>
+            <?php renderNavigation('Staff Management'); ?>
         </nav>
     </div>
 

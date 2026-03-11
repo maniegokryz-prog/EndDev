@@ -343,7 +343,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
 </head>
 
 <body>
- <body>
   <!-- Top Navbar -->
   <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
 
@@ -351,9 +350,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
     <div class="d-flex align-items-center">
       <div class="menu-toggle me-3">
         <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
-      </div>
-      <div class="welcome-message d-none d-md-block">
-        <h5 class="mb-0 text-white">Attendance Reports</h5>
       </div>
     </div>
 
@@ -380,14 +376,14 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
     </nav>
   </div>
 <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <div class="content pt-3" id="content">
+  <div class="content pt-1" id="content">
   <div class="container-fluid">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2 gap-md-3">
       <h2 class="display-4 text-dark page-title mb-0">Attendance Reports</h2>
       <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2 gap-sm-3">
         <span class="text-dark text-nowrap">Selected Date: <strong id="selectedDateDisplay"><?php echo $currentDate; ?></strong></span>
         <?php if (isAdmin()): ?>
-        <a href="exporep.php" class="btn btn-warning fw-bold text-nowrap">Batch Export DTR</a>
+        <a href="exporep.php" class="btn btn-batch-export fw-bold text-nowrap">Batch Export DTR</a>
         <?php endif; ?>
       </div>
   </div>

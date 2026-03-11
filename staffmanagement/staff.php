@@ -291,12 +291,12 @@ $roles = $viewer->getDistinctRoles();
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
   <div class="content pt-3" id="content">
     <div class="container-fluid">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="display-4 text-dark">Staff Management</h2>
-        <div class="d-flex justify-content-end mb-3 mt-3 ms-3 me-3">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2 gap-md-3">
+        <h2 class="display-4 text-dark mb-0">Staff Management</h2>
+        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2 gap-sm-3">
           <?php if (!$hide_add_staff_button): ?>
           <?php if (canAddNewStaff()): ?>
-          <a href="newstaff.php" class="btn btn-warning">Add New Staff</a>
+          <a href="newstaff.php" class="btn btn-add-staff fw-bold text-nowrap">Add New Staff</a>
           <?php else: ?>
           <button class="btn btn-secondary" disabled title="Adding new staff is disabled on this server">
             <i class="bi bi-lock"></i> Add New Staff (Disabled)
@@ -307,8 +307,7 @@ $roles = $viewer->getDistinctRoles();
       </div>
 
       <!-- Page Content -->
-      <div class="container-fluid mt-3">
-        <div class="row g-3 align-items-center">
+      <div class="row g-3 align-items-center mb-4">
           <div class="col-md-3">
             <select id="roleFilter" class="form-select">
               <option value="">All Roles</option>
@@ -362,7 +361,7 @@ $roles = $viewer->getDistinctRoles();
           </button>
         </div>
       </div>
-    </div>
+      </div>
   </div>
 
   <!---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->

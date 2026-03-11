@@ -230,21 +230,20 @@ if ($id) {
         class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
     </div>
     <nav class="nav flex-column px-2">
-      <?php renderNavigation('My Attendance'); ?>
+      <?php renderNavigation(isAdmin() ? 'Attendance Reports' : 'My Attendance'); ?>
     </nav>
   </div>
 
   <div class="content" id="content">
     <div class="container-fluid">
-      <?php if (isAdmin()): ?>
-        <div class="mb-10">
-          <a href="../staffmanagement/staff_profile.php?id=<?= $id ?>" class="btn btn-outline-secondary mb-2 mt-3">&larr;
-            Back</a>
-        </div>
-      <?php endif; ?>
-      <h2 class="fw-bold mt-3 mb-4 display-4 text-dark">
-        <?php echo isAdmin() ? 'Individual Report' : 'My Attendance'; ?>
-      </h2>
+      <div class="d-flex justify-content-between align-items-center mt-2 mb-4">
+        <h2 class="display-4 text-dark mb-0">
+          <?php echo isAdmin() ? 'Individual Report' : 'My Attendance'; ?>
+        </h2>
+        <?php if (isAdmin()): ?>
+          <a href="../staffmanagement/staff_profile.php?id=<?= $id ?>" class="btn btn-outline-secondary">&larr; Back</a>
+        <?php endif; ?>
+      </div>
 
       <?php if ($employee): ?>
         <div class="card p-4 shadow-sm mb-4">
