@@ -635,8 +635,8 @@ $profilePhoto .= '?v=' . microtime(true);
                                 </div>
                             </div>
                             <div class="action-buttons">
-                                <button class="btn-modern btn-outline" data-bs-toggle="modal"
-                                    data-bs-target="#editInfoModal">
+                                <button class="btn-modern btn-outline text-success border-success"
+                                    data-bs-toggle="modal" data-bs-target="#editInfoModal">
                                     <i class="bi bi-pencil"></i> Edit Info
                                 </button>
                                 <?php if ($isAdmin): ?>
@@ -646,7 +646,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                     </button>
                                     <?php if (!$hide_re_register_face_button): ?>
                                         <a href="re_register_face.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>"
-                                            class="btn-modern btn-outline text-warning border-warning btn-compact"
+                                            class="btn-modern btn-outline text-warning border-warning"
                                             title="Re-register Face Data">
                                             <i class="bi bi-person-bounding-box"></i> Re-register Face
                                         </a>
@@ -795,12 +795,12 @@ $profilePhoto .= '?v=' . microtime(true);
                     <div class="card-header-custom">
                         <h3 class="card-title">Schedule</h3>
                         <?php if ($isAdmin && isset($pendingRequestId) && $pendingRequestId): ?>
-                            <button class="btn-modern btn-outline btn-sm" data-bs-toggle="modal"
+                            <button class="btn-modern btn-outline btn-sm text-success border-success" data-bs-toggle="modal"
                                 data-bs-target="#adminPendingRequestWarningModal">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
                         <?php else: ?>
-                            <button class="btn-modern btn-outline btn-sm" data-bs-toggle="modal"
+                            <button class="btn-modern btn-outline btn-sm text-success border-success" data-bs-toggle="modal"
                                 data-bs-target="#editScheduleModal">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
@@ -849,15 +849,15 @@ $profilePhoto .= '?v=' . microtime(true);
                             <form action="processes/update_employee.php" method="POST" enctype="multipart/form-data">
                                 <input type="hidden" name="employee_id"
                                     value="<?php echo htmlspecialchars($employee['employee_id']); ?>">
-                                <div class="form-group mb-3">
-                                    <label>Profile Picture</label>
+                                <div class="form-group mb-3 text-center">
+                                    <label class="fw-bold mb-2">Profile Picture</label>
                                     <img id="profile-preview"
                                         src="<?php echo $employee['profile_photo'] !== 'N/A' ? '../' . htmlspecialchars($employee['profile_photo']) . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
                                         alt="Profile Preview"
-                                        style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block; margin-bottom: 10px;"
+                                        style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 15px auto;"
                                         onerror="this.src='../assets/profile_pic/user.png'">
                                     <input type="file" id="profile_photo" name="profile_photo" accept="image/*"
-                                        class="form-control">
+                                        class="form-control text-start">
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4 mb-3"><label>First Name</label><input type="text" name="first_name"
@@ -888,7 +888,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                     </div>
                                 <?php endif; ?>
                                 <div class="mt-4 d-flex flex-column flex-md-row justify-content-md-end gap-2">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn btn-primary">Save Changes</button>
                                 </div>
                             </form>

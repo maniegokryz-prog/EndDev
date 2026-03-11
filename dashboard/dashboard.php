@@ -159,7 +159,7 @@ $currentUser = getCurrentUser();
           <!-- Removed old widget code -->
 
           <div class="col-xl-9 col-lg-8 col-md-8">
-            <div class="row g-2 mt-1">
+            <div class="row g-2">
 
               <div class="col-3">
                 <div class="card text-center p-3 shadow-sm border-0 clickable-card">

@@ -382,8 +382,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
 <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
   <div class="content pt-3" id="content">
   <div class="container-fluid">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-      <h2 class="display-4 text-dark page-title">Attendance Reports</h2>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2 gap-md-3">
+      <h2 class="display-4 text-dark page-title mb-0">Attendance Reports</h2>
       <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2 gap-sm-3">
         <span class="text-dark text-nowrap">Selected Date: <strong id="selectedDateDisplay"><?php echo $currentDate; ?></strong></span>
         <?php if (isAdmin()): ?>

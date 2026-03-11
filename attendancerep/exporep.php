@@ -35,477 +35,456 @@ $result = $conn->query($sql);
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="attendancerep.css">
-  <style>
-    .table-wrapper {
-      max-height: 500px;
-      overflow-y: auto;
-      border: 1px solid #dee2e6;
-      border-radius: 0.25rem;
-    }
 
-    .table-wrapper table {
-      margin-bottom: 0;
-    }
-
-    .table-wrapper thead th {
-      position: sticky;
-      top: 0;
-      background-color: #f8f9fa;
-      z-index: 10;
-    }
-  </style>
 </head>
 
 <body>
-
-  <body>
-    <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
-      <div class="menu-toggle">
-        <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
-      </div>
-      <?php include '../includes/notification_bell.php'; ?>
+  <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
+    <div class="menu-toggle">
+      <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
     </div>
+    <?php include '../includes/notification_bell.php'; ?>
+  </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar d-flex flex-column pt-5" id="sidebar">
-      <div class="profile text-center p-3 mt-4">
-        <?php
-        // Include auth guard if not already included
-        if (!function_exists('getCurrentUser')) {
-          require_once '../auth_guard.php';
-          $currentUser = getCurrentUser();
+  <!-- Sidebar -->
+  <div class="sidebar d-flex flex-column pt-5" id="sidebar">
+    <div class="profile text-center p-3 mt-4">
+      <?php
+      // Include auth guard if not already included
+      if (!function_exists('getCurrentUser')) {
+        require_once '../auth_guard.php';
+        $currentUser = getCurrentUser();
+      }
+      ?>
+      <img
+        src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
+        alt="Profile" class="rounded-circle mb-2" width="70" height="70"
+        onerror="this.src='../assets/profile_pic/user.png';">
+      <h5 class="mb-0"><?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?></h5>
+      <small
+        class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
+    </div>
+    <nav class="nav flex-column px-2">
+      <?php renderNavigation('Attendance'); ?>
+    </nav>
+  </div>
+
+  <div class="content pt-3" id="content">
+    <div class="container-fluid">
+
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <h2 class="display-4 text-dark">Export DTR Reports</h2>
+      </div>
+      <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+
+      <!-- Toolbar: Filters & Search Layout -->
+      <div class="row g-3 mb-4 align-items-end">
+        <div class="col-md-auto">
+          <button class="btn btn-outline-dark" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
+        </div>
+        <div class="col-md-3">
+          <label for="dateRangePicker" class="form-label small text-muted"><i class="bi bi-calendar3"></i> Date
+            Range</label>
+          <input type="text" class="form-control" id="dateRangePicker" placeholder="Select Date Range">
+        </div>
+
+        <div class="col-md-2">
+          <label for="sortBy" class="form-label small text-muted">Sort By</label>
+          <select class="form-select" id="sortBy">
+            <option value="">Default Order</option>
+            <option value="name">Name</option>
+            <option value="role">Role</option>
+            <option value="department">Department</option>
+          </select>
+        </div>
+
+        <div class="col-md-auto d-flex gap-2">
+          <button class="btn btn-dark px-4" style="background-color: #103932; border-color: #103932;"
+            onclick="applyFilters()">Apply</button>
+          <button class="btn btn-warning px-3" onclick="resetFilters()">Reset</button>
+        </div>
+
+        <div class="col-md-3 ms-auto">
+          <label for="searchInput" class="form-label small text-muted">Search Staff</label>
+          <input type="text" class="form-control" placeholder="Search by name, ID, email..." id="searchInput"
+            onkeyup="searchTable()">
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div class="card p-3 shadow-sm">
+        <div class="table-responsive">
+          <table class="table align-middle" id="employeeTable">
+            <thead class="table-light">
+              <tr>
+                <th>Select</th>
+                <th>Name & ID</th>
+                <th>Email</th>
+                <th>Contact No.</th>
+                <th>Role</th>
+                <th>Department</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <?php
+              if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                  $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ? $row['middle_name'] . ' ' : '') . $row['last_name']);
+                  $profilePic = !empty($row['profile_photo']) ? '' . $row['profile_photo'] : 'pic.png';
+                  $email = !empty($row['email']) ? htmlspecialchars($row['email']) : 'N/A';
+                  $phone = !empty($row['phone']) ? htmlspecialchars($row['phone']) : 'N/A';
+                  $roles = !empty($row['roles']) ? htmlspecialchars($row['roles']) : 'N/A';
+                  $department = !empty($row['department']) ? htmlspecialchars($row['department']) : 'N/A';
+
+                  echo '<tr data-employee-id="' . $row['id'] . '">';
+                  echo '<td><input type="checkbox" class="employee-checkbox" data-employee-id="' . $row['id'] . '"></td>';
+                  echo '<td>';
+                  echo '  <div class="d-flex align-items-center">';
+                  echo '    <img src="' . $profilePic . '" class="rounded-circle me-3" width="40" height="40" onerror="this.src=\'pic.png\'">';
+                  echo '    <div class="d-flex flex-column">';
+                  echo '      <span class="fw-semibold employee-name">' . htmlspecialchars($fullName) . '</span>';
+                  echo '      <small class="text-muted employee-id">' . htmlspecialchars($row['employee_id']) . '</small>';
+                  echo '    </div>';
+                  echo '  </div>';
+                  echo '</td>';
+                  echo '<td class="employee-email">' . $email . '</td>';
+                  echo '<td class="employee-phone">' . $phone . '</td>';
+                  echo '<td class="employee-role">' . $roles . '</td>';
+                  echo '<td class="employee-department">' . $department . '</td>';
+                  echo '</tr>';
+                }
+              } else {
+                echo '<tr><td colspan="6" class="text-center">No employees found</td></tr>';
+              }
+              ?>
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+
+      <!-- Export Buttons -->
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button class="btn btn-warning export-btn" onclick="openConfirmModal('PDF')">Export as PDF</button>
+        <button class="btn btn-success export-btn" onclick="openConfirmModal('Excel')">Export as Excel</button>
+      </div>
+
+    </div> <!-- container-fluid -->
+  </div> <!-- content pt-3 -->
+
+  <!-- Confirm Export Modal -->
+  <div class="modal fade" id="confirmExportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-3">
+        <h5 class="fw-bold">Confirm DTR Export</h5>
+        <hr>
+        <div class="my-3">
+          <i class="bi bi-box-arrow-up fs-1 text-success"></i>
+        </div>
+        <p>Confirm DTR Report for <span id="staffCount">0</span> staff as <span id="exportType"></span>?</p>
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-success" id="confirmExportBtn">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal fade" id="successExportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-3">
+        <h5 class="fw-bold text-success">Export Completed!</h5>
+        <hr>
+        <div class="my-3">
+          <i class="bi bi-check-circle fs-1 text-success"></i>
+        </div>
+        <p>DTR report successfully generated as <span id="exportDoneType"></span>.</p>
+        <button class="btn btn-success" data-bs-dismiss="modal">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warning Modal -->
+  <div class="modal fade" id="warningModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-3">
+        <h5 class="fw-bold text-danger">No Staff Selected</h5>
+        <hr>
+        <div class="my-3">
+          <i class="bi bi-exclamation-circle fs-1 text-danger"></i>
+        </div>
+        <p>Please select at least one staff before exporting.</p>
+        <button class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery (required for daterangepicker) -->
+  <!-- jQuery (required for daterangepicker) -->
+  <script src="../assets/vendor/jquery/jquery.min.js"></script>
+
+  <!-- Moment.js (required for daterangepicker) -->
+  <script src="../assets/vendor/moment/moment.min.js"></script>
+
+  <!-- Daterangepicker JS -->
+  <script src="../assets/vendor/daterangepicker/daterangepicker.min.js"></script>
+
+  <!-- Bootstrap Bundle -->
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    let exportType = '';
+    let allSelected = false;
+    let selectedDateRange = null;
+
+    // Initialize Date Range Picker
+    $(document).ready(function () {
+      $('#dateRangePicker').daterangepicker({
+        autoUpdateInput: false,
+        locale: {
+          cancelLabel: 'Clear',
+          format: 'YYYY-MM-DD'
         }
-        ?>
-        <img
-          src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
-          alt="Profile" class="rounded-circle mb-2" width="70" height="70"
-          onerror="this.src='../assets/profile_pic/user.png';">
-        <h5 class="mb-0"><?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?></h5>
-        <small
-          class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
+      });
+
+      // Update date range input when dates are selected
+      $('#dateRangePicker').on('apply.daterangepicker', function (ev, picker) {
+        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+        selectedDateRange = {
+          start: picker.startDate.format('YYYY-MM-DD'),
+          end: picker.endDate.format('YYYY-MM-DD')
+        };
+      });
+
+      $('#dateRangePicker').on('cancel.daterangepicker', function (ev, picker) {
+        $(this).val('');
+        selectedDateRange = null;
+      });
+    });
+
+    // Toggle Select All functionality
+    function toggleSelectAll() {
+      const checkboxes = document.querySelectorAll('.employee-checkbox');
+      const visibleCheckboxes = Array.from(checkboxes).filter(cb => {
+        const row = cb.closest('tr');
+        return row.style.display !== 'none';
+      });
+
+      allSelected = !allSelected;
+      visibleCheckboxes.forEach(checkbox => {
+        checkbox.checked = allSelected;
+      });
+
+      document.getElementById('selectAllBtn').textContent = allSelected ? 'Deselect All' : 'Select All';
+    }
+
+    // Search functionality
+    function searchTable() {
+      const input = document.getElementById('searchInput');
+      const filter = input.value.toLowerCase();
+      const table = document.getElementById('employeeTable');
+      const rows = table.getElementsByTagName('tr');
+
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const name = row.querySelector('.employee-name')?.textContent.toLowerCase() || '';
+        const id = row.querySelector('.employee-id')?.textContent.toLowerCase() || '';
+        const email = row.querySelector('.employee-email')?.textContent.toLowerCase() || '';
+        const role = row.querySelector('.employee-role')?.textContent.toLowerCase() || '';
+        const department = row.querySelector('.employee-department')?.textContent.toLowerCase() || '';
+
+        if (name.includes(filter) || id.includes(filter) || email.includes(filter) ||
+          role.includes(filter) || department.includes(filter)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+    }
+
+    function applyFilters() {
+      // Apply Sort
+      sortTable();
+
+      // Could add any future dynamic filters here
+    }
+
+    function resetFilters() {
+      // Reset Date Range
+      $('#dateRangePicker').val('');
+      selectedDateRange = null;
+
+      // Reset Sort By
+      document.getElementById('sortBy').value = '';
+
+      // Reset Search
+      document.getElementById('searchInput').value = '';
+
+      // Reset Select All State
+      const checkboxes = document.querySelectorAll('.employee-checkbox');
+      checkboxes.forEach(cb => cb.checked = false);
+      allSelected = false;
+      document.getElementById('selectAllBtn').textContent = 'Select All';
+
+      // Show all rows
+      searchTable();
+
+      // Resetting sort back to default order visually is slightly complex without full reload,
+      // but by clearing the value, the next sort will override. A page reload is simpler for full DB sort.
+      // To provide a smooth UX, we just filter normally.
+    }
+
+    // Sort functionality
+    function sortTable() {
+      const sortBy = document.getElementById('sortBy').value;
+      const table = document.getElementById('employeeTable');
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+
+      if (!sortBy) return;
+
+      rows.sort((a, b) => {
+        let aValue, bValue;
+
+        switch (sortBy) {
+          case 'name':
+            aValue = a.querySelector('.employee-name')?.textContent || '';
+            bValue = b.querySelector('.employee-name')?.textContent || '';
+            break;
+          case 'role':
+            aValue = a.querySelector('.employee-role')?.textContent || '';
+            bValue = b.querySelector('.employee-role')?.textContent || '';
+            break;
+          case 'department':
+            aValue = a.querySelector('.employee-department')?.textContent || '';
+            bValue = b.querySelector('.employee-department')?.textContent || '';
+            break;
+          default:
+            return 0;
+        }
+
+        return aValue.localeCompare(bValue);
+      });
+
+      rows.forEach(row => tbody.appendChild(row));
+    }
+
+    function openConfirmModal(type) {
+      exportType = type;
+      const selected = document.querySelectorAll(".employee-checkbox:checked").length;
+
+      if (selected === 0) {
+        new bootstrap.Modal(document.getElementById("warningModal")).show();
+        return;
+      }
+
+      document.getElementById("staffCount").textContent = selected;
+      document.getElementById("exportType").textContent = type;
+
+      const confirmModal = new bootstrap.Modal(document.getElementById("confirmExportModal"));
+      confirmModal.show();
+
+      // Attach export confirmation only once
+      const confirmBtn = document.getElementById("confirmExportBtn");
+      confirmBtn.onclick = () => {
+        confirmModal.hide();
+        setTimeout(() => {
+          document.getElementById("exportDoneType").textContent = exportType;
+          new bootstrap.Modal(document.getElementById("successExportModal")).show();
+
+          // Trigger actual export here after success modal is shown
+          performExport(exportType);
+        }, 300);
+      };
+    }
+
+    function performExport(type) {
+      // Get selected employee IDs
+      const selectedCheckboxes = document.querySelectorAll('.employee-checkbox:checked');
+      const employeeIds = Array.from(selectedCheckboxes).map(cb => cb.dataset.employeeId);
+
+      // Get date range
+      let dateFrom = '';
+      let dateTo = '';
+      if (selectedDateRange) {
+        dateFrom = selectedDateRange.start;
+        dateTo = selectedDateRange.end;
+      }
+
+      // Create logic to submit form
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'export_batch.php';
+      form.target = '_blank'; // Open in new tab
+
+      // Add Export Type
+      const typeInput = document.createElement('input');
+      typeInput.type = 'hidden';
+      typeInput.name = 'export_type';
+      typeInput.value = type.toLowerCase();
+      form.appendChild(typeInput);
+
+      // Add Employee IDs
+      const idsInput = document.createElement('input');
+      idsInput.type = 'hidden';
+      idsInput.name = 'employee_ids';
+      idsInput.value = JSON.stringify(employeeIds);
+      form.appendChild(idsInput);
+
+      // Add Date Range if exists
+      if (dateFrom && dateTo) {
+        const startInput = document.createElement('input');
+        startInput.type = 'hidden';
+        startInput.name = 'start_date';
+        startInput.value = dateFrom;
+        form.appendChild(startInput);
+
+        const endInput = document.createElement('input');
+        endInput.type = 'hidden';
+        endInput.name = 'end_date';
+        endInput.value = dateTo;
+        form.appendChild(endInput);
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+    }
+
+    // Logout modal function
+    function showLogoutModal() {
+      var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+      logoutModal.show();
+    }
+  </script>
+
+  <!-- Logout Modal -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title w-100 text-center" id="logoutModalLabel">Confirm Logout</h5>
+        </div>
+        <div class="modal-body text-center">
+          Are you sure you want to logout?
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form method="POST" action="logout.php" style="display: inline;">
+            <input type="hidden" name="confirm_logout" value="1">
+            <button type="submit" class="btn btn-danger">Yes, Log out</button>
+          </form>
+        </div>
       </div>
-      <nav class="nav flex-column px-2">
-        <?php renderNavigation('Attendance'); ?>
-      </nav>
     </div>
+  </div>
 
-    <div class="content pt-3" id="content">
-      <div class="container-fluid">
-
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <h2 class="display-4 text-dark">Export DTR Reports</h2>
-        </div>
-        <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-
-
-        <!-- Toolbar: Filters & Search Layout -->
-        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 bg-light p-3 rounded border shadow-sm">
-          <div class="d-flex gap-3 align-items-end flex-wrap">
-            <div>
-              <button class="btn btn-outline-dark" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
-            </div>
-            <div style="width: 260px;">
-              <label for="dateRangePicker" class="form-label text-muted fw-semibold small mb-1"><i class="bi bi-funnel"></i> Date Range</label>
-              <div class="input-group">
-                <span class="input-group-text bg-white"><i class="bi bi-calendar3"></i></span>
-                <input type="text" class="form-control" id="dateRangePicker" placeholder="Select Date Range">
-              </div>
-            </div>
-
-            <div style="width: 200px;">
-              <label for="sortBy" class="form-label text-muted fw-semibold small mb-1">Sort By</label>
-              <select class="form-select" id="sortBy">
-                <option value="">Default Order</option>
-                <option value="name">Name</option>
-                <option value="role">Role</option>
-                <option value="department">Department</option>
-              </select>
-            </div>
-
-            <div>
-              <button class="btn btn-dark px-4" style="background-color: #103932; border-color: #103932;" onclick="applyFilters()">Apply</button>
-              <button class="btn btn-warning px-3" onclick="resetFilters()">Reset</button>
-            </div>
-          </div>
-
-          <div style="width: 300px;">
-            <label for="searchInput" class="form-label text-muted fw-semibold small mb-1">Search Staff</label>
-            <div class="input-group">
-              <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control" placeholder="Search by name, ID, email..." id="searchInput" onkeyup="searchTable()">
-            </div>
-          </div>
-        </div>
-
-        <body class="p-4">
-          <!-- Table -->
-          <div class="table-wrapper mt-5">
-            <table class="table table-bordered" id="employeeTable">
-              <thead class="table-light">
-                <tr>
-                  <th>Select</th>
-                  <th>Name & ID</th>
-                  <th>Email</th>
-                  <th>Contact No.</th>
-                  <th>Role</th>
-                  <th>Department</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <?php
-                if ($result && $result->num_rows > 0) {
-                  while ($row = $result->fetch_assoc()) {
-                    $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ? $row['middle_name'] . ' ' : '') . $row['last_name']);
-                    $profilePic = !empty($row['profile_photo']) ? '' . $row['profile_photo'] : 'pic.png';
-                    $email = !empty($row['email']) ? htmlspecialchars($row['email']) : 'N/A';
-                    $phone = !empty($row['phone']) ? htmlspecialchars($row['phone']) : 'N/A';
-                    $roles = !empty($row['roles']) ? htmlspecialchars($row['roles']) : 'N/A';
-                    $department = !empty($row['department']) ? htmlspecialchars($row['department']) : 'N/A';
-
-                    echo '<tr data-employee-id="' . $row['id'] . '">';
-                    echo '<td><input type="checkbox" class="employee-checkbox" data-employee-id="' . $row['id'] . '"></td>';
-                    echo '<td>';
-                    echo '  <div class="d-flex align-items-center">';
-                    echo '    <img src="' . $profilePic . '" class="rounded-circle me-3" width="40" height="40" onerror="this.src=\'pic.png\'">';
-                    echo '    <div class="d-flex flex-column">';
-                    echo '      <span class="fw-semibold employee-name">' . htmlspecialchars($fullName) . '</span>';
-                    echo '      <small class="text-muted employee-id">' . htmlspecialchars($row['employee_id']) . '</small>';
-                    echo '    </div>';
-                    echo '  </div>';
-                    echo '</td>';
-                    echo '<td class="employee-email">' . $email . '</td>';
-                    echo '<td class="employee-phone">' . $phone . '</td>';
-                    echo '<td class="employee-role">' . $roles . '</td>';
-                    echo '<td class="employee-department">' . $department . '</td>';
-                    echo '</tr>';
-                  }
-                } else {
-                  echo '<tr><td colspan="6" class="text-center">No employees found</td></tr>';
-                }
-                ?>
-              </tbody>
-
-            </table>
-          </div>
-
-          <!-- Export Buttons -->
-          <div class="d-flex justify-content-end gap-2 mt-3">
-            <button class="btn btn-warning export-btn" onclick="openConfirmModal('PDF')">Export as PDF</button>
-            <button class="btn btn-success export-btn" onclick="openConfirmModal('Excel')">Export as Excel</button>
-          </div>
-
-          <!-- Confirm Export Modal -->
-          <div class="modal fade" id="confirmExportModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content text-center p-3">
-                <h5 class="fw-bold">Confirm DTR Export</h5>
-                <hr>
-                <div class="my-3">
-                  <i class="bi bi-box-arrow-up fs-1 text-success"></i>
-                </div>
-                <p>Confirm DTR Report for <span id="staffCount">0</span> staff as <span id="exportType"></span>?</p>
-                <div class="d-flex justify-content-center gap-2">
-                  <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button class="btn btn-success" id="confirmExportBtn">Yes</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Success Modal -->
-          <div class="modal fade" id="successExportModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content text-center p-3">
-                <h5 class="fw-bold text-success">Export Completed!</h5>
-                <hr>
-                <div class="my-3">
-                  <i class="bi bi-check-circle fs-1 text-success"></i>
-                </div>
-                <p>DTR report successfully generated as <span id="exportDoneType"></span>.</p>
-                <button class="btn btn-success" data-bs-dismiss="modal">Continue</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Warning Modal -->
-          <div class="modal fade" id="warningModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content text-center p-3">
-                <h5 class="fw-bold text-danger">No Staff Selected</h5>
-                <hr>
-                <div class="my-3">
-                  <i class="bi bi-exclamation-circle fs-1 text-danger"></i>
-                </div>
-                <p>Please select at least one staff before exporting.</p>
-                <button class="btn btn-danger" data-bs-dismiss="modal">OK</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- jQuery (required for daterangepicker) -->
-          <!-- jQuery (required for daterangepicker) -->
-          <script src="../assets/vendor/jquery/jquery.min.js"></script>
-
-          <!-- Moment.js (required for daterangepicker) -->
-          <script src="../assets/vendor/moment/moment.min.js"></script>
-
-          <!-- Daterangepicker JS -->
-          <script src="../assets/vendor/daterangepicker/daterangepicker.min.js"></script>
-
-          <!-- Bootstrap Bundle -->
-          <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-          <script>
-            let exportType = '';
-            let allSelected = false;
-            let selectedDateRange = null;
-
-            // Initialize Date Range Picker
-            $(document).ready(function () {
-              $('#dateRangePicker').daterangepicker({
-                autoUpdateInput: false,
-                locale: {
-                  cancelLabel: 'Clear',
-                  format: 'YYYY-MM-DD'
-                }
-              });
-
-              // Update date range input when dates are selected
-              $('#dateRangePicker').on('apply.daterangepicker', function (ev, picker) {
-                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
-                selectedDateRange = {
-                  start: picker.startDate.format('YYYY-MM-DD'),
-                  end: picker.endDate.format('YYYY-MM-DD')
-                };
-              });
-
-              $('#dateRangePicker').on('cancel.daterangepicker', function (ev, picker) {
-                $(this).val('');
-                selectedDateRange = null;
-              });
-            });
-
-            // Toggle Select All functionality
-            function toggleSelectAll() {
-              const checkboxes = document.querySelectorAll('.employee-checkbox');
-              const visibleCheckboxes = Array.from(checkboxes).filter(cb => {
-                const row = cb.closest('tr');
-                return row.style.display !== 'none';
-              });
-
-              allSelected = !allSelected;
-              visibleCheckboxes.forEach(checkbox => {
-                checkbox.checked = allSelected;
-              });
-
-              document.getElementById('selectAllBtn').textContent = allSelected ? 'Deselect All' : 'Select All';
-            }
-
-            // Search functionality
-            function searchTable() {
-              const input = document.getElementById('searchInput');
-              const filter = input.value.toLowerCase();
-              const table = document.getElementById('employeeTable');
-              const rows = table.getElementsByTagName('tr');
-
-              for (let i = 1; i < rows.length; i++) {
-                const row = rows[i];
-                const name = row.querySelector('.employee-name')?.textContent.toLowerCase() || '';
-                const id = row.querySelector('.employee-id')?.textContent.toLowerCase() || '';
-                const email = row.querySelector('.employee-email')?.textContent.toLowerCase() || '';
-                const role = row.querySelector('.employee-role')?.textContent.toLowerCase() || '';
-                const department = row.querySelector('.employee-department')?.textContent.toLowerCase() || '';
-
-                if (name.includes(filter) || id.includes(filter) || email.includes(filter) ||
-                  role.includes(filter) || department.includes(filter)) {
-                  row.style.display = '';
-                } else {
-                  row.style.display = 'none';
-                }
-              }
-            }
-
-            function applyFilters() {
-              // Apply Sort
-              sortTable();
-
-              // Could add any future dynamic filters here
-            }
-
-            function resetFilters() {
-              // Reset Date Range
-              $('#dateRangePicker').val('');
-              selectedDateRange = null;
-
-              // Reset Sort By
-              document.getElementById('sortBy').value = '';
-
-              // Reset Search
-              document.getElementById('searchInput').value = '';
-
-              // Reset Select All State
-              const checkboxes = document.querySelectorAll('.employee-checkbox');
-              checkboxes.forEach(cb => cb.checked = false);
-              allSelected = false;
-              document.getElementById('selectAllBtn').textContent = 'Select All';
-
-              // Show all rows
-              searchTable();
-
-              // Resetting sort back to default order visually is slightly complex without full reload,
-              // but by clearing the value, the next sort will override. A page reload is simpler for full DB sort.
-              // To provide a smooth UX, we just filter normally.
-            }
-
-            // Sort functionality
-            function sortTable() {
-              const sortBy = document.getElementById('sortBy').value;
-              const table = document.getElementById('employeeTable');
-              const tbody = table.querySelector('tbody');
-              const rows = Array.from(tbody.querySelectorAll('tr'));
-
-              if (!sortBy) return;
-
-              rows.sort((a, b) => {
-                let aValue, bValue;
-
-                switch (sortBy) {
-                  case 'name':
-                    aValue = a.querySelector('.employee-name')?.textContent || '';
-                    bValue = b.querySelector('.employee-name')?.textContent || '';
-                    break;
-                  case 'role':
-                    aValue = a.querySelector('.employee-role')?.textContent || '';
-                    bValue = b.querySelector('.employee-role')?.textContent || '';
-                    break;
-                  case 'department':
-                    aValue = a.querySelector('.employee-department')?.textContent || '';
-                    bValue = b.querySelector('.employee-department')?.textContent || '';
-                    break;
-                  default:
-                    return 0;
-                }
-
-                return aValue.localeCompare(bValue);
-              });
-
-              rows.forEach(row => tbody.appendChild(row));
-            }
-
-            function openConfirmModal(type) {
-              exportType = type;
-              const selected = document.querySelectorAll(".employee-checkbox:checked").length;
-
-              if (selected === 0) {
-                new bootstrap.Modal(document.getElementById("warningModal")).show();
-                return;
-              }
-
-              document.getElementById("staffCount").textContent = selected;
-              document.getElementById("exportType").textContent = type;
-
-              const confirmModal = new bootstrap.Modal(document.getElementById("confirmExportModal"));
-              confirmModal.show();
-
-              // Attach export confirmation only once
-              const confirmBtn = document.getElementById("confirmExportBtn");
-              confirmBtn.onclick = () => {
-                confirmModal.hide();
-                setTimeout(() => {
-                  document.getElementById("exportDoneType").textContent = exportType;
-                  new bootstrap.Modal(document.getElementById("successExportModal")).show();
-
-                  // Trigger actual export here after success modal is shown
-                  performExport(exportType);
-                }, 300);
-              };
-            }
-
-            function performExport(type) {
-              // Get selected employee IDs
-              const selectedCheckboxes = document.querySelectorAll('.employee-checkbox:checked');
-              const employeeIds = Array.from(selectedCheckboxes).map(cb => cb.dataset.employeeId);
-
-              // Get date range
-              let dateFrom = '';
-              let dateTo = '';
-              if (selectedDateRange) {
-                dateFrom = selectedDateRange.start;
-                dateTo = selectedDateRange.end;
-              }
-
-              // Create logic to submit form
-              const form = document.createElement('form');
-              form.method = 'POST';
-              form.action = 'export_batch.php';
-              form.target = '_blank'; // Open in new tab
-
-              // Add Export Type
-              const typeInput = document.createElement('input');
-              typeInput.type = 'hidden';
-              typeInput.name = 'export_type';
-              typeInput.value = type.toLowerCase();
-              form.appendChild(typeInput);
-
-              // Add Employee IDs
-              const idsInput = document.createElement('input');
-              idsInput.type = 'hidden';
-              idsInput.name = 'employee_ids';
-              idsInput.value = JSON.stringify(employeeIds);
-              form.appendChild(idsInput);
-
-              // Add Date Range if exists
-              if (dateFrom && dateTo) {
-                const startInput = document.createElement('input');
-                startInput.type = 'hidden';
-                startInput.name = 'start_date';
-                startInput.value = dateFrom;
-                form.appendChild(startInput);
-
-                const endInput = document.createElement('input');
-                endInput.type = 'hidden';
-                endInput.name = 'end_date';
-                endInput.value = dateTo;
-                form.appendChild(endInput);
-              }
-
-              document.body.appendChild(form);
-              form.submit();
-              document.body.removeChild(form);
-            }
-
-            // Logout modal function
-            function showLogoutModal() {
-              var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
-              logoutModal.show();
-            }
-          </script>
-
-          <!-- Logout Modal -->
-          <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header border-0">
-                  <h5 class="modal-title w-100 text-center" id="logoutModalLabel">Confirm Logout</h5>
-                </div>
-                <div class="modal-body text-center">
-                  Are you sure you want to logout?
-                </div>
-                <div class="modal-footer justify-content-center">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <form method="POST" action="logout.php" style="display: inline;">
-                    <input type="hidden" name="confirm_logout" value="1">
-                    <button type="submit" class="btn btn-danger">Yes, Log out</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Custom JS -->
-          <script src="attendancerep.js"></script>
-          <script src="../dashboard/dashboard.js"></script>
-        </body>
+  <!-- Custom JS -->
+  <script src="attendancerep.js"></script>
+  <script src="../dashboard/dashboard.js"></script>
+</body>
 
 </html>

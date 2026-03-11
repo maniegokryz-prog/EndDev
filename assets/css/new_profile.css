@@ -706,6 +706,30 @@ body {
     border-color: #a0aec0;
 }
 
+.btn-outline.text-success:hover {
+    background: #e2e8f0 !important;
+    /* Light Gray */
+    color: #198754 !important;
+    /* Keep the 'Edit' word readable (green) */
+    border-color: #198754 !important;
+}
+
+.btn-outline.text-danger:hover {
+    background: #e2e8f0 !important;
+    /* Light Gray */
+    color: #dc3545 !important;
+    /* Keep the 'Remove' word readable (red) */
+    border-color: #dc3545 !important;
+}
+
+.btn-outline.text-warning:hover {
+    background: #e2e8f0 !important;
+    /* Light Gray */
+    color: #ffc107 !important;
+    /* Keep the 'Re-register Face' word readable (yellow) */
+    border-color: #ffc107 !important;
+}
+
 /* Helper classes */
 .text-muted {
     color: var(--text-secondary) !important;

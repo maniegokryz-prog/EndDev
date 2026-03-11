@@ -534,7 +534,7 @@
      overflow-y: auto;
      border: 1px solid #ddd;
      border-radius: 1rem;
-     margin-top: 0 !important;
+     margin-top: 15px !important;
      /* remove lift */
      display: flex;
      flex-direction: column;
@@ -553,7 +553,6 @@
      .col-xl-9.col-lg-8.col-md-8 {
        height: 550px;
        overflow: hidden;
-       margin-top: 1px !important;
        /* ⬅ adjust until visually aligned */
      }
    }

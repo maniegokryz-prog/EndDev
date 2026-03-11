@@ -156,6 +156,24 @@ try {
             object-fit: cover;
             border-radius: 50%;
         }
+
+        @media (max-width: 767px) {
+
+            /* Control upward shift and force equal left/right margins in mobile */
+            .wizard-mobile-container {
+                margin-top: -80px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+
+            .wizard-mobile-title {
+                text-align: center !important;
+                padding-top: 15px !important;
+                margin-top: 10px !important;
+            }
+        }
     </style>
 </head>
 
@@ -188,12 +206,11 @@ try {
 
     <div class="content pt-3" id="content">
         <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-
+            <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
             </div>
 
-            <div class="container py-4 mt-5" style="margin-top: -5px !important;">
-                <h3 class="fw-bold mb-4 pt-4">Add New Staff / Wizard</h3>
+            <div class="container py-4 mt-5 wizard-mobile-container" style="margin-top: -5px !important;">
+                <h3 class="mb-4 pt-4 wizard-mobile-title">Add New Staff / Wizard</h3>
 
                 <!-- Navigation Tabs -->
                 <ul class="nav nav-tabs nav-fill mb-4" id="staffWizardTabs" role="tablist">
@@ -477,25 +494,35 @@ try {
 
                                         <div class="row mt-3" id="faculty-fields">
                                             <div class="col-md-4 form-group">
-                                                <label for="designate_class" style="min-height: 45px;">Designate Class <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
+                                                <label for="designate_class" style="min-height: 45px;">Designate Class
+                                                    <span
+                                                        style="display: block; color: #999; font-size: 0.9em;">(Faculty
+                                                        Only - Optional)</span></label>
                                                 <input type="text" id="designate_class" name="designate_class"
                                                     class="form-control" placeholder="Class Name" autocomplete="off"
                                                     style="text-transform: uppercase;" disabled>
-                                                <small style="color: #666; font-size: 0.8em; display: none;" class="faculty-helper">Click arrow or type to search</small>
+                                                <small style="color: #666; font-size: 0.8em; display: none;"
+                                                    class="faculty-helper">Click arrow or type to search</small>
                                             </div>
                                             <div class="col-md-4 form-group">
-                                                <label for="designate_subject" style="min-height: 45px;">Subject <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
+                                                <label for="designate_subject" style="min-height: 45px;">Subject <span
+                                                        style="display: block; color: #999; font-size: 0.9em;">(Faculty
+                                                        Only - Optional)</span></label>
                                                 <input type="text" id="designate_subject" name="designate_subject"
                                                     class="form-control" placeholder="Subject Code" autocomplete="off"
                                                     style="text-transform: uppercase;" disabled>
-                                                <small style="color: #666; font-size: 0.8em; display: none;" class="faculty-helper">Click arrow or type to search</small>
+                                                <small style="color: #666; font-size: 0.8em; display: none;"
+                                                    class="faculty-helper">Click arrow or type to search</small>
                                             </div>
                                             <div class="col-md-4 form-group">
-                                                <label for="room-number" style="min-height: 45px;">Room Number <span style="display: block; color: #999; font-size: 0.9em;">(Faculty Only - Optional)</span></label>
+                                                <label for="room-number" style="min-height: 45px;">Room Number <span
+                                                        style="display: block; color: #999; font-size: 0.9em;">(Faculty
+                                                        Only - Optional)</span></label>
                                                 <input type="text" id="room-number" name="room-number"
                                                     class="form-control" placeholder="Room #" autocomplete="off"
                                                     style="text-transform: uppercase;" disabled>
-                                                <small style="color: #666; font-size: 0.8em; display: none;" class="faculty-helper">Click arrow or type to search</small>
+                                                <small style="color: #666; font-size: 0.8em; display: none;"
+                                                    class="faculty-helper">Click arrow or type to search</small>
                                             </div>
                                         </div>
 
