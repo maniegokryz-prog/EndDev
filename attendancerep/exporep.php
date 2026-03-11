@@ -50,12 +50,12 @@ $result = $conn->query($sql);
   <div class="sidebar d-flex flex-column pt-5" id="sidebar">
     <div class="profile text-center p-3 mt-4">
       <?php
-      // Include auth guard if not already included
-      if (!function_exists('getCurrentUser')) {
-        require_once '../auth_guard.php';
-        $currentUser = getCurrentUser();
-      }
-      ?>
+// Include auth guard if not already included
+if (!function_exists('getCurrentUser')) {
+  require_once '../auth_guard.php';
+  $currentUser = getCurrentUser();
+}
+?>
       <img
         src="<?php echo !empty($currentUser['profile_photo']) ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
         alt="Profile" class="rounded-circle mb-2" width="70" height="70"
@@ -81,7 +81,7 @@ $result = $conn->query($sql);
       <!-- Toolbar: Filters & Search Layout -->
       <div class="row g-3 mb-4 align-items-end">
         <div class="col-md-auto">
-          <button class="btn btn-outline-dark" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
+          <button class="btn btn-outline-dark fw-bold" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
         </div>
         <div class="col-md-3">
           <label for="dateRangePicker" class="form-label small text-muted"><i class="bi bi-calendar3"></i> Date
@@ -100,9 +100,9 @@ $result = $conn->query($sql);
         </div>
 
         <div class="col-md-auto d-flex gap-2">
-          <button class="btn btn-dark px-4" style="background-color: #103932; border-color: #103932;"
+          <button class="btn btn-custom-apply px-4 fw-bold"
             onclick="applyFilters()">Apply</button>
-          <button class="btn btn-warning px-3" onclick="resetFilters()">Reset</button>
+          <button class="btn btn-outline-warning px-3 fw-bold" onclick="resetFilters()">Reset</button>
         </div>
 
         <div class="col-md-3 ms-auto">
@@ -129,36 +129,37 @@ $result = $conn->query($sql);
 
             <tbody>
               <?php
-              if ($result && $result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                  $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ? $row['middle_name'] . ' ' : '') . $row['last_name']);
-                  $profilePic = !empty($row['profile_photo']) ? '' . $row['profile_photo'] : 'pic.png';
-                  $email = !empty($row['email']) ? htmlspecialchars($row['email']) : 'N/A';
-                  $phone = !empty($row['phone']) ? htmlspecialchars($row['phone']) : 'N/A';
-                  $roles = !empty($row['roles']) ? htmlspecialchars($row['roles']) : 'N/A';
-                  $department = !empty($row['department']) ? htmlspecialchars($row['department']) : 'N/A';
+if ($result && $result->num_rows > 0) {
+  while ($row = $result->fetch_assoc()) {
+    $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ? $row['middle_name'] . ' ' : '') . $row['last_name']);
+    $profilePic = !empty($row['profile_photo']) ? '' . $row['profile_photo'] : 'pic.png';
+    $email = !empty($row['email']) ? htmlspecialchars($row['email']) : 'N/A';
+    $phone = !empty($row['phone']) ? htmlspecialchars($row['phone']) : 'N/A';
+    $roles = !empty($row['roles']) ? htmlspecialchars($row['roles']) : 'N/A';
+    $department = !empty($row['department']) ? htmlspecialchars($row['department']) : 'N/A';
 
-                  echo '<tr data-employee-id="' . $row['id'] . '">';
-                  echo '<td><input type="checkbox" class="employee-checkbox" data-employee-id="' . $row['id'] . '"></td>';
-                  echo '<td>';
-                  echo '  <div class="d-flex align-items-center">';
-                  echo '    <img src="' . $profilePic . '" class="rounded-circle me-3" width="40" height="40" onerror="this.src=\'pic.png\'">';
-                  echo '    <div class="d-flex flex-column">';
-                  echo '      <span class="fw-semibold employee-name">' . htmlspecialchars($fullName) . '</span>';
-                  echo '      <small class="text-muted employee-id">' . htmlspecialchars($row['employee_id']) . '</small>';
-                  echo '    </div>';
-                  echo '  </div>';
-                  echo '</td>';
-                  echo '<td class="employee-email">' . $email . '</td>';
-                  echo '<td class="employee-phone">' . $phone . '</td>';
-                  echo '<td class="employee-role">' . $roles . '</td>';
-                  echo '<td class="employee-department">' . $department . '</td>';
-                  echo '</tr>';
-                }
-              } else {
-                echo '<tr><td colspan="6" class="text-center">No employees found</td></tr>';
-              }
-              ?>
+    echo '<tr data-employee-id="' . $row['id'] . '">';
+    echo '<td><input type="checkbox" class="employee-checkbox" data-employee-id="' . $row['id'] . '"></td>';
+    echo '<td>';
+    echo '  <div class="d-flex align-items-center">';
+    echo '    <img src="' . $profilePic . '" class="rounded-circle me-3" width="40" height="40" onerror="this.src=\'pic.png\'">';
+    echo '    <div class="d-flex flex-column">';
+    echo '      <span class="fw-semibold employee-name">' . htmlspecialchars($fullName) . '</span>';
+    echo '      <small class="text-muted employee-id">' . htmlspecialchars($row['employee_id']) . '</small>';
+    echo '    </div>';
+    echo '  </div>';
+    echo '</td>';
+    echo '<td class="employee-email">' . $email . '</td>';
+    echo '<td class="employee-phone">' . $phone . '</td>';
+    echo '<td class="employee-role">' . $roles . '</td>';
+    echo '<td class="employee-department">' . $department . '</td>';
+    echo '</tr>';
+  }
+}
+else {
+  echo '<tr><td colspan="6" class="text-center">No employees found</td></tr>';
+}
+?>
             </tbody>
 
           </table>
@@ -167,8 +168,8 @@ $result = $conn->query($sql);
 
       <!-- Export Buttons -->
       <div class="d-flex justify-content-end gap-2 mt-3">
-        <button class="btn btn-warning export-btn" onclick="openConfirmModal('PDF')">Export as PDF</button>
-        <button class="btn btn-success export-btn" onclick="openConfirmModal('Excel')">Export as Excel</button>
+        <button class="btn btn-outline-warning export-btn fw-bold" onclick="openConfirmModal('PDF')">Export as PDF</button>
+        <button class="btn btn-outline-success export-btn fw-bold" onclick="openConfirmModal('Excel')">Export as Excel</button>
       </div>
 
     </div> <!-- container-fluid -->

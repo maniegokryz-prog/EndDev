@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Protect this page - require authentication
 require_once '../auth_guard.php';
 require_once '../navigation.php';
@@ -920,6 +920,33 @@ $profilePhoto .= '?v=' . microtime(true);
     <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4">
+                <style>
+                    .btn-outline-custom-gray {
+                        background-color: transparent !important;
+                        border: 1px solid #6c757d !important;
+                        color: #6c757d !important;
+                        transition: background-color 0.2s;
+                        font-weight: 400 !important;
+                    }
+
+                    .btn-outline-custom-gray:hover {
+                        background-color: #e2e6ea !important;
+                        color: #5c636a !important;
+                    }
+
+                    .btn-outline-custom-red {
+                        background-color: transparent !important;
+                        border: 1px solid #dc3545 !important;
+                        color: #dc3545 !important;
+                        transition: background-color 0.2s;
+                        font-weight: 400 !important;
+                    }
+
+                    .btn-outline-custom-red:hover {
+                        background-color: #e2e6ea !important;
+                        color: #b02a37 !important;
+                    }
+                </style>
                 <h5 class="fw-bold mb-3 text-danger text-center">Confirm Employee Removal</h5>
                 <p class="text-center">This will move the employee to the archive. Enter your admin password to confirm.
                 </p>
@@ -931,8 +958,8 @@ $profilePhoto .= '?v=' . microtime(true);
                         <div id="passwordError" class="text-danger small mt-1" style="display: none;"></div>
                     </div>
                     <div class="d-flex justify-content-center gap-3 mt-4">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger" id="confirmRemoveBtn">
+                        <button type="button" class="btn btn-outline-custom-gray" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-outline-custom-red" id="confirmRemoveBtn">
                             <span id="removeBtnText">Remove Employee</span>
                             <span id="removeBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                                 style="display: none;"></span>

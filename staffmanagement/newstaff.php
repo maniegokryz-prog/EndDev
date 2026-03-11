@@ -174,6 +174,52 @@ try {
                 margin-top: 10px !important;
             }
         }
+
+        .step-tab-btn {
+            font-weight: bold !important;
+            transition: all 0.2s ease-in-out;
+        }
+        .step-tab-btn:hover {
+            background-color: #6c757d !important; /* gray background */
+            color: white !important;             /* white text for contrast */
+            border-color: #6c757d !important;
+        }
+
+        .btn-custom-save-info {
+            background-color: transparent !important;
+            border-color: #198754 !important; /* Bootstrap success green */
+            color: #198754 !important;
+            font-weight: bold;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-custom-save-info:hover {
+            background-color: #198754 !important;
+            color: white !important;
+        }
+        
+        .btn-custom-capture {
+            background-color: transparent !important;
+            border: 1px solid #0d6efd !important;
+            color: #0d6efd !important;
+            font-weight: bold !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .btn-custom-capture:hover {
+            background-color: #0d6efd !important;
+            color: white !important;
+        }
+
+        .btn-custom-skip {
+            background-color: transparent !important;
+            border: 1px solid #fd7e14 !important;
+            color: #fd7e14 !important;
+            font-weight: bold !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .btn-custom-skip:hover {
+            background-color: #fd7e14 !important;
+            color: white !important;
+        }
     </style>
 </head>
 
@@ -215,19 +261,19 @@ try {
                 <!-- Navigation Tabs -->
                 <ul class="nav nav-tabs nav-fill mb-4" id="staffWizardTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="step1-tab" data-bs-toggle="tab" data-bs-target="#step1"
+                        <button class="nav-link active step-tab-btn" id="step1-tab" data-bs-toggle="tab" data-bs-target="#step1"
                             type="button" role="tab" aria-controls="step1" aria-selected="true">
                             Step 1: Information
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="step2-tab" data-bs-toggle="tab" data-bs-target="#step2"
+                        <button class="nav-link step-tab-btn" id="step2-tab" data-bs-toggle="tab" data-bs-target="#step2"
                             type="button" role="tab" aria-controls="step2" aria-selected="false">
                             Step 2: Face Registration
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="step3-tab" data-bs-toggle="tab" data-bs-target="#step3"
+                        <button class="nav-link step-tab-btn" id="step3-tab" data-bs-toggle="tab" data-bs-target="#step3"
                             type="button" role="tab" aria-controls="step3" aria-selected="false">
                             Step 3: Schedule
                         </button>
@@ -325,7 +371,7 @@ try {
 
                                     <!-- Step 1 Submit -->
                                     <div class="mt-4 d-flex justify-content-center">
-                                        <button type="submit" class="btn btn-success px-4 py-2">Save Personal
+                                        <button type="submit" class="btn btn-custom-save-info px-4 py-2">Save Personal
                                             Information</button>
                                     </div>
                                 </form>
@@ -395,9 +441,9 @@ try {
                                         </h4>
                                         <p id="angle-instruction">Look directly at the camera with a neutral expression
                                         </p>
-                                        <button type="button" id="capture-btn" class="btn btn-warning">Capture
+                                        <button type="button" id="capture-btn" class="btn btn-custom-capture">Capture
                                             Photo</button>
-                                        <button type="button" id="skip-btn" class="btn btn-secondary">Skip This
+                                        <button type="button" id="skip-btn" class="btn btn-custom-skip">Skip This
                                             Angle</button>
                                     </div>
 
@@ -407,7 +453,7 @@ try {
                                     </div>
 
                                     <div class="mt-4 pt-3 border-top d-flex justify-content-center">
-                                        <button type="button" id="save-faces-btn" class="btn btn-success px-5" disabled
+                                        <button type="button" id="save-faces-btn" class="btn btn-custom-save-info px-5" disabled
                                             onclick="submitFaceData()">
                                             Save Face Registration
                                         </button>
