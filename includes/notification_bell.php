@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Notification Bell Component
  * Include this in any page's top navbar to show notifications
@@ -17,7 +17,7 @@
     <div class="notification-header d-flex justify-content-between align-items-center p-3 border-bottom"
       style="background: #f8f9fa; border-top-left-radius: 8px; border-top-right-radius: 8px;">
       <h6 class="mb-0 fw-bold">Notifications</h6>
-      <button class="btn btn-sm btn-link text-primary" id="markAllRead" style="font-size: 0.75rem;">Mark all as
+      <button class="notif-link border-0 bg-transparent p-0" id="markAllRead" style="font-size: 0.75rem;">Mark all as
         read</button>
     </div>
     <div class="notification-body" id="notificationBody"
@@ -32,21 +32,20 @@
     <div class="notification-footer text-center p-2 border-top"
       style="background: #f8f9fa; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
       <a href="#" onclick="event.preventDefault(); openAllNotificationsModal();"
-        class="small text-primary text-decoration-none">View all notifications</a>
+        class="small notif-link">View all notifications</a>
     </div>
   </div>
 </div>
 
 <!-- All Notifications Modal -->
 <div class="modal fade" id="allNotificationsModal" tabindex="-1" aria-labelledby="allNotificationsModalLabel"
-  aria-hidden="true">
+  aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="allNotificationsModalLabel">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title fw-bold" id="allNotificationsModalLabel">
           <i class="bi bi-bell-fill text-warning me-2"></i>All Notifications
         </h5>
-
       </div>
       <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
         <div id="allNotificationsBody">
@@ -58,9 +57,9 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-outline-danger" id="deleteAllNotifications">
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="deleteAllNotifications">
           <i class="bi bi-trash"></i> Delete All
         </button>
       </div>
@@ -70,7 +69,7 @@
 
 <!-- Delete Notification Confirmation Modal -->
 <div class="modal fade" id="deleteNotificationModal" tabindex="-1" aria-labelledby="deleteNotificationModalLabel"
-  aria-hidden="true">
+  aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-0">
@@ -94,7 +93,7 @@
 
 <!-- Delete All Notifications Confirmation Modal -->
 <div class="modal fade" id="deleteAllNotificationsModal" tabindex="-1"
-  aria-labelledby="deleteAllNotificationsModalLabel" aria-hidden="true">
+  aria-labelledby="deleteAllNotificationsModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-0">
@@ -118,7 +117,7 @@
 </div>
 
 <!-- Rejected Schedule Detail Modal -->
-<div class="modal fade" id="rejectedScheduleDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 10100;">
+<div class="modal fade" id="rejectedScheduleDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 10100;" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content shadow-lg border-0">
       <div class="modal-header" style="background: #fff3cd; border-bottom: 0;">
@@ -172,6 +171,40 @@
 
   .notification-item.unread {
     background-color: #e7f3ff;
+  }
+
+  /* Notification Dropdown Links */
+  .notif-link {
+    color: #007bff !important;
+    text-decoration: underline !important;
+    font-weight: normal !important;
+    background: transparent !important;
+    border: none !important;
+    transition: color 0.15s ease-in-out;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .notif-link:hover {
+    color: #000000ff !important;
+    text-decoration: underline !important;
+  }
+
+  /* Modern Outline Button Hovers */
+  .btn-modern.btn-outline {
+    transition: all 0.2s ease !important;
+  }
+
+  .btn-modern.btn-outline.text-secondary:hover {
+    background-color: #6c757d !important;
+    color: #fff !important;
+    border-color: #6c757d !important;
+  }
+
+  .btn-modern.btn-outline.text-danger:hover {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    border-color: #dc3545 !important;
   }
 </style>
 
@@ -492,7 +525,7 @@
                     <i class="bi bi-clock me-1"></i>${formatTimeAgo(notif.created_at)}
                   </small>
                 </div>
-                <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteNotification(${notif.id})" title="Delete">
+                <button class="btn-modern btn-outline text-danger border-danger btn-sm ms-2" onclick="deleteNotification(${notif.id})" title="Delete">
                   <i class="bi bi-trash"></i>
                 </button>
               </div>

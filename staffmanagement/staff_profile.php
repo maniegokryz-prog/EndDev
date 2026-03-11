@@ -459,6 +459,38 @@ $profilePhoto .= '?v=' . microtime(true);
                 width: 100% !important;
             }
         }
+
+        /* Schedule Delete Button in Grid */
+        .schedule-delete-btn {
+            position: absolute !important;
+            top: 2px !important;
+            right: 5px !important;
+            width: 22px !important;
+            height: 22px !important;
+            background: rgba(0, 0, 0, 0.4) !important;
+            color: #fff !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            transition: all 0.2s ease !important;
+            z-index: 10 !important;
+            line-height: 1 !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .schedule-delete-btn:hover {
+            background: rgba(220, 53, 69, 0.9) !important;
+            transform: scale(1.15) !important;
+            color: #fff !important;
+        }
+
+        .schedule-block {
+            position: relative !important;
+        }
     </style>
 </head>
 
@@ -1017,7 +1049,7 @@ $profilePhoto .= '?v=' . microtime(true);
     <!-- LEAVE REQUEST MODALS -->
 
     <!-- Add Leave Modal -->
-    <div class="modal fade" id="addLeaveModal" tabindex="-1" aria-labelledby="addLeaveLabel" aria-hidden="true">
+    <div class="modal fade" id="addLeaveModal" tabindex="-1" aria-labelledby="addLeaveLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header justify-content-center">
@@ -1071,7 +1103,7 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Pre-Submit Confirmation -->
-    <div class="modal fade" id="leaveDetailsModal" tabindex="-1">
+    <div class="modal fade" id="leaveDetailsModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-center p-4">
                 <div class="modal-body">
@@ -1337,9 +1369,9 @@ $profilePhoto .= '?v=' . microtime(true);
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered edit-schedule-modal-dialog">
             <div class="modal-content border-0 shadow-sm">
-                <div class="modal-header">
-                    <h4 class="modal-title fw-semibold" id="editScheduleModalLabel">Edit Schedule</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header justify-content-center position-relative">
+                    <h4 class="modal-title fw-bold" id="editScheduleModalLabel">Edit Schedule</h4>
+                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
@@ -1430,7 +1462,7 @@ $profilePhoto .= '?v=' . microtime(true);
                             </div>
 
                             <div class="form-row">
-                                <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
+                                <div class="form-group" style="display: flex; gap: 10px; justify-content: center;">
                                     <button type="button" id="add-schedule-btn"
                                         class="btn-modern btn-outline text-success border-success"
                                         style="min-width: 140px;" onclick="addSchedule()">Add
@@ -1474,11 +1506,11 @@ $profilePhoto .= '?v=' . microtime(true);
 
                         </div>
 
-                        <div class="form-actions text-end mt-4">
-                            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                        <div class="form-actions d-flex justify-content-center gap-3 mt-4">
+                            <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4"
                                 style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit"
-                                class="btn-modern btn-outline btn-save text-success border-success px-4"
+                                class="btn-modern btn-outline btn-save text-success border-success fw-bold px-4"
                                 style="min-width: 150px;">
                                 <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'Save Schedule' : 'Submit Request'; ?>
                             </button>
@@ -1619,9 +1651,9 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 text-danger">Confirm Clear All</h5>
                 <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4"
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4"
                         data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4"
                         id="scheduleClearConfirmBtn">Yes, Clear All</button>
                 </div>
             </div>
@@ -1634,8 +1666,8 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
                 <p id="scheduleDeleteConfirmMsg">Are you sure you want to delete this schedule?</p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
                 </div>
             </div>
         </div>
