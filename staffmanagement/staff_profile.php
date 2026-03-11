@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Protect this page - require authentication
 require_once '../auth_guard.php';
 require_once '../navigation.php';
@@ -1430,7 +1430,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
 
     <!-- HELPER MODALS FOR EDIT SCHEDULE (Moved to end for z-index stacking) -->
-    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">No Working Day Selected</h5>
@@ -1443,7 +1443,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Missing Information</h5>
@@ -1456,7 +1456,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
@@ -1469,7 +1469,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Required Fields</h5>
@@ -1483,7 +1483,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
@@ -1497,7 +1497,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <!-- Pending Request Conflict Modal -->
     <div class="modal fade" id="schedulePendingConflictModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"
-        data-bs-backdrop="false">
+       >
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
@@ -1512,7 +1512,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <!-- Admin Warning: Pending Request Exists -->
     <div class="modal fade" id="adminPendingRequestWarningModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"
-        data-bs-backdrop="false">
+       >
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
@@ -1539,7 +1539,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
@@ -1551,7 +1551,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Confirm Clear All</h5>
@@ -1566,7 +1566,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
@@ -1579,7 +1579,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
@@ -1591,7 +1591,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">
@@ -1607,7 +1607,7 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
-    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-info">No Schedules</h5>

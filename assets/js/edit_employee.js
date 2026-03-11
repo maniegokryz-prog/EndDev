@@ -1781,3 +1781,24 @@ function deleteSchedule(scheduleIndex, day) {
         }
     }
 }
+
+// Global nested modal backdrop fix for schedule alerts
+document.addEventListener('show.bs.modal', function(event) {
+    const modalEl = event.target;
+    // Check if it's one of the schedule warning/success modals, but NOT the main editScheduleModal
+    if (modalEl.id && modalEl.id.startsWith('schedule') && modalEl.id !== 'editScheduleModal') {
+        const targetZIndex = 20000;
+        modalEl.style.setProperty('z-index', targetZIndex, 'important');
+        
+        // Use a tiny timeout to ensure Bootstrap has appended the .modal-backdrop to the DOM
+        setTimeout(() => {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 0) {
+                // The newest backdrop is appended last
+                const latestBackdrop = backdrops[backdrops.length - 1];
+                // Put it immediately behind the modal
+                latestBackdrop.style.setProperty('z-index', targetZIndex - 1, 'important');
+            }
+        }, 10);
+    }
+});

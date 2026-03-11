@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Protect this page - require authentication
 require_once '../auth_guard.php';
 require_once '../navigation.php';
@@ -1290,18 +1290,18 @@ $schedules = $viewer->getSchedules();
 
                       // Priority check: Pending requests block new submissions
                       if (pendingRequests.length > 0) {
-                        limitText.innerHTML = '<strong>⏳ You have a pending leave request.</strong><br>Please wait for admin approval before submitting another request.';
+                        limitText.innerHTML = '<strong>â³ You have a pending leave request.</strong><br>Please wait for admin approval before submitting another request.';
                         limitInfo.className = 'alert alert-warning mb-3';
                       }
                       // Check approved monthly limit
                       else if (approvedThisMonth.length >= 2) {
-                        limitText.innerHTML = '<strong>❌ Monthly limit reached.</strong><br>You have used 2 of 2 approved leave requests this month.';
+                        limitText.innerHTML = '<strong>âŒ Monthly limit reached.</strong><br>You have used 2 of 2 approved leave requests this month.';
                         limitInfo.className = 'alert alert-danger mb-3';
                       }
                       // Show remaining available requests
                       else {
                         const remaining = 2 - approvedThisMonth.length;
-                        limitText.innerHTML = `<strong>✅ ${remaining} of 2 leave requests available</strong> this month.<br><small>Note: You can only submit one request at a time.</small>`;
+                        limitText.innerHTML = `<strong>âœ… ${remaining} of 2 leave requests available</strong> this month.<br><small>Note: You can only submit one request at a time.</small>`;
                         limitInfo.className = 'alert alert-success mb-3';
                       }
                     }
@@ -2240,7 +2240,7 @@ $schedules = $viewer->getSchedules();
 
                 const attendanceModal = new bootstrap.Modal(attendanceModalEl);
 
-                // 🔹 Function to fetch and populate schedule times for a date
+                // ðŸ”¹ Function to fetch and populate schedule times for a date
                 async function populateScheduleTimes(dateInput, timeInInput, timeOutInput) {
                   const selectedDate = dateInput.value;
 
@@ -2334,7 +2334,7 @@ $schedules = $viewer->getSchedules();
 
 
 
-                // 🔹 Function to attach date change listener to a row
+                // ðŸ”¹ Function to attach date change listener to a row
                 function attachDateListener(row) {
                   const dateInput = row.querySelector('input[type="date"]');
                   const timeInputs = row.querySelectorAll('input[type="time"]');
@@ -2358,7 +2358,7 @@ $schedules = $viewer->getSchedules();
                   }
                 }
 
-                // 🔹 Step 1: Open Manual Attendance and setup listeners
+                // ðŸ”¹ Step 1: Open Manual Attendance and setup listeners
                 openAttendanceBtn.addEventListener('click', () => {
                   attendanceModal.show();
 
@@ -2369,7 +2369,7 @@ $schedules = $viewer->getSchedules();
                   }
                 });
 
-                // 🔹 Step 2: Add another day
+                // ðŸ”¹ Step 2: Add another day
                 addDayBtn.addEventListener('click', () => {
                   const newRow = document.createElement('div');
                   newRow.classList.add('attendance-row', 'row', 'mb-3', 'align-items-start');
@@ -2401,7 +2401,7 @@ $schedules = $viewer->getSchedules();
                   attachDateListener(newRow);
                 });
 
-                // 🔹 Step 3: Handle Row Actions (Remove / Clear)
+                // ðŸ”¹ Step 3: Handle Row Actions (Remove / Clear)
                 attendanceContainer.addEventListener('click', (e) => {
                   // Remove
                   if (e.target.closest('.removeRow')) {
@@ -2418,7 +2418,7 @@ $schedules = $viewer->getSchedules();
                   }
                 });
 
-                // 🔹 Step 4: Save attendance records
+                // ðŸ”¹ Step 4: Save attendance records
                 saveBtn.addEventListener('click', async () => {
                   const rows = attendanceContainer.querySelectorAll('.attendance-row');
                   const records = [];
@@ -2778,7 +2778,7 @@ $schedules = $viewer->getSchedules();
                   console.log(`  Show Edit: ${showEditButton}`);
 
                   // Custom time text for visits
-                  let timeDisplay = `Time In: ${timeIn} — Time Out: ${timeOut}`;
+                  let timeDisplay = `Time In: ${timeIn} â€” Time Out: ${timeOut}`;
                   if (record.is_visit) {
                     timeDisplay = `Visit Time: ${timeIn}`;
                   }
@@ -3724,7 +3724,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleNoWorkDayModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
@@ -3737,7 +3737,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleMissingTimeModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
@@ -3750,7 +3750,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleInvalidTimeModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
@@ -3763,7 +3763,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleFacultyMissingModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-warning">Required Fields</h5>
@@ -3777,7 +3777,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
@@ -3786,7 +3786,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
@@ -3795,7 +3795,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-danger">Confirm Clear All</h5>
@@ -3810,7 +3810,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
@@ -3823,7 +3823,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
@@ -3832,7 +3832,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleSavedSuccessModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-success">Schedules Saved</h5>
@@ -3860,7 +3860,7 @@ $schedules = $viewer->getSchedules();
       </div>
     </div>
 
-    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal fade" id="scheduleNoDataModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
           <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
