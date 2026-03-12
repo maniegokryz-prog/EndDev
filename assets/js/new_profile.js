@@ -490,12 +490,12 @@ function renderDTRList(records) {
                     ${record.hours_worked !== 'N/A' && record.hours_worked ? ` <span class="text-muted text-nowrap" style="font-size: 0.85em;">(Credited: ${record.hours_worked})</span>` : ''}
                 </div>
                 ${window.isAdmin ? `
-                <div class="mt-1 d-flex gap-2 align-items-center">
-                    <button class="btn btn-sm btn-link p-0 text-primary" style="font-size: 0.8em;" onclick='openEditAttendanceModal(${JSON.stringify(record)})'>
+                <div class="mt-2 d-flex gap-2 align-items-center">
+                    <button class="btn-modern btn-outline btn-sm text-success border-success fw-bold px-3 py-1" onclick='openEditAttendanceModal(${JSON.stringify(record)})'>
                         <i class="bi bi-pencil-square"></i> Edit
                     </button>
                     ${(record.status && record.status.toLowerCase() === 'visit') ? `
-                    <button class="btn btn-sm btn-link p-0 text-success" style="font-size: 0.8em;" onclick="confirmSetOffset(${record.id})">
+                    <button class="btn-modern btn-outline btn-sm text-success border-success fw-bold px-3 py-1" onclick="confirmSetOffset(${record.id})">
                         <i class="bi bi-check-circle-fill"></i> Set as Offset
                     </button>` : ''}
                 </div>` : ''}

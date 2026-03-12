@@ -368,6 +368,12 @@ $profilePhoto .= '?v=' . microtime(true);
             border-color: #ffc107 !important;
         }
 
+        .btn-modern.btn-outline.text-primary:hover {
+            background-color: #0d6efd !important;
+            color: #fff !important;
+            border-color: #0d6efd !important;
+        }
+
 
         /* Responsive Fixes for Modal */
         @media (max-width: 768px) {
@@ -1054,7 +1060,6 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content">
                 <div class="modal-header justify-content-center">
                     <h5 class="modal-title fw-bold">Add Scheduled Leave</h5>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <label class="form-label">Type:</label>
@@ -1268,11 +1273,11 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Attendance Manual Modal -->
-    <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content p-3">
-                <div class="modal-header">
-                    <h5 class="modal-title">Manual Attendance Record</h5>
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title fw-bold">Manual Attendance Record</h5>
                 </div>
                 <div class="modal-body">
                     <div id="attendanceContainer">
@@ -1310,12 +1315,11 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Edit Attendance Modal -->
-    <div class="modal fade" id="editAttendanceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="editAttendanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-3">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Attendance</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header justify-content-center position-relative">
+                    <h5 class="modal-title fw-bold">Edit Attendance</h5>
                 </div>
                 <div class="modal-body">
                     <form id="editAttendanceForm">
@@ -1337,24 +1341,26 @@ $profilePhoto .= '?v=' . microtime(true);
                         <div id="editAttError" class="alert alert-danger d-none p-2 mb-3 small"></div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="btnSaveEditAttendance">Save Changes</button>
+                <div class="modal-footer justify-content-center gap-3 mt-3">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" id="btnSaveEditAttendance">Save Changes</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="text-success">Attendance Saved</h5>
-                <p id="attendanceSuccessMessage">Records saved successfully.</p><button class="btn btn-primary mt-3"
-                    data-bs-dismiss="modal">OK</button>
+                <p id="attendanceSuccessMessage">Records saved successfully.</p>
+                <div class="mt-3">
+                    <button class="btn-modern btn-outline text-success border-success fw-bold px-4" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="attendanceErrorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="attendanceErrorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="text-danger">Save Failed</h5>
@@ -1366,12 +1372,11 @@ $profilePhoto .= '?v=' . microtime(true);
 
 
     <div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel"
-        aria-hidden="true">
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered edit-schedule-modal-dialog">
             <div class="modal-content border-0 shadow-sm">
                 <div class="modal-header justify-content-center position-relative">
                     <h4 class="modal-title fw-bold" id="editScheduleModalLabel">Edit Schedule</h4>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">

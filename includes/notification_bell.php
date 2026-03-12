@@ -58,8 +58,8 @@
         </div>
       </div>
       <div class="modal-footer justify-content-center">
-        <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="deleteAllNotifications">
+        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-outline-danger px-4" id="deleteAllNotifications">
           <i class="bi bi-trash"></i> Delete All
         </button>
       </div>
@@ -513,22 +513,20 @@
             : '';
 
           return `
-          <div class="card mb-2" id="notif-${notif.id}">
-            <div class="card-body p-3">
-              <div class="d-flex align-items-start">
-                <div class="flex-shrink-0 me-3" style="font-size: 2rem;">
-                  ${iconHtml}
-                </div>
-                <div class="flex-grow-1">
-                  <p class="mb-1">${notif.message}${unreadBadge}</p>
-                  <small class="text-muted">
-                    <i class="bi bi-clock me-1"></i>${formatTimeAgo(notif.created_at)}
-                  </small>
-                </div>
-                <button class="btn-modern btn-outline text-danger border-danger btn-sm ms-2" onclick="deleteNotification(${notif.id})" title="Delete">
-                  <i class="bi bi-trash"></i>
-                </button>
+          <div class="border-bottom py-3 px-2" id="notif-${notif.id}">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0 me-3" style="font-size: 1.5rem;">
+                ${iconHtml}
               </div>
+              <div class="flex-grow-1">
+                <p class="mb-1" style="font-size: 0.95rem;">${notif.message}${unreadBadge}</p>
+                <small class="text-muted" style="font-size: 0.8rem;">
+                  <i class="bi bi-clock me-1"></i>${formatTimeAgo(notif.created_at)}
+                </small>
+              </div>
+              <button class="btn btn-outline-danger btn-sm ms-2" onclick="deleteNotification(${notif.id})" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
             </div>
           </div>
         `;

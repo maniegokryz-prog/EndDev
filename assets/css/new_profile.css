@@ -156,6 +156,13 @@ body {
     background: #f8fafc;
     border-radius: 8px;
     border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.dtr-item:hover {
+    background: #edf2f7;
+    transform: translateX(4px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .dtr-item.present {

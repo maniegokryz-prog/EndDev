@@ -198,10 +198,23 @@ if ($id) {
 
 <body>
   <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
-    <div class="menu-toggle">
-      <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
+
+    <!-- Left: Menu & Welcome -->
+    <div class="d-flex align-items-center">
+      <div class="menu-toggle me-3">
+        <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
+      </div>
+      <div class="welcome-message d-none d-md-block">
+        <h5 class="mb-0 text-white">Welcome,
+          <?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?>!
+        </h5>
+      </div>
     </div>
-    <?php include '../includes/notification_bell.php'; ?>
+
+    <!-- Right: Sync Status & Notifications -->
+    <div class="d-flex align-items-center">
+      <?php include '../includes/notification_bell.php'; ?>
+    </div>
   </div>
 
   <!-- Sidebar -->
