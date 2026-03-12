@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Protect this page - require authentication
 require_once '../auth_guard.php';
 require_once '../navigation.php';
@@ -559,6 +559,36 @@ $schedules = $viewer->getSchedules();
     .dtr-item i[style*="color"] {
       color: inherit !important;
     }
+
+    /* Modern Outline Button Styles */
+    .btn-modern {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .btn-outline {
+      background: transparent !important;
+    }
+
+    .btn-outline.text-success {
+      color: #198754 !important;
+      border-color: #198754 !important;
+    }
+
+    .btn-outline.text-success:hover {
+      background: #198754 !important;
+      color: #fff !important;
+      border-color: #198754 !important;
+    }
   </style>
 </head>
 
@@ -768,7 +798,7 @@ $schedules = $viewer->getSchedules();
               <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Save Successful</h5>
                 <p>Your changes have been saved successfully.</p>
-                <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button>
+                <button type="button" class="btn-modern btn-outline text-success border-success mt-3" data-bs-dismiss="modal">OK</button>
               </div>
             </div>
           </div>

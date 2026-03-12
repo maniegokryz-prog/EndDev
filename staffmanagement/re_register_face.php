@@ -526,11 +526,9 @@ else {
                     </div>
                     <h3 class="mb-2 fw-bold text-dark">Success!</h3>
                     <p class="text-muted mb-4">Face data has been successfully updated.</p>
-                    <p class="small text-muted">Redirecting to profile in <span id="countdown">3</span>s...</p>
-
                     <a href="staff_profile.php?id=<?php echo htmlspecialchars($employee_id); ?>"
-                        class="btn btn-primary px-4 rounded-pill">
-                        Return to Profile Now
+                        class="btn-modern btn-outline text-primary border-primary px-4 rounded-pill">
+                        return to the profile
                     </a>
                 </div>
             </div>
@@ -660,17 +658,6 @@ else {
             const modalEl = document.getElementById('successModal');
             const modal = new bootstrap.Modal(modalEl);
             modal.show();
-
-            let seconds = 3;
-            const countdownEl = document.getElementById('countdown');
-            const interval = setInterval(() => {
-                seconds--;
-                if (countdownEl) countdownEl.textContent = seconds;
-                if (seconds <= 0) {
-                    clearInterval(interval);
-                    window.location.href = 'staff_profile.php?id=' + window.currentFaceEmployeeId;
-                }
-            }, 1000);
         }
 
         function showLoading(msg) {

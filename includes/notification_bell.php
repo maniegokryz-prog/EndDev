@@ -57,9 +57,9 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-outline-danger px-4" id="deleteAllNotifications">
+      <div class="modal-footer justify-content-center gap-2">
+        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4" id="deleteAllNotifications">
           <i class="bi bi-trash"></i> Delete All
         </button>
       </div>
@@ -72,18 +72,18 @@
   aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="deleteNotificationModalLabel">
+      <div class="modal-header border-0 justify-content-center">
+        <h5 class="modal-title fw-bold" id="deleteNotificationModalLabel">
           <i class="bi bi-exclamation-triangle text-warning me-2"></i>Delete Notification
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body text-center">
         <p class="mb-0">Are you sure you want to delete this notification? This action cannot be undone.</p>
       </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirmDeleteNotification">
+      <div class="modal-footer border-0 justify-content-center gap-2">
+        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4" id="confirmDeleteNotification">
           <i class="bi bi-trash"></i> Delete
         </button>
       </div>
@@ -96,19 +96,19 @@
   aria-labelledby="deleteAllNotificationsModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="deleteAllNotificationsModalLabel">
+      <div class="modal-header border-0 justify-content-center">
+        <h5 class="modal-title fw-bold" id="deleteAllNotificationsModalLabel">
           <i class="bi bi-exclamation-triangle text-danger me-2"></i>Delete All Notifications
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body text-center">
         <p class="mb-0"><strong>Warning:</strong> This will permanently delete ALL your notifications. This action
           cannot be undone.</p>
       </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirmDeleteAllNotifications">
+      <div class="modal-footer border-0 justify-content-center gap-2">
+        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4" id="confirmDeleteAllNotifications">
           <i class="bi bi-trash"></i> Delete All
         </button>
       </div>
@@ -146,8 +146,8 @@
           <div id="rejectedScheduleCalendarView" style="overflow-x: auto;"></div>
         </div>
       </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -190,11 +190,38 @@
     text-decoration: underline !important;
   }
 
-  /* Modern Outline Button Hovers */
-  .btn-modern.btn-outline {
+  /* Modern Button Base */
+  .btn-modern {
+    padding: 0.5rem 1rem !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
     transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    white-space: nowrap !important;
+    border: 1px solid transparent !important;
+    cursor: pointer !important;
   }
 
+  /* Modern Outline Button Hovers */
+  .btn-modern.btn-outline {
+    background-color: transparent !important;
+  }
+
+  /* Base states for the specific colors */
+  .btn-modern.btn-outline.text-secondary {
+    border-color: #6c757d !important;
+    color: #6c757d !important;
+  }
+
+  .btn-modern.btn-outline.text-danger {
+    border-color: #dc3545 !important;
+    color: #dc3545 !important;
+  }
+
+  /* Hover states */
   .btn-modern.btn-outline.text-secondary:hover {
     background-color: #6c757d !important;
     color: #fff !important;
@@ -524,8 +551,10 @@
                   <i class="bi bi-clock me-1"></i>${formatTimeAgo(notif.created_at)}
                 </small>
               </div>
-              <button class="btn btn-outline-danger btn-sm ms-2" onclick="deleteNotification(${notif.id})" title="Delete">
-                <i class="bi bi-trash"></i>
+              <button class="btn-modern btn-outline text-danger border-danger ms-2" 
+                      style="width: 32px !important; height: 32px !important; min-width: 32px !important; padding: 0 !important; border-radius: 4px !important;"
+                      onclick="deleteNotification(${notif.id})" title="Delete">
+                <i class="bi bi-trash" style="font-size: 14px;"></i>
               </button>
             </div>
           </div>

@@ -974,7 +974,7 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-success">Save Successful</h5>
                 <p>Your changes have been saved successfully.</p>
-                <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">OK</button>
+                <button type="button" class="btn-modern btn-outline text-success border-success mt-3" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
     </div>
