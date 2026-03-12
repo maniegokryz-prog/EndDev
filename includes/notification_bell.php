@@ -76,7 +76,6 @@
         <h5 class="modal-title fw-bold" id="deleteNotificationModalLabel">
           <i class="bi bi-exclamation-triangle text-warning me-2"></i>Delete Notification
         </h5>
-        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-center">
         <p class="mb-0">Are you sure you want to delete this notification? This action cannot be undone.</p>
@@ -100,7 +99,6 @@
         <h5 class="modal-title fw-bold" id="deleteAllNotificationsModalLabel">
           <i class="bi bi-exclamation-triangle text-danger me-2"></i>Delete All Notifications
         </h5>
-        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-center">
         <p class="mb-0"><strong>Warning:</strong> This will permanently delete ALL your notifications. This action
@@ -124,7 +122,6 @@
         <h5 class="modal-title fw-bold" style="color: #664d03;">
           <i class="bi bi-x-circle me-2 text-danger"></i>Schedule Request Rejected
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-4">
         <!-- Remarks -->
@@ -148,6 +145,25 @@
       </div>
       <div class="modal-footer border-0 justify-content-center">
         <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notification Error/Info Modal -->
+<div class="modal fade" id="notificationErrorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 shadow border-0">
+      <div class="modal-header border-0 justify-content-center">
+        <h5 class="modal-title fw-bold text-danger" id="notificationErrorModalLabel">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>Error
+        </h5>
+      </div>
+      <div class="modal-body text-center">
+        <p id="notificationErrorMessage" class="mb-0 fs-6">An error occurred while processing your request.</p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-5" data-bs-dismiss="modal">OK</button>
       </div>
     </div>
   </div>
@@ -201,7 +217,7 @@
     justify-content: center !important;
     gap: 0.5rem !important;
     white-space: nowrap !important;
-    border: 1px solid transparent !important;
+    border: 1px solid transparent;
     cursor: pointer !important;
   }
 
@@ -221,6 +237,21 @@
     color: #dc3545 !important;
   }
 
+  .btn-modern.btn-outline.text-success {
+    border-color: #198754 !important;
+    color: #198754 !important;
+  }
+
+  .btn-modern.btn-outline.text-primary {
+    border-color: #0d6efd !important;
+    color: #0d6efd !important;
+  }
+
+  .btn-modern.btn-outline.text-warning {
+    border-color: #ffc107 !important;
+    color: #ffc107 !important;
+  }
+
   /* Hover states */
   .btn-modern.btn-outline.text-secondary:hover {
     background-color: #6c757d !important;
@@ -232,6 +263,34 @@
     background-color: #dc3545 !important;
     color: #fff !important;
     border-color: #dc3545 !important;
+  }
+
+  .btn-modern.btn-outline.text-success:hover {
+    background-color: #198754 !important;
+    color: #fff !important;
+    border-color: #198754 !important;
+  }
+
+  .btn-modern.btn-outline.text-primary:hover {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+    border-color: #0d6efd !important;
+  }
+
+  .btn-modern.btn-outline.text-warning:hover {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+    border-color: #ffc107 !important;
+  }
+
+  /* Disabled state */
+  .btn-modern:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    background-color: #e9ecef !important;
+    border-color: #dee2e6 !important;
+    color: #6c757d !important;
   }
 </style>
 
@@ -251,8 +310,28 @@
       const notificationCount = document.getElementById('notificationCount');
       const markAllReadBtn = document.getElementById('markAllRead');
 
+      // Helper to show modern error modal instead of browser alert
+      window.showNotificationError = function(message, title = 'Error') {
+        const modalEl = document.getElementById('notificationErrorModal');
+        if (!modalEl) return;
+        
+        // Move to body if not already there
+        if (modalEl.parentElement !== document.body) {
+          document.body.appendChild(modalEl);
+        }
+
+        const titleEl = document.getElementById('notificationErrorModalLabel');
+        const messageEl = document.getElementById('notificationErrorMessage');
+        
+        if (titleEl) titleEl.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i>${title}`;
+        if (messageEl) messageEl.textContent = message;
+        
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+      };
+
       // Move modals to body to ensure correct stacking context (fixes backdrop issues)
-      ['allNotificationsModal', 'deleteNotificationModal', 'deleteAllNotificationsModal'].forEach(id => {
+      ['allNotificationsModal', 'deleteNotificationModal', 'deleteAllNotificationsModal', 'notificationErrorModal'].forEach(id => {
         const el = document.getElementById(id);
         if (el && el.parentElement !== document.body) {
           document.body.appendChild(el);
@@ -517,8 +596,10 @@
         }
 
         const notifications = result.data || [];
+        const deleteAllBtn = document.getElementById('deleteAllNotifications');
 
         if (notifications.length === 0) {
+          if (deleteAllBtn) deleteAllBtn.disabled = true;
           allNotificationsBody.innerHTML = `
           <div class="text-center py-5 text-muted">
             <i class="bi bi-bell-slash" style="font-size: 3rem;"></i>
@@ -527,6 +608,8 @@
         `;
           return;
         }
+
+        if (deleteAllBtn) deleteAllBtn.disabled = false;
 
         allNotificationsBody.innerHTML = notifications.map(notif => {
           let iconHtml = '<i class="bi bi-file-earmark-text" style="color: #0d6832;"></i>';
@@ -621,11 +704,11 @@
             }, 500);
           }
         } else {
-          alert('Failed to delete notification: ' + (result.error || 'Unknown error'));
+          showNotificationError('Failed to delete notification: ' + (result.error || 'Unknown error'));
         }
       } catch (error) {
         console.error('Error deleting notification:', error);
-        alert('Failed to delete notification');
+        showNotificationError('Failed to delete notification');
       } finally {
         notificationIdToDelete = null;
       }
@@ -675,11 +758,11 @@
           `;
           }
         } else {
-          alert('Failed to delete notifications: ' + (result.error || 'Unknown error'));
+          showNotificationError('Failed to delete notifications: ' + (result.error || 'Unknown error'));
         }
       } catch (error) {
         console.error('Error deleting all notifications:', error);
-        alert('Failed to delete all notifications');
+        showNotificationError('Failed to delete all notifications');
       }
     });
 

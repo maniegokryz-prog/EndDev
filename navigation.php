@@ -105,36 +105,63 @@ function renderNavigation($currentPage = '')
         $currentScript = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
     }
 
-    foreach ($links as $link) {
-        $activeClass = '';
+    // -------------------------------------------------------------------------
+    // DETERMINE THE SINGLE ACTIVE LINK
+    // -------------------------------------------------------------------------
+    $activeIndex = -1;
+    $currentPage = trim($currentPage);
+    
+    // 1. Precise Label Match (Case-Insensitive)
+    if ($currentPage !== '') {
+        foreach ($links as $index => $link) {
+            if (strcasecmp(trim($link['label']), $currentPage) === 0) {
+                $activeIndex = $index;
+                break;
+            }
+        }
+    }
 
-        // 1) Try filename-based matching (most robust)
-        if (!empty($link['url']) && $link['url'] !== '#') {
-            $parsedUrl = parse_url($link['url'], PHP_URL_PATH);
-            if ($parsedUrl !== null) {
-                $linkFile = basename($parsedUrl);
-                if ($linkFile !== '' && $currentScript !== '' && strcasecmp($linkFile, $currentScript) === 0) {
-                    $activeClass = 'active';
+    // 2. Exact Filename Match
+    if ($activeIndex === -1 && $currentScript !== '') {
+        foreach ($links as $index => $link) {
+            if (!empty($link['url']) && $link['url'] !== '#') {
+                $parsedUrl = parse_url($link['url'], PHP_URL_PATH);
+                if ($parsedUrl !== null) {
+                    $linkFile = basename($parsedUrl);
+                    if ($linkFile !== '' && strcasecmp($linkFile, $currentScript) === 0) {
+                        // For staff_profile.php, we need to be careful. 
+                        // If we are on staff_profile but $currentPage was something else that didn't match,
+                        // this Filename match is a good fallback.
+                        $activeIndex = $index;
+                        break;
+                    }
                 }
             }
         }
+    }
 
-        // 2) Fallback: allow case-insensitive partial label matching
-        if ($activeClass === '' && trim($currentPage) !== '') {
-            $cmpCurrent = strtolower(trim($currentPage));
+    // 3. Partial Label Match (Fuzzy Fallback)
+    if ($activeIndex === -1 && $currentPage !== '') {
+        $cmpCurrent = strtolower($currentPage);
+        foreach ($links as $index => $link) {
             $cmpLabel = strtolower(trim($link['label']));
             if (strpos($cmpLabel, $cmpCurrent) !== false || strpos($cmpCurrent, $cmpLabel) !== false) {
-                // Prevent 'Settings' and 'Sync Settings' from cross-matching
-                if (
-                    ($cmpCurrent === 'settings' && $cmpLabel === 'sync settings') ||
-                    ($cmpCurrent === 'sync settings' && $cmpLabel === 'settings')
-                ) {
-                    // Do not mark as active
-                } else {
-                    $activeClass = 'active';
+                // Exclusion logic for settings vs sync settings
+                if (($cmpCurrent === 'settings' && $cmpLabel === 'sync settings') ||
+                    ($cmpCurrent === 'sync settings' && $cmpLabel === 'settings')) {
+                    continue;
                 }
+                $activeIndex = $index;
+                break;
             }
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // RENDER LINKS
+    // -------------------------------------------------------------------------
+    foreach ($links as $index => $link) {
+        $activeClass = ($index === $activeIndex) ? 'active' : '';
 
         // Check if link has onclick attribute
         $onclickAttr = isset($link['onclick']) ? 'onclick="' . htmlspecialchars($link['onclick'], ENT_QUOTES, 'UTF-8') . '"' : '';

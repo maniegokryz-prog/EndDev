@@ -16,3 +16,7 @@
 [2026-02-03 01:34:18] [ACTIVITY] Employees restored successfully - Count: 1
 [2026-03-11 12:43:43] [ACTIVITY] Password verified for restore - System Admin: admin (ID: 1)
 [2026-03-11 12:43:43] [ACTIVITY] Employees restored successfully - Count: 1
+[2026-03-12 18:28:06] [ACTIVITY] Password verified for deletion - System Admin: admin (ID: 1)
+[2026-03-12 18:28:06] [ACTIVITY] Employees deleted permanently - Count: 1
+[2026-03-12 18:28:29] [ACTIVITY] Password verified for restore - System Admin: admin (ID: 1)
+[2026-03-12 18:28:29] [ACTIVITY] Employees restored successfully - Count: 1

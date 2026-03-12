@@ -18,7 +18,7 @@ $updateError = $_SESSION['update_error'] ?? '';
 if (isset($_SESSION['update_error'])) {
     unset($_SESSION['update_error']);
 }
-$isAdmin = isset($currentUser['role']) && $currentUser['role'] === 'admin';
+$isAdmin = isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin';
 
 // CONFIGURATION: Set to true when deploying to IONOS server to disable editing
 $is_ionos_server = false;
@@ -297,6 +297,13 @@ $profilePhoto .= '?v=' . microtime(true);
     <script src="../assets/vendor/chartjs/chart.umd.min.js"></script>
     <style>
         /* Force button sizing for edit schedule modal - DESKTOP DEFAULT */
+        /* Custom gray hover for specific buttons */
+        .btn-gray-hover:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: #fff !important;
+        }
+
         #editScheduleModal .add-schedule-btn,
         #editScheduleModal .edit-schedule-btn,
         #editScheduleModal .btn-cancel {
@@ -504,8 +511,10 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <!-- Top Navbar -->
     <div class="top-navbar d-flex justify-content-between align-items-center p-2 shadow-sm">
-        <div class="menu-toggle">
-            <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn" onclick="toggleSidebar()"></i>
+        <div class="d-flex align-items-center">
+            <div class="menu-toggle me-3">
+                <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn" onclick="toggleSidebar()"></i>
+            </div>
         </div>
         <?php include '../includes/notification_bell.php'; ?>
     </div>
@@ -520,7 +529,11 @@ $profilePhoto .= '?v=' . microtime(true);
             <small class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User')); ?></small>
         </div>
         <nav class="nav flex-column px-2">
-            <?php renderNavigation($isAdmin ? 'Staff Management' : 'My Info'); ?>
+            <?php 
+                $isOwnProfile = (isset($currentUser['employee_id']) && isset($employee['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']);
+                $navLabel = $isOwnProfile ? ($isAdmin ? 'My Profile' : 'My Info') : ($isAdmin ? 'Staff Management' : 'My Info');
+                renderNavigation($navLabel); 
+            ?>
         </nav>
     </div>
 
@@ -550,20 +563,19 @@ $profilePhoto .= '?v=' . microtime(true);
 
             <?php if ($hasPendingRequest): ?>
                 <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']): ?>
-                    <div class="alert alert-warning d-flex align-items-center mb-4 border-0 shadow-sm flex-wrap" role="alert">
-                        <i class="bi bi-hourglass-split fs-4 me-3"></i>
-                        <div class="flex-grow-1 mb-2 mb-md-0">
-                            <strong>Pending Schedule Request:</strong> You have submitted a schedule edit request that is
-                            currently waiting for Admin approval. Your previous active schedule is shown below until the new one
-                            is approved.
+                    <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex align-items-center justify-content-center flex-wrap gap-3 px-4 py-3" role="alert">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-circle fs-4 m-0 text-warning-emphasis"></i>
+                            <div class="lh-sm m-0">
+                                <strong>Pending Schedule Request:</strong> You have submitted a schedule edit request that is
+                                currently waiting for Admin approval. Your previous active schedule is shown below until the new one is approved.
+                            </div>
                         </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-dark fw-semibold" data-bs-toggle="modal"
+                        <button class="btn btn-dark btn-sm fw-semibold text-nowrap m-0 px-4 py-2 btn-gray-hover" data-bs-toggle="modal"
                                 data-bs-target="#viewPendingRequestModal"
                                 onclick="try { renderPendingRequestCalendar(); } catch(e) { alert('Function error: ' + e.message); console.error(e); }">
                                 <i class="bi bi-eye"></i> View Request
-                            </button>
-                        </div>
+                        </button>
                     </div>
                 <?php elseif ($isAdmin): ?>
                     <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex align-items-center justify-content-center flex-wrap gap-3 px-4 py-3"
@@ -576,7 +588,7 @@ $profilePhoto .= '?v=' . microtime(true);
                             </div>
                         </div>
                         <a href="review_schedule_request.php?id=<?php echo $pendingRequestId; ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>"
-                            class="btn btn-dark btn-sm fw-semibold text-nowrap m-0 px-4 py-2">
+                            class="btn btn-dark btn-sm fw-semibold text-nowrap m-0 px-4 py-2 btn-gray-hover">
                             <i class="bi bi-pencil-square"></i> Review Request
                         </a>
                     </div>
@@ -1603,7 +1615,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <p id="schedulePendingConflictMsg">You already have a pending schedule request. Please wait for it to be
                     approved or rejected, or cancel it before submitting a new one.</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Understood</button>
+                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" data-bs-dismiss="modal">Understood</button>
                 </div>
             </div>
         </div>
@@ -1628,10 +1640,10 @@ $profilePhoto .= '?v=' . microtime(true);
                     }
                 </style>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                     <?php if (isset($pendingRequestId) && $pendingRequestId): ?>
                         <a href="review_schedule_request.php?id=<?php echo urlencode($pendingRequestId); ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>"
-                            class="btn btn-danger">View Request</a>
+                            class="btn-modern btn-outline text-danger border-danger fw-bold px-4">View Request</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1719,25 +1731,22 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- View Pending Request Modal -->
-    <div class="modal fade" id="viewPendingRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal fade" id="viewPendingRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-warning bg-opacity-10 border-bottom-0 pb-0">
-                    <h5 class="fw-bold mb-0" style="color: #664d03;"><i class="bi bi-hourglass-split me-2"></i>Pending
-                        Schedule Request</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content shadow-lg border-0 rounded-4">
+                <div class="modal-header bg-warning bg-opacity-10 border-bottom-0 pb-0 justify-content-center">
+                    <h5 class="fw-bold mb-0 text-center" style="color: #664d03;"><i class="bi bi-hourglass-split me-2"></i>Pending Schedule Request</h5>
                 </div>
-                <div class="modal-body p-4 pt-3">
-                    <p class="text-muted small mb-3">This is the schedule you requested. It is currently waiting for
-                        admin approval.</p>
+                <div class="modal-body p-4 pt-3 text-center">
+                    <p class="text-muted small mb-3">This is the schedule you requested. It is currently waiting for admin approval.</p>
                     <div class="table-responsive" style="overflow-x: auto; padding-bottom: 15px;">
                         <div id="pending-request-calendar-view" class="schedule-calendar-preview"
                             style="min-height: 200px;"></div>
                     </div>
                 </div>
-                <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-danger fw-semibold"
+                <div class="modal-footer border-top-0 pt-0 justify-content-center gap-2">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4 fw-bold" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold"
                         onclick="cancelPendingRequest(<?php echo $pendingRequestId; ?>)">
                         <i class="bi bi-x-circle"></i> Cancel Request
                     </button>
@@ -1831,15 +1840,15 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <!-- Cancel Pending Request Confirm Modal -->
     <div class="modal fade" id="cancelPendingRequestConfirmModal" tabindex="-1" aria-hidden="true"
-        style="z-index: 1060;">
+        style="z-index: 1060;" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
+            <div class="modal-content p-4 text-center rounded-4 shadow border-0">
                 <h5 class="fw-bold mb-3 text-danger">Confirm Cancel</h5>
                 <p id="cancelPendingRequestConfirmMsg">Are you sure you want to cancel this pending schedule request?
                 </p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep It</button>
-                    <button type="button" class="btn btn-danger" id="cancelPendingRequestConfirmBtn">Yes, Cancel
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4 fw-bold" data-bs-dismiss="modal">No, Keep It</button>
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold" id="cancelPendingRequestConfirmBtn">Yes, Cancel
                         Request</button>
                 </div>
             </div>
@@ -1986,18 +1995,18 @@ $profilePhoto .= '?v=' . microtime(true);
         };
     </script>
     <!-- Logout Modal -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center">
-                    <h5 class="mb-3">Confirm Logout</h5>
-                    <p class="mb-0">Are you sure you want to log out?</p>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-body text-center py-4">
+                    <h5 class="fw-bold mb-3">Confirm Logout</h5>
+                    <p class="mb-0 fs-6">Are you sure you want to log out?</p>
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
                     <form id="logoutForm" method="POST" action="../dashboard/logout.php" style="display:inline;">
                         <input type="hidden" name="confirm_logout" value="1">
-                        <button type="submit" class="btn btn-danger">Yes, Log out</button>
+                        <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
                     </form>
                 </div>
             </div>

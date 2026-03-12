@@ -418,4 +418,11 @@
 
    .modal-backdrop {
      z-index: 1900 !important;
-   }
+   }/* Premium Buttons */
+.btn-modern { border-radius: 8px !important; padding: 10px 24px !important; font-weight: 600 !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; border: 2px solid transparent !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; text-decoration: none !important; } .btn-outline { background: transparent !important; } .btn-outline.text-success.border-success:hover { background-color: #198754 !important; color: white !important; } .btn-outline.text-primary.border-primary:hover { background-color: #0d6efd !important; color: white !important; } .btn-outline.text-danger.border-danger:hover { background-color: #dc3545 !important; color: white !important; } .btn-outline.text-warning.border-warning:hover { background-color: #ffc107 !important; color: #212529 !important; } .btn-outline.text-secondary.border-secondary:hover { background-color: #6c757d !important; color: white !important; } .selection-btn { border: 2px solid #dee2e6 !important; background-color: #fff !important; color: #212529 !important; text-align: left !important; width: 100% !important; border-radius: 12px !important; padding: 1.25rem !important; transition: all 0.2s ease !important; text-decoration: none !important; display: flex !important; align-items: center !important; } .selection-btn:hover { background-color: #f8f9fa !important; border-color: #adb5bd !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); color: #212529 !important; } .selection-btn i { transition: transform 0.2s ease; } .selection-btn:hover i { transform: scale(1.15); }
+.bi-arrow-left { border-radius: 50%; padding: 4px; transition: all 0.2s ease; } .bi-arrow-left:hover { background-color: rgba(0,0,0,0.1); transform: translateX(-3px); }
+
+/* Brand Green Buttons */
+.text-brand-green { color: #083c34 !important; }
+.border-brand-green { border-color: #083c34 !important; }
+.btn-modern.btn-outline.text-brand-green.border-brand-green:hover { background-color: #083c34 !important; color: white !important; }

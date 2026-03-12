@@ -114,7 +114,8 @@ $csrfToken = $_SESSION['csrf_token'];
             <h6>Employee Archive</h6>
           </div>
         </div>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
         <?php if ($isAdmin): ?>
         <div class="col-6 col-md-3">
@@ -134,21 +135,22 @@ $csrfToken = $_SESSION['csrf_token'];
             <h6>Grace Period</h6>
           </div>
         </div>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
         <!-- ✅ Change Password Selection Modal -->
-        <div class="modal fade" id="changePasswordSelectionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="changePasswordSelectionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-              <div class="modal-header border-0">
+              <div class="modal-header border-0 pb-0 d-flex justify-content-center position-relative">
                 <h5 class="modal-title fw-bold">Select Verification Method</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close position-absolute end-0 me-3 mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body px-4 pb-4 text-center">
                 <p class="text-muted mb-4">How would you like to verify your identity?</p>
 
                 <div class="d-grid gap-3">
-                  <button class="btn btn-outline-dark p-3 text-start d-flex align-items-center" id="btnSelectOTP">
+                  <button class="selection-btn" id="btnSelectOTP">
                     <i class="bi bi-envelope-fill fs-4 me-3 text-primary"></i>
                     <div>
                       <div class="fw-bold">Via Email OTP</div>
@@ -156,7 +158,7 @@ $csrfToken = $_SESSION['csrf_token'];
                     </div>
                   </button>
 
-                  <button class="btn btn-outline-dark p-3 text-start d-flex align-items-center" id="btnSelectCurrent">
+                  <button class="selection-btn" id="btnSelectCurrent">
                     <i class="bi bi-key-fill fs-4 me-3 text-warning"></i>
                     <div>
                       <div class="fw-bold">Via Current Password</div>
@@ -171,12 +173,13 @@ $csrfToken = $_SESSION['csrf_token'];
         </div>
 
         <!-- ✅ Change Password via Current Password Modal -->
-        <div class="modal fade" id="changePasswordViaCurrentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="changePasswordViaCurrentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-              <div class="modal-header border-0">
+              <div class="modal-header border-0 justify-content-center position-relative">
+                <i class="bi bi-arrow-left fs-4 position-absolute start-0 ms-3 mt-1" 
+                   style="cursor: pointer;" onclick="goBackToSelection('changePasswordViaCurrentModal')"></i>
                 <h5 class="modal-title fw-bold">Change Password</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body px-4 pb-4">
                 <div class="alert alert-danger" id="currentPassError" style="display:none;"></div>
@@ -214,9 +217,9 @@ $csrfToken = $_SESSION['csrf_token'];
                   </div>
                 </div>
 
-                <div class="d-flex justify-content-end mt-4">
-                  <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn text-white" style="background-color: #083c34;"
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="btnSubmitCurrentPassChange">Change Password</button>
                 </div>
               </div>
@@ -227,13 +230,14 @@ $csrfToken = $_SESSION['csrf_token'];
         <!-- ✅ Change Password Modal - Step 1: Verify Email (Renamed ID slightly to avoid conflict if needed, but keeping compliant with existing JS for now) -->
         <!-- ✅ Change Password Modal - Step 1: Verify Email (Renamed ID slightly to avoid conflict if needed, but keeping compliant with existing JS for now) -->
         <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordLabel"
-          aria-hidden="true">
+          aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
 
-              <div class="modal-header border-0">
+              <div class="modal-header border-0 justify-content-center position-relative">
+                <i class="bi bi-arrow-left fs-4 position-absolute start-0 ms-3 mt-1" 
+                   style="cursor: pointer;" onclick="goBackToSelection('changePasswordModal')"></i>
                 <h5 class="modal-title fw-bold" id="changePasswordLabel">Change Password - Step 1</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
 
               <div class="modal-body px-4 pb-4">
@@ -247,9 +251,9 @@ $csrfToken = $_SESSION['csrf_token'];
                     required>
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
-                  <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn text-white px-4" style="background-color: #083c34;"
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="changeToStep2">Send OTP</button>
                 </div>
               </div>
@@ -259,13 +263,12 @@ $csrfToken = $_SESSION['csrf_token'];
         </div>
 
         <!-- ✅ Change Password Modal - Step 2: Verify OTP -->
-        <div class="modal fade" id="changePasswordModalStep2" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="changePasswordModalStep2" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
 
-              <div class="modal-header border-0">
+              <div class="modal-header border-0 justify-content-center">
                 <h5 class="modal-title fw-bold">Change Password - Step 2</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
 
               <div class="modal-body px-4 pb-4">
@@ -280,9 +283,9 @@ $csrfToken = $_SESSION['csrf_token'];
                     placeholder="Enter 6-digit code" required>
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
-                  <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn text-white px-4" style="background-color: #083c34;"
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="changeToStep3">Verify OTP</button>
                 </div>
               </div>
@@ -292,13 +295,12 @@ $csrfToken = $_SESSION['csrf_token'];
         </div>
 
         <!-- ✅ Change Password Modal - Step 3: Enter New Password -->
-        <div class="modal fade" id="changePasswordModalStep3" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="changePasswordModalStep3" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
 
-              <div class="modal-header border-0">
+              <div class="modal-header border-0 justify-content-center">
                 <h5 class="modal-title fw-bold">Change Password - Step 3</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
 
               <div class="modal-body px-4 pb-4">
@@ -308,20 +310,28 @@ $csrfToken = $_SESSION['csrf_token'];
 
                 <div class="mb-3">
                   <label for="changeNewPassword" class="form-label fw-semibold">New Password</label>
-                  <input type="password" class="form-control" id="changeNewPassword" placeholder="Enter new password"
-                    required>
+                  <div class="input-group">
+                    <input type="password" class="form-control" id="changeNewPassword" placeholder="Enter new password"
+                      required>
+                    <button class="btn btn-outline-secondary" type="button" id="toggleStep3NewPassword"><i
+                        class="bi bi-eye"></i></button>
+                  </div>
                   <small class="text-muted">At least 6 chars, must contain a number</small>
                 </div>
 
                 <div class="mb-3">
                   <label for="changeConfirmPassword" class="form-label fw-semibold">Confirm Password</label>
-                  <input type="password" class="form-control" id="changeConfirmPassword"
-                    placeholder="Confirm new password" required>
+                  <div class="input-group">
+                    <input type="password" class="form-control" id="changeConfirmPassword"
+                      placeholder="Confirm new password" required>
+                    <button class="btn btn-outline-secondary" type="button" id="toggleStep3ConfirmPassword"><i
+                        class="bi bi-eye"></i></button>
+                  </div>
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
-                  <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn text-white px-4" style="background-color: #083c34;"
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="changeFinalStep">Change Password</button>
                 </div>
               </div>
@@ -331,7 +341,7 @@ $csrfToken = $_SESSION['csrf_token'];
         </div>
 
         <!-- ✅ Change Password Success Modal -->
-        <div class="modal fade" id="changePasswordSuccess" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="changePasswordSuccess" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg text-center">
               <div class="modal-body px-4 py-5">
@@ -340,7 +350,7 @@ $csrfToken = $_SESSION['csrf_token'];
                 </div>
                 <h5 class="fw-bold mb-2">Password Changed Successfully!</h5>
                 <p class="text-muted">Your password has been updated.</p>
-                <button type="button" class="btn text-white px-4 mt-3" style="background-color: #083c34;"
+                <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4 mt-3"
                   id="changeGoSettings">Back to Settings</button>
               </div>
             </div>
@@ -349,13 +359,12 @@ $csrfToken = $_SESSION['csrf_token'];
 
         <!-- ✅ Privacy Policy / Terms Modal -->
         <div class="modal fade" id="privacyPolicyModal" tabindex="-1" aria-labelledby="privacyPolicyLabel"
-          aria-hidden="true">
+          aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg">
 
-              <div class="modal-header border-0">
+              <div class="modal-header border-0 justify-content-center">
                 <h4 class="modal-title fw-bold" id="privacyPolicyLabel">Privacy Policy and Terms</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
 
               <div class="modal-body px-4 pb-3" style="max-height: 70vh; overflow-y: auto; text-align: justify;">
@@ -397,7 +406,7 @@ $csrfToken = $_SESSION['csrf_token'];
               </div>
 
               <div class="modal-footer border-0 justify-content-center">
-                <button type="button" class="btn text-white px-5 py-2" style="background-color: #083c34;"
+                <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5"
                   id="acceptPolicyBtn">Accept</button>
               </div>
 
@@ -407,15 +416,14 @@ $csrfToken = $_SESSION['csrf_token'];
 
 
         <!-- ✅ Leave Settings Modal -->
-        <div class="modal fade" id="leaveSettingsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="leaveSettingsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-              <div class="modal-header border-0">
+              <div class="modal-header border-0 justify-content-center">
                 <h5 class="modal-title fw-bold">Leave Request Configuration</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body px-4 pb-4">
-                <p class="text-muted mb-3">Set restrictions for leave requests.</p>
+                <p class="text-muted mb-3 text-center">Set restrictions for leave requests.</p>
 
                 <div class="mb-3">
                   <label for="noticePeriodInput" class="form-label fw-semibold">Min. Notice Period (Days)</label>
@@ -425,9 +433,9 @@ $csrfToken = $_SESSION['csrf_token'];
 
 
 
-                <div class="d-flex justify-content-end mt-4">
-                  <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn text-white" style="background-color: #083c34;"
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="saveLeaveSettingsBtn">Save Changes</button>
                 </div>
               </div>
@@ -435,16 +443,14 @@ $csrfToken = $_SESSION['csrf_token'];
           </div>
         </div>
 
-        <!-- ✅ Break Settings Modal -->
-        <div class="modal fade" id="breakSettingsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="breakSettingsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-              <div class="modal-header border-0">
+              <div class="modal-header border-0 justify-content-center">
                 <h5 class="modal-title fw-bold">Break Deduction Settings</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body px-4 pb-4">
-                <p class="text-muted mb-3">Set automatic break deduction for Admin & Non-Teaching.</p>
+                <p class="text-muted mb-3 text-center">Set automatic break deduction for Admin & Non-Teaching.</p>
                 <div class="alert alert-info small">
                   <i class="bi bi-info-circle me-1"></i> Deduction applies when work duration > 5 hours.
                 </div>
@@ -462,9 +468,9 @@ $csrfToken = $_SESSION['csrf_token'];
                     placeholder="Enter minutes (e.g. 20)" style="display: none;" min="0">
                 </div>
 
-                <div class="d-flex justify-content-end mt-4">
-                  <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn text-white" style="background-color: #083c34;"
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="saveBreakSettingsBtn">Save Changes</button>
                 </div>
               </div>
@@ -472,16 +478,14 @@ $csrfToken = $_SESSION['csrf_token'];
           </div>
         </div>
 
-        <!-- ✅ Grace Period Modal -->
-        <div class="modal fade" id="gracePeriodModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="gracePeriodModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-              <div class="modal-header border-0">
+              <div class="modal-header border-0 justify-content-center">
                 <h5 class="modal-title fw-bold">Grace Period Settings</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body px-4 pb-4">
-                <p class="text-muted mb-3">Set a grace period for employee time in.</p>
+                <p class="text-muted mb-3 text-center">Set a grace period for employee time in.</p>
                 <div class="alert alert-info small">
                   <i class="bi bi-info-circle me-1"></i> Employees arriving within the grace period will not be tagged
                   as late. This applies only to the display tag.
@@ -500,9 +504,9 @@ $csrfToken = $_SESSION['csrf_token'];
                     placeholder="Enter minutes (e.g. 20)" style="display: none;" min="0">
                 </div>
 
-                <div class="d-flex justify-content-end mt-4">
-                  <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn text-white" style="background-color: #083c34;"
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="saveGracePeriodBtn">Save Changes</button>
                 </div>
               </div>
@@ -520,12 +524,12 @@ $csrfToken = $_SESSION['csrf_token'];
               <h6>CLEAR ALL RECORDS</h6>
             </div>
           </div>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
-        <!-- 🔹 FIRST CONFIRMATION MODAL -->
-        <div class="modal fade" id="clearAllRecordsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="clearAllRecordsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-center p-3">
+            <div class="modal-content text-center border-0 shadow-lg p-3">
               <div class="modal-body">
                 <i class="bi bi-exclamation-triangle-fill text-warning mb-3" style="font-size:3rem;"></i>
                 <h5 class="mb-3">
@@ -535,10 +539,10 @@ $csrfToken = $_SESSION['csrf_token'];
                   </span>.
                 </h5>
                 <p class="text-muted">Do you want to export all records before deleting them?</p>
-                <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
-                  <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button class="btn btn-success" id="exportAndProceedBtn">Export & Continue</button>
-                  <button class="btn btn-danger" id="proceedDeleteBtn">Delete Without Exporting</button>
+                <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
+                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" id="exportAndProceedBtn">Export & Continue</button>
+                  <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="proceedDeleteBtn">Delete Without Exporting</button>
                 </div>
               </div>
             </div>
@@ -546,12 +550,11 @@ $csrfToken = $_SESSION['csrf_token'];
         </div>
 
         <!-- 🔹 SECOND CONFIRMATION MODAL WITH PASSWORD -->
-        <div class="modal fade" id="secondConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="secondConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-3">
-              <div class="modal-header border-0">
-                <h5 class="modal-title">Confirm Action</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content border-0 shadow-lg p-3">
+              <div class="modal-header border-0 justify-content-center">
+                <h5 class="modal-title fw-bold">Confirm Action</h5>
               </div>
               <div class="modal-body text-center">
                 <i class="bi bi-exclamation-triangle-fill text-warning mb-3" style="font-size:3rem;"></i>
@@ -568,9 +571,9 @@ $csrfToken = $_SESSION['csrf_token'];
                   </div>
                 </form>
               </div>
-              <div class="modal-footer border-0 justify-content-center">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-danger" id="confirmDeleteBtn">
+              <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
+                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
+                <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="confirmDeleteBtn">
                   <span id="deleteBtnText">Yes, Clear All</span>
                   <span id="deleteBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                     style="display: none;"></span>
@@ -602,6 +605,17 @@ $csrfToken = $_SESSION['csrf_token'];
         <script src="settings.js?v=<?php echo time(); ?>"></script>
 
         <script>
+          // Back Button Logic for Password Flow
+          function goBackToSelection(currentModalId) {
+            // Hide current modal
+            const currentModal = bootstrap.Modal.getInstance(document.getElementById(currentModalId));
+            if (currentModal) currentModal.hide();
+            
+            // Show selection modal
+            const selectionModal = new bootstrap.Modal(document.getElementById('changePasswordSelectionModal'));
+            selectionModal.show();
+          }
+
           // Clear All Records functionality
           async function handleClearRecordsClick() {
             console.log('Clear All Records clicked!');
@@ -1032,38 +1046,36 @@ $csrfToken = $_SESSION['csrf_token'];
         </script>
 
 
-        <!-- Break Deduction Confirmation Modal -->
-        <div class="modal fade" id="breakConfirmationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="breakConfirmationModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header border-0">
-                <h5 class="modal-title w-100 text-center">Confirm Change</h5>
+            <div class="modal-content border-0 shadow-lg">
+              <div class="modal-header border-0 justify-content-center">
+                <h5 class="modal-title fw-bold">Confirm Change</h5>
               </div>
-              <div class="modal-body text-center">
+              <div class="modal-body text-center px-4">
                 This will change the break time duration for all non-faculty members. Are you sure?
               </div>
-              <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary me-2" id="cancelBreakChangeBtn">Cancel</button>
-                <button type="button" class="btn text-white" style="background-color: #083c34;"
+              <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
+                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" id="cancelBreakChangeBtn">Cancel</button>
+                <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                   id="confirmBreakChangeBtn">Yes, Save Changes</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Grace Period Confirmation Modal -->
-        <div class="modal fade" id="gracePeriodConfirmationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="gracePeriodConfirmationModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header border-0">
-                <h5 class="modal-title w-100 text-center">Confirm Change</h5>
+            <div class="modal-content border-0 shadow-lg">
+              <div class="modal-header border-0 justify-content-center">
+                <h5 class="modal-title fw-bold">Confirm Change</h5>
               </div>
-              <div class="modal-body text-center">
+              <div class="modal-body text-center px-4">
                 This will update the grace period for employee time-ins. Are you sure?
               </div>
-              <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary me-2" id="cancelGracePeriodChangeBtn">Cancel</button>
-                <button type="button" class="btn text-white" style="background-color: #083c34;"
+              <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
+                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" id="cancelGracePeriodChangeBtn">Cancel</button>
+                <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                   id="confirmGracePeriodChangeBtn">Yes, Save Changes</button>
               </div>
             </div>
@@ -1071,20 +1083,18 @@ $csrfToken = $_SESSION['csrf_token'];
         </div>
 
         <!-- Logout Modal -->
-        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header border-0">
-                <h5 class="modal-title w-100 text-center" id="logoutModalLabel">Confirm Logout</h5>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+              <div class="modal-body text-center py-4">
+                <h5 class="fw-bold mb-3">Confirm Logout</h5>
+                <p class="mb-0 fs-6">Are you sure you want to log out?</p>
               </div>
-              <div class="modal-body text-center">
-                Are you sure you want to logout?
-              </div>
-              <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+                <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
                 <form method="POST" action="logout.php" style="display: inline;">
                   <input type="hidden" name="confirm_logout" value="1">
-                  <button type="submit" class="btn btn-danger">Yes, Log out</button>
+                  <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
                 </form>
               </div>
             </div>

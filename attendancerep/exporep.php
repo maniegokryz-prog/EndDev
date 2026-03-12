@@ -35,6 +35,7 @@ $result = $conn->query($sql);
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="attendancerep.css">
+  <link rel="stylesheet" href="../settings/settings.css">
 
 </head>
 
@@ -45,11 +46,6 @@ $result = $conn->query($sql);
     <div class="d-flex align-items-center">
       <div class="menu-toggle me-3">
         <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
-      </div>
-      <div class="welcome-message d-none d-md-block">
-        <h5 class="mb-0 text-white">Welcome,
-          <?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?>!
-        </h5>
       </div>
     </div>
 
@@ -189,49 +185,50 @@ else {
   </div> <!-- content pt-3 -->
 
   <!-- Confirm Export Modal -->
-  <div class="modal fade" id="confirmExportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="confirmExportModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-3">
-        <h5 class="fw-bold">Confirm DTR Export</h5>
-        <hr>
+      <div class="modal-content border-0 shadow-lg text-center p-4">
+        <h5 class="fw-bold mb-3">Confirm DTR Export</h5>
         <div class="my-3">
           <i class="bi bi-box-arrow-up fs-1 text-success"></i>
         </div>
-        <p>Confirm DTR Report for <span id="staffCount">0</span> staff as <span id="exportType"></span>?</p>
-        <div class="d-flex justify-content-center gap-2">
-          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-success" id="confirmExportBtn">Yes</button>
+        <p class="mb-4">Confirm DTR Report for <span id="staffCount" class="fw-bold">0</span> staff as <span id="exportType" class="fw-bold"></span>?</p>
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-modern btn-outline text-success border-success fw-bold px-4" id="confirmExportBtn">Yes</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Success Modal -->
-  <div class="modal fade" id="successExportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="successExportModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-3">
-        <h5 class="fw-bold text-success">Export Completed!</h5>
-        <hr>
+      <div class="modal-content border-0 shadow-lg text-center p-4">
+        <h5 class="fw-bold text-success mb-3">Export Completed!</h5>
         <div class="my-3">
           <i class="bi bi-check-circle fs-1 text-success"></i>
         </div>
-        <p>DTR report successfully generated as <span id="exportDoneType"></span>.</p>
-        <button class="btn btn-success" data-bs-dismiss="modal">Continue</button>
+        <p class="mb-4">DTR report successfully generated as <span id="exportDoneType" class="fw-bold"></span>.</p>
+        <div class="d-flex justify-content-center">
+          <button class="btn-modern btn-outline text-success border-success fw-bold px-5" data-bs-dismiss="modal">Continue</button>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Warning Modal -->
-  <div class="modal fade" id="warningModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="warningModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-3">
-        <h5 class="fw-bold text-danger">No Staff Selected</h5>
-        <hr>
+      <div class="modal-content border-0 shadow-lg text-center p-4">
+        <h5 class="fw-bold text-danger mb-3">No Staff Selected</h5>
         <div class="my-3">
           <i class="bi bi-exclamation-circle fs-1 text-danger"></i>
         </div>
-        <p>Please select at least one staff before exporting.</p>
-        <button class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+        <p class="mb-4">Please select at least one staff before exporting.</p>
+        <div class="d-flex justify-content-center">
+          <button class="btn-modern btn-outline text-danger border-danger fw-bold px-5" data-bs-dismiss="modal">OK</button>
+        </div>
       </div>
     </div>
   </div>
@@ -476,20 +473,18 @@ else {
   </script>
 
   <!-- Logout Modal -->
-  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header border-0">
-          <h5 class="modal-title w-100 text-center" id="logoutModalLabel">Confirm Logout</h5>
+      <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+        <div class="modal-body text-center py-4">
+          <h5 class="fw-bold mb-3">Confirm Logout</h5>
+          <p class="mb-0 fs-6">Are you sure you want to log out?</p>
         </div>
-        <div class="modal-body text-center">
-          Are you sure you want to logout?
-        </div>
-        <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+          <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
           <form method="POST" action="logout.php" style="display: inline;">
             <input type="hidden" name="confirm_logout" value="1">
-            <button type="submit" class="btn btn-danger">Yes, Log out</button>
+            <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
           </form>
         </div>
       </div>

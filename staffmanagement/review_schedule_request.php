@@ -317,19 +317,19 @@ try {
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column flex-md-row gap-2 mt-3 mt-md-0">
-                                            <button type="button" class="btn btn-primary edit-request-btn"
+                                            <button type="button" class="btn-modern btn-outline text-primary border-primary fw-bold edit-request-btn"
                                                 data-req-id="<?php echo $request['id']; ?>"
                                                 data-emp-id="<?php echo htmlspecialchars($request['employee_id_string'], ENT_QUOTES); ?>"
                                                 data-first="<?php echo htmlspecialchars($request['first_name'], ENT_QUOTES); ?>"
                                                 data-last="<?php echo htmlspecialchars($request['last_name'], ENT_QUOTES); ?>">
                                                 <i class="bi bi-pencil-square"></i> Edit
                                             </button>
-                                            <button class="btn btn-success" data-bs-toggle="modal"
+                                            <button class="btn-modern btn-outline text-success border-success fw-bold" data-bs-toggle="modal"
                                                 data-bs-target="#confirmActionModal"
                                                 onclick="setupConfirmModal(<?php echo $request['id']; ?>, 'approve')">
                                                 <i class="bi bi-check-circle"></i> Approve
                                             </button>
-                                            <button class="btn btn-danger"
+                                            <button class="btn-modern btn-outline text-danger border-danger fw-bold"
                                                 onclick="openRejectModal(<?php echo $request['id']; ?>)">
                                                 <i class="bi bi-x-circle"></i> Reject
                                             </button>
@@ -381,13 +381,10 @@ try {
     </div>
 
     <!-- Confirm Action Modal (Approve) -->
-    <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-                <div class="modal-header border-0 pb-0">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center pt-0">
+                <div class="modal-body text-center pt-4">
                     <div class="mb-3">
                         <i id="confirmActionIcon" class="bi bi-check-circle-fill text-success"
                             style="font-size: 4rem;"></i>
@@ -398,9 +395,9 @@ try {
                         schedule request? This will automatically update the employee's active schedule.</p>
                 </div>
                 <div class="modal-footer border-0 justify-content-center pb-4 pt-0 gap-3">
-                    <button type="button" class="btn btn-light px-4 py-2 text-secondary fw-semibold"
-                        style="border-radius: 8px;" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success px-4 py-2 fw-bold" style="border-radius: 8px;"
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4"
+                         data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                         id="confirmActionButton">Yes, Approve Request</button>
                 </div>
             </div>
@@ -408,13 +405,11 @@ try {
     </div>
 
     <!-- Reject with Remarks Modal -->
-    <div class="modal fade" id="rejectRemarksModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="rejectRemarksModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold text-danger"><i class="bi bi-x-circle me-2"></i>Reject Schedule
-                        Request</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header border-0 pb-0 justify-content-center">
+                    <h5 class="modal-title fw-bold text-danger"><i class="bi bi-x-circle me-2"></i>Reject Schedule Request</h5>
                 </div>
                 <div class="modal-body pt-2">
                     <p class="text-muted small mb-3">Provide a reason for rejecting this schedule request. The employee
@@ -427,8 +422,8 @@ try {
                         reason for rejection.</div>
                 </div>
                 <div class="modal-footer border-0 justify-content-end pt-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmRejectBtn"><i
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4 me-2" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="confirmRejectBtn"><i
                             class="bi bi-x-circle me-1"></i>Confirm Reject</button>
                 </div>
             </div>
@@ -465,9 +460,8 @@ try {
         aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered edit-schedule-modal-dialog">
             <div class="modal-content border-0 shadow-sm">
-                <div class="modal-header">
+                <div class="modal-header justify-content-center">
                     <h4 class="modal-title fw-semibold" id="editScheduleModalLabel">Edit Schedule</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
@@ -588,11 +582,11 @@ try {
 
                         </div>
 
-                        <div class="form-actions text-end mt-4">
-                            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                        <div class="form-actions justify-content-center d-flex gap-3 mt-4">
+                            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold"
                                 style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit"
-                                class="btn-modern btn-outline btn-save text-success border-success px-4"
+                                class="btn-modern btn-outline btn-save text-success border-success px-4 fw-bold"
                                 style="min-width: 150px;">Save Changes</button>
                         </div>
                     </form>
@@ -1119,18 +1113,18 @@ try {
     </script>
 
     <!-- Logout Modal -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center">
-                    <h5 class="mb-3">Confirm Logout</h5>
-                    <p class="mb-0">Are you sure you want to log out?</p>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-body text-center py-4">
+                    <h5 class="fw-bold mb-3">Confirm Logout</h5>
+                    <p class="mb-0 fs-6">Are you sure you want to log out?</p>
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
                     <form method="POST" action="logout.php" style="display:inline;">
                         <input type="hidden" name="confirm_logout" value="1">
-                        <button type="submit" class="btn btn-danger">Yes, Log out</button>
+                        <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
                     </form>
                 </div>
             </div>

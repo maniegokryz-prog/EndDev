@@ -81,9 +81,9 @@ $currentUser = getCurrentUser();
 
           <!-- Toolbar -->
           <div class="d-flex flex-wrap align-items-center mb-3 gap-2">
-            <button class="btn btn-secondary btn-sm" id="selectAllBtn">Select All</button>
-            <button class="btn btn-danger btn-sm" id="deleteSelectedBtn">Delete Selected</button>
-            <button class="btn btn-success btn-sm" id="restoreSelectedBtn">Restore Selected</button>
+            <button class="btn-modern btn-outline text-secondary border-secondary btn-sm" id="selectAllBtn">Select All</button>
+            <button class="btn-modern btn-outline text-danger border-danger btn-sm" id="deleteSelectedBtn">Delete Selected</button>
+            <button class="btn-modern btn-outline text-success border-success btn-sm" id="restoreSelectedBtn">Restore Selected</button>
             <div class="ms-auto">
               <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Search staff name">
             </div>
@@ -134,17 +134,16 @@ $currentUser = getCurrentUser();
 
 
         <!-- Delete Confirmation Modal with Password -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4">
-              <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Confirm Permanent Deletion</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content border-0 shadow-lg p-4">
+              <div class="modal-header border-0 justify-content-center">
+                <h5 class="modal-title fw-bold">Confirm Permanent Deletion</h5>
               </div>
               <div class="modal-body">
-                <p class="text-danger fw-bold"><i class="fa-solid fa-exclamation-triangle me-2"></i>Warning: This action
+                <p class="text-danger fw-bold text-center"><i class="fa-solid fa-exclamation-triangle me-2"></i>Warning: This action
                   cannot be undone!</p>
-                <p>You are about to permanently delete <span id="deleteCount">0</span> employee(s) from the database.
+                <p class="text-center">You are about to permanently delete <span id="deleteCount" class="fw-bold">0</span> employee(s) from the database.
                   All related data including attendance records, schedules, and assignments will be permanently removed.
                 </p>
                 <form id="deleteForm">
@@ -157,9 +156,9 @@ $currentUser = getCurrentUser();
                   </div>
                 </form>
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+              <div class="modal-footer border-0 justify-content-center gap-3">
+                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="confirmDeleteBtn">
                   <span id="deleteBtnText">Delete Permanently</span>
                   <span id="deleteBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                     style="display: none;"></span>
@@ -170,15 +169,14 @@ $currentUser = getCurrentUser();
         </div>
 
         <!-- Restore Confirmation Modal with Password -->
-        <div class="modal fade" id="restoreModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="restoreModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4">
-              <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">Confirm Employee Restore</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content border-0 shadow-lg p-4">
+              <div class="modal-header border-0 justify-content-center">
+                <h5 class="modal-title fw-bold">Confirm Employee Restore</h5>
               </div>
               <div class="modal-body">
-                <p>You are about to restore <span id="restoreCount">0</span> employee(s) to active status. Their
+                <p class="text-center">You are about to restore <span id="restoreCount" class="fw-bold">0</span> employee(s) to active status. Their
                   schedules and assignments will be reactivated.</p>
                 <form id="restoreForm">
                   <div class="mb-3">
@@ -190,9 +188,9 @@ $currentUser = getCurrentUser();
                   </div>
                 </form>
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success" id="confirmRestoreBtn">
+              <div class="modal-footer border-0 justify-content-center gap-3">
+                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" id="confirmRestoreBtn">
                   <span id="restoreBtnText">Restore Employees</span>
                   <span id="restoreBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                     style="display: none;"></span>
@@ -607,20 +605,18 @@ $currentUser = getCurrentUser();
         </script>
 
         <!-- Logout Modal -->
-        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header border-0">
-                <h5 class="modal-title w-100 text-center" id="logoutModalLabel">Confirm Logout</h5>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+              <div class="modal-body text-center py-4">
+                <h5 class="fw-bold mb-3">Confirm Logout</h5>
+                <p class="mb-0 fs-6">Are you sure you want to log out?</p>
               </div>
-              <div class="modal-body text-center">
-                Are you sure you want to logout?
-              </div>
-              <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+                <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
                 <form method="POST" action="logout.php" style="display: inline;">
                   <input type="hidden" name="confirm_logout" value="1">
-                  <button type="submit" class="btn btn-danger">Yes, Log out</button>
+                  <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
                 </form>
               </div>
             </div>

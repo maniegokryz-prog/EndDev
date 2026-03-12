@@ -32,6 +32,7 @@ if (file_exists($configFile)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../dashboard/dashboard.css">
+    <link rel="stylesheet" href="settings.css">
 </head>
 
 <body>
@@ -107,10 +108,10 @@ if (file_exists($configFile)) {
                                         value="<?php echo intval($config['sync_interval']); ?>" min="10" max="3600">
                                 </div>
 
-                                <div class="d-flex justify-content-between">
-                                    <button type="button" class="btn btn-secondary"
-                                        onclick="window.location.href='../dashboard/dashboard.php'">Cancel</button>
-                                    <button type="submit" class="btn btn-primary d-flex align-items-center">
+                                <div class="d-flex justify-content-center gap-3">
+                                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4"
+                                        onclick="window.location.href='settings.php'">Cancel</button>
+                                    <button type="submit" class="btn-modern btn-outline text-primary border-primary fw-bold px-4 d-flex align-items-center">
                                         <span class="spinner-border spinner-border-sm me-2 d-none"
                                             id="saveSpinner"></span>
                                         Save Configuration
@@ -181,20 +182,18 @@ if (file_exists($configFile)) {
     </script>
 
     <!-- Logout Modal -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title w-100 text-center" id="logoutModalLabel">Confirm Logout</h5>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-body text-center py-4">
+                    <h5 class="fw-bold mb-3">Confirm Logout</h5>
+                    <p class="mb-0 fs-6">Are you sure you want to log out?</p>
                 </div>
-                <div class="modal-body text-center">
-                    Are you sure you want to logout?
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
                     <form method="POST" action="logout.php" style="display: inline;">
                         <input type="hidden" name="confirm_logout" value="1">
-                        <button type="submit" class="btn btn-danger">Yes, Log out</button>
+                        <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
                     </form>
                 </div>
             </div>

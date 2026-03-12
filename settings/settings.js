@@ -59,6 +59,8 @@ function setupToggle(inputId, toggleId) {
 setupToggle('currentPasswordInput', 'toggleCurrentPassword');
 setupToggle('newPasswordInput', 'toggleNewPassword');
 setupToggle('confirmNewPasswordInput', 'toggleConfirmNewPassword');
+setupToggle('changeNewPassword', 'toggleStep3NewPassword');
+setupToggle('changeConfirmPassword', 'toggleStep3ConfirmPassword');
 
 
 // Handle "Change Password" submit via Current Password

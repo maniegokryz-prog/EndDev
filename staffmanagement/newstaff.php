@@ -612,55 +612,53 @@ try {
     <input type="hidden" id="schedule_data" value="">
 
     <!-- Success Modal -->
-    <div class="modal fade" id="wizardSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="wizardSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Success</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-header bg-success text-white border-0 justify-content-center py-3">
+                    <h5 class="modal-title fw-bold" style="color: white !important;">Success</h5>
                 </div>
-                <div class="modal-body" id="wizardSuccessMessage">
+                <div class="modal-body text-center py-4 fs-6" id="wizardSuccessMessage">
                     Action completed successfully!
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="wizardNextBtn" style="display:none">Proceed to
-                        Next Step</button>
+                <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-modern btn-outline text-primary border-primary px-4" id="wizardNextBtn" style="display:none">Proceed to Next Step</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- App Info Modal (system-styled, used by face registration JS) -->
-    <div class="modal fade" id="appInfoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="appInfoModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title w-100 text-center" data-app-info-title>Notice</h5>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-header border-0 justify-content-center py-3">
+                    <h5 class="modal-title fw-bold" data-app-info-title>Notice</h5>
                 </div>
-                <div class="modal-body text-center" data-app-info-message>
+                <div class="modal-body text-center py-4 fs-6" data-app-info-message>
                     <!-- Message injected via JS -->
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-primary btn-modal-ok" data-bs-dismiss="modal">OK</button>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn-modern btn-outline text-primary border-primary px-5" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- System Confirm Modal (reusable) -->
-    <div class="modal fade" id="systemConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="systemConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title w-100 text-center" data-confirm-title>Confirm</h5>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-header border-0 justify-content-center py-3">
+                    <h5 class="modal-title fw-bold" data-confirm-title>Confirm</h5>
                 </div>
-                <div class="modal-body text-center" data-confirm-message>
+                <div class="modal-body text-center py-4 fs-6" data-confirm-message>
                     <!-- Message injected via JS -->
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-confirm-cancel>Cancel</button>
-                    <button type="button" class="btn btn-primary btn-modal-ok" data-confirm-ok>OK</button>
+                <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-confirm-cancel>Cancel</button>
+                    <button type="button" class="btn-modern btn-outline text-primary border-primary px-4" data-confirm-ok>OK</button>
                 </div>
             </div>
         </div>
@@ -674,18 +672,17 @@ try {
     </div>
 
     <!-- Error Modal -->
-    <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Error</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-header bg-danger text-white border-0 justify-content-center py-3">
+                    <h5 class="modal-title fw-bold" style="color: white !important;">Error</h5>
                 </div>
-                <div class="modal-body" id="errorMessage">
+                <div class="modal-body text-center py-4 fs-6" id="errorMessage">
                     An error occurred.
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-5" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -710,37 +707,36 @@ try {
     </div>
 
     <!-- System Alert Modal (appAlertModal) -->
-    <div class="modal fade" id="appAlertModal" tabindex="-1" aria-labelledby="appAlertModalLabel" aria-hidden="true">
+    <div class="modal fade" id="appAlertModal" tabindex="-1" aria-labelledby="appAlertModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title w-100 text-center" id="appAlertModalLabel">Notice</h5>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-header border-0 justify-content-center py-3">
+                    <h5 class="modal-title fw-bold" id="appAlertModalLabel">Notice</h5>
                 </div>
-                <div class="modal-body text-center">
-                    <i id="appAlertModalIcon" class="bi bi-info-circle-fill text-primary fs-1 mb-2"></i>
+                <div class="modal-body text-center py-4 fs-6">
+                    <i id="appAlertModalIcon" class="bi bi-info-circle-fill text-primary fs-1 mb-2 d-block text-center"></i>
                     <p id="appAlertModalMessage" class="mb-0"></p>
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-primary btn-modal-ok" data-bs-dismiss="modal">OK</button>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn-modern btn-outline text-primary border-primary px-5" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- System Confirm Modal (appConfirmModal) -->
-    <div class="modal fade" id="appConfirmModal" tabindex="-1" aria-labelledby="appConfirmModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="appConfirmModal" tabindex="-1" aria-labelledby="appConfirmModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title w-100 text-center" id="appConfirmModalLabel">Confirm</h5>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-header border-0 justify-content-center py-3">
+                    <h5 class="modal-title fw-bold" id="appConfirmModalLabel">Confirm</h5>
                 </div>
-                <div class="modal-body text-center">
+                <div class="modal-body text-center py-4 fs-6">
                     <p id="appConfirmModalMessage" class="mb-0"></p>
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" id="appConfirmCancel">Cancel</button>
-                    <button type="button" class="btn btn-primary btn-modal-ok" id="appConfirmOk">OK</button>
+                <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" id="appConfirmCancel">Cancel</button>
+                    <button type="button" class="btn-modern btn-outline text-primary border-primary px-4" id="appConfirmOk">OK</button>
                 </div>
             </div>
         </div>
@@ -1138,18 +1134,18 @@ try {
     <script src="staff.js"></script>
     <script src="../assets/js/newstaff_wizard.js?v=<?php echo time(); ?>"></script>
     <!-- Logout Modal -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center">
-                    <h5 class="mb-3">Confirm Logout</h5>
-                    <p class="mb-0">Are you sure you want to log out?</p>
+            <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+                <div class="modal-body text-center py-4">
+                    <h5 class="fw-bold mb-3">Confirm Logout</h5>
+                    <p class="mb-0 fs-6">Are you sure you want to log out?</p>
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
                     <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
                         <input type="hidden" name="confirm_logout" value="1">
-                        <button type="submit" class="btn btn-danger">Yes, Log out</button>
+                        <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
                     </form>
                 </div>
             </div>

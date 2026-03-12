@@ -37,9 +37,9 @@ $currentUser = getCurrentUser();
       <div class="menu-toggle me-3">
         <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
       </div>
-      <div class="welcome-message">
-        <h5 class="mb-0 text-white">Welcome,
-          <?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?>!
+      <div class="welcome-message d-none d-md-block">
+        <h5 class="mb-0 text-white">
+          <?php echo isAdmin() ? 'Welcome, Admin!' : 'Welcome!'; ?>
         </h5>
       </div>
     </div>
@@ -47,13 +47,13 @@ $currentUser = getCurrentUser();
     <!-- Right: Sync Status & Notifications -->
     <div class="d-flex align-items-center">
       <?php
-      // Sync Status Widget
-      if (!$hide_sync_status) {
-        if (file_exists('../admin/includes/sync_status_topbar.php')) {
-          include '../admin/includes/sync_status_topbar.php';
-        }
-      }
-      ?>
+// Sync Status Widget
+if (!$hide_sync_status) {
+  if (file_exists('../admin/includes/sync_status_topbar.php')) {
+    include '../admin/includes/sync_status_topbar.php';
+  }
+}
+?>
       <?php include '../includes/notification_bell.php'; ?>
     </div>
   </div>
@@ -357,18 +357,18 @@ $currentUser = getCurrentUser();
     </div> <!-- content -->
 
     <!-- Logout Modal -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-body text-center">
-            <h5 class="mb-3">Confirm Logout</h5>
-            <p class="mb-0">Are you sure you want to log out?</p>
+        <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
+          <div class="modal-body text-center py-4">
+            <h5 class="fw-bold mb-3">Confirm Logout</h5>
+            <p class="mb-0 fs-6">Are you sure you want to log out?</p>
           </div>
-          <div class="modal-footer justify-content-center">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-            <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
+          <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
+            <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
+            <form id="logoutForm" method="POST" action="../dashboard/logout.php" style="display:inline;">
               <input type="hidden" name="confirm_logout" value="1">
-              <button type="submit" class="btn btn-danger">Yes, Log out</button>
+              <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
             </form>
           </div>
         </div>
