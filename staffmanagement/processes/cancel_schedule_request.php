@@ -38,7 +38,9 @@ try {
     $stmt->close();
 
     // Soft-delete: mark as cancelled so it syncs to Hostinger properly
-    $hasSyncCol = $conn->query("SHOW COLUMNS FROM schedule_requests LIKE 'sync_status'")->num_rows > 0;
+    $syncResult = $conn->query("SHOW COLUMNS FROM schedule_requests LIKE 'sync_status'");
+    $hasSyncCol = $syncResult && $syncResult->num_rows > 0;
+    
     $updateQuery = $hasSyncCol
         ? "UPDATE schedule_requests SET status = 'cancelled', sync_status = 0 WHERE id = ?"
         : "UPDATE schedule_requests SET status = 'cancelled' WHERE id = ?";
@@ -52,8 +54,8 @@ try {
     }
     $delStmt->close();
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     error_log("Error cancelling schedule request: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'An internal error occurred.']);
+    echo json_encode(['success' => false, 'message' => 'An internal error occurred: ' . $e->getMessage()]);
 }
 ?>

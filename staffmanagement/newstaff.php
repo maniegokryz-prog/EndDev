@@ -343,7 +343,8 @@ try {
                                         </div>
                                         <div class="form-group">
                                             <label for="phone">Phone:</label>
-                                            <input type="tel" id="phone" name="phone" required>
+                                            <input type="tel" id="phone" name="phone" pattern="[0-9]{11}" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('phone-error').style.display = (this.value.length === 11 || this.value.length === 0) ? 'none' : 'block';" title="Phone number must be exactly 11 digits" required>
+                                            <small id="phone-error" class="text-danger mt-1" style="display: none;"><i class="bi bi-exclamation-circle me-1"></i>Phone number must be exactly 11 digits.</small>
                                         </div>
                                     </div>
 

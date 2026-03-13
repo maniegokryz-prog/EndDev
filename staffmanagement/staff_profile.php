@@ -663,20 +663,28 @@ $profilePhoto .= '?v=' . microtime(true);
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body: `request_id=${requestId}&csrf_token=${csrfToken}`
                             })
-                                .then(r => r.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        modal.hide();
-                                        window.location.reload();
-                                    } else {
-                                        alert("Error: " + data.message);
+                                .then(async r => {
+                                    const text = await r.text();
+                                    try {
+                                        const data = JSON.parse(text);
+                                        if (data.success) {
+                                            modal.hide();
+                                            window.location.reload();
+                                        } else {
+                                            alert("Error: " + data.message);
+                                            newBtn.disabled = false;
+                                            newBtn.innerHTML = originalHtml;
+                                        }
+                                    } catch(e) {
+                                        console.error("Server returned invalid data:", text);
+                                        alert("An error occurred during cancellation. Please check your connection and try again.");
                                         newBtn.disabled = false;
                                         newBtn.innerHTML = originalHtml;
                                     }
                                 })
                                 .catch(err => {
-                                    console.error("Error canceling request:", err);
-                                    alert("An error occurred viewing the console.");
+                                    console.error("Network Error:", err);
+                                    alert("A network error occurred. Please check your connection.");
                                     newBtn.disabled = false;
                                     newBtn.innerHTML = originalHtml;
                                 });
@@ -950,8 +958,17 @@ $profilePhoto .= '?v=' . microtime(true);
                                 </div>
                                 <div class="mb-3"><label>Email</label><input type="email" name="email" class="form-control"
                                         value="<?php echo htmlspecialchars($employee['email']); ?>" required></div>
-                                <div class="mb-3"><label>Phone</label><input type="text" name="phone" class="form-control"
-                                        value="<?php echo htmlspecialchars($employee['phone']); ?>"></div>
+                                <div class="mb-3">
+                                    <label>Phone</label>
+                                    <input type="tel" name="phone" id="edit_phone" class="form-control"
+                                        pattern="[0-9]{11}" maxlength="11"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('edit-phone-error').style.display = (this.value.length === 11 || this.value.length === 0) ? 'none' : 'block';"
+                                        title="Phone number must be exactly 11 digits"
+                                        value="<?php echo htmlspecialchars($employee['phone']); ?>">
+                                    <small id="edit-phone-error" class="text-danger mt-1" style="display: none;">
+                                        <i class="bi bi-exclamation-circle me-1"></i>Phone number must be exactly 11 digits.
+                                    </small>
+                                </div>
                                 <?php if ($isAdmin): ?>
                                     <div class="row">
                                         <div class="col-md-4 mb-3"><label>Role</label><input type="text" name="roles" id="roles"
@@ -1639,11 +1656,11 @@ $profilePhoto .= '?v=' . microtime(true);
                         padding: 8px 16px !important;
                     }
                 </style>
-                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap mt-3">
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4 py-2 m-0" data-bs-dismiss="modal">Cancel</button>
                     <?php if (isset($pendingRequestId) && $pendingRequestId): ?>
                         <a href="review_schedule_request.php?id=<?php echo urlencode($pendingRequestId); ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>"
-                            class="btn-modern btn-outline text-danger border-danger fw-bold px-4">View Request</a>
+                            class="btn-modern btn-outline text-danger border-danger fw-bold px-4 py-2 m-0 text-decoration-none d-inline-flex align-items-center justify-content-center">View Request</a>
                     <?php endif; ?>
                 </div>
             </div>
