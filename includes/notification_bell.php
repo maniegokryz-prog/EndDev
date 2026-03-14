@@ -57,7 +57,7 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer justify-content-center gap-2">
+      <div class="modal-footer justify-content-end gap-2">
         <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn-modern btn-outline text-danger border-danger px-4" id="deleteAllNotifications">
           <i class="bi bi-trash"></i> Delete All
@@ -80,7 +80,7 @@
       <div class="modal-body text-center">
         <p class="mb-0">Are you sure you want to delete this notification? This action cannot be undone.</p>
       </div>
-      <div class="modal-footer border-0 justify-content-center gap-2">
+      <div class="modal-footer border-0 justify-content-end gap-2">
         <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Cancel</button>
         <button type="button" class="btn-modern btn-outline text-danger border-danger px-4" id="confirmDeleteNotification">
           <i class="bi bi-trash"></i> Delete
@@ -104,7 +104,7 @@
         <p class="mb-0"><strong>Warning:</strong> This will permanently delete ALL your notifications. This action
           cannot be undone.</p>
       </div>
-      <div class="modal-footer border-0 justify-content-center gap-2">
+      <div class="modal-footer border-0 justify-content-end gap-2">
         <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Cancel</button>
         <button type="button" class="btn-modern btn-outline text-danger border-danger px-4" id="confirmDeleteAllNotifications">
           <i class="bi bi-trash"></i> Delete All
@@ -143,7 +143,7 @@
           <div id="rejectedScheduleCalendarView" style="overflow-x: auto;"></div>
         </div>
       </div>
-      <div class="modal-footer border-0 justify-content-center">
+      <div class="modal-footer border-0 justify-content-end">
         <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
@@ -162,7 +162,7 @@
       <div class="modal-body text-center">
         <p id="notificationErrorMessage" class="mb-0 fs-6">An error occurred while processing your request.</p>
       </div>
-      <div class="modal-footer border-0 justify-content-center">
+      <div class="modal-footer border-0 justify-content-end">
         <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-5" data-bs-dismiss="modal">OK</button>
       </div>
     </div>

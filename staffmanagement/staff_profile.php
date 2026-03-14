@@ -563,7 +563,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
             <?php if ($hasPendingRequest): ?>
                 <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']): ?>
-                    <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex align-items-center justify-content-center flex-wrap gap-3 px-4 py-3" role="alert">
+                    <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex flex-column align-items-start gap-3 px-4 py-3" role="alert">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-exclamation-circle fs-4 m-0 text-warning-emphasis"></i>
                             <div class="lh-sm m-0">
@@ -578,7 +578,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         </button>
                     </div>
                 <?php elseif ($isAdmin): ?>
-                    <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex align-items-center justify-content-center flex-wrap gap-3 px-4 py-3"
+                    <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex flex-column align-items-start gap-3 px-4 py-3"
                         role="alert">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-exclamation-circle fs-4 m-0 text-warning-emphasis"></i>
@@ -1126,7 +1126,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         <label class="form-check-label" for="autoApprove"><strong>Auto-approve</strong> (Admin)</label>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-center">
+                <div class="modal-footer justify-content-end">
                     <button class="btn-modern btn-outline text-secondary border-secondary fw-bold" onclick="cancelLeaveRequest ? cancelLeaveRequest() : null"
                         data-bs-dismiss="modal">Cancel</button>
                     <button class="btn-modern btn-outline text-success border-success fw-bold" onclick="confirmLeave ? confirmLeave() : null"
@@ -1184,7 +1184,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                 class="btn btn-outline-primary btn-sm"><i class="bi bi-paperclip"></i> View</a></div>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-center" id="viewLeaveActions"></div>
+                <div class="modal-footer justify-content-end" id="viewLeaveActions"></div>
             </div>
         </div>
     </div>
@@ -1232,7 +1232,7 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 class="text-success fw-bold">Approve Request</h5>
                 <p id="leaveApproveConfirmMsg"></p>
-                <div class="mt-3"><button class="btn-modern btn-outline text-secondary border-secondary fw-bold me-2" data-bs-dismiss="modal">Cancel</button><button
+                <div class="mt-3 d-flex justify-content-center gap-2"><button class="btn-modern btn-outline text-secondary border-secondary fw-bold" data-bs-dismiss="modal">Cancel</button><button
                         class="btn-modern btn-outline text-success border-success fw-bold" id="leaveApproveConfirmBtn">Yes, Approve</button></div>
             </div>
         </div>
@@ -1244,7 +1244,7 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 id="leaveConfirmTitle" class="fw-bold">Confirm</h5>
                 <p id="leaveConfirmMsg"></p>
-                <div class="mt-3"><button class="btn-modern btn-outline text-secondary border-secondary fw-bold me-2" data-bs-dismiss="modal">No</button><button
+                <div class="mt-3 d-flex justify-content-center gap-2"><button class="btn-modern btn-outline text-secondary border-secondary fw-bold" data-bs-dismiss="modal">No</button><button
                         class="btn-modern btn-outline text-success border-success fw-bold" id="btnConfirmAction">Yes</button></div>
             </div>
         </div>
@@ -1335,7 +1335,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         <button id="addDayBtn" class="btn-modern btn-outline text-warning border-warning mt-2">+ Add Day</button>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-center">
+                <div class="modal-footer justify-content-end">
                     <button class="btn-modern btn-outline text-secondary border-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button class="btn-modern btn-outline text-success border-success" id="saveBtn">Save Records</button>
                 </div>
@@ -1370,7 +1370,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         <div id="editAttError" class="alert alert-danger d-none p-2 mb-3 small"></div>
                     </form>
                 </div>
-                <div class="modal-footer justify-content-center gap-3 mt-3">
+                <div class="modal-footer justify-content-end gap-3 mt-3">
                     <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" id="btnSaveEditAttendance">Save Changes</button>
                 </div>
@@ -1496,7 +1496,7 @@ $profilePhoto .= '?v=' . microtime(true);
                             </div>
 
                             <div class="form-row">
-                                <div class="form-group" style="display: flex; gap: 10px; justify-content: center;">
+                                <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
                                     <button type="button" id="add-schedule-btn"
                                         class="btn-modern btn-outline text-success border-success"
                                         style="min-width: 140px;" onclick="addSchedule()">Add
@@ -1540,7 +1540,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
                         </div>
 
-                        <div class="form-actions d-flex justify-content-center gap-3 mt-4">
+                        <div class="form-actions d-flex justify-content-end gap-3 mt-4">
                             <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4"
                                 style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit"
@@ -1761,7 +1761,7 @@ $profilePhoto .= '?v=' . microtime(true);
                             style="min-height: 200px;"></div>
                     </div>
                 </div>
-                <div class="modal-footer border-top-0 pt-0 justify-content-center gap-2">
+                <div class="modal-footer border-top-0 pt-0 justify-content-end gap-2">
                     <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4 fw-bold" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold"
                         onclick="cancelPendingRequest(<?php echo $pendingRequestId; ?>)">

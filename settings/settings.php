@@ -217,7 +217,7 @@ endif; ?>
                   </div>
                 </div>
 
-                <div class="d-flex justify-content-center gap-3 mt-4">
+                <div class="d-flex justify-content-end gap-3 mt-4">
                   <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="btnSubmitCurrentPassChange">Change Password</button>
@@ -251,7 +251,7 @@ endif; ?>
                     required>
                 </div>
 
-                <div class="d-flex justify-content-center gap-3 mt-4">
+                <div class="d-flex justify-content-end gap-3 mt-4">
                   <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="changeToStep2">Send OTP</button>
@@ -283,7 +283,7 @@ endif; ?>
                     placeholder="Enter 6-digit code" required>
                 </div>
 
-                <div class="d-flex justify-content-center gap-3 mt-4">
+                <div class="d-flex justify-content-end gap-3 mt-4">
                   <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="changeToStep3">Verify OTP</button>
@@ -329,7 +329,7 @@ endif; ?>
                   </div>
                 </div>
 
-                <div class="d-flex justify-content-center gap-3 mt-4">
+                <div class="d-flex justify-content-end gap-3 mt-4">
                   <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="changeFinalStep">Change Password</button>
@@ -433,7 +433,7 @@ endif; ?>
 
 
 
-                <div class="d-flex justify-content-center gap-3 mt-4">
+                <div class="d-flex justify-content-end gap-3 mt-4">
                   <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="saveLeaveSettingsBtn">Save Changes</button>
@@ -468,7 +468,7 @@ endif; ?>
                     placeholder="Enter minutes (e.g. 20)" style="display: none;" min="0">
                 </div>
 
-                <div class="d-flex justify-content-center gap-3 mt-4">
+                <div class="d-flex justify-content-end gap-3 mt-4">
                   <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="saveBreakSettingsBtn">Save Changes</button>
@@ -504,7 +504,7 @@ endif; ?>
                     placeholder="Enter minutes (e.g. 20)" style="display: none;" min="0">
                 </div>
 
-                <div class="d-flex justify-content-center gap-3 mt-4">
+                <div class="d-flex justify-content-end gap-3 mt-4">
                   <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
                     id="saveGracePeriodBtn">Save Changes</button>

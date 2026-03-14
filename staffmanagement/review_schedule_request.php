@@ -203,6 +203,14 @@ try {
                 width: 100% !important;
             }
         }
+
+        @media (max-width: 576px) {
+            h3.text-nowrap {
+                font-size: 1.25rem !important;
+                white-space: normal !important;
+                line-height: 1.3;
+            }
+        }
     </style>
 </head>
 
@@ -283,10 +291,10 @@ try {
     <div class="content pt-3" id="content">
         <div class="container-fluid">
             <div class="container py-4 mt-5" style="margin-top: -5px !important;">
-                <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
-                    <h3 class="fw-bold mb-0">Pending Schedule Edits</h3>
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 pt-4 gap-3">
+                    <h3 class="fw-bold mb-0 text-nowrap">Pending Schedule Edits</h3>
                     <?php if ($specific_id): ?>
-                        <a href="review_schedule_request.php" class="btn btn-outline-primary shadow-sm hover-scale">
+                        <a href="review_schedule_request.php" class="btn btn-outline-primary shadow-sm hover-scale text-nowrap">
                             <i class="bi bi-arrow-left me-2"></i>View All Pending Requests
                         </a>
                     <?php endif; ?>
@@ -421,7 +429,7 @@ try {
                     <div id="rejectRemarksError" class="text-danger small mt-1" style="display:none;">Please provide a
                         reason for rejection.</div>
                 </div>
-                <div class="modal-footer border-0 justify-content-end pt-0">
+                <div class="modal-footer border-0 justify-content-center pt-0 pb-4">
                     <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4 me-2" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="confirmRejectBtn"><i
                             class="bi bi-x-circle me-1"></i>Confirm Reject</button>
@@ -582,7 +590,7 @@ try {
 
                         </div>
 
-                        <div class="form-actions justify-content-center d-flex gap-3 mt-4">
+                        <div class="form-actions d-flex justify-content-end gap-3 mt-4">
                             <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold"
                                 style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit"

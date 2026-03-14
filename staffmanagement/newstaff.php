@@ -371,7 +371,7 @@ try {
                                         value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
                                     <!-- Step 1 Submit -->
-                                    <div class="mt-4 d-flex justify-content-center">
+                                    <div class="mt-4 d-flex justify-content-end">
                                         <button type="submit" class="btn btn-custom-save-info px-4 py-2">Save Personal
                                             Information</button>
                                     </div>
@@ -453,7 +453,7 @@ try {
                                         <div id="photo-thumbnails"></div>
                                     </div>
 
-                                    <div class="mt-4 pt-3 border-top d-flex justify-content-center">
+                                    <div class="mt-4 pt-3 border-top d-flex justify-content-end">
                                         <button type="button" id="save-faces-btn" class="btn btn-custom-save-info px-5" disabled
                                             onclick="submitFaceData()">
                                             Save Face Registration
@@ -593,7 +593,7 @@ try {
                                             </div>
                                         </div>
 
-                                        <div class="mt-4 pt-3 border-top d-flex justify-content-center">
+                                        <div class="mt-4 pt-3 border-top d-flex justify-content-end">
                                             <button type="button" class="btn btn-save-schedule px-5"
                                                 onclick="submitSchedule()">Save Schedule</button>
                                         </div>

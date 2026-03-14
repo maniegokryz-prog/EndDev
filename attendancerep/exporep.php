@@ -34,8 +34,8 @@ $result = $conn->query($sql);
   <link rel="stylesheet" type="text/css" href="../assets/vendor/daterangepicker/daterangepicker.css" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="attendancerep.css">
   <link rel="stylesheet" href="../settings/settings.css">
+  <link rel="stylesheet" href="attendancerep.css?v=<?php echo time(); ?>">
 
 </head>
 
@@ -74,15 +74,15 @@ if (!function_exists('getCurrentUser')) {
         class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
     </div>
     <nav class="nav flex-column px-2">
-      <?php renderNavigation('Attendance'); ?>
+      <?php renderNavigation('Attendance Reports'); ?>
     </nav>
   </div>
 
   <div class="content pt-3" id="content">
     <div class="container-fluid">
 
-      <div class="d-flex justify-content-between align-items-center mb-1">
-        <h2 class="display-4 text-dark">Export DTR Reports</h2>
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2 gap-md-3">
+        <h2 class="display-4 text-dark page-title mb-0">Export DTR Reports</h2>
       </div>
       <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 

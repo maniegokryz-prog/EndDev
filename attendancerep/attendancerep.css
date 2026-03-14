@@ -627,3 +627,13 @@
    color: #000 !important;
    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
  }
+
+ /* Mobile specific header adjustments */
+ @media (max-width: 576px) {
+   .page-title.display-4,
+   h3.text-nowrap {
+     font-size: 1.25rem !important;
+     white-space: normal !important;
+     line-height: 1.3;
+   }
+ }

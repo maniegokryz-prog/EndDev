@@ -1122,7 +1122,7 @@ $schedules = $viewer->getSchedules();
                       <small class="d-block text-muted">If unchecked, request will be pending for approval</small>
                     </div>
                   </div>
-                  <div class="modal-footer">
+                  <div class="modal-footer justify-content-end">
                     <button class="btn btn-secondary" onclick="cancelLeaveRequest()"
                       data-bs-dismiss="modal">Cancel</button>
                     <button class="btn btn-success" onclick="confirmLeave()">Submit Request</button>
@@ -2244,7 +2244,7 @@ $schedules = $viewer->getSchedules();
                     </div>
                     <button id="addDayBtn" class="btn btn-warning mt-2">+ Add Another Day</button>
                   </div>
-                  <div class="modal-footer">
+                  <div class="modal-footer justify-content-end">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button class="btn btn-success" id="saveBtn">Save Records</button>
                   </div>
@@ -3659,7 +3659,7 @@ $schedules = $viewer->getSchedules();
                   </div>
 
                   <div class="form-row">
-                    <div class="form-group" style="display: flex; gap: 10px;">
+                    <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
                       <button type="button" id="add-schedule-btn"
                         class="btn-modern btn-outline text-success border-success" style="min-width: 140px;"
                         onclick="addSchedule()">Add Schedule</button>
@@ -3700,7 +3700,7 @@ $schedules = $viewer->getSchedules();
 
                 </div>
 
-                <div class="form-actions text-end mt-4">
+                <div class="form-actions d-flex justify-content-end gap-3 mt-4">
                   <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
                     style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
                   <button type="submit" class="btn-modern btn-outline btn-save text-success border-success px-4"

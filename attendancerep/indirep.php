@@ -204,11 +204,6 @@ if ($id) {
       <div class="menu-toggle me-3">
         <i class="bi bi-list fs-3 text-warning icon-btn" id="menu-btn"></i>
       </div>
-      <div class="welcome-message d-none d-md-block">
-        <h5 class="mb-0 text-white">
-          <?php echo isAdmin() ? 'Welcome, Admin!' : 'Welcome!'; ?>
-        </h5>
-      </div>
     </div>
 
     <!-- Right: Sync Status & Notifications -->

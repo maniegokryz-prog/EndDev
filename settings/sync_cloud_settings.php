@@ -108,7 +108,7 @@ if (file_exists($configFile)) {
                                         value="<?php echo intval($config['sync_interval']); ?>" min="10" max="3600">
                                 </div>
 
-                                <div class="d-flex justify-content-center gap-3">
+                                <div class="d-flex justify-content-end gap-3">
                                     <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4"
                                         onclick="window.location.href='settings.php'">Cancel</button>
                                     <button type="submit" class="btn-modern btn-outline text-primary border-primary fw-bold px-4 d-flex align-items-center">
