@@ -47,6 +47,10 @@ switch ($action) {
         syncPullUpdates($conn);
         break;
 
+    case 'fetch_notifications': // Hostinger serving notifications to Localhost
+        fetchNotifications($conn);
+        break;
+
     case 'mark_synced': // Localhost telling VPS it pulled successfully
         $ids = $_POST['ids'] ?? '';
         if (is_string($ids))
@@ -150,6 +154,25 @@ function syncPullUpdates($conn)
     }
 
     echo json_encode(['success' => true, 'data' => $changes, 'total' => $total_changes]);
+}
+
+function fetchNotifications($conn)
+{
+    // Fetch notifications modified or created in the last 24 hours
+    $since = $_POST['since'] ?? date('Y-m-d H:i:s', strtotime('-1 day'));
+
+    $sql = "SELECT id, type, target, message, link, deleted_by, actioned_by, is_read, created_at FROM notifications WHERE created_at >= ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $since);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $notifications = [];
+    while ($row = $result->fetch_assoc()) {
+        $notifications[] = $row;
+    }
+
+    echo json_encode(['success' => true, 'data' => $notifications]);
 }
 
 function syncMarkSynced($conn, $table, $ids)

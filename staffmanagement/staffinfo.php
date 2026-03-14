@@ -1078,7 +1078,6 @@ $schedules = $viewer->getSchedules();
                     <label class="form-label">Type:</label>
                     <select class="form-control mb-3" id="leaveType">
                       <option value="">Select leave type...</option>
-                      <option value="Sick">Sick Leave</option>
                       <option value="Vacation">Vacation Leave</option>
                       <option value="Maternity">Maternity Leave</option>
                       <option value="Paternity">Paternity Leave</option>

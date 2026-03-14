@@ -772,6 +772,85 @@ def fetch_cloud_employees():
         log_message(f"❌ Error fetching cloud employees: {str(e)}")
         return 0
 
+def fetch_cloud_notifications():
+    """Fetch updated notifications from Cloud and update Local DB (specifically deleted_by / actioned_by markers)"""
+    try:
+        headers = {'X-API-KEY': API_KEY, 'User-Agent': 'Auto-Sync/1.0'}
+        since_time = (datetime.now() - timedelta(hours=24)).strftime('%Y-%m-%d %H:%M:%S')
+        payload = {
+            'action': 'fetch_notifications', 
+            'since': since_time
+        }
+        
+        # Verify=False for HTTPs bypass if needed
+        response = requests.post(API_URL, data=payload, headers=headers, timeout=30, verify=False)
+        
+        if response.status_code != 200:
+            return 0
+            
+        result = response.json()
+        if not result.get('success') or not result.get('data'):
+            return 0
+            
+        notifications = result['data']
+        count = 0
+        
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        
+        for cloud_notif in notifications:
+            # Notifications on cloud and local DO NOT share the same ID. 
+            # We match by type, created_at range, and message/link to find the matching local notification.
+            # This is a heuristic match because IDs differ.
+            
+            # Find matching local notification
+            cursor.execute("""
+                SELECT id, deleted_by, actioned_by FROM notifications 
+                WHERE type = %s AND target = %s AND (message = %s OR link = %s)
+                ORDER BY created_at DESC LIMIT 1
+            """, (cloud_notif['type'], cloud_notif['target'], cloud_notif['message'], cloud_notif['link']))
+            
+            local_notif = cursor.fetchone()
+            
+            if local_notif:
+                # Merge deleted_by markers
+                local_deleted = local_notif['deleted_by'] or ''
+                cloud_deleted = cloud_notif.get('deleted_by') or ''
+                
+                # Simple merge: append cloud markers if they don't exist locally
+                new_deleted = local_deleted
+                import re
+                cloud_markers = re.findall(r'\[(.*?)\]', cloud_deleted)
+                for marker in cloud_markers:
+                    if f"[{marker}]" not in new_deleted:
+                        new_deleted += f"[{marker}]"
+                
+                # Actioned by
+                cloud_actioned = cloud_notif.get('actioned_by')
+                new_actioned = local_notif['actioned_by']
+                if cloud_actioned and not new_actioned:
+                    new_actioned = cloud_actioned
+
+                if new_deleted != local_deleted or new_actioned != local_notif['actioned_by'] or cloud_notif.get('is_read') == 1:
+                    is_read = 1 if (cloud_notif.get('is_read') == 1 or local_notif.get('is_read') == 1) else 0
+                    update_query = "UPDATE notifications SET deleted_by = %s, actioned_by = %s, is_read = %s WHERE id = %s"
+                    cursor.execute(update_query, (new_deleted if new_deleted else None, new_actioned, is_read, local_notif['id']))
+                    if cursor.rowcount > 0:
+                        count += 1
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        if count > 0:
+            log_message(f"✅ Pulled {count} notification updates from Cloud")
+            
+        return count
+
+    except Exception as e:
+        log_message(f"❌ Error fetching cloud notifications: {str(e)}")
+        return 0
+
 def main():
     """Main sync loop"""
     log_message("🚀 Auto-Sync Script Started")
@@ -803,8 +882,9 @@ def main():
             c6 = fetch_cloud_employees()
             c7 = sync_schedule_requests()
             c8 = sync_notifications()
+            c9 = fetch_cloud_notifications()
             
-            total_synced = c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8
+            total_synced = c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9
             if total_synced > 0:
                 msg = f"Synced {total_synced} records"
                 update_status_file("success", msg)

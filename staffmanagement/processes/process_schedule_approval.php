@@ -59,7 +59,8 @@ try {
                 $updNotifStmt->close();
             }
         }
-    } catch (Throwable $e) {
+    }
+    catch (Throwable $e) {
         error_log("Failed to update notification ownership: " . $e->getMessage());
     }
 
@@ -75,9 +76,9 @@ try {
 
         // Update status to rejected
         $updateQuery = $hasSyncColumn ? 
-            "UPDATE schedule_requests SET status = 'rejected', sync_status = 0 WHERE id = ?" : 
+            "UPDATE schedule_requests SET status = 'rejected', sync_status = 0 WHERE id = ?" :
             "UPDATE schedule_requests SET status = 'rejected' WHERE id = ?";
-            
+
         $stmt = $conn->prepare($updateQuery);
         if (!$stmt) {
             echo json_encode(['success' => false, 'message' => 'Database error (reject init): ' . $conn->error]);
@@ -102,10 +103,11 @@ try {
         echo json_encode(['success' => true, 'message' => 'Request rejected successfully']);
         exit;
 
-    } elseif ($action === 'approve') {
+    }
+    elseif ($action === 'approve') {
         // Update status to approved
         $updateQuery = $hasSyncColumn ? 
-            "UPDATE schedule_requests SET status = 'approved', sync_status = 0 WHERE id = ?" : 
+            "UPDATE schedule_requests SET status = 'approved', sync_status = 0 WHERE id = ?" :
             "UPDATE schedule_requests SET status = 'approved' WHERE id = ?";
 
         $stmt = $conn->prepare($updateQuery);
@@ -115,8 +117,8 @@ try {
         }
         $stmt->bind_param("i", $requestId);
         if (!$stmt->execute()) {
-             echo json_encode(['success' => false, 'message' => 'Database error (approve exec): ' . $stmt->error]);
-             exit;
+            echo json_encode(['success' => false, 'message' => 'Database error (approve exec): ' . $stmt->error]);
+            exit;
         }
 
         // Notify employee
@@ -135,15 +137,18 @@ try {
         exit;
     }
 
-} catch (Throwable $e) {
+}
+catch (Throwable $e) {
     error_log("Error processing schedule approval: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
 }
 
-function sendEmployeeNotification($db, $employeeId, $message, $linkOverride = null, $scheduleRequestId = null) {
+function sendEmployeeNotification($db, $employeeId, $message, $linkOverride = null, $scheduleRequestId = null)
+{
     try {
         $check_table = $db->query("SHOW TABLES LIKE 'notifications'");
-        if ($check_table->num_rows == 0) return;
+        if ($check_table->num_rows == 0)
+            return;
 
         // Determine link
         $link = $linkOverride ?? "#";
@@ -167,21 +172,25 @@ function sendEmployeeNotification($db, $employeeId, $message, $linkOverride = nu
             if ($check_column->num_rows > 0) {
                 $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, link, target, is_read, schedule_request_id) VALUES (?, 'schedule_change', ?, ?, 'employee', 0, ?)");
                 $stmt->bind_param("issi", $employeeId, $message, $link, $scheduleRequestId);
-            } else {
+            }
+            else {
                 $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, target, is_read, schedule_request_id) VALUES (?, 'schedule_change', ?, 'employee', 0, ?)");
                 $stmt->bind_param("isi", $employeeId, $message, $scheduleRequestId);
             }
-        } else {
+        }
+        else {
             if ($check_column->num_rows > 0) {
                 $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'schedule_change', ?, ?, 'employee', 0)");
                 $stmt->bind_param("iss", $employeeId, $message, $link);
-            } else {
+            }
+            else {
                 $stmt = $db->prepare("INSERT INTO notifications (employee_id, type, message, target, is_read) VALUES (?, 'schedule_change', ?, 'employee', 0)");
                 $stmt->bind_param("is", $employeeId, $message);
             }
         }
         $stmt->execute();
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
         error_log("Notification Error: " . $e->getMessage());
     }
 }

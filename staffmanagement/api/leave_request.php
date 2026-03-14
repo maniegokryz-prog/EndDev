@@ -86,7 +86,8 @@ try {
             throw new Exception('Invalid action');
     }
 
-} catch (Exception $e) {
+}
+catch (Exception $e) {
     // Clear any error output
     if (ob_get_length())
         ob_end_clean();
@@ -211,7 +212,8 @@ function submitLeaveRequest($conn)
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("iisssss", $employee_id, $leave_type_id, $start_date, $end_date, $reason, $initial_status, $attachment_path);
-    } else {
+    }
+    else {
         $sql = "INSERT INTO employee_leaves 
                 (employee_id, leave_type_id, start_date, end_date, reason, status) 
                 VALUES (?, ?, ?, ?, ?, ?)";
@@ -242,14 +244,16 @@ function submitLeaveRequest($conn)
         markDatesAsLeave($conn, $employee_id, $start_date, $end_date);
         logActivity($conn, 'Leave auto-approved by admin', "Employee ID: $employee_id, Leave ID: $leave_id");
 
-        $message = $is_admin ?
+        $message = $is_admin ? 
             'Leave request submitted and automatically approved' :
             'Leave request approved successfully';
-    } else {
+    }
+    else {
         // Create notification for admin (only if not auto-approved)
         if (!$is_admin) {
             createAdminNotification($conn, $employee_id, $leave_id, 'new_request');
-        } else {
+        }
+        else {
             createAdminNotification($conn, $employee_id, $leave_id, 'admin_request');
             // Also notify the admin requestor as an employee
             createEmployeeNotification($conn, $employee_id, $leave_id, 'pending');
@@ -257,7 +261,7 @@ function submitLeaveRequest($conn)
 
         logActivity($conn, 'Leave request submitted', "Employee ID: $employee_id, Leave ID: $leave_id, Requested by: " . ($is_admin ? 'Admin' : 'Employee'));
 
-        $message = $is_admin ?
+        $message = $is_admin ? 
             'Leave request submitted for approval' :
             'Leave request submitted successfully and pending approval';
     }
@@ -621,6 +625,7 @@ function getAdminNotifications($conn)
                         n.schedule_request_id,
                         el.start_date,
                         el.end_date,
+                        e.id as emp_tbl_id,
                         e.first_name,
                         e.last_name,
                         e.employee_id as employee_code,
@@ -638,7 +643,8 @@ function getAdminNotifications($conn)
             $stmt->bind_param("ss", $user_marker, $user_marker);
             $stmt->execute();
             $result = $stmt->get_result();
-        } else {
+        }
+        else {
             // Employee Admin: Can see admin notifications AND their own personal notifications
             $sql = "SELECT 
                         n.id,
@@ -650,6 +656,7 @@ function getAdminNotifications($conn)
                         n.schedule_request_id,
                         el.start_date,
                         el.end_date,
+                        e.id as emp_tbl_id,
                         e.first_name,
                         e.last_name,
                         e.employee_id as employee_code,
@@ -669,7 +676,8 @@ function getAdminNotifications($conn)
             $stmt->execute();
             $result = $stmt->get_result();
         }
-    } else {
+    }
+    else {
         $sql = "SELECT 
                     n.id,
                     n.type,
@@ -680,6 +688,7 @@ function getAdminNotifications($conn)
                     n.schedule_request_id,
                     el.start_date,
                     el.end_date,
+                    e.id as emp_tbl_id,
                     e.first_name,
                     e.last_name,
                     e.employee_id as employee_code,
@@ -699,14 +708,33 @@ function getAdminNotifications($conn)
 
     $notifications = [];
 
+    $is_sys_admin = $_SESSION['is_system_admin'] ?? false;
+    
     while ($row = $result->fetch_assoc()) {
+        $msg = $row['message'];
+        $emp_name = trim($row['first_name'] . ' ' . $row['last_name']);
+        
+        // If the current user is NOT a system admin and they are the employee who caused the notification, 
+        // personalize it to "You" from their point of view.
+        // We exclude types that are actions taken BY admins ON the employee's data (like approvals, rejections, schedule changes).
+        $excluded_from_you = ['schedule_change', 'leave_approved', 'leave_rejected', 'schedule_approval'];
+        
+        if (!$is_sys_admin && isset($row['emp_tbl_id']) && $row['emp_tbl_id'] == $user_id && !in_array($row['type'], $excluded_from_you)) {
+            $msg = str_replace($emp_name . " has", "You have", $msg);
+            $msg = str_replace($emp_name . " requested", "You requested", $msg);
+            // Case-insensitive replacements for "from [Name]"
+            $msg = str_ireplace("from " . $emp_name, "from You", $msg);
+            // Catch anything else remaining
+            $msg = str_replace($emp_name, "You", $msg);
+        }
+
         $notifications[] = [
             'id' => $row['id'],
             'type' => $row['type'],
-            'message' => $row['message'],
+            'message' => $msg,
             'is_read' => $row['is_read'],
             'created_at' => $row['created_at'],
-            'employee_name' => trim($row['first_name'] . ' ' . $row['last_name']),
+            'employee_name' => $emp_name,
             'employee_code' => $row['employee_code'],
             'leave_id' => $row['leave_id'],
             'link' => $row['link'],
@@ -718,8 +746,8 @@ function getAdminNotifications($conn)
         'success' => true,
         'count' => count($notifications),
         'unread_count' => array_reduce($notifications, function ($count, $n) {
-            return $count + ($n['is_read'] ? 0 : 1);
-        }, 0),
+        return $count + ($n['is_read'] ? 0 : 1);
+    }, 0),
         'data' => $notifications
     ]);
 }
@@ -785,7 +813,8 @@ function deleteNotification($conn)
         $sql = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']') WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("si", $user_marker, $notification_id);
-    } else {
+    }
+    else {
         // Only allow hard deletion of own employee notifications
         $sql = "DELETE FROM notifications WHERE id = ? AND employee_id = ?";
         $stmt = $conn->prepare($sql);
@@ -839,14 +868,15 @@ function deleteAllNotifications($conn)
         $stmt2 = $conn->prepare($sql2);
         $stmt2->bind_param("i", $user_id);
         $stmt2->execute();
-        
+
         $deleted_count = $stmt1->affected_rows + $stmt2->affected_rows;
-    } else {
+    }
+    else {
         // Delete only employee's own notifications
         $sql = "DELETE FROM notifications WHERE target = 'employee' AND employee_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $user_id);
-        
+
         if (!$stmt->execute()) {
             throw new Exception('Failed to delete notifications');
         }
@@ -981,7 +1011,8 @@ function createAdminNotification($conn, $employee_id, $leave_id, $type)
 
     if ($type === 'admin_request') {
         $message = "$employee_name has submitted a leave request (Pending for approval)";
-    } else {
+    }
+    else {
         $message = "$employee_name has submitted a leave request (Pending for approval)";
     }
 
@@ -1032,11 +1063,14 @@ function createEmployeeNotification($conn, $employee_id, $leave_id, $status)
 
     if ($status === 'approved') {
         $message = "$employee_name, Your leave request has been Approved";
-    } else if ($status === 'rejected') {
+    }
+    else if ($status === 'rejected') {
         $message = "$employee_name, Your leave request has been Rejected";
-    } else if ($status === 'pending') {
+    }
+    else if ($status === 'pending') {
         $message = "$employee_name, Your leave request has been submitted (Pending for approval)";
-    } else {
+    }
+    else {
         $message = "$employee_name, Your leave request has been " . ucfirst($status);
     }
 
@@ -1071,7 +1105,8 @@ function markDatesAsLeave($conn, $employee_id, $start_date, $end_date)
         if ($result->num_rows > 0) {
             // Update existing record
             $sql = "UPDATE daily_attendance SET status = 'on_leave' WHERE employee_id = ? AND attendance_date = ?";
-        } else {
+        }
+        else {
             // Insert new record
             $sql = "INSERT INTO daily_attendance (employee_id, attendance_date, status) VALUES (?, ?, 'on_leave')";
         }
@@ -1086,7 +1121,8 @@ function markDatesAsLeave($conn, $employee_id, $start_date, $end_date)
             syncToCloud('daily_attendance', [
                 'status' => 'on_leave'
             ], 'update', "employee_id = $employee_id AND attendance_date = '$date'");
-        } else {
+        }
+        else {
             syncToCloud('daily_attendance', [
                 'employee_id' => $employee_id,
                 'attendance_date' => $date,
@@ -1127,12 +1163,13 @@ function ensureNotificationsTable($conn)
         if ($col_check_deleted && $col_check_deleted->num_rows === 0) {
             $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
         }
-        
+
         // Auto-add actioned_by column if it doesn't exist yet, or modify it if it's INT
         $col_check_actioned = $conn->query("SHOW COLUMNS FROM notifications LIKE 'actioned_by'");
         if ($col_check_actioned && $col_check_actioned->num_rows === 0) {
             $conn->query("ALTER TABLE notifications ADD COLUMN actioned_by VARCHAR(50) NULL DEFAULT NULL");
-        } else {
+        }
+        else {
             // Ensure it's VARCHAR(50) to support string markers
             $conn->query("ALTER TABLE notifications MODIFY COLUMN actioned_by VARCHAR(50) NULL DEFAULT NULL");
         }
@@ -1142,8 +1179,9 @@ function ensureNotificationsTable($conn)
             FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE");
         @$conn->query("ALTER TABLE notifications ADD CONSTRAINT fk_notif_leave 
             FOREIGN KEY (leave_id) REFERENCES employee_leaves(id) ON DELETE CASCADE");
-    } catch (Exception $e) {
-        // Silently fail - table might already exist
+    }
+    catch (Exception $e) {
+    // Silently fail - table might already exist
     }
 }
 

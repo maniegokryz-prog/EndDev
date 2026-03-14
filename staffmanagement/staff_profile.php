@@ -1094,7 +1094,6 @@ $profilePhoto .= '?v=' . microtime(true);
                     <label class="form-label">Type:</label>
                     <select class="form-control mb-3" id="leaveType">
                         <option value="">Select leave type...</option>
-                        <option value="Sick">Sick Leave</option>
                         <option value="Vacation">Vacation Leave</option>
                         <option value="Maternity">Maternity Leave</option>
                         <option value="Paternity">Paternity Leave</option>
@@ -1158,10 +1157,10 @@ $profilePhoto .= '?v=' . microtime(true);
     <div class="modal fade" id="leaveDetailsViewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header justify-content-center">
+                <div class="modal-header">
                     <h5 class="modal-title fw-bold">Leave Request Details</h5>
                 </div>
-                <div class="modal-body text-center">
+                <div class="modal-body">
                     <div class="mb-3"><label class="fw-bold">Type:</label>
                         <div id="viewLeaveType" class=""></div>
                     </div>

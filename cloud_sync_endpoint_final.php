@@ -70,6 +70,9 @@ try {
         case 'fetch_employees':
             fetchEmployees($conn);
             break;
+        case 'fetch_notifications':
+            fetchNotifications($conn);
+            break;
         case 'insert':
             handleInsert($conn, $table, $data);
             break;
@@ -135,6 +138,25 @@ function fetchEmployees($conn)
     }
 
     echo json_encode(['success' => true, 'data' => $employees]);
+}
+
+function fetchNotifications($conn)
+{
+    // Fetch notifications modified or created in the last 24 hours
+    $since = $_POST['since'] ?? date('Y-m-d H:i:s', strtotime('-1 day'));
+
+    $sql = "SELECT id, type, target, message, link, deleted_by, actioned_by, is_read, created_at FROM notifications WHERE created_at >= ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $since);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $notifications = [];
+    while ($row = $result->fetch_assoc()) {
+        $notifications[] = $row;
+    }
+
+    echo json_encode(['success' => true, 'data' => $notifications]);
 }
 
 function handleInsert($conn, $table, $data)
