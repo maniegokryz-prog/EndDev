@@ -73,6 +73,9 @@ try {
         case 'fetch_notifications':
             fetchNotifications($conn);
             break;
+        case 'upsert_notifications':
+            upsertNotifications($conn, $data);
+            break;
         case 'insert':
             handleInsert($conn, $table, $data);
             break;
@@ -142,21 +145,124 @@ function fetchEmployees($conn)
 
 function fetchNotifications($conn)
 {
-    // Fetch notifications modified or created in the last 24 hours
-    $since = $_POST['since'] ?? date('Y-m-d H:i:s', strtotime('-1 day'));
+    // Fetch notifications flagged for sync (sync_status=0) OR recent ones for bootstrapping
+    $since = $_POST['since'] ?? date('Y-m-d H:i:s', strtotime('-24 hours'));
 
-    $sql = "SELECT id, type, target, message, link, deleted_by, actioned_by, is_read, created_at FROM notifications WHERE created_at >= ?";
+    // Check if sync_status column exists on this server
+    $colCheck = $conn->query("SHOW COLUMNS FROM notifications LIKE 'sync_status'");
+    
+    if ($colCheck && $colCheck->num_rows > 0) {
+        // Fetch rows that need syncing (pending sync) OR recent rows
+        $sql = "SELECT id, type, target, message, link, deleted_by, actioned_by, is_read, created_at 
+                FROM notifications 
+                WHERE sync_status = 0 OR created_at >= ?
+                ORDER BY created_at DESC LIMIT 500";
+    } else {
+        $sql = "SELECT id, type, target, message, link, deleted_by, actioned_by, is_read, created_at 
+                FROM notifications WHERE created_at >= ?
+                ORDER BY created_at DESC LIMIT 500";
+    }
+    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $since);
     $stmt->execute();
     $result = $stmt->get_result();
 
     $notifications = [];
+    $ids = [];
     while ($row = $result->fetch_assoc()) {
         $notifications[] = $row;
+        $ids[] = $row['id'];
+    }
+    
+    // Mark those rows as synced (sync_status=1) so they don't keep being fetched
+    if (!empty($ids) && $colCheck && $colCheck->num_rows > 0) {
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $markStmt = $conn->prepare("UPDATE notifications SET sync_status = 1 WHERE id IN ($placeholders)");
+        $types = str_repeat('i', count($ids));
+        $markStmt->bind_param($types, ...$ids);
+        $markStmt->execute();
     }
 
     echo json_encode(['success' => true, 'data' => $notifications]);
+}
+
+function upsertNotifications($conn, $batch)
+{
+    /**
+     * Upserts a batch of notifications from remote.
+     * For each notification, we match by (type, target, message, link) heuristically,
+     * and MERGE deleted_by / actioned_by rather than overwriting.
+     */
+    if (empty($batch) || !is_array($batch)) {
+        echo json_encode(['success' => true, 'message' => 'No notifications to upsert', 'count' => 0]);
+        return;
+    }
+
+    // Ensure columns exist
+    $conn->query("ALTER TABLE notifications ADD COLUMN IF NOT EXISTS deleted_by TEXT NULL DEFAULT NULL");
+    $conn->query("ALTER TABLE notifications ADD COLUMN IF NOT EXISTS actioned_by TEXT NULL DEFAULT NULL");
+    $conn->query("ALTER TABLE notifications ADD COLUMN IF NOT EXISTS sync_status TINYINT(1) DEFAULT 1");
+
+    $updated = 0;
+    foreach ($batch as $cloud_notif) {
+        $type     = $cloud_notif['type'] ?? '';
+        $target   = $cloud_notif['target'] ?? '';
+        $message  = $cloud_notif['message'] ?? '';
+        $link     = $cloud_notif['link'] ?? '';
+        $cloud_deleted  = $cloud_notif['deleted_by'] ?? '';
+        $cloud_actioned = $cloud_notif['actioned_by'] ?? null;
+        $cloud_is_read  = isset($cloud_notif['is_read']) ? (int)$cloud_notif['is_read'] : 0;
+
+        // Find matching local notification by content (IDs differ between environments)
+        $stmt = $conn->prepare(
+            "SELECT id, deleted_by, actioned_by, is_read FROM notifications 
+             WHERE type = ? AND target = ? AND (message = ? OR link = ?)
+             ORDER BY created_at DESC LIMIT 1"
+        );
+        $stmt->bind_param('ssss', $type, $target, $message, $link);
+        $stmt->execute();
+        $local = $stmt->get_result()->fetch_assoc();
+        
+        if (!$local) continue; // Not found locally - skip
+
+        // Merge deleted_by: append any new markers from cloud that don't exist locally
+        $local_deleted = $local['deleted_by'] ?? '';
+        $merged_deleted = $local_deleted;
+        if ($cloud_deleted) {
+            preg_match_all('/\[([^\]]+)\]/', $cloud_deleted, $matches);
+            foreach ($matches[1] as $marker) {
+                if (strpos($merged_deleted, "[$marker]") === false) {
+                    $merged_deleted .= "[$marker]";
+                }
+            }
+        }
+
+        // Merge actioned_by: take cloud value if local is empty
+        $merged_actioned = $local['actioned_by'];
+        if (!$merged_actioned && $cloud_actioned) {
+            $merged_actioned = $cloud_actioned;
+        }
+
+        // Merge is_read: once read, always read
+        $merged_is_read = ($cloud_is_read || $local['is_read']) ? 1 : 0;
+
+        // Only update if something actually changed
+        if ($merged_deleted !== $local_deleted || 
+            $merged_actioned !== $local['actioned_by'] || 
+            $merged_is_read !== (int)$local['is_read']) {
+            
+            $upd = $conn->prepare(
+                "UPDATE notifications SET deleted_by = ?, actioned_by = ?, is_read = ?, sync_status = 1
+                 WHERE id = ?"
+            );
+            $upd->bind_param('ssii', $merged_deleted ?: null, $merged_actioned, $merged_is_read, $local['id']);
+            $upd->execute();
+            if ($upd->affected_rows > 0) $updated++;
+        }
+    }
+
+    echo json_encode(['success' => true, 'message' => "Upserted $updated notification(s)", 'count' => $updated]);
 }
 
 function handleInsert($conn, $table, $data)

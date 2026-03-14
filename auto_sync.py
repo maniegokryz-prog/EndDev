@@ -520,48 +520,160 @@ def sync_schedule_requests():
         return 0
 
 def sync_notifications():
-    """Sync notifications table to Hostinger so employees see alerts on both sides"""
+    """Push local notification changes (especially deletions) to Hostinger via upsert."""
     try:
         conn = pymysql.connect(**LOCAL_DB_CONFIG)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         
-        # Sync notifications created in the last hour or flagged as unsynced
+        # Only pick rows flagged for sync (sync_status = 0) - these have changes
         cursor.execute("""
-            SELECT * FROM notifications 
-            WHERE sync_status = 0 OR created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            SELECT id, type, target, message, link, deleted_by, actioned_by, is_read, created_at
+            FROM notifications 
+            WHERE sync_status = 0
             ORDER BY created_at DESC
             LIMIT 200
         """)
         records = cursor.fetchall()
-        synced_count = 0
-        synced_ids = []
         
-        for record in records:
-            data = convert_to_json_serializable(record)
-            record_id = data.get('id')
-            # Keep the id so ON DUPLICATE KEY UPDATE works correctly on Hostinger
-            if sync_to_cloud('notifications', data, 'insert'):
-                synced_count += 1
-                if record_id:
-                    synced_ids.append(record_id)
+        if not records:
+            cursor.close()
+            conn.close()
+            return 0
         
-        # Mark synced locally
-        if synced_ids:
-            placeholders = ','.join(['%s'] * len(synced_ids))
-            cursor.execute(f"UPDATE notifications SET sync_status = 1 WHERE id IN ({placeholders})", synced_ids)
-            conn.commit()
+        # Convert records to JSON-serializable format
+        batch = [convert_to_json_serializable(r) for r in records]
+        record_ids = [r['id'] for r in records]
+        
+        # Push the batch to Hostinger via the new upsert_notifications action
+        headers = {'X-API-KEY': API_KEY, 'User-Agent': 'Auto-Sync/1.0'}
+        payload = {
+            'action': 'upsert_notifications',
+            'data': json.dumps(batch)
+        }
+        
+        try:
+            response = requests.post(API_URL, data=payload, headers=headers, timeout=30, verify=False)
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success'):
+                    count = result.get('count', len(batch))
+                    log_message(f"✅ Pushed {count} notification upserts to Hostinger")
+                    # Mark synced locally
+                    placeholders = ','.join(['%s'] * len(record_ids))
+                    cursor.execute(f"UPDATE notifications SET sync_status = 1 WHERE id IN ({placeholders})", record_ids)
+                    conn.commit()
+                    cursor.close()
+                    conn.close()
+                    return count
+                else:
+                    log_message(f"❌ upsert_notifications failed: {result.get('error', 'Unknown')}")
+            else:
+                log_message(f"❌ upsert_notifications HTTP error: {response.status_code}")
+        except Exception as e:
+            log_message(f"❌ Network error pushing notification upserts: {str(e)}")
         
         cursor.close()
         conn.close()
-        
-        if synced_count > 0:
-            log_message(f"✅ Synced {synced_count} notification records")
-        
-        return synced_count
+        return 0
         
     except pymysql.Error as e:
-        log_message(f"❌ Database error syncing notifications: {str(e)}")
+        log_message(f"❌ Database error in sync_notifications: {str(e)}")
         return 0
+
+
+def fetch_cloud_notifications():
+    """Pull pending notification changes from Hostinger and apply them locally via merge."""
+    try:
+        headers = {'X-API-KEY': API_KEY, 'User-Agent': 'Auto-Sync/1.0'}
+        
+        # Fetch cloud-side pending notifications (sync_status=0 or recent)
+        since_time = (datetime.now() - timedelta(hours=24)).strftime('%Y-%m-%d %H:%M:%S')
+        payload = {
+            'action': 'fetch_notifications', 
+            'since': since_time
+        }
+        
+        response = requests.post(API_URL, data=payload, headers=headers, timeout=30, verify=False)
+        
+        if response.status_code != 200:
+            return 0
+            
+        result = response.json()
+        if not result.get('success') or not result.get('data'):
+            return 0
+            
+        notifications = result['data']
+        if not notifications:
+            return 0
+        
+        import re
+        
+        conn = pymysql.connect(**LOCAL_DB_CONFIG)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        
+        count = 0
+        for cloud_notif in notifications:
+            c_type    = cloud_notif.get('type', '')
+            c_target  = cloud_notif.get('target', '')
+            c_message = cloud_notif.get('message', '')
+            c_link    = cloud_notif.get('link', '')
+            c_deleted = cloud_notif.get('deleted_by') or ''
+            c_actioned = cloud_notif.get('actioned_by')
+            c_is_read = 1 if cloud_notif.get('is_read') in (1, '1', True) else 0
+
+            # Find matching local notification
+            cursor.execute("""
+                SELECT id, deleted_by, actioned_by, is_read FROM notifications 
+                WHERE type = %s AND target = %s AND (message = %s OR link = %s)
+                ORDER BY created_at DESC LIMIT 1
+            """, (c_type, c_target, c_message, c_link))
+            
+            local = cursor.fetchone()
+            if not local:
+                continue
+            
+            # Merge deleted_by: append cloud markers not yet local
+            local_deleted = local['deleted_by'] or ''
+            merged_deleted = local_deleted
+            cloud_markers = re.findall(r'\[([^\]]+)\]', c_deleted)
+            for marker in cloud_markers:
+                if f"[{marker}]" not in merged_deleted:
+                    merged_deleted += f"[{marker}]"
+            
+            # Merge actioned_by: take cloud value if local is empty
+            merged_actioned = local['actioned_by']
+            if not merged_actioned and c_actioned:
+                merged_actioned = c_actioned
+            
+            # Merge is_read: once read, always read
+            local_is_read = 1 if local.get('is_read') in (1, '1', True) else 0
+            merged_is_read = 1 if (c_is_read or local_is_read) else 0
+            
+            # Only write if something changed
+            if (merged_deleted != local_deleted or 
+                merged_actioned != local['actioned_by'] or
+                merged_is_read != local_is_read):
+                
+                cursor.execute(
+                    "UPDATE notifications SET deleted_by = %s, actioned_by = %s, is_read = %s, sync_status = 1 WHERE id = %s",
+                    (merged_deleted or None, merged_actioned, merged_is_read, local['id'])
+                )
+                if cursor.rowcount > 0:
+                    count += 1
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        if count > 0:
+            log_message(f"✅ Applied {count} notification changes from Hostinger to Local")
+            
+        return count
+
+    except Exception as e:
+        log_message(f"❌ Error in fetch_cloud_notifications: {str(e)}")
+        return 0
+
 
 def fetch_cloud_pending_leaves():
     """Fetch pending leave requests from Cloud and save to Local DB"""
@@ -772,84 +884,7 @@ def fetch_cloud_employees():
         log_message(f"❌ Error fetching cloud employees: {str(e)}")
         return 0
 
-def fetch_cloud_notifications():
-    """Fetch updated notifications from Cloud and update Local DB (specifically deleted_by / actioned_by markers)"""
-    try:
-        headers = {'X-API-KEY': API_KEY, 'User-Agent': 'Auto-Sync/1.0'}
-        since_time = (datetime.now() - timedelta(hours=24)).strftime('%Y-%m-%d %H:%M:%S')
-        payload = {
-            'action': 'fetch_notifications', 
-            'since': since_time
-        }
-        
-        # Verify=False for HTTPs bypass if needed
-        response = requests.post(API_URL, data=payload, headers=headers, timeout=30, verify=False)
-        
-        if response.status_code != 200:
-            return 0
-            
-        result = response.json()
-        if not result.get('success') or not result.get('data'):
-            return 0
-            
-        notifications = result['data']
-        count = 0
-        
-        conn = pymysql.connect(**LOCAL_DB_CONFIG)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        
-        for cloud_notif in notifications:
-            # Notifications on cloud and local DO NOT share the same ID. 
-            # We match by type, created_at range, and message/link to find the matching local notification.
-            # This is a heuristic match because IDs differ.
-            
-            # Find matching local notification
-            cursor.execute("""
-                SELECT id, deleted_by, actioned_by FROM notifications 
-                WHERE type = %s AND target = %s AND (message = %s OR link = %s)
-                ORDER BY created_at DESC LIMIT 1
-            """, (cloud_notif['type'], cloud_notif['target'], cloud_notif['message'], cloud_notif['link']))
-            
-            local_notif = cursor.fetchone()
-            
-            if local_notif:
-                # Merge deleted_by markers
-                local_deleted = local_notif['deleted_by'] or ''
-                cloud_deleted = cloud_notif.get('deleted_by') or ''
-                
-                # Simple merge: append cloud markers if they don't exist locally
-                new_deleted = local_deleted
-                import re
-                cloud_markers = re.findall(r'\[(.*?)\]', cloud_deleted)
-                for marker in cloud_markers:
-                    if f"[{marker}]" not in new_deleted:
-                        new_deleted += f"[{marker}]"
-                
-                # Actioned by
-                cloud_actioned = cloud_notif.get('actioned_by')
-                new_actioned = local_notif['actioned_by']
-                if cloud_actioned and not new_actioned:
-                    new_actioned = cloud_actioned
 
-                if new_deleted != local_deleted or new_actioned != local_notif['actioned_by'] or cloud_notif.get('is_read') == 1:
-                    is_read = 1 if (cloud_notif.get('is_read') == 1 or local_notif.get('is_read') == 1) else 0
-                    update_query = "UPDATE notifications SET deleted_by = %s, actioned_by = %s, is_read = %s WHERE id = %s"
-                    cursor.execute(update_query, (new_deleted if new_deleted else None, new_actioned, is_read, local_notif['id']))
-                    if cursor.rowcount > 0:
-                        count += 1
-        
-        conn.commit()
-        cursor.close()
-        conn.close()
-        
-        if count > 0:
-            log_message(f"✅ Pulled {count} notification updates from Cloud")
-            
-        return count
-
-    except Exception as e:
-        log_message(f"❌ Error fetching cloud notifications: {str(e)}")
-        return 0
 
 def main():
     """Main sync loop"""
