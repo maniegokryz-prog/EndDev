@@ -37,6 +37,14 @@ try {
     }
     $stmt->close();
 
+    // Ensure the 'status' column ENUM includes 'cancelled' to prevent truncation errors on different PCs
+    $enumCheck = $conn->query("SHOW COLUMNS FROM schedule_requests LIKE 'status'");
+    if ($enumCheck && $row = $enumCheck->fetch_assoc()) {
+        if (strpos($row['Type'], "'cancelled'") === false) {
+            $conn->query("ALTER TABLE schedule_requests MODIFY COLUMN status enum('pending','approved','rejected','cancelled') DEFAULT 'pending'");
+        }
+    }
+
     // Soft-delete: mark as cancelled so it syncs to Hostinger properly
     $syncResult = $conn->query("SHOW COLUMNS FROM schedule_requests LIKE 'sync_status'");
     $hasSyncCol = $syncResult && $syncResult->num_rows > 0;

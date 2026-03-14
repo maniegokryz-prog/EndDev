@@ -2031,7 +2031,6 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- <script src="../assets/js/staff_profile_logic.js?v=<?php echo time(); ?>"></script> -->
-    <script src="../assets/js/new_profile.js?v=<?php echo time(); ?>"></script>
     <script>
         // Logout Modal Trigger
         function showLogoutModal() {
