@@ -42,6 +42,24 @@ try {
         exit;
     }
 
+    // Find the notification and set actioned_by to current admin so it only shows for them
+    try {
+        $admin_id = $_SESSION['user_id'] ?? 0;
+        if ($admin_id > 0) {
+            $check_col = $conn->query("SHOW COLUMNS FROM notifications LIKE 'actioned_by'");
+            if ($check_col && $check_col->num_rows > 0) {
+                // The link format used in update_employee_schedule.php is "/EndDev/staffmanagement/review_schedule_request.php?id=[ID]"
+                $linkPattern = "%review_schedule_request.php?id=" . $requestId;
+                $updNotifStmt = $conn->prepare("UPDATE notifications SET actioned_by = ?, is_read = 1 WHERE type = 'schedule_approval' AND link LIKE ?");
+                $updNotifStmt->bind_param("is", $admin_id, $linkPattern);
+                $updNotifStmt->execute();
+                $updNotifStmt->close();
+            }
+        }
+    } catch (Throwable $e) {
+        error_log("Failed to update notification ownership: " . $e->getMessage());
+    }
+
     // Determine if sync_status column exists
     $hasSyncColumn = false;
     $syncCheck = $conn->query("SHOW COLUMNS FROM schedule_requests LIKE 'sync_status'");

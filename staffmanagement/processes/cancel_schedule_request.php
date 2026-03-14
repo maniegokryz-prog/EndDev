@@ -56,6 +56,22 @@ try {
     $delStmt = $conn->prepare($updateQuery);
     $delStmt->bind_param("i", $request_id);
     if ($delStmt->execute()) {
+        // Find and delete the admin notification for this request
+        try {
+            // Check if link column exists (since schedule notifications use it)
+            $check_link = $conn->query("SHOW COLUMNS FROM notifications LIKE 'link'");
+            if ($check_link && $check_link->num_rows > 0) {
+                // The link format used in update_employee_schedule.php is "/EndDev/staffmanagement/review_schedule_request.php?id=[ID]"
+                $linkPattern = "%review_schedule_request.php?id=" . $request_id;
+                $delNotifStmt = $conn->prepare("DELETE FROM notifications WHERE type = 'schedule_approval' AND link LIKE ?");
+                $delNotifStmt->bind_param("s", $linkPattern);
+                $delNotifStmt->execute();
+                $delNotifStmt->close();
+            }
+        } catch (Throwable $e) {
+            error_log("Failed to delete notification on schedule cancel: " . $e->getMessage());
+        }
+
         echo json_encode(['success' => true, 'message' => 'Schedule request cancelled successfully.']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to cancel the schedule request.']);

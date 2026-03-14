@@ -363,6 +363,17 @@ function approveLeaveRequest($conn)
     require_once __DIR__ . '/../../db_cloud_sync.php';
     syncToCloud('employee_leaves', ['status' => 'approved'], 'update', "id = $leave_id");
 
+    // Set actioned_by on the admin notification so it persists only for this admin
+    $admin_id = $_SESSION['user_id'] ?? 0;
+    if ($admin_id > 0) {
+        $check_col = $conn->query("SHOW COLUMNS FROM notifications LIKE 'actioned_by'");
+        if ($check_col && $check_col->num_rows > 0) {
+            $updStmt = $conn->prepare("UPDATE notifications SET actioned_by = ?, is_read = 1 WHERE target = 'admin' AND leave_id = ? AND type = 'new_request'");
+            $updStmt->bind_param("ii", $admin_id, $leave_id);
+            $updStmt->execute();
+        }
+    }
+
     // Mark attendance dates as "on_leave"
     markDatesAsLeave($conn, $leave['employee_id'], $leave['start_date'], $leave['end_date']);
 
@@ -414,6 +425,17 @@ function rejectLeaveRequest($conn)
     // Flag local record for sync
     require_once __DIR__ . '/../../db_cloud_sync.php';
     syncToCloud('employee_leaves', ['status' => 'rejected'], 'update', "id = $leave_id");
+
+    // Set actioned_by on the admin notification so it persists only for this admin
+    $admin_id = $_SESSION['user_id'] ?? 0;
+    if ($admin_id > 0) {
+        $check_col = $conn->query("SHOW COLUMNS FROM notifications LIKE 'actioned_by'");
+        if ($check_col && $check_col->num_rows > 0) {
+            $updStmt = $conn->prepare("UPDATE notifications SET actioned_by = ?, is_read = 1 WHERE target = 'admin' AND leave_id = ? AND type = 'new_request'");
+            $updStmt->bind_param("ii", $admin_id, $leave_id);
+            $updStmt->execute();
+        }
+    }
 
     // Create notification for employee
     createEmployeeNotification($conn, $leave['employee_id'], $leave_id, 'rejected');
@@ -602,11 +624,13 @@ function getAdminNotifications($conn)
                     LEFT JOIN employee_leaves el ON n.leave_id = el.id
                     LEFT JOIN employees e ON n.employee_id = e.id
                     WHERE n.target = 'admin' AND n.type NOT IN ('schedule_change', 'leave_approved', 'leave_rejected')
+                    AND (n.deleted_by IS NULL OR n.deleted_by NOT LIKE CONCAT('%[', ?, ']%'))
+                    AND (n.actioned_by IS NULL OR n.actioned_by = ?)
                     ORDER BY n.is_read ASC, n.created_at DESC
                     LIMIT 50";
 
             $stmt = $conn->prepare($sql);
-            // No bind param needed as we aren't using user_id in the query
+            $stmt->bind_param("ii", $user_id, $user_id);
             $stmt->execute();
             $result = $stmt->get_result();
         } else {
@@ -628,13 +652,15 @@ function getAdminNotifications($conn)
                     FROM notifications n
                     LEFT JOIN employee_leaves el ON n.leave_id = el.id
                     LEFT JOIN employees e ON n.employee_id = e.id
-                    WHERE (n.target = 'admin' AND n.type NOT IN ('schedule_change', 'leave_approved', 'leave_rejected')) 
-                       OR (n.employee_id = ?)
+                    WHERE (n.target = 'admin' AND n.type NOT IN ('schedule_change', 'leave_approved', 'leave_rejected') 
+                           AND (n.deleted_by IS NULL OR n.deleted_by NOT LIKE CONCAT('%[', ?, ']%'))
+                           AND (n.actioned_by IS NULL OR n.actioned_by = ?)) 
+                       OR (n.target = 'employee' AND n.employee_id = ?)
                     ORDER BY n.is_read ASC, n.created_at DESC
                     LIMIT 50";
 
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $user_id);
+            $stmt->bind_param("iii", $user_id, $user_id, $user_id);
             $stmt->execute();
             $result = $stmt->get_result();
         }
@@ -725,6 +751,7 @@ function deleteNotification($conn)
 {
     $notification_id = $_POST['notification_id'] ?? 0;
     $user_id = $_SESSION['user_id'] ?? null;
+    $user_role = $_SESSION['user_role'] ?? 'employee';
 
     if (!$notification_id) {
         throw new Exception('Notification ID is required');
@@ -734,10 +761,23 @@ function deleteNotification($conn)
         throw new Exception('User not logged in');
     }
 
-    // Only allow deletion of own notifications
-    $sql = "DELETE FROM notifications WHERE id = ? AND employee_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $notification_id, $user_id);
+    // Check if notification is admin-targeted and user is admin
+    $check = $conn->prepare("SELECT target FROM notifications WHERE id = ?");
+    $check->bind_param("i", $notification_id);
+    $check->execute();
+    $res = $check->get_result()->fetch_assoc();
+
+    if ($res && $res['target'] === 'admin' && $user_role === 'admin') {
+        // Soft delete for this admin by appending to deleted_by
+        $sql = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']') WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $user_id, $notification_id);
+    } else {
+        // Only allow hard deletion of own employee notifications
+        $sql = "DELETE FROM notifications WHERE id = ? AND employee_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $notification_id, $user_id);
+    }
 
     if (!$stmt->execute()) {
         throw new Exception('Failed to delete notification');
@@ -767,22 +807,30 @@ function deleteAllNotifications($conn)
 
     // Delete based on user role and notification target
     if ($user_role === 'admin') {
-        // Delete all admin notifications and admin's own employee notifications
-        $sql = "DELETE FROM notifications WHERE target = 'admin' OR (target = 'employee' AND employee_id = ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $user_id);
+        // Soft-delete admin notifications
+        $sql1 = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']') WHERE target = 'admin' AND (deleted_by IS NULL OR deleted_by NOT LIKE CONCAT('%[', ?, ']%'))";
+        $stmt1 = $conn->prepare($sql1);
+        $stmt1->bind_param("ii", $user_id, $user_id);
+        $stmt1->execute();
+
+        // Hard-delete admin's own employee notifications
+        $sql2 = "DELETE FROM notifications WHERE target = 'employee' AND employee_id = ?";
+        $stmt2 = $conn->prepare($sql2);
+        $stmt2->bind_param("i", $user_id);
+        $stmt2->execute();
+        
+        $deleted_count = $stmt1->affected_rows + $stmt2->affected_rows;
     } else {
         // Delete only employee's own notifications
         $sql = "DELETE FROM notifications WHERE target = 'employee' AND employee_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $user_id);
+        
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to delete notifications');
+        }
+        $deleted_count = $stmt->affected_rows;
     }
-
-    if (!$stmt->execute()) {
-        throw new Exception('Failed to delete notifications');
-    }
-
-    $deleted_count = $stmt->affected_rows;
 
     echo json_encode([
         'success' => true,
@@ -1044,12 +1092,26 @@ function ensureNotificationsTable($conn)
             target ENUM('admin', 'employee') DEFAULT 'admin',
             is_read BOOLEAN DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            deleted_by TEXT NULL DEFAULT NULL,
+            actioned_by INT NULL DEFAULT NULL,
             INDEX idx_target (target),
             INDEX idx_employee (employee_id),
             INDEX idx_read (is_read)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
         @$conn->query($sql);
+
+        // Auto-add deleted_by column if it doesn't exist yet
+        $col_check_deleted = $conn->query("SHOW COLUMNS FROM notifications LIKE 'deleted_by'");
+        if ($col_check_deleted && $col_check_deleted->num_rows === 0) {
+            $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
+        }
+        
+        // Auto-add actioned_by column if it doesn't exist yet
+        $col_check_actioned = $conn->query("SHOW COLUMNS FROM notifications LIKE 'actioned_by'");
+        if ($col_check_actioned && $col_check_actioned->num_rows === 0) {
+            $conn->query("ALTER TABLE notifications ADD COLUMN actioned_by INT NULL DEFAULT NULL");
+        }
 
         // Add foreign keys separately if they don't exist
         @$conn->query("ALTER TABLE notifications ADD CONSTRAINT fk_notif_employee 
