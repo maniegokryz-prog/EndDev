@@ -690,7 +690,26 @@
           if (notifElement) {
             notifElement.style.transition = 'opacity 0.3s';
             notifElement.style.opacity = '0';
-            setTimeout(() => notifElement.remove(), 300);
+            setTimeout(() => {
+              notifElement.remove();
+              
+              // Check if any notifications remain in the modal body
+              const remaining = document.querySelectorAll('#allNotificationsBody [id^="notif-"]');
+              if (remaining.length === 0) {
+                const deleteAllBtn = document.getElementById('deleteAllNotifications');
+                if (deleteAllBtn) deleteAllBtn.disabled = true;
+                
+                const body = document.getElementById('allNotificationsBody');
+                if (body) {
+                  body.innerHTML = `
+                    <div class="text-center py-5 text-muted">
+                      <i class="bi bi-bell-slash" style="font-size: 3rem;"></i>
+                      <p class="mt-3">No notifications</p>
+                    </div>
+                  `;
+                }
+              }
+            }, 300);
           }
 
           // Reload notifications in bell dropdown
