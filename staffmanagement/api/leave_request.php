@@ -365,11 +365,13 @@ function approveLeaveRequest($conn)
 
     // Set actioned_by on the admin notification so it persists only for this admin
     $admin_id = $_SESSION['user_id'] ?? 0;
+    $is_system_admin = $_SESSION['is_system_admin'] ?? false;
+    $user_marker = $is_system_admin ? 'sys_' . $admin_id : 'emp_' . $admin_id;
     if ($admin_id > 0) {
         $check_col = $conn->query("SHOW COLUMNS FROM notifications LIKE 'actioned_by'");
         if ($check_col && $check_col->num_rows > 0) {
             $updStmt = $conn->prepare("UPDATE notifications SET actioned_by = ?, is_read = 1 WHERE target = 'admin' AND leave_id = ? AND type = 'new_request'");
-            $updStmt->bind_param("ii", $admin_id, $leave_id);
+            $updStmt->bind_param("si", $user_marker, $leave_id);
             $updStmt->execute();
         }
     }
@@ -428,11 +430,13 @@ function rejectLeaveRequest($conn)
 
     // Set actioned_by on the admin notification so it persists only for this admin
     $admin_id = $_SESSION['user_id'] ?? 0;
+    $is_system_admin = $_SESSION['is_system_admin'] ?? false;
+    $user_marker = $is_system_admin ? 'sys_' . $admin_id : 'emp_' . $admin_id;
     if ($admin_id > 0) {
         $check_col = $conn->query("SHOW COLUMNS FROM notifications LIKE 'actioned_by'");
         if ($check_col && $check_col->num_rows > 0) {
             $updStmt = $conn->prepare("UPDATE notifications SET actioned_by = ?, is_read = 1 WHERE target = 'admin' AND leave_id = ? AND type = 'new_request'");
-            $updStmt->bind_param("ii", $admin_id, $leave_id);
+            $updStmt->bind_param("si", $user_marker, $leave_id);
             $updStmt->execute();
         }
     }
@@ -602,6 +606,7 @@ function getAdminNotifications($conn)
         // Check if this is a System Admin (from admin_users table)
         // System Admins have IDs that might collide with Employee IDs, so we MUST NOT show personal notifications based on ID
         $is_system_admin = $_SESSION['is_system_admin'] ?? false;
+        $user_marker = $is_system_admin ? 'sys_' . $user_id : 'emp_' . $user_id;
 
         if ($is_system_admin) {
             // System Admin: Only see admin notifications, STRICTLY filtering out personal types
@@ -630,7 +635,7 @@ function getAdminNotifications($conn)
                     LIMIT 50";
 
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ii", $user_id, $user_id);
+            $stmt->bind_param("ss", $user_marker, $user_marker);
             $stmt->execute();
             $result = $stmt->get_result();
         } else {
@@ -660,7 +665,7 @@ function getAdminNotifications($conn)
                     LIMIT 50";
 
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("iii", $user_id, $user_id, $user_id);
+            $stmt->bind_param("ssi", $user_marker, $user_marker, $user_id);
             $stmt->execute();
             $result = $stmt->get_result();
         }
@@ -752,6 +757,8 @@ function deleteNotification($conn)
     $notification_id = $_POST['notification_id'] ?? 0;
     $user_id = $_SESSION['user_id'] ?? null;
     $user_role = $_SESSION['user_role'] ?? 'employee';
+    $is_system_admin = $_SESSION['is_system_admin'] ?? false;
+    $user_marker = $is_system_admin ? 'sys_' . $user_id : 'emp_' . $user_id;
 
     if (!$notification_id) {
         throw new Exception('Notification ID is required');
@@ -768,10 +775,16 @@ function deleteNotification($conn)
     $res = $check->get_result()->fetch_assoc();
 
     if ($res && $res['target'] === 'admin' && $user_role === 'admin') {
+        // Ensure the deleted_by column exists before trying to update it
+        $col_check_deleted = $conn->query("SHOW COLUMNS FROM notifications LIKE 'deleted_by'");
+        if ($col_check_deleted && $col_check_deleted->num_rows === 0) {
+            $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
+        }
+
         // Soft delete for this admin by appending to deleted_by
         $sql = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']') WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $user_id, $notification_id);
+        $stmt->bind_param("si", $user_marker, $notification_id);
     } else {
         // Only allow hard deletion of own employee notifications
         $sql = "DELETE FROM notifications WHERE id = ? AND employee_id = ?";
@@ -800,6 +813,8 @@ function deleteAllNotifications($conn)
 {
     $user_id = $_SESSION['user_id'] ?? null;
     $user_role = $_SESSION['user_role'] ?? 'employee';
+    $is_system_admin = $_SESSION['is_system_admin'] ?? false;
+    $user_marker = $is_system_admin ? 'sys_' . $user_id : 'emp_' . $user_id;
 
     if (!$user_id) {
         throw new Exception('User not logged in');
@@ -807,10 +822,16 @@ function deleteAllNotifications($conn)
 
     // Delete based on user role and notification target
     if ($user_role === 'admin') {
+        // Ensure the deleted_by column exists before trying to update it
+        $col_check_deleted = $conn->query("SHOW COLUMNS FROM notifications LIKE 'deleted_by'");
+        if ($col_check_deleted && $col_check_deleted->num_rows === 0) {
+            $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
+        }
+
         // Soft-delete admin notifications
         $sql1 = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']') WHERE target = 'admin' AND (deleted_by IS NULL OR deleted_by NOT LIKE CONCAT('%[', ?, ']%'))";
         $stmt1 = $conn->prepare($sql1);
-        $stmt1->bind_param("ii", $user_id, $user_id);
+        $stmt1->bind_param("ss", $user_marker, $user_marker);
         $stmt1->execute();
 
         // Hard-delete admin's own employee notifications
@@ -1093,7 +1114,7 @@ function ensureNotificationsTable($conn)
             is_read BOOLEAN DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             deleted_by TEXT NULL DEFAULT NULL,
-            actioned_by INT NULL DEFAULT NULL,
+            actioned_by VARCHAR(50) NULL DEFAULT NULL,
             INDEX idx_target (target),
             INDEX idx_employee (employee_id),
             INDEX idx_read (is_read)
@@ -1107,10 +1128,13 @@ function ensureNotificationsTable($conn)
             $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
         }
         
-        // Auto-add actioned_by column if it doesn't exist yet
+        // Auto-add actioned_by column if it doesn't exist yet, or modify it if it's INT
         $col_check_actioned = $conn->query("SHOW COLUMNS FROM notifications LIKE 'actioned_by'");
         if ($col_check_actioned && $col_check_actioned->num_rows === 0) {
-            $conn->query("ALTER TABLE notifications ADD COLUMN actioned_by INT NULL DEFAULT NULL");
+            $conn->query("ALTER TABLE notifications ADD COLUMN actioned_by VARCHAR(50) NULL DEFAULT NULL");
+        } else {
+            // Ensure it's VARCHAR(50) to support string markers
+            $conn->query("ALTER TABLE notifications MODIFY COLUMN actioned_by VARCHAR(50) NULL DEFAULT NULL");
         }
 
         // Add foreign keys separately if they don't exist
