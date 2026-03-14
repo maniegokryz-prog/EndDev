@@ -667,12 +667,12 @@ function getAdminNotifications($conn)
                     WHERE (n.target = 'admin' AND n.type NOT IN ('schedule_change', 'leave_approved', 'leave_rejected') 
                            AND (n.deleted_by IS NULL OR n.deleted_by NOT LIKE CONCAT('%[', ?, ']%'))
                            AND (n.actioned_by IS NULL OR n.actioned_by = ?)) 
-                       OR (n.target = 'employee' AND n.employee_id = ?)
+                       OR (n.target = 'employee' AND n.employee_id = ? AND (n.deleted_by IS NULL OR n.deleted_by NOT LIKE CONCAT('%[', ?, ']%')))
                     ORDER BY n.is_read ASC, n.created_at DESC
                     LIMIT 50";
 
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssi", $user_marker, $user_marker, $user_id);
+            $stmt->bind_param("ssis", $user_marker, $user_marker, $user_id, $user_marker);
             $stmt->execute();
             $result = $stmt->get_result();
         }

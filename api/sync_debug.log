@@ -9939,3 +9939,103 @@
 2026-03-14 15:22:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
 2026-03-14 15:23:17 - --- Sync Cycle Started ---
 2026-03-14 15:23:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:24:17 - --- Sync Cycle Started ---
+2026-03-14 15:24:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:24:38 - --- Sync Cycle Started ---
+2026-03-14 15:24:38 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:25:07 - --- Sync Cycle Started ---
+2026-03-14 15:25:08 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:25:08 - Pulled tables from VPS: notifications
+2026-03-14 15:25:08 - Successfully pulled and updated local record on notifications with VPS id 3
+2026-03-14 15:25:13 - --- Sync Cycle Started ---
+2026-03-14 15:25:13 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:25:43 - --- Sync Cycle Started ---
+2026-03-14 15:25:43 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:25:43 - Successfully pushed to VPS for notifications ID 2
+2026-03-14 15:25:44 - Successfully pushed to VPS for notifications ID 6
+2026-03-14 15:25:44 - Successfully pushed to VPS for notifications ID 7
+2026-03-14 15:26:13 - --- Sync Cycle Started ---
+2026-03-14 15:26:13 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:26:13 - Successfully pushed to VPS for notifications ID 2
+2026-03-14 15:26:14 - --- Sync Cycle Started ---
+2026-03-14 15:26:14 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:26:44 - --- Sync Cycle Started ---
+2026-03-14 15:26:44 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:26:44 - Pulled tables from VPS: notifications
+2026-03-14 15:26:44 - Successfully pulled and updated local record on notifications with VPS id 2
+2026-03-14 15:26:47 - --- Sync Cycle Started ---
+2026-03-14 15:26:47 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:26:48 - --- Sync Cycle Started ---
+2026-03-14 15:26:48 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:26:50 - --- Sync Cycle Started ---
+2026-03-14 15:26:50 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:26:53 - --- Sync Cycle Started ---
+2026-03-14 15:26:53 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:27:12 - --- Sync Cycle Started ---
+2026-03-14 15:27:12 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:27:18 - --- Sync Cycle Started ---
+2026-03-14 15:27:18 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:27:18 - Push error on schedule_requests ID 3: Invalid JSON from VPS: 
+2026-03-14 15:27:37 - --- Sync Cycle Started ---
+2026-03-14 15:27:37 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:27:37 - Push error on schedule_requests ID 3: Invalid JSON from VPS: 
+2026-03-14 15:27:37 - Successfully pushed to VPS for schedule_requests ID 4
+2026-03-14 15:27:37 - Successfully pushed to VPS for notifications ID 8
+2026-03-14 15:27:53 - --- Sync Cycle Started ---
+2026-03-14 15:27:54 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:27:54 - Push error on schedule_requests ID 3: Invalid JSON from VPS: 
+2026-03-14 15:28:23 - --- Sync Cycle Started ---
+2026-03-14 15:28:23 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:28:23 - Push error on schedule_requests ID 3: Invalid JSON from VPS: 
+2026-03-14 15:28:23 - Successfully pushed to VPS for notifications ID 8
+2026-03-14 15:28:54 - --- Sync Cycle Started ---
+2026-03-14 15:28:54 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:28:54 - Push error on schedule_requests ID 3: Invalid JSON from VPS: 
+2026-03-14 15:29:23 - --- Sync Cycle Started ---
+2026-03-14 15:29:23 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:29:23 - Push error on schedule_requests ID 3: Invalid JSON from VPS: 
+2026-03-14 15:34:47 - --- Sync Cycle Started ---
+2026-03-14 15:34:52 - --- Sync Cycle Started ---
+2026-03-14 15:34:55 - --- Sync Cycle Started ---
+2026-03-14 15:35:23 - --- Sync Cycle Started ---
+2026-03-14 15:35:23 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-14 15:35:23 - Successfully pushed to VPS for employees ID 1
+2026-03-14 15:35:48 - --- Sync Cycle Started ---
+2026-03-14 15:35:50 - --- Sync Cycle Started ---
+2026-03-14 15:36:09 - --- Sync Cycle Started ---
+2026-03-14 15:36:10 - Successfully pushed to VPS for leave_types ID 1
+2026-03-14 15:36:10 - Successfully pushed to VPS for employee_leaves ID 1
+2026-03-14 15:36:10 - Successfully pushed to VPS for notifications ID 1
+2026-03-14 15:36:18 - --- Sync Cycle Started ---
+2026-03-14 15:36:49 - --- Sync Cycle Started ---
+2026-03-14 15:36:49 - Pulled tables from VPS: notifications
+2026-03-14 15:36:49 - Successfully pulled and updated local record on notifications with VPS id 1
+2026-03-14 15:36:52 - --- Sync Cycle Started ---
+2026-03-14 15:36:54 - --- Sync Cycle Started ---
+2026-03-14 15:37:02 - --- Sync Cycle Started ---
+2026-03-14 15:37:31 - --- Sync Cycle Started ---
+2026-03-14 15:37:41 - --- Sync Cycle Started ---
+2026-03-14 15:37:49 - --- Sync Cycle Started ---
+2026-03-14 15:37:50 - Successfully pushed to VPS for employee_leaves ID 1
+2026-03-14 15:37:50 - Successfully pushed to VPS for daily_attendance ID 1
+2026-03-14 15:37:50 - Successfully pushed to VPS for notifications ID 2
+2026-03-14 15:37:56 - --- Sync Cycle Started ---
+2026-03-14 15:38:27 - --- Sync Cycle Started ---
+2026-03-14 15:38:35 - --- Sync Cycle Started ---
+2026-03-14 15:38:56 - --- Sync Cycle Started ---
+2026-03-14 15:38:56 - Pulled tables from VPS: notifications
+2026-03-14 15:38:56 - Successfully pulled and updated local record on notifications with VPS id 1
+2026-03-14 15:38:56 - Successfully pulled and updated local record on notifications with VPS id 2
+2026-03-14 15:39:27 - --- Sync Cycle Started ---
+2026-03-14 15:39:41 - --- Sync Cycle Started ---
+2026-03-14 15:40:00 - --- Sync Cycle Started ---
+2026-03-14 15:40:00 - Successfully pushed to VPS for notifications ID 2
+2026-03-14 15:40:30 - --- Sync Cycle Started ---
+2026-03-14 15:41:00 - --- Sync Cycle Started ---
+2026-03-14 15:41:30 - --- Sync Cycle Started ---
+2026-03-14 15:42:01 - --- Sync Cycle Started ---
+2026-03-14 15:42:31 - --- Sync Cycle Started ---
+2026-03-14 15:43:01 - --- Sync Cycle Started ---
+2026-03-14 15:43:35 - --- Sync Cycle Started ---
+2026-03-14 15:43:37 - --- Sync Cycle Started ---
+2026-03-14 15:44:08 - --- Sync Cycle Started ---
