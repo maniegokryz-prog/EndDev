@@ -678,6 +678,8 @@ function getAdminNotifications($conn)
         }
     }
     else {
+        $is_system_admin = $_SESSION['is_system_admin'] ?? false;
+        $user_marker_filter = $is_system_admin ? 'sys_' . $user_id : 'emp_' . $user_id;
         $sql = "SELECT 
                     n.id,
                     n.type,
@@ -697,11 +699,13 @@ function getAdminNotifications($conn)
                 LEFT JOIN employee_leaves el ON n.leave_id = el.id
                 LEFT JOIN employees e ON n.employee_id = e.id
                 WHERE n.target = 'employee' AND e.id = ?
+                AND (n.deleted_by IS NULL OR n.deleted_by NOT LIKE ?)
                 ORDER BY n.is_read ASC, n.created_at DESC
                 LIMIT 50";
 
+        $deleted_filter = '%[' . $user_marker_filter . ']%';
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $user_id);
+        $stmt->bind_param("is", $user_id, $deleted_filter);
         $stmt->execute();
         $result = $stmt->get_result();
     }
@@ -809,16 +813,21 @@ function deleteNotification($conn)
             $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
         }
 
-        // Soft delete for this admin by appending to deleted_by and flagging for sync
+        // Soft delete — append marker to deleted_by and set sync_status=0 so run_sync.php pushes this to Hostinger
         $sql = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']'), sync_status = 0 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("si", $user_marker, $notification_id);
     }
     else {
-        // Only allow hard deletion of own employee notifications
-        $sql = "DELETE FROM notifications WHERE id = ? AND employee_id = ?";
+        // Employee notification: soft-delete too so it can sync to Hostinger
+        // Hard DELETE cannot sync — the row disappears and Hostinger never hears about it
+        $check_del = $conn->query("SHOW COLUMNS FROM notifications LIKE 'deleted_by'");
+        if ($check_del && $check_del->num_rows === 0) {
+            $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
+        }
+        $sql = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']'), sync_status = 0 WHERE id = ? AND employee_id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $notification_id, $user_id);
+        $stmt->bind_param("sii", $user_marker, $notification_id, $user_id);
     }
 
     if (!$stmt->execute()) {
@@ -857,25 +866,29 @@ function deleteAllNotifications($conn)
             $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
         }
 
-        // Soft-delete admin notifications and flag for sync
+        // Soft-delete admin notifications — sync_status=0 flags for push to Hostinger
         $sql1 = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']'), sync_status = 0 WHERE target = 'admin' AND (deleted_by IS NULL OR deleted_by NOT LIKE CONCAT('%[', ?, ']%'))";
         $stmt1 = $conn->prepare($sql1);
         $stmt1->bind_param("ss", $user_marker, $user_marker);
         $stmt1->execute();
 
-        // Hard-delete admin's own employee notifications
-        $sql2 = "DELETE FROM notifications WHERE target = 'employee' AND employee_id = ?";
+        // Soft-delete employee notifications too so they sync
+        $sql2 = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']'), sync_status = 0 WHERE target = 'employee' AND employee_id = ? AND (deleted_by IS NULL OR deleted_by NOT LIKE CONCAT('%[', ?, ']%'))";
         $stmt2 = $conn->prepare($sql2);
-        $stmt2->bind_param("i", $user_id);
+        $stmt2->bind_param("sis", $user_marker, $user_id, $user_marker);
         $stmt2->execute();
 
         $deleted_count = $stmt1->affected_rows + $stmt2->affected_rows;
     }
     else {
-        // Delete only employee's own notifications
-        $sql = "DELETE FROM notifications WHERE target = 'employee' AND employee_id = ?";
+        // Employee: soft-delete so the deletion syncs to Hostinger
+        $check_del = $conn->query("SHOW COLUMNS FROM notifications LIKE 'deleted_by'");
+        if ($check_del && $check_del->num_rows === 0) {
+            $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
+        }
+        $sql = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']'), sync_status = 0 WHERE target = 'employee' AND employee_id = ? AND (deleted_by IS NULL OR deleted_by NOT LIKE CONCAT('%[', ?, ']%'))";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $user_id);
+        $stmt->bind_param("sis", $user_marker, $user_id, $user_marker);
 
         if (!$stmt->execute()) {
             throw new Exception('Failed to delete notifications');

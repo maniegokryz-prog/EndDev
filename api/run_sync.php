@@ -81,8 +81,11 @@ foreach ($tables_to_sync as $table) {
                 $id = (int) $record['id'];
                 $conn->query("UPDATE `$table` SET `sync_status` = 1, `last_sync` = NOW() WHERE `id` = $id");
                 $results['pushed']++;
+                logSync("Successfully pushed to VPS for $table ID {$record['id']}");
             } else {
-                $results['errors'][] = "Push error on $table ID {$record['id']}: " . ($response['error'] ?? 'Network error');
+                $err = "Push error on $table ID {$record['id']}: " . ($response['error'] ?? 'Network error');
+                $results['errors'][] = $err;
+                logSync($err);
             }
         }
     }

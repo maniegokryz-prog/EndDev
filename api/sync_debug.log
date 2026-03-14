@@ -9805,3 +9805,137 @@
 2026-03-14 14:34:17 - --- Sync Cycle Started ---
 2026-03-14 14:35:17 - --- Sync Cycle Started ---
 2026-03-14 14:36:17 - --- Sync Cycle Started ---
+2026-03-14 14:37:17 - --- Sync Cycle Started ---
+2026-03-14 14:37:58 - --- Sync Cycle Started ---
+2026-03-14 14:38:06 - --- Sync Cycle Started ---
+2026-03-14 14:38:09 - --- Sync Cycle Started ---
+2026-03-14 14:38:14 - --- Sync Cycle Started ---
+2026-03-14 14:38:44 - --- Sync Cycle Started ---
+2026-03-14 14:38:55 - --- Sync Cycle Started ---
+2026-03-14 14:39:26 - --- Sync Cycle Started ---
+2026-03-14 14:39:56 - --- Sync Cycle Started ---
+2026-03-14 14:40:26 - --- Sync Cycle Started ---
+2026-03-14 14:40:56 - --- Sync Cycle Started ---
+2026-03-14 14:41:26 - --- Sync Cycle Started ---
+2026-03-14 14:41:56 - --- Sync Cycle Started ---
+2026-03-14 14:43:16 - --- Sync Cycle Started ---
+2026-03-14 14:43:17 - Pulled tables from VPS: notifications
+2026-03-14 14:43:17 - Successfully pulled and updated local record on notifications with VPS id 1
+2026-03-14 14:43:17 - Successfully pulled and updated local record on notifications with VPS id 2
+2026-03-14 14:43:26 - --- Sync Cycle Started ---
+2026-03-14 14:43:55 - --- Sync Cycle Started ---
+2026-03-14 14:43:57 - --- Sync Cycle Started ---
+2026-03-14 14:44:27 - --- Sync Cycle Started ---
+2026-03-14 14:44:45 - --- Sync Cycle Started ---
+2026-03-14 14:45:16 - --- Sync Cycle Started ---
+2026-03-14 14:45:46 - --- Sync Cycle Started ---
+2026-03-14 14:45:52 - --- Sync Cycle Started ---
+2026-03-14 14:46:23 - --- Sync Cycle Started ---
+2026-03-14 14:46:53 - --- Sync Cycle Started ---
+2026-03-14 14:47:22 - --- Sync Cycle Started ---
+2026-03-14 14:47:24 - --- Sync Cycle Started ---
+2026-03-14 14:47:35 - --- Sync Cycle Started ---
+2026-03-14 14:47:35 - Pulled tables from VPS: notifications
+2026-03-14 14:47:35 - Successfully pulled and updated local record on notifications with VPS id 2
+2026-03-14 14:47:56 - --- Sync Cycle Started ---
+2026-03-14 14:47:59 - --- Sync Cycle Started ---
+2026-03-14 14:48:03 - --- Sync Cycle Started ---
+2026-03-14 14:48:33 - --- Sync Cycle Started ---
+2026-03-14 14:49:04 - --- Sync Cycle Started ---
+2026-03-14 14:49:34 - --- Sync Cycle Started ---
+2026-03-14 14:50:04 - --- Sync Cycle Started ---
+2026-03-14 14:50:34 - --- Sync Cycle Started ---
+2026-03-14 14:51:04 - --- Sync Cycle Started ---
+2026-03-14 14:52:17 - --- Sync Cycle Started ---
+2026-03-14 14:53:17 - --- Sync Cycle Started ---
+2026-03-14 14:54:17 - --- Sync Cycle Started ---
+2026-03-14 14:55:17 - --- Sync Cycle Started ---
+2026-03-14 14:55:43 - --- Sync Cycle Started ---
+2026-03-14 14:55:46 - --- Sync Cycle Started ---
+2026-03-14 14:55:47 - --- Sync Cycle Started ---
+2026-03-14 14:55:51 - --- Sync Cycle Started ---
+2026-03-14 14:55:55 - --- Sync Cycle Started ---
+2026-03-14 14:56:25 - --- Sync Cycle Started ---
+2026-03-14 14:56:26 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-14 14:56:27 - --- Sync Cycle Started ---
+2026-03-14 14:56:58 - --- Sync Cycle Started ---
+2026-03-14 14:57:10 - --- Sync Cycle Started ---
+2026-03-14 14:57:11 - Pulled tables from VPS: schedule_requests, notifications
+2026-03-14 14:57:11 - Successfully pulled and updated local record on schedule_requests with VPS id 1
+2026-03-14 14:57:11 - Successfully pulled and updated local record on notifications with VPS id 3
+2026-03-14 14:57:12 - --- Sync Cycle Started ---
+2026-03-14 14:57:14 - --- Sync Cycle Started ---
+2026-03-14 14:57:45 - --- Sync Cycle Started ---
+2026-03-14 14:58:15 - --- Sync Cycle Started ---
+2026-03-14 14:58:15 - Pulled tables from VPS: notifications
+2026-03-14 14:58:15 - Successfully pulled and updated local record on notifications with VPS id 3
+2026-03-14 14:58:26 - --- Sync Cycle Started ---
+2026-03-14 14:58:36 - --- Sync Cycle Started ---
+2026-03-14 14:58:40 - --- Sync Cycle Started ---
+2026-03-14 14:58:47 - --- Sync Cycle Started ---
+2026-03-14 14:59:18 - --- Sync Cycle Started ---
+2026-03-14 14:59:48 - --- Sync Cycle Started ---
+2026-03-14 14:59:54 - --- Sync Cycle Started ---
+2026-03-14 15:00:25 - --- Sync Cycle Started ---
+2026-03-14 15:00:25 - Pulled tables from VPS: schedule_requests, notifications
+2026-03-14 15:00:25 - Successfully pulled and updated local record on schedule_requests with VPS id 1
+2026-03-14 15:00:25 - Successfully pulled and updated local record on notifications with VPS id 4
+2026-03-14 15:00:55 - --- Sync Cycle Started ---
+2026-03-14 15:01:25 - --- Sync Cycle Started ---
+2026-03-14 15:01:25 - Pulled tables from VPS: schedule_requests, notifications
+2026-03-14 15:01:25 - Successfully pulled and updated local record on schedule_requests with VPS id 2
+2026-03-14 15:01:25 - Successfully pulled and updated local record on notifications with VPS id 5
+2026-03-14 15:01:44 - --- Sync Cycle Started ---
+2026-03-14 15:01:44 - Pulled tables from VPS: notifications
+2026-03-14 15:01:45 - Successfully pulled and updated local record on notifications with VPS id 5
+2026-03-14 15:02:23 - --- Sync Cycle Started ---
+2026-03-14 15:02:38 - --- Sync Cycle Started ---
+2026-03-14 15:02:44 - --- Sync Cycle Started ---
+2026-03-14 15:03:07 - --- Sync Cycle Started ---
+2026-03-14 15:03:14 - --- Sync Cycle Started ---
+2026-03-14 15:03:32 - --- Sync Cycle Started ---
+2026-03-14 15:03:32 - Pulled tables from VPS: notifications
+2026-03-14 15:03:32 - Successfully pulled and updated local record on notifications with VPS id 6
+2026-03-14 15:04:02 - --- Sync Cycle Started ---
+2026-03-14 15:04:32 - --- Sync Cycle Started ---
+2026-03-14 15:05:02 - --- Sync Cycle Started ---
+2026-03-14 15:05:32 - --- Sync Cycle Started ---
+2026-03-14 15:06:02 - --- Sync Cycle Started ---
+2026-03-14 15:06:32 - --- Sync Cycle Started ---
+2026-03-14 15:07:17 - --- Sync Cycle Started ---
+2026-03-14 15:08:17 - --- Sync Cycle Started ---
+2026-03-14 15:08:42 - --- Sync Cycle Started ---
+2026-03-14 15:09:00 - --- Sync Cycle Started ---
+2026-03-14 15:09:05 - --- Sync Cycle Started ---
+2026-03-14 15:09:06 - --- Sync Cycle Started ---
+2026-03-14 15:09:07 - --- Sync Cycle Started ---
+2026-03-14 15:09:30 - --- Sync Cycle Started ---
+2026-03-14 15:09:42 - --- Sync Cycle Started ---
+2026-03-14 15:10:07 - --- Sync Cycle Started ---
+2026-03-14 15:10:08 - Pulled tables from VPS: notifications
+2026-03-14 15:10:08 - Successfully pulled and updated local record on notifications with VPS id 7
+2026-03-14 15:10:38 - --- Sync Cycle Started ---
+2026-03-14 15:11:08 - --- Sync Cycle Started ---
+2026-03-14 15:11:38 - --- Sync Cycle Started ---
+2026-03-14 15:12:08 - --- Sync Cycle Started ---
+2026-03-14 15:12:38 - --- Sync Cycle Started ---
+2026-03-14 15:13:08 - --- Sync Cycle Started ---
+2026-03-14 15:14:17 - --- Sync Cycle Started ---
+2026-03-14 15:15:17 - --- Sync Cycle Started ---
+2026-03-14 15:15:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:16:17 - --- Sync Cycle Started ---
+2026-03-14 15:16:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:17:17 - --- Sync Cycle Started ---
+2026-03-14 15:17:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:18:17 - --- Sync Cycle Started ---
+2026-03-14 15:18:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:19:17 - --- Sync Cycle Started ---
+2026-03-14 15:19:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:20:17 - --- Sync Cycle Started ---
+2026-03-14 15:20:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:21:17 - --- Sync Cycle Started ---
+2026-03-14 15:21:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:22:17 - --- Sync Cycle Started ---
+2026-03-14 15:22:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-14 15:23:17 - --- Sync Cycle Started ---
+2026-03-14 15:23:17 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
