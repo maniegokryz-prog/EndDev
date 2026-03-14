@@ -202,7 +202,7 @@ function upsertNotifications($conn, $batch)
     // Ensure columns exist
     $conn->query("ALTER TABLE notifications ADD COLUMN IF NOT EXISTS deleted_by TEXT NULL DEFAULT NULL");
     $conn->query("ALTER TABLE notifications ADD COLUMN IF NOT EXISTS actioned_by TEXT NULL DEFAULT NULL");
-    $conn->query("ALTER TABLE notifications ADD COLUMN IF NOT EXISTS sync_status TINYINT(1) DEFAULT 1");
+    $conn->query("ALTER TABLE notifications ADD COLUMN IF NOT EXISTS sync_status TINYINT(1) DEFAULT 0");
 
     $updated = 0;
     foreach ($batch as $cloud_notif) {

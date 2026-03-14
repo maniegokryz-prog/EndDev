@@ -709,16 +709,16 @@ function getAdminNotifications($conn)
     $notifications = [];
 
     $is_sys_admin = $_SESSION['is_system_admin'] ?? false;
-    
+
     while ($row = $result->fetch_assoc()) {
         $msg = $row['message'];
         $emp_name = trim($row['first_name'] . ' ' . $row['last_name']);
-        
+
         // If the current user is NOT a system admin and they are the employee who caused the notification, 
         // personalize it to "You" from their point of view.
         // We exclude types that are actions taken BY admins ON the employee's data (like approvals, rejections, schedule changes).
         $excluded_from_you = ['schedule_change', 'leave_approved', 'leave_rejected', 'schedule_approval'];
-        
+
         if (!$is_sys_admin && isset($row['emp_tbl_id']) && $row['emp_tbl_id'] == $user_id && !in_array($row['type'], $excluded_from_you)) {
             $msg = str_replace($emp_name . " has", "You have", $msg);
             $msg = str_replace($emp_name . " requested", "You requested", $msg);
@@ -809,8 +809,8 @@ function deleteNotification($conn)
             $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
         }
 
-        // Soft delete for this admin by appending to deleted_by
-        $sql = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']') WHERE id = ?";
+        // Soft delete for this admin by appending to deleted_by and flagging for sync
+        $sql = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']'), sync_status = 0 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("si", $user_marker, $notification_id);
     }
@@ -857,8 +857,8 @@ function deleteAllNotifications($conn)
             $conn->query("ALTER TABLE notifications ADD COLUMN deleted_by TEXT NULL DEFAULT NULL");
         }
 
-        // Soft-delete admin notifications
-        $sql1 = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']') WHERE target = 'admin' AND (deleted_by IS NULL OR deleted_by NOT LIKE CONCAT('%[', ?, ']%'))";
+        // Soft-delete admin notifications and flag for sync
+        $sql1 = "UPDATE notifications SET deleted_by = CONCAT(IFNULL(deleted_by, ''), '[', ?, ']'), sync_status = 0 WHERE target = 'admin' AND (deleted_by IS NULL OR deleted_by NOT LIKE CONCAT('%[', ?, ']%'))";
         $stmt1 = $conn->prepare($sql1);
         $stmt1->bind_param("ss", $user_marker, $user_marker);
         $stmt1->execute();
