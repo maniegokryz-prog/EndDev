@@ -61,7 +61,7 @@
 
   <!-- STEP 1: VERIFY ACCOUNT -->
   <div class="modal fade" id="modalStep1" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content p-3">
         <h4 class="text-center mt-2">Forgot Password?</h4>
         <p class="text-center">Enter your Employee ID and Email to receive an OTP</p>
@@ -81,7 +81,7 @@
 
   <!-- STEP 2: OTP -->
   <div class="modal fade" id="modalStep2" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content p-3">
         <h4 class="text-center mt-2">Enter OTP</h4>
         <p class="text-center" id="otpMessage">A 6-digit OTP has been sent to your email address</p>
@@ -104,7 +104,7 @@
 
   <!-- STEP 3: RESET PASSWORD -->
   <div class="modal fade" id="modalStep3" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content p-3">
         <h4 class="text-center mt-2">Reset Your Password</h4>
         <p class="text-center">Enter your new password</p>
@@ -125,7 +125,7 @@
 
   <!-- FINAL POPUP -->
   <div class="modal fade" id="modalSuccess" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content p-4 text-center">
         <div class="mb-3">
           ✅

@@ -653,7 +653,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                 container.innerHTML = '';
                                 container.style.cssText = 'min-height: 200px; display: grid; gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 8px; min-width: 800px;';
                                 // Call the main schedule render function defined in new_profile.js
-                                renderVisualSchedule(container, scheduleBlocks);
+                                renderVisualSchedule(container, scheduleBlocks, true); // Added true for showLegend
                             } else {
                                 throw new Error("renderVisualSchedule is not defined.");
                             }
@@ -1458,6 +1458,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
                 <div class="modal-body">
                     <form id="editScheduleForm" action="processes/update_employee_schedule.php" method="POST">
+                        <input type="hidden" id="roles" value="<?php echo htmlspecialchars($employee['roles']); ?>">
                         <input type="hidden" name="employee_id"
                             value="<?php echo htmlspecialchars($employee['employee_id']); ?>">
                         <input type="hidden" name="first_name"
@@ -1567,8 +1568,11 @@ $profilePhoto .= '?v=' . microtime(true);
                                         Clear All Schedules
                                     </button>
                                 </div>
+                                <!-- Indicators removed per user request -->
                                 <div class="calendar-wrapper">
-                                    <div class="schedule-calendar" id="edit-schedule-calendar">
+                                </div>
+                            </div>
+                            <div class="schedule-calendar" id="edit-schedule-calendar">
                                         <div class="time-header"></div>
 
                                         <div class="day-header" data-day="Monday">Mon</div>

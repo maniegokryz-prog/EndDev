@@ -54,7 +54,7 @@ class EmployeeScheduleUpdater
                 $checkStmt->bind_param('i', $employeeId);
                 $checkStmt->execute();
                 $checkResult = $checkStmt->get_result();
-                
+
                 if ($checkResult && $checkResult->num_rows > 0) {
                     $this->db->rollback();
                     // Return a specific 409 Conflict status with a friendly user message
@@ -65,7 +65,7 @@ class EmployeeScheduleUpdater
                     ]);
                     exit;
                 }
-                
+
                 // If not admin and no pending requests, save as pending request and notify admin
                 $this->savePendingRequest($employeeId);
                 $this->db->commit();
@@ -89,7 +89,8 @@ class EmployeeScheduleUpdater
             ]);
             exit;
 
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             $this->db->rollback();
             $this->logError('Schedule Update Failed', $e->getMessage());
 
@@ -162,7 +163,7 @@ class EmployeeScheduleUpdater
                         'start_time' => $periodDetails[$index]['start_time'],
                         'end_time' => $periodDetails[$index]['end_time'],
                         'is_active' => 0,
-                        '_delete_mode' => true  // Signal to update instead of insert
+                        '_delete_mode' => true // Signal to update instead of insert
                     ]);
                 }
             }
@@ -179,9 +180,9 @@ class EmployeeScheduleUpdater
                     $scheduleIdQuery = "(SELECT id FROM schedules WHERE schedule_name = '{$scheduleNameForDelete}')";
                     syncToCloud(
                         'schedule_periods',
-                        [
-                            'is_active' => 0
-                        ],
+                    [
+                        'is_active' => 0
+                    ],
                         'update',
                         "schedule_id = {$scheduleIdQuery} " .
                         "AND day_of_week = {$period['day_of_week']} " .
@@ -236,7 +237,8 @@ class EmployeeScheduleUpdater
             ]);
 
             $this->logActivity('New schedule created and linked', "Schedule ID: {$oldScheduleId}");
-        } else {
+        }
+        else {
             // Get existing schedule name
             $stmt = $this->db->prepare("SELECT schedule_name FROM schedules WHERE id = ?");
             $stmt->bind_param('i', $oldScheduleId);
@@ -335,7 +337,8 @@ class EmployeeScheduleUpdater
 
                     if (!$stmt->affected_rows) {
                         $this->logError('Schedule Update', "Failed to create assignment for period {$periodId}");
-                    } else {
+                    }
+                    else {
                         // Sync employee assignment to cloud with ID lookup
                         syncToCloudWithLookup('employee_assignments', [
                             'employee_id_string' => $this->validatedData['employee_id_string'],
@@ -367,7 +370,7 @@ class EmployeeScheduleUpdater
             (employee_id, employee_id_string, first_name, last_name, schedule_data, status) 
             VALUES (?, ?, ?, ?, ?, 'pending')
         ");
-        
+
         $stmt->bind_param(
             'issss',
             $employeeId,
@@ -377,7 +380,7 @@ class EmployeeScheduleUpdater
             $this->validatedData['schedule_data']
         );
         $stmt->execute();
-        
+
         $requestId = $this->db->insert_id;
         $this->logActivity('Pending schedule request created', "Request ID: {$requestId}, Employee: {$this->validatedData['employee_id_string']}");
 
@@ -409,13 +412,15 @@ class EmployeeScheduleUpdater
             if ($check_column->num_rows > 0) {
                 $stmt = $this->db->prepare("INSERT INTO notifications (type, message, link, target, is_read) VALUES ('schedule_approval', ?, ?, 'admin', 0)");
                 $stmt->bind_param("ss", $message, $link);
-            } else {
+            }
+            else {
                 $stmt = $this->db->prepare("INSERT INTO notifications (type, message, target, is_read) VALUES ('schedule_approval', ?, 'admin', 0)");
                 $stmt->bind_param("s", $message);
             }
             $stmt->execute();
 
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             $this->logError('Admin Notification Creation Failed', $e->getMessage());
         }
     }
@@ -440,11 +445,12 @@ class EmployeeScheduleUpdater
             if ($employee) {
                 $emp_name = $employee['first_name'] . ' ' . $employee['last_name'];
                 $message = $emp_name . ", There are some changes to your schedule";
-                
+
                 // If the employee is an admin, link them to their profile page. Otherwise use #.
                 if (stripos(strtolower($employee['roles']), 'admin') !== false) {
                     $link = "/EndDev/staffmanagement/staff_profile.php?id=" . $employee['string_id'];
-                } else {
+                }
+                else {
                     $link = "#";
                 }
 
@@ -453,7 +459,8 @@ class EmployeeScheduleUpdater
                 if ($check_column->num_rows > 0) {
                     $stmt = $this->db->prepare("INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'schedule_change', ?, ?, 'employee', 0)");
                     $stmt->bind_param("iss", $employeeId, $message, $link);
-                } else {
+                }
+                else {
                     $stmt = $this->db->prepare("INSERT INTO notifications (employee_id, type, message, target, is_read) VALUES (?, 'schedule_change', ?, 'employee', 0)");
                     $stmt->bind_param("is", $employeeId, $message);
                 }
@@ -461,7 +468,8 @@ class EmployeeScheduleUpdater
 
                 $this->logActivity('Schedule change notification created', "Employee ID: {$employeeId}");
             }
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             $this->logError('Notification Creation Failed', $e->getMessage());
         }
     }

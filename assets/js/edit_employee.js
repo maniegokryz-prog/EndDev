@@ -1194,8 +1194,12 @@ function renderScheduleBlock(schedule, scheduleIndex) {
                         <div class="schedule-type">Work Schedule</div>
                     `;
                 }
+                // Status Badge removed per user request
+                let statusBadge = '';
+
                 scheduleBlock.innerHTML = `
                     <div class="schedule-delete-btn" onclick="deleteSchedule(${scheduleIndex}, '${day}')">×</div>
+                    ${statusBadge}
                     <div class="schedule-info">
                         ${scheduleContent}
                     </div>
@@ -1346,8 +1350,8 @@ function addSchedule() {
 
     // Check if user is faculty member
     const rolesInput = document.getElementById('roles');
-    const currentRole = rolesInput ? rolesInput.value.trim() : '';
-    const isFaculty = currentRole === 'Faculty_Member';
+    const currentRole = rolesInput ? rolesInput.value.toLowerCase() : '';
+    const isFaculty = currentRole.includes('faculty');
 
     if (isFaculty) {
         // Validation removed: Faculty fields are optional
@@ -1366,7 +1370,8 @@ function addSchedule() {
         class: finalClass.toUpperCase(), // Ensure uppercase for consistency
         subject: finalSubject.toUpperCase(), // Ensure uppercase for consistency
         room_num: finalRoom.toUpperCase(), // Ensure uppercase for consistency
-        color: getRandomEditScheduleColor() // Assign random color to this schedule
+        color: getRandomEditScheduleColor(), // Assign random color to this schedule
+        status: 'added' // Mark as new schedule
     };
 
     console.log('Adding new schedule:', scheduleData);
@@ -1395,7 +1400,7 @@ function addSchedule() {
     // Show confirmation with adjustment info
     const daysList = editSelectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
-    
+
     // Use the new professional HTML summary
     const summaryHtml = getScheduleSummaryHtml(
         roleDisplay,
@@ -1410,7 +1415,7 @@ function addSchedule() {
 
     const msgEl = document.getElementById('scheduleAddedSuccessMsg');
     if (msgEl) msgEl.innerHTML = summaryHtml;
-    
+
     const modalEl = document.getElementById('scheduleAddedSuccessModal');
     if (modalEl) {
         const m = new bootstrap.Modal(modalEl);
@@ -1482,8 +1487,8 @@ function editSchedule() {
 
     // Check if user is faculty member
     const rolesInput = document.getElementById('roles');
-    const currentRole = rolesInput ? rolesInput.value.trim() : '';
-    const isFaculty = currentRole === 'Faculty_Member';
+    const currentRole = rolesInput ? rolesInput.value.toLowerCase() : '';
+    const isFaculty = currentRole.includes('faculty');
 
     if (isFaculty && (!designateClass || !designateSubject || !roomNumber)) {
         const msgEl = document.getElementById('scheduleFacultyMissingMsg');
@@ -1500,15 +1505,14 @@ function editSchedule() {
     const finalClass = isFaculty ? designateClass : 'N/A';
     const finalSubject = isFaculty ? designateSubject : 'General';
     const finalRoom = isFaculty ? roomNumber : 'TBD';
-
     // Create the updated schedule object
-    const originalColor = editAddedSchedules[editCurrentlyEditingIndex].color;
+    const currentItem = editAddedSchedules[editCurrentlyEditingIndex];
+    const originalColor = currentItem.color;
 
     // FORCE SYNC: Rebuild selected days from DOM state to ensure accuracy
     window.editSelectedDays = [];
-    document.querySelectorAll('#editScheduleForm .day-btn.active').forEach(btn => {
-        const d = btn.getAttribute('data-day');
-        if (d) window.editSelectedDays.push(d);
+    document.querySelectorAll('.edit-day-btn.active').forEach(btn => {
+        window.editSelectedDays.push(btn.getAttribute('data-day'));
     });
 
     const updatedSchedule = {
@@ -1539,7 +1543,7 @@ function editSchedule() {
     // Show confirmation with adjustment info
     const daysList = editSelectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
-    
+
     // Use the new professional HTML summary
     const summaryHtml = getScheduleSummaryHtml(
         roleDisplay,
@@ -1554,7 +1558,7 @@ function editSchedule() {
 
     const msgEl = document.getElementById('scheduleUpdatedSuccessMsg');
     if (msgEl) msgEl.innerHTML = summaryHtml;
-    
+
     const modalEl = document.getElementById('scheduleUpdatedSuccessModal');
     if (modalEl) {
         const m = new bootstrap.Modal(modalEl);
@@ -1844,13 +1848,13 @@ function deleteSchedule(scheduleIndex, day) {
 }
 
 // Global nested modal backdrop fix for schedule alerts
-document.addEventListener('show.bs.modal', function(event) {
+document.addEventListener('show.bs.modal', function (event) {
     const modalEl = event.target;
     // Check if it's one of the schedule warning/success modals, but NOT the main editScheduleModal
     if (modalEl.id && modalEl.id.startsWith('schedule') && modalEl.id !== 'editScheduleModal') {
         const targetZIndex = 20000;
         modalEl.style.setProperty('z-index', targetZIndex, 'important');
-        
+
         // Use a tiny timeout to ensure Bootstrap has appended the .modal-backdrop to the DOM
         setTimeout(() => {
             const backdrops = document.querySelectorAll('.modal-backdrop');

@@ -37,7 +37,8 @@ try {
             $requests[] = $row;
         }
     }
-} catch (Exception $e) {
+}
+catch (Exception $e) {
     error_log("Error fetching schedule requests: " . $e->getMessage());
 }
 ?>
@@ -226,60 +227,63 @@ try {
     <div class="sidebar d-flex flex-column pt-5" id="sidebar">
         <div class="profile text-center p-3 mt-4">
             <?php $currentUser = getCurrentUser(); ?>
-            <img src="<?php echo (!empty($currentUser['profile_photo']) && $currentUser['profile_photo'] !== 'N/A') ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
+            <img src="<?php echo(!empty($currentUser['profile_photo']) && $currentUser['profile_photo'] !== 'N/A') ? '../' . htmlspecialchars($currentUser['profile_photo'], ENT_QUOTES, 'UTF-8') . '?v=' . time() : '../assets/profile_pic/user.png?v=' . time(); ?>"
                 alt="Profile" class="rounded-circle mb-2" style="width: 70px; height: 70px; object-fit: cover;"
                 onerror="this.src='../assets/profile_pic/user.png';">
             <h5 class="mb-0"><?php echo htmlspecialchars($currentUser['name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?></h5>
             <?php
-            // Check for status messages from redirect
-            $updateStatus = $_GET['status'] ?? '';
+// Check for status messages from redirect
+$updateStatus = $_GET['status'] ?? '';
 
-            // Fetch unique classes, subjects, and rooms for the dropdowns
-            $existing_classes = [];
-            $existing_subjects = [];
-            $existing_rooms = [];
+// Fetch unique classes, subjects, and rooms for the dropdowns
+$existing_classes = [];
+$existing_subjects = [];
+$existing_rooms = [];
 
-            $ignore_list = ['work shift', 'work_shift', 'n/a', 'na', 'tba', 'tbd', 'none'];
+$ignore_list = ['work shift', 'work_shift', 'n/a', 'na', 'tba', 'tbd', 'none'];
 
-            try {
-                $res = $conn->query("SELECT DISTINCT designate_class FROM employee_assignments WHERE designate_class IS NOT NULL AND designate_class != '' ORDER BY designate_class");
-                if ($res) {
-                    while ($row = $res->fetch_assoc()) {
-                        $val = trim($row['designate_class']);
-                        if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
-                            $existing_classes[] = $val;
-                        }
-                    }
-                }
-            } catch (Exception $e) {
+try {
+    $res = $conn->query("SELECT DISTINCT designate_class FROM employee_assignments WHERE designate_class IS NOT NULL AND designate_class != '' ORDER BY designate_class");
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $val = trim($row['designate_class']);
+            if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                $existing_classes[] = $val;
             }
+        }
+    }
+}
+catch (Exception $e) {
+}
 
-            try {
-                $res = $conn->query("SELECT DISTINCT subject_code FROM employee_assignments WHERE subject_code IS NOT NULL AND subject_code != '' ORDER BY subject_code");
-                if ($res) {
-                    while ($row = $res->fetch_assoc()) {
-                        $val = trim($row['subject_code']);
-                        if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
-                            $existing_subjects[] = $val;
-                        }
-                    }
-                }
-            } catch (Exception $e) {
+try {
+    $res = $conn->query("SELECT DISTINCT subject_code FROM employee_assignments WHERE subject_code IS NOT NULL AND subject_code != '' ORDER BY subject_code");
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $val = trim($row['subject_code']);
+            if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                $existing_subjects[] = $val;
             }
+        }
+    }
+}
+catch (Exception $e) {
+}
 
-            try {
-                $res = $conn->query("SELECT DISTINCT room_num FROM employee_assignments WHERE room_num IS NOT NULL AND room_num != '' ORDER BY room_num");
-                if ($res) {
-                    while ($row = $res->fetch_assoc()) {
-                        $val = trim($row['room_num']);
-                        if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
-                            $existing_rooms[] = $val;
-                        }
-                    }
-                }
-            } catch (Exception $e) {
+try {
+    $res = $conn->query("SELECT DISTINCT room_num FROM employee_assignments WHERE room_num IS NOT NULL AND room_num != '' ORDER BY room_num");
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $val = trim($row['room_num']);
+            if ($val !== '' && !in_array(strtolower($val), $ignore_list)) {
+                $existing_rooms[] = $val;
             }
-            ?>
+        }
+    }
+}
+catch (Exception $e) {
+}
+?>
             <small
                 class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User'), ENT_QUOTES, 'UTF-8'); ?></small>
         </div>
@@ -297,7 +301,8 @@ try {
                         <a href="review_schedule_request.php" class="btn btn-outline-primary shadow-sm hover-scale text-nowrap">
                             <i class="bi bi-arrow-left me-2"></i>View All Pending Requests
                         </a>
-                    <?php endif; ?>
+                    <?php
+endif; ?>
                 </div>
 
                 <?php if (empty($requests)): ?>
@@ -306,7 +311,8 @@ try {
                         <h5>No Pending Requests</h5>
                         <p class="text-muted mb-0">There are currently no schedule edits waiting for your approval.</p>
                     </div>
-                <?php else: ?>
+                <?php
+else: ?>
                     <div class="row">
                         <?php foreach ($requests as $request): ?>
                             <?php $scheduleData = json_decode($request['schedule_data'], true); ?>
@@ -357,9 +363,11 @@ try {
                                     </div>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        <?php
+    endforeach; ?>
                     </div>
-                <?php endif; ?>
+                <?php
+endif; ?>
             </div>
         </div>
     </div>
@@ -570,7 +578,8 @@ try {
                                     </button>
                                 </div>
                                 <div class="calendar-wrapper">
-                                    <div class="schedule-calendar" id="edit-schedule-calendar">
+                            <!-- Indicators removed per user request -->
+                            <div class="schedule-calendar" id="edit-schedule-calendar">
                                         <div class="time-header"></div>
 
                                         <div class="day-header" data-day="Monday">Mon</div>
@@ -925,7 +934,7 @@ try {
                             position: relative;
                             margin: 2px;
                             padding: 8px 4px;
-                            border-radius: 4px;
+                            border-radius: 6px;
                             color: white;
                             font-size: 0.75em;
                             display: flex;
@@ -936,13 +945,44 @@ try {
                             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                             transition: transform 0.2s, box-shadow 0.2s;
                             min-height: 60px;
-                            border-left: 3px solid rgba(255,255,255,0.3);
+                            border-left: 4px solid rgba(255,255,255,0.4);
+                        }
+                        .schedule-status-badge {
+                            position: absolute;
+                            top: 2px;
+                            right: 4px;
+                            font-size: 0.7em;
+                            font-weight: bold;
+                            text-transform: uppercase;
+                            padding: 1px 4px;
+                            border-radius: 3px;
+                            background: rgba(0,0,0,0.2);
+                        }
+                        .status-added { background: #198754 !important; }
+                        .status-modified { background: #f9b233 !important; color: #000 !important; }
+                        
+                        .calendar-legend {
+                            display: flex;
+                            gap: 15px;
+                            margin-bottom: 10px;
+                            font-size: 0.85em;
+                        }
+                        .legend-item {
+                            display: flex;
+                            align-items: center;
+                            gap: 5px;
+                        }
+                        .legend-box {
+                            width: 12px;
+                            height: 12px;
+                            border-radius: 2px;
                         }
                         .calendar-scroll-wrap {
                             overflow-x: auto;
                             padding-bottom: 10px;
                         }
                     </style>
+                    <!-- Indicators removed per user request -->
                     <div class="calendar-scroll-wrap">
                         <div class="visual-schedule">
                             <!-- Headers -->
@@ -1008,11 +1048,15 @@ try {
                         }
 
                         const timeRange = `${formatAmPm(block.startTime)} - ${formatAmPm(block.endTime)}`;
+                        
+                        // Status Badge removed per user request
+                        let statusHtml = '';
 
                         html += `
-                            <div class="vs-block" style="position: absolute; top: ${startPos}px; left: 0; right: 0; height: ${height}px; background-color: ${color};">
+                            <div class="vs-block" style="position: absolute; top: ${startPos}px; left: 0; right: 0; min-height: ${height}px; height: ${height}px; background-color: ${color};">
+                                ${statusHtml}
                                 ${blockContent}
-                                <div style="font-size: 0.9em; opacity: 0.9;">${timeRange}</div>
+                                <div style="font-size: 0.85em; opacity: 0.9;">${timeRange}</div>
                             </div>
                         `;
                     });

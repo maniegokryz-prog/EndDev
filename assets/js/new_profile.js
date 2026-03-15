@@ -538,7 +538,7 @@ function initScheduleDisplay() {
     if (mobileContainer) renderMobileSchedule(mobileContainer, window.schedulesData);
 }
 
-function renderMobileSchedule(container, schedules) {
+function renderMobileSchedule(container, schedules, showLegend = false) {
     const daysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     let html = '';
 
@@ -616,6 +616,8 @@ function renderMobileSchedule(container, schedules) {
     } else {
         const totalWeeklyHours = +(totalWeeklyMinutes / 60).toFixed(2);
 
+        // Indicators removed per user request
+
         // Add total weekly hours at the TOP instead of bottom
         html += `
         <div class="mb-4 pb-3 border-bottom text-center" style="background-color: #f8f9fa; border-radius: 8px; padding: 10px;">
@@ -628,7 +630,7 @@ function renderMobileSchedule(container, schedules) {
     container.innerHTML = html;
 }
 
-function renderVisualSchedule(container, schedules) {
+function renderVisualSchedule(container, schedules, showLegend = false) {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const timeStart = 7 * 60; // 7:00 AM in minutes
     // Maximum school schedule is 9:00 PM, show up to 9:30 PM so 9:00 PM label appears
@@ -671,10 +673,10 @@ function renderVisualSchedule(container, schedules) {
 
     let gridHtml = '';
 
-    // Append Total Row (spans all columns) at the top
     gridHtml += `<div style="grid-column: 1 / -1; padding: 15px; text-align: center; font-weight: bold; border-bottom: 1px solid #e2e8f0; color: #2d3748; background-color: #f8f9fa;">
         Total Weekly Hours: <span class="text-primary" style="font-size: 1.1em;">${totalWeeklyHours} hrs</span>
     </div>`;
+
 
     gridHtml += `<div class="schedule-header-cell">Time</div>`;
     days.forEach(day => {
@@ -753,7 +755,10 @@ function placeScheduleBlock(container, schedule, days, gridStartMinutes, interva
                 content = `<span class="schedule-time">${formatMinutesToTime(startMins)} - ${formatMinutesToTime(endMins)}</span><br>Work`;
             }
 
-            block.innerHTML = content;
+            // Status Badge removed per user request
+            let statusHtml = '';
+
+            block.innerHTML = statusHtml + content;
             block.title = `${schedule.subject || 'Work'} (${formatMinutesToTime(startMins)} - ${formatMinutesToTime(endMins)})`;
 
             cell.appendChild(block);

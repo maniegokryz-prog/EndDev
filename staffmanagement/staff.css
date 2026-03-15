@@ -361,12 +361,56 @@
      position: relative;
    }
 
-   .schedule-block .remove {
+   .schedule-block .remove,
+   .schedule-delete-btn {
      position: absolute;
      top: 2px;
      right: 6px;
      font-weight: bold;
      cursor: pointer;
+     font-size: 16px;
+     line-height: 1;
+     color: rgba(255, 255, 255, 0.7);
+     z-index: 10;
+     transition: color 0.2s;
+   }
+
+   .schedule-delete-btn:hover {
+     color: #fff;
+   }
+
+   .schedule-status-badge {
+     position: absolute;
+     top: 2px;
+     left: 6px;
+     font-size: 9px;
+     font-weight: bold;
+     text-transform: uppercase;
+     padding: 1px 4px;
+     border-radius: 3px;
+     background: rgba(0, 0, 0, 0.2);
+     z-index: 5;
+     pointer-events: none;
+   }
+
+   .schedule-legend {
+     display: flex;
+     gap: 12px;
+     margin-bottom: 12px;
+     font-size: 13px;
+     flex-wrap: wrap;
+   }
+
+   .legend-item {
+     display: flex;
+     align-items: center;
+     gap: 6px;
+   }
+
+   .legend-box {
+     width: 12px;
+     height: 12px;
+     border-radius: 3px;
    }
 
    .modal-content {
@@ -1407,12 +1451,14 @@
 
    /* Pending list item styles */
    .list-group-item-action:hover {
-     background-color: rgba(13, 110, 253, 0.1) !important; /* Slightly more opaque blue-ish hover */
+     background-color: rgba(13, 110, 253, 0.1) !important;
+     /* Slightly more opaque blue-ish hover */
      transition: background-color 0.2s ease;
    }
 
    .list-group-item-action.active {
-     background-color: rgba(13, 110, 253, 0.2) !important; /* Stronger highlight for active selection */
+     background-color: rgba(13, 110, 253, 0.2) !important;
+     /* Stronger highlight for active selection */
      border-color: rgba(13, 110, 253, 0.3) !important;
      color: #000 !important;
    }
