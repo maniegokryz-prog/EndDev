@@ -344,15 +344,46 @@ $profilePhoto .= '?v=' . microtime(true);
         /* Clear/Cancel - Red Outline */
         #editScheduleModal .clear-schedules-btn,
         #editScheduleModal .btn-cancel {
-            background-color: transparent !important;
+            background: transparent !important;
+            background-image: none !important; /* Clear gradient from styles.css */
             color: #dc3545 !important;
             border: 1px solid #dc3545 !important;
             box-shadow: none !important;
+            min-width: 150px;
+            font-weight: bold !important; /* Bold as requested */
+        }
+
+        /* Default Bold for all modal buttons */
+        #editScheduleModal .btn-modern {
+            font-weight: bold !important;
+        }
+
+        /* Hover states matching border colors */
+        #editScheduleModal .add-schedule-btn:hover,
+        #editScheduleModal .btn-save:hover {
+            background-color: #198754 !important;
+            border-color: #198754 !important;
+            color: #fff !important;
+        }
+
+        #editScheduleModal .edit-schedule-btn:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        #editScheduleModal .clear-schedules-btn:hover,
+        #editScheduleModal .btn-cancel:hover {
+            background-color: #dc3545 !important;
+            background-image: none !important; /* Clear gradient on hover too */
+            border-color: #dc3545 !important;
+            color: #fff !important;
         }
 
         /* Modern Outline Button Hovers */
         .btn-modern.btn-outline.text-secondary:hover {
             background-color: #6c757d !important;
+            background-image: none !important;
             color: #fff !important;
             border-color: #6c757d !important;
         }
@@ -864,7 +895,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         <div class="profile-card leave-section-card">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="card-title mb-0">Scheduled Leave</h4>
-                                <button class="btn-modern btn-outline btn-sm text-success border-success"
+                                <button class="btn-modern btn-outline btn-sm text-success border-success btn-icon-sq"
                                     data-bs-toggle="modal" data-bs-target="#addLeaveModal" title="Add Request">
                                     <i class="bi bi-plus-lg"></i>
                                 </button>
@@ -1000,10 +1031,17 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <div class="modal fade" id="saveSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Save Successful</h5>
-                <p>Your changes have been saved successfully.</p>
-                <button type="button" class="btn-modern btn-outline text-success border-success mt-3" data-bs-dismiss="modal">OK</button>
+            <div class="modal-content p-4 rounded-4 shadow border-0">
+                <div class="modal-body text-center">
+                    <div class="success-icon-container">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2 text-success">Save Successful</h5>
+                    <p class="text-muted">Your changes have been saved successfully.</p>
+                    <div class="mt-4">
+                        <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1066,17 +1104,28 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <div class="modal fade" id="removeSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="text-success">Employee Archived</h5>
-                <p>Redirecting...</p>
+            <div class="modal-content p-4 rounded-4 shadow border-0">
+                <div class="modal-body text-center">
+                    <div class="success-icon-container">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-success mb-2">Employee Archived</h5>
+                    <p class="text-muted">Redirecting you to the staff list...</p>
+                </div>
             </div>
         </div>
     </div>
     <div class="modal fade" id="errorRemoveModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="text-danger">Failed</h5>
-                <p id="errorRemoveMessage"></p><button class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            <div class="modal-content p-4 rounded-4 shadow border-0">
+                <div class="modal-body text-center">
+                    <div class="success-icon-container" style="background: #fff5f5; color: #e53e3e;">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-danger mb-2">Operation Failed</h5>
+                    <p id="errorRemoveMessage" class="text-muted mb-4"></p>
+                    <button class="btn-modern btn-outline text-secondary border-secondary px-5 fw-bold" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1497,14 +1546,14 @@ $profilePhoto .= '?v=' . microtime(true);
                             <div class="form-row">
                                 <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
                                     <button type="button" id="add-schedule-btn"
-                                        class="btn-modern btn-outline text-success border-success"
+                                        class="btn-modern btn-outline add-schedule-btn text-success border-success"
                                         style="min-width: 140px;" onclick="addSchedule()">Add
                                         Schedule</button>
                                     <button type="button" id="edit-schedule-btn"
-                                        class="btn-modern btn-outline text-secondary border-secondary"
+                                        class="btn-modern btn-outline edit-schedule-btn text-secondary border-secondary"
                                         style="min-width: 140px;" onclick="editSchedule()" disabled>Update Selected
                                         Schedule</button>
-                                    <button type="button" class="btn-modern btn-outline text-danger border-danger"
+                                    <button type="button" class="btn-modern btn-outline btn-cancel text-danger border-danger"
                                         style="min-width: 140px;" onclick="clearScheduleForm()">Cancel</button>
                                 </div>
                             </div>
@@ -1513,7 +1562,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                 <div class="schedule-header">
                                     <h3>Schedule</h3>
                                     <button type="button"
-                                        class="btn-modern btn-outline text-danger border-danger fw-bold"
+                                        class="btn-modern btn-outline clear-schedules-btn text-danger border-danger"
                                         style="min-width: 200px;" onclick="clearAllSchedules()">
                                         Clear All Schedules
                                     </button>
@@ -1540,10 +1589,10 @@ $profilePhoto .= '?v=' . microtime(true);
                         </div>
 
                         <div class="form-actions d-flex justify-content-end gap-3 mt-4">
-                            <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4"
+                            <button type="button" class="btn-modern btn-outline btn-cancel text-danger border-danger px-4"
                                 style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit"
-                                class="btn-modern btn-outline btn-save text-success border-success fw-bold px-4"
+                                class="btn-modern btn-outline btn-save text-success border-success px-4"
                                 style="min-width: 150px;">
                                 <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'Save Schedule' : 'Submit Request'; ?>
                             </button>
@@ -1612,11 +1661,16 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <div class="modal fade" id="scheduleAddedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Schedule Added Successfully</h5>
-                <p id="scheduleAddedSuccessMsg">Your schedule has been added.</p>
-                <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" data-bs-dismiss="modal">OK</button>
+            <div class="modal-content p-4 rounded-4 shadow border-0">
+                <div class="modal-body text-center">
+                    <div class="success-icon-container">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1 text-success">Schedule Added Successfully</h5>
+                    <div id="scheduleAddedSuccessMsg"></div>
+                    <div class="mt-4">
+                        <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1668,11 +1722,16 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <div class="modal fade" id="scheduleUpdatedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Schedule Updated Successfully</h5>
-                <p id="scheduleUpdatedSuccessMsg">Your schedule has been updated.</p>
-                <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" data-bs-dismiss="modal">OK</button>
+            <div class="modal-content p-4 rounded-4 shadow border-0">
+                <div class="modal-body text-center">
+                    <div class="success-icon-container">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1 text-success">Schedule Updated Successfully</h5>
+                    <div id="scheduleUpdatedSuccessMsg"></div>
+                    <div class="mt-4">
+                        <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1680,14 +1739,17 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <div class="modal fade" id="scheduleClearConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-danger">Confirm Clear All</h5>
-                <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
-                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4"
-                        data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4"
-                        id="scheduleClearConfirmBtn">Yes, Clear All</button>
+            <div class="modal-content p-4 rounded-4 shadow border-0">
+                <div class="modal-body text-center">
+                    <div class="success-icon-container" style="background: #fff5f5; color: #e53e3e;">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2 text-danger">Confirm Clear All</h5>
+                    <p id="scheduleClearConfirmMsg" class="text-muted">Are you sure you want to clear all schedules?</p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+                        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4 fw-bold" data-bs-dismiss="modal">No, Keep Them</button>
+                        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold" id="scheduleClearConfirmBtn">Yes, Clear All</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1695,12 +1757,17 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <div class="modal fade" id="scheduleDeleteConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
-                <p id="scheduleDeleteConfirmMsg">Are you sure you want to delete this schedule?</p>
-                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
+            <div class="modal-content p-4 rounded-4 shadow border-0">
+                <div class="modal-body text-center">
+                    <div class="success-icon-container" style="background: #fff5f5; color: #e53e3e;">
+                        <i class="bi bi-trash3-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2 text-danger">Confirm Delete</h5>
+                    <p id="scheduleDeleteConfirmMsg" class="text-muted">Are you sure you want to delete this schedule block?</p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+                        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1708,11 +1775,16 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <div class="modal fade" id="scheduleClearedSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4 text-center">
-                <h5 class="fw-bold mb-3 text-success">Schedules Cleared</h5>
-                <p id="scheduleClearedSuccessMsg">All schedules have been cleared!</p>
-                <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" data-bs-dismiss="modal">OK</button>
+            <div class="modal-content p-4 rounded-4 shadow border-0">
+                <div class="modal-body text-center">
+                    <div class="success-icon-container">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2 text-success">Schedules Cleared</h5>
+                    <p id="scheduleClearedSuccessMsg" class="text-muted">All schedules have been cleared successfully!</p>
+                    <div class="mt-4">
+                        <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -613,23 +613,25 @@
 
  /* Batch Export DTR Button Styling */
  .btn-batch-export {
-   background-color: transparent !important;
-   color: #000 !important;
+   background-color: #ffc107 !important;
+   color: #000000 !important;
    border: 2px solid #ffc107 !important;
-   transition: all 0.1s ease-in-out;
+   transition: all 0.2s ease-in-out;
    display: inline-flex;
    align-items: center;
    justify-content: center;
  }
 
  .btn-batch-export:hover {
-   background-color: #ffc107 !important;
-   color: #000 !important;
+   background-color: #6c757d !important;
+   border-color: #6c757d !important;
+   color: #fff !important;
    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
  }
 
  /* Mobile specific header adjustments */
  @media (max-width: 576px) {
+
    .page-title.display-4,
    h3.text-nowrap {
      font-size: 1.25rem !important;

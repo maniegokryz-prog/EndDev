@@ -1015,13 +1015,13 @@ function loadEmployeeLeaves() {
                 else if (leave.status === 'rejected') badge = '<span class="badge bg-danger">Rejected</span>';
 
                 html += `
-                <div class="card p-2 border shadow-sm" style="min-width: 200px; flex: 1 1 200px;">
-                    <div class="d-flex justify-content-between align-items-start">
+                <div class="card p-2 border shadow-sm leave-item-card">
+                    <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <strong>${leave.leave_type}</strong> ${badge}
                             <div class="small text-muted">${leave.formatted_dates}</div>
                         </div>
-                        <button class="btn-modern btn-outline btn-sm text-success border-success" onclick='openLeaveDetails(${JSON.stringify(leave)})'>
+                        <button class="btn-modern btn-outline btn-sm text-success border-success btn-icon-sq" onclick='openLeaveDetails(${JSON.stringify(leave)})' style="width: 32px; height: 32px;">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>

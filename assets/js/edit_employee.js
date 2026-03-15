@@ -1395,15 +1395,22 @@ function addSchedule() {
     // Show confirmation with adjustment info
     const daysList = editSelectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
-    let message = `Schedule Added Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
+    
+    // Use the new professional HTML summary
+    const summaryHtml = getScheduleSummaryHtml(
+        roleDisplay,
+        daysList,
+        shiftStart,
+        shiftEnd,
+        finalClass.toUpperCase(),
+        finalSubject.toUpperCase(),
+        finalRoom.toUpperCase(),
+        adjustments
+    );
 
-    if (adjustments.length > 0) {
-        message += '\n\n⚠️ Overlapping schedules were automatically adjusted:\n' + adjustments.map(adj => '• ' + adj).join('\n');
-    }
-
-    // Show success modal
     const msgEl = document.getElementById('scheduleAddedSuccessMsg');
-    if (msgEl) msgEl.innerHTML = message.replace(/\n/g, '<br>');
+    if (msgEl) msgEl.innerHTML = summaryHtml;
+    
     const modalEl = document.getElementById('scheduleAddedSuccessModal');
     if (modalEl) {
         const m = new bootstrap.Modal(modalEl);
@@ -1532,15 +1539,22 @@ function editSchedule() {
     // Show confirmation with adjustment info
     const daysList = editSelectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
-    let message = `Schedule Updated Successfully!\n\nRole: ${roleDisplay}\nDays: ${daysList}\nTime: ${shiftStart} - ${shiftEnd}\nClass: ${finalClass.toUpperCase()}\nSubject: ${finalSubject.toUpperCase()}\nRoom: ${finalRoom.toUpperCase()}`;
+    
+    // Use the new professional HTML summary
+    const summaryHtml = getScheduleSummaryHtml(
+        roleDisplay,
+        daysList,
+        shiftStart,
+        shiftEnd,
+        finalClass.toUpperCase(),
+        finalSubject.toUpperCase(),
+        finalRoom.toUpperCase(),
+        adjustments
+    );
 
-    if (adjustments.length > 0) {
-        message += '\n\n⚠️ Overlapping schedules were automatically adjusted:\n' + adjustments.map(adj => '• ' + adj).join('\n');
-    }
-
-    // Show success modal
     const msgEl = document.getElementById('scheduleUpdatedSuccessMsg');
-    if (msgEl) msgEl.innerHTML = message.replace(/\n/g, '<br>');
+    if (msgEl) msgEl.innerHTML = summaryHtml;
+    
     const modalEl = document.getElementById('scheduleUpdatedSuccessModal');
     if (modalEl) {
         const m = new bootstrap.Modal(modalEl);
@@ -1748,6 +1762,53 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
     console.log('Updated schedules:', editAddedSchedules);
 
     return adjustments;
+}
+
+/**
+ * Generates a professional HTML summary for schedule success modals
+ */
+function getScheduleSummaryHtml(role, days, startTime, endTime, className, subject, room, adjustments = []) {
+    let html = `
+        <div class="schedule-summary-container">
+            <div class="summary-item">
+                <span class="summary-label">Role</span>
+                <span class="summary-value">${role.replace('_', ' ')}</span>
+            </div>
+            <div class="summary-item flex-column py-2" style="border-bottom: 1px dashed #e2e8f0;">
+                <span class="summary-label mb-1">Work Days</span>
+                <span class="summary-value text-center w-100" style="color: #198754; font-size: 1rem;">${days}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Time Slot</span>
+                <span class="summary-value">${formatTime(startTime)} - ${formatTime(endTime)}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Designate Class</span>
+                <span class="summary-value">${className}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Subject Code</span>
+                <span class="summary-value">${subject}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Room Number</span>
+                <span class="summary-value">${room}</span>
+            </div>
+        </div>
+    `;
+
+    if (adjustments && adjustments.length > 0) {
+        html += `
+            <div class="alert alert-warning mt-3 py-2 px-3 text-start mb-0" style="font-size: 0.85rem; border-radius: 10px; border: none; background: #fff3cd;">
+                <div class="fw-bold mb-1 text-warning-emphasis"><i class="bi bi-exclamation-triangle-fill me-1"></i> Auto-Adjustments Made:</div>
+                <ul class="mb-0 ps-3">
+                    ${adjustments.map(adj => `<li>${adj}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    return html;
 }
 
 // Delete individual schedule

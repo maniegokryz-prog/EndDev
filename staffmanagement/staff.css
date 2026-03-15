@@ -1352,10 +1352,10 @@
 
    /* Add New Staff Button Styling */
    .btn-add-staff {
-     background-color: transparent !important;
-     color: #000 !important;
+     background-color: #ffc107 !important;
+     color: #000000 !important;
      border: 2px solid #ffc107 !important;
-     transition: all 0.1s ease-in-out;
+     transition: all 0.2s ease-in-out;
      display: inline-flex;
      align-items: center;
      justify-content: center;
@@ -1363,8 +1363,9 @@
    }
 
    .btn-add-staff:hover {
-     background-color: #ffc107 !important;
-     color: #000 !important;
+     background-color: #6c757d !important;
+     border-color: #6c757d !important;
+     color: #fff !important;
      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
    }
 
