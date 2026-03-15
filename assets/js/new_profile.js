@@ -594,16 +594,24 @@ function renderMobileSchedule(container, schedules, showLegend = false) {
             daysHtml += `<div class="d-flex flex-column gap-2">`;
 
             dayScheds.forEach(s => {
+                const isDefaultClass = !s.class || ['N/A', 'WORK SHIFT'].includes(s.class.toUpperCase());
+                const isDefaultSubject = !s.subject || ['GENERAL'].includes(s.subject.toUpperCase());
+                const isFaculty = !isDefaultClass && !isDefaultSubject;
+
+                const displaySubject = isFaculty ? s.subject : 'Work Schedule';
+                const displayClass = isFaculty ? `<span class="badge bg-secondary">${s.class}</span>` : '';
+                const displayRoom = (isFaculty && s.room_num && !['TBD'].includes(s.room_num.toUpperCase())) ? `<div class="small text-muted mt-1"><i class="bi bi-geo-alt me-1"></i> ${s.room_num}</div>` : '';
+
                 daysHtml += `
                 <div class="mobile-sched-card p-3 rounded" style="background-color: ${s.color}15; border-left: 4px solid ${s.color}; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between">
-                        <span class="fw-bold text-dark">${s.subject || 'Work'}</span>
-                        <span class="badge bg-secondary">${s.class || 'N/A'}</span>
+                        <span class="fw-bold text-dark">${displaySubject}</span>
+                        ${displayClass}
                     </div>
                     <div class="small text-muted mt-1">
                         <i class="bi bi-clock me-1"></i> ${s.startTime} - ${s.endTime}
                     </div>
-                    ${s.room_num ? `<div class="small text-muted mt-1"><i class="bi bi-geo-alt me-1"></i> ${s.room_num}</div>` : ''}
+                    ${displayRoom}
                 </div>`;
             });
 
@@ -749,10 +757,16 @@ function placeScheduleBlock(container, schedule, days, gridStartMinutes, interva
             block.style.height = `${height - 2}px`; // minus margins
 
             let content = '';
-            if (schedule.class && schedule.class !== 'N/A') {
+            
+            // Check if this is a generic/default schedule
+            const isDefaultClass = !schedule.class || ['N/A', 'WORK SHIFT'].includes(schedule.class.toUpperCase());
+            const isDefaultSubject = !schedule.subject || ['GENERAL'].includes(schedule.subject.toUpperCase());
+            const isFaculty = !isDefaultClass && !isDefaultSubject;
+
+            if (isFaculty) {
                 content = `<strong>${schedule.subject}</strong><br>${schedule.class}<br><span class="schedule-time">${formatMinutesToTime(startMins)} - ${formatMinutesToTime(endMins)}</span>`;
             } else {
-                content = `<span class="schedule-time">${formatMinutesToTime(startMins)} - ${formatMinutesToTime(endMins)}</span><br>Work`;
+                content = `<span class="schedule-time">${formatMinutesToTime(startMins)} - ${formatMinutesToTime(endMins)}</span><br><div style="margin-top:2px;">Work Schedule</div>`;
             }
 
             // Status Badge removed per user request

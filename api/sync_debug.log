@@ -12048,3 +12048,449 @@
 2026-03-15 14:21:40 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
 2026-03-15 14:22:11 - --- Sync Cycle Started ---
 2026-03-15 14:22:11 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:22:41 - --- Sync Cycle Started ---
+2026-03-15 14:22:41 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:23:11 - --- Sync Cycle Started ---
+2026-03-15 14:23:11 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:23:41 - --- Sync Cycle Started ---
+2026-03-15 14:23:41 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:24:14 - --- Sync Cycle Started ---
+2026-03-15 14:24:14 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:24:53 - --- Sync Cycle Started ---
+2026-03-15 14:24:53 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:26:45 - --- Sync Cycle Started ---
+2026-03-15 14:26:45 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:27:01 - --- Sync Cycle Started ---
+2026-03-15 14:27:01 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:27:29 - --- Sync Cycle Started ---
+2026-03-15 14:27:30 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:27:31 - --- Sync Cycle Started ---
+2026-03-15 14:27:31 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:27:33 - --- Sync Cycle Started ---
+2026-03-15 14:27:33 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:28:03 - --- Sync Cycle Started ---
+2026-03-15 14:28:03 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:28:03 - Successfully pushed to VPS for notifications ID 3
+2026-03-15 14:28:04 - Successfully pushed to VPS for notifications ID 4
+2026-03-15 14:28:04 - Successfully pushed to VPS for notifications ID 5
+2026-03-15 14:28:04 - Successfully pushed to VPS for notifications ID 10
+2026-03-15 14:28:33 - --- Sync Cycle Started ---
+2026-03-15 14:28:33 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:29:04 - --- Sync Cycle Started ---
+2026-03-15 14:29:04 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:29:34 - --- Sync Cycle Started ---
+2026-03-15 14:29:34 - Push error on schedule_requests ID 2: Invalid JSON from VPS: 
+2026-03-15 14:32:32 - --- Sync Cycle Started ---
+2026-03-15 14:34:50 - --- Sync Cycle Started ---
+2026-03-15 14:34:57 - --- Sync Cycle Started ---
+2026-03-15 14:34:59 - --- Sync Cycle Started ---
+2026-03-15 14:35:29 - --- Sync Cycle Started ---
+2026-03-15 14:35:43 - --- Sync Cycle Started ---
+2026-03-15 14:35:43 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-15 14:35:43 - Successfully pushed to VPS for employees ID 1
+2026-03-15 14:36:14 - --- Sync Cycle Started ---
+2026-03-15 14:36:44 - --- Sync Cycle Started ---
+2026-03-15 14:37:14 - --- Sync Cycle Started ---
+2026-03-15 14:37:14 - Pulled tables from VPS: schedule_requests, notifications
+2026-03-15 14:37:14 - Successfully pulled and updated local record on schedule_requests with VPS id 1
+2026-03-15 14:37:14 - Successfully pulled and updated local record on notifications with VPS id 1
+2026-03-15 14:37:44 - --- Sync Cycle Started ---
+2026-03-15 14:37:46 - --- Sync Cycle Started ---
+2026-03-15 14:37:50 - --- Sync Cycle Started ---
+2026-03-15 14:37:50 - Successfully pushed to VPS for schedules ID 1
+2026-03-15 14:37:50 - Successfully pushed to VPS for schedule_requests ID 1
+2026-03-15 14:37:50 - Successfully pushed to VPS for schedule_periods ID 1
+2026-03-15 14:37:51 - Successfully pushed to VPS for schedule_periods ID 2
+2026-03-15 14:37:51 - Successfully pushed to VPS for schedule_periods ID 3
+2026-03-15 14:37:51 - Successfully pushed to VPS for schedule_periods ID 4
+2026-03-15 14:37:51 - Successfully pushed to VPS for employee_schedules ID 1
+2026-03-15 14:37:51 - Successfully pushed to VPS for notifications ID 2
+2026-03-15 14:37:51 - Successfully pushed to VPS for notifications ID 3
+2026-03-15 14:37:52 - --- Sync Cycle Started ---
+2026-03-15 14:38:23 - --- Sync Cycle Started ---
+2026-03-15 14:38:44 - --- Sync Cycle Started ---
+2026-03-15 14:38:44 - Pulled tables from VPS: daily_attendance
+2026-03-15 14:38:44 - Successfully pulled and updated local record on daily_attendance with VPS id 1
+2026-03-15 14:38:45 - --- Sync Cycle Started ---
+2026-03-15 14:38:53 - --- Sync Cycle Started ---
+2026-03-15 14:38:55 - --- Sync Cycle Started ---
+2026-03-15 14:39:21 - --- Sync Cycle Started ---
+2026-03-15 14:39:21 - Pulled tables from VPS: notifications
+2026-03-15 14:39:21 - Successfully pulled and updated local record on notifications with VPS id 1
+2026-03-15 14:39:21 - Successfully pulled and updated local record on notifications with VPS id 2
+2026-03-15 14:39:21 - Successfully pulled and updated local record on notifications with VPS id 3
+2026-03-15 14:39:52 - --- Sync Cycle Started ---
+2026-03-15 14:40:22 - --- Sync Cycle Started ---
+2026-03-15 14:40:41 - --- Sync Cycle Started ---
+2026-03-15 14:40:43 - --- Sync Cycle Started ---
+2026-03-15 14:41:14 - --- Sync Cycle Started ---
+2026-03-15 14:41:14 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-15 14:41:14 - Successfully pushed to VPS for employees ID 2
+2026-03-15 14:41:42 - --- Sync Cycle Started ---
+2026-03-15 14:42:13 - --- Sync Cycle Started ---
+2026-03-15 14:42:43 - --- Sync Cycle Started ---
+2026-03-15 14:43:13 - --- Sync Cycle Started ---
+2026-03-15 14:43:43 - --- Sync Cycle Started ---
+2026-03-15 14:44:13 - --- Sync Cycle Started ---
+2026-03-15 14:44:43 - --- Sync Cycle Started ---
+2026-03-15 14:45:12 - --- Sync Cycle Started ---
+2026-03-15 14:45:43 - --- Sync Cycle Started ---
+2026-03-15 14:45:53 - --- Sync Cycle Started ---
+2026-03-15 14:46:23 - --- Sync Cycle Started ---
+2026-03-15 14:46:23 - Pulled tables from VPS: leave_types, employee_leaves, notifications
+2026-03-15 14:46:23 - Successfully pulled and updated local record on leave_types with VPS id 1
+2026-03-15 14:46:23 - Successfully pulled and updated local record on employee_leaves with VPS id 1
+2026-03-15 14:46:23 - Successfully pulled and updated local record on notifications with VPS id 4
+2026-03-15 14:46:53 - --- Sync Cycle Started ---
+2026-03-15 14:47:23 - --- Sync Cycle Started ---
+2026-03-15 14:47:53 - --- Sync Cycle Started ---
+2026-03-15 14:48:23 - --- Sync Cycle Started ---
+2026-03-15 14:48:53 - --- Sync Cycle Started ---
+2026-03-15 14:50:14 - --- Sync Cycle Started ---
+2026-03-15 14:51:14 - --- Sync Cycle Started ---
+2026-03-15 14:52:14 - --- Sync Cycle Started ---
+2026-03-15 14:53:14 - --- Sync Cycle Started ---
+2026-03-15 14:53:20 - --- Sync Cycle Started ---
+2026-03-15 14:53:50 - --- Sync Cycle Started ---
+2026-03-15 14:54:21 - --- Sync Cycle Started ---
+2026-03-15 14:54:51 - --- Sync Cycle Started ---
+2026-03-15 14:55:20 - --- Sync Cycle Started ---
+2026-03-15 14:55:23 - --- Sync Cycle Started ---
+2026-03-15 14:55:30 - --- Sync Cycle Started ---
+2026-03-15 14:55:30 - Successfully pushed to VPS for employee_leaves ID 1
+2026-03-15 14:55:30 - Successfully pushed to VPS for daily_attendance ID 2
+2026-03-15 14:55:30 - Successfully pushed to VPS for notifications ID 5
+2026-03-15 14:56:01 - --- Sync Cycle Started ---
+2026-03-15 14:56:31 - --- Sync Cycle Started ---
+2026-03-15 14:57:01 - --- Sync Cycle Started ---
+2026-03-15 14:57:31 - --- Sync Cycle Started ---
+2026-03-15 14:58:01 - --- Sync Cycle Started ---
+2026-03-15 14:58:31 - --- Sync Cycle Started ---
+2026-03-15 14:59:14 - --- Sync Cycle Started ---
+2026-03-15 15:00:14 - --- Sync Cycle Started ---
+2026-03-15 15:01:14 - --- Sync Cycle Started ---
+2026-03-15 15:02:14 - --- Sync Cycle Started ---
+2026-03-15 15:03:14 - --- Sync Cycle Started ---
+2026-03-15 15:04:14 - --- Sync Cycle Started ---
+2026-03-15 15:05:14 - --- Sync Cycle Started ---
+2026-03-15 15:06:14 - --- Sync Cycle Started ---
+2026-03-15 15:07:14 - --- Sync Cycle Started ---
+2026-03-15 15:08:14 - --- Sync Cycle Started ---
+2026-03-15 15:09:14 - --- Sync Cycle Started ---
+2026-03-15 15:10:14 - --- Sync Cycle Started ---
+2026-03-15 15:11:14 - --- Sync Cycle Started ---
+2026-03-15 15:12:14 - --- Sync Cycle Started ---
+2026-03-15 15:13:14 - --- Sync Cycle Started ---
+2026-03-15 15:14:14 - --- Sync Cycle Started ---
+2026-03-15 15:15:14 - --- Sync Cycle Started ---
+2026-03-15 15:16:14 - --- Sync Cycle Started ---
+2026-03-15 15:17:14 - --- Sync Cycle Started ---
+2026-03-15 15:18:14 - --- Sync Cycle Started ---
+2026-03-15 15:19:14 - --- Sync Cycle Started ---
+2026-03-15 15:20:14 - --- Sync Cycle Started ---
+2026-03-15 15:21:17 - --- Sync Cycle Started ---
+2026-03-15 15:22:14 - --- Sync Cycle Started ---
+2026-03-15 15:23:14 - --- Sync Cycle Started ---
+2026-03-15 15:24:14 - --- Sync Cycle Started ---
+2026-03-15 15:25:15 - --- Sync Cycle Started ---
+2026-03-15 15:26:14 - --- Sync Cycle Started ---
+2026-03-15 15:27:14 - --- Sync Cycle Started ---
+2026-03-15 15:28:14 - --- Sync Cycle Started ---
+2026-03-15 15:29:14 - --- Sync Cycle Started ---
+2026-03-15 15:30:14 - --- Sync Cycle Started ---
+2026-03-15 15:31:17 - --- Sync Cycle Started ---
+2026-03-15 15:32:14 - --- Sync Cycle Started ---
+2026-03-15 15:33:14 - --- Sync Cycle Started ---
+2026-03-15 15:34:21 - --- Sync Cycle Started ---
+2026-03-15 15:35:14 - --- Sync Cycle Started ---
+2026-03-15 15:36:14 - --- Sync Cycle Started ---
+2026-03-15 15:37:14 - --- Sync Cycle Started ---
+2026-03-15 15:38:14 - --- Sync Cycle Started ---
+2026-03-15 15:39:14 - --- Sync Cycle Started ---
+2026-03-15 15:40:14 - --- Sync Cycle Started ---
+2026-03-15 15:41:18 - --- Sync Cycle Started ---
+2026-03-15 15:42:14 - --- Sync Cycle Started ---
+2026-03-15 15:43:14 - --- Sync Cycle Started ---
+2026-03-15 15:44:14 - --- Sync Cycle Started ---
+2026-03-15 15:45:16 - --- Sync Cycle Started ---
+2026-03-15 15:46:14 - --- Sync Cycle Started ---
+2026-03-15 15:47:05 - --- Sync Cycle Started ---
+2026-03-15 15:47:19 - --- Sync Cycle Started ---
+2026-03-15 15:47:50 - --- Sync Cycle Started ---
+2026-03-15 15:47:52 - --- Sync Cycle Started ---
+2026-03-15 15:47:57 - --- Sync Cycle Started ---
+2026-03-15 15:47:59 - --- Sync Cycle Started ---
+2026-03-15 15:48:29 - --- Sync Cycle Started ---
+2026-03-15 15:48:29 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-15 15:48:29 - Successfully pushed to VPS for employees ID 3
+2026-03-15 15:48:49 - --- Sync Cycle Started ---
+2026-03-15 15:48:49 - Successfully pushed to VPS for schedules ID 2
+2026-03-15 15:48:50 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-15 15:48:50 - Successfully pushed to VPS for schedule_periods ID 6
+2026-03-15 15:48:50 - Successfully pushed to VPS for employee_schedules ID 2
+2026-03-15 15:48:50 - Successfully pushed to VPS for notifications ID 6
+2026-03-15 15:48:55 - --- Sync Cycle Started ---
+2026-03-15 15:49:13 - --- Sync Cycle Started ---
+2026-03-15 15:49:43 - --- Sync Cycle Started ---
+2026-03-15 15:50:13 - --- Sync Cycle Started ---
+2026-03-15 15:50:44 - --- Sync Cycle Started ---
+2026-03-15 15:51:14 - --- Sync Cycle Started ---
+2026-03-15 15:51:54 - --- Sync Cycle Started ---
+2026-03-15 15:51:57 - --- Sync Cycle Started ---
+2026-03-15 15:52:03 - --- Sync Cycle Started ---
+2026-03-15 15:52:34 - --- Sync Cycle Started ---
+2026-03-15 15:53:04 - --- Sync Cycle Started ---
+2026-03-15 15:53:34 - --- Sync Cycle Started ---
+2026-03-15 15:54:03 - --- Sync Cycle Started ---
+2026-03-15 15:54:33 - --- Sync Cycle Started ---
+2026-03-15 15:55:03 - --- Sync Cycle Started ---
+2026-03-15 15:55:33 - --- Sync Cycle Started ---
+2026-03-15 15:56:04 - --- Sync Cycle Started ---
+2026-03-15 15:56:34 - --- Sync Cycle Started ---
+2026-03-15 15:57:03 - --- Sync Cycle Started ---
+2026-03-15 15:57:34 - --- Sync Cycle Started ---
+2026-03-15 15:58:04 - --- Sync Cycle Started ---
+2026-03-15 15:58:24 - --- Sync Cycle Started ---
+2026-03-15 15:58:54 - --- Sync Cycle Started ---
+2026-03-15 15:59:14 - --- Sync Cycle Started ---
+2026-03-15 15:59:44 - --- Sync Cycle Started ---
+2026-03-15 16:00:14 - --- Sync Cycle Started ---
+2026-03-15 16:00:44 - --- Sync Cycle Started ---
+2026-03-15 16:00:55 - --- Sync Cycle Started ---
+2026-03-15 16:01:25 - --- Sync Cycle Started ---
+2026-03-15 16:01:56 - --- Sync Cycle Started ---
+2026-03-15 16:02:25 - --- Sync Cycle Started ---
+2026-03-15 16:02:39 - --- Sync Cycle Started ---
+2026-03-15 16:03:09 - --- Sync Cycle Started ---
+2026-03-15 16:03:16 - --- Sync Cycle Started ---
+2026-03-15 16:03:16 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-15 16:03:16 - Successfully pushed to VPS for schedule_periods ID 6
+2026-03-15 16:03:16 - Successfully pushed to VPS for schedule_periods ID 7
+2026-03-15 16:03:16 - Successfully pushed to VPS for schedule_periods ID 8
+2026-03-15 16:03:17 - Successfully pushed to VPS for schedule_periods ID 9
+2026-03-15 16:03:17 - Successfully pushed to VPS for employee_assignments ID 1
+2026-03-15 16:03:17 - Successfully pushed to VPS for employee_assignments ID 2
+2026-03-15 16:03:17 - Successfully pushed to VPS for notifications ID 7
+2026-03-15 16:03:46 - --- Sync Cycle Started ---
+2026-03-15 16:04:16 - --- Sync Cycle Started ---
+2026-03-15 16:04:47 - --- Sync Cycle Started ---
+2026-03-15 16:05:20 - --- Sync Cycle Started ---
+2026-03-15 16:05:47 - --- Sync Cycle Started ---
+2026-03-15 16:06:17 - --- Sync Cycle Started ---
+2026-03-15 16:06:42 - --- Sync Cycle Started ---
+2026-03-15 16:07:01 - --- Sync Cycle Started ---
+2026-03-15 16:07:32 - --- Sync Cycle Started ---
+2026-03-15 16:08:02 - --- Sync Cycle Started ---
+2026-03-15 16:08:32 - --- Sync Cycle Started ---
+2026-03-15 16:09:01 - --- Sync Cycle Started ---
+2026-03-15 16:09:05 - --- Sync Cycle Started ---
+2026-03-15 16:09:05 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-15 16:09:05 - Successfully pushed to VPS for schedule_periods ID 6
+2026-03-15 16:09:05 - Successfully pushed to VPS for schedule_periods ID 7
+2026-03-15 16:09:06 - Successfully pushed to VPS for schedule_periods ID 8
+2026-03-15 16:09:06 - Successfully pushed to VPS for schedule_periods ID 9
+2026-03-15 16:09:06 - Successfully pushed to VPS for schedule_periods ID 10
+2026-03-15 16:09:06 - Successfully pushed to VPS for employee_assignments ID 1
+2026-03-15 16:09:07 - Successfully pushed to VPS for employee_assignments ID 2
+2026-03-15 16:09:07 - Successfully pushed to VPS for employee_assignments ID 3
+2026-03-15 16:09:07 - Successfully pushed to VPS for notifications ID 8
+2026-03-15 16:09:35 - --- Sync Cycle Started ---
+2026-03-15 16:10:05 - --- Sync Cycle Started ---
+2026-03-15 16:10:21 - --- Sync Cycle Started ---
+2026-03-15 16:10:26 - --- Sync Cycle Started ---
+2026-03-15 16:10:41 - --- Sync Cycle Started ---
+2026-03-15 16:10:42 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-15 16:10:42 - Successfully pushed to VPS for schedule_periods ID 6
+2026-03-15 16:10:42 - Successfully pushed to VPS for schedule_periods ID 7
+2026-03-15 16:10:42 - Successfully pushed to VPS for schedule_periods ID 8
+2026-03-15 16:10:42 - Successfully pushed to VPS for schedule_periods ID 9
+2026-03-15 16:10:43 - Successfully pushed to VPS for schedule_periods ID 10
+2026-03-15 16:10:43 - Successfully pushed to VPS for schedule_periods ID 11
+2026-03-15 16:10:43 - Successfully pushed to VPS for schedule_periods ID 12
+2026-03-15 16:10:43 - Successfully pushed to VPS for schedule_periods ID 13
+2026-03-15 16:10:43 - Successfully pushed to VPS for employee_assignments ID 1
+2026-03-15 16:10:44 - Successfully pushed to VPS for employee_assignments ID 2
+2026-03-15 16:10:44 - Successfully pushed to VPS for employee_assignments ID 3
+2026-03-15 16:10:44 - Successfully pushed to VPS for employee_assignments ID 4
+2026-03-15 16:10:44 - Successfully pushed to VPS for notifications ID 9
+2026-03-15 16:11:01 - --- Sync Cycle Started ---
+2026-03-15 16:11:01 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-15 16:11:02 - Successfully pushed to VPS for schedule_periods ID 6
+2026-03-15 16:11:02 - Successfully pushed to VPS for schedule_periods ID 7
+2026-03-15 16:11:02 - Successfully pushed to VPS for schedule_periods ID 8
+2026-03-15 16:11:02 - Successfully pushed to VPS for schedule_periods ID 9
+2026-03-15 16:11:02 - Successfully pushed to VPS for schedule_periods ID 10
+2026-03-15 16:11:03 - Successfully pushed to VPS for schedule_periods ID 11
+2026-03-15 16:11:03 - Successfully pushed to VPS for schedule_periods ID 12
+2026-03-15 16:11:03 - Successfully pushed to VPS for schedule_periods ID 13
+2026-03-15 16:11:03 - Successfully pushed to VPS for schedule_periods ID 14
+2026-03-15 16:11:03 - Successfully pushed to VPS for schedule_periods ID 15
+2026-03-15 16:11:03 - Successfully pushed to VPS for schedule_periods ID 16
+2026-03-15 16:11:04 - Successfully pushed to VPS for employee_assignments ID 1
+2026-03-15 16:11:04 - Successfully pushed to VPS for employee_assignments ID 2
+2026-03-15 16:11:04 - Successfully pushed to VPS for employee_assignments ID 3
+2026-03-15 16:11:04 - Successfully pushed to VPS for employee_assignments ID 4
+2026-03-15 16:11:04 - Successfully pushed to VPS for employee_assignments ID 5
+2026-03-15 16:11:04 - Successfully pushed to VPS for employee_assignments ID 6
+2026-03-15 16:11:05 - Successfully pushed to VPS for employee_assignments ID 7
+2026-03-15 16:11:05 - Successfully pushed to VPS for notifications ID 10
+2026-03-15 16:11:11 - --- Sync Cycle Started ---
+2026-03-15 16:11:41 - --- Sync Cycle Started ---
+2026-03-15 16:12:11 - --- Sync Cycle Started ---
+2026-03-15 16:12:41 - --- Sync Cycle Started ---
+2026-03-15 16:13:11 - --- Sync Cycle Started ---
+2026-03-15 16:13:41 - --- Sync Cycle Started ---
+2026-03-15 16:14:11 - --- Sync Cycle Started ---
+2026-03-15 16:14:13 - --- Sync Cycle Started ---
+2026-03-15 16:14:33 - --- Sync Cycle Started ---
+2026-03-15 16:14:49 - --- Sync Cycle Started ---
+2026-03-15 16:15:20 - --- Sync Cycle Started ---
+2026-03-15 16:15:50 - --- Sync Cycle Started ---
+2026-03-15 16:16:20 - --- Sync Cycle Started ---
+2026-03-15 16:16:50 - --- Sync Cycle Started ---
+2026-03-15 16:17:20 - --- Sync Cycle Started ---
+2026-03-15 16:17:50 - --- Sync Cycle Started ---
+2026-03-15 16:18:20 - --- Sync Cycle Started ---
+2026-03-15 16:18:50 - --- Sync Cycle Started ---
+2026-03-15 16:18:56 - --- Sync Cycle Started ---
+2026-03-15 16:19:10 - --- Sync Cycle Started ---
+2026-03-15 16:19:10 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-15 16:19:10 - Successfully pushed to VPS for schedule_periods ID 6
+2026-03-15 16:19:10 - Successfully pushed to VPS for schedule_periods ID 7
+2026-03-15 16:19:10 - Successfully pushed to VPS for schedule_periods ID 8
+2026-03-15 16:19:10 - Successfully pushed to VPS for schedule_periods ID 9
+2026-03-15 16:19:11 - Successfully pushed to VPS for schedule_periods ID 10
+2026-03-15 16:19:11 - Successfully pushed to VPS for schedule_periods ID 11
+2026-03-15 16:19:11 - Successfully pushed to VPS for schedule_periods ID 12
+2026-03-15 16:19:11 - Successfully pushed to VPS for schedule_periods ID 13
+2026-03-15 16:19:11 - Successfully pushed to VPS for schedule_periods ID 14
+2026-03-15 16:19:11 - Successfully pushed to VPS for schedule_periods ID 15
+2026-03-15 16:19:11 - Successfully pushed to VPS for schedule_periods ID 16
+2026-03-15 16:19:12 - Successfully pushed to VPS for schedule_periods ID 17
+2026-03-15 16:19:12 - Successfully pushed to VPS for schedule_periods ID 18
+2026-03-15 16:19:12 - Successfully pushed to VPS for schedule_periods ID 19
+2026-03-15 16:19:12 - Successfully pushed to VPS for employee_assignments ID 1
+2026-03-15 16:19:12 - Successfully pushed to VPS for employee_assignments ID 2
+2026-03-15 16:19:12 - Successfully pushed to VPS for employee_assignments ID 3
+2026-03-15 16:19:13 - Successfully pushed to VPS for employee_assignments ID 4
+2026-03-15 16:19:13 - Successfully pushed to VPS for employee_assignments ID 5
+2026-03-15 16:19:13 - Successfully pushed to VPS for employee_assignments ID 6
+2026-03-15 16:19:13 - Successfully pushed to VPS for employee_assignments ID 7
+2026-03-15 16:19:13 - Successfully pushed to VPS for employee_assignments ID 8
+2026-03-15 16:19:13 - Successfully pushed to VPS for employee_assignments ID 9
+2026-03-15 16:19:14 - Successfully pushed to VPS for employee_assignments ID 10
+2026-03-15 16:19:14 - Successfully pushed to VPS for notifications ID 11
+2026-03-15 16:19:40 - --- Sync Cycle Started ---
+2026-03-15 16:20:10 - --- Sync Cycle Started ---
+2026-03-15 16:20:40 - --- Sync Cycle Started ---
+2026-03-15 16:21:10 - --- Sync Cycle Started ---
+2026-03-15 16:21:40 - --- Sync Cycle Started ---
+2026-03-15 16:22:10 - --- Sync Cycle Started ---
+2026-03-15 16:22:40 - --- Sync Cycle Started ---
+2026-03-15 16:23:10 - --- Sync Cycle Started ---
+2026-03-15 16:23:20 - --- Sync Cycle Started ---
+2026-03-15 16:23:51 - --- Sync Cycle Started ---
+2026-03-15 16:24:21 - --- Sync Cycle Started ---
+2026-03-15 16:24:51 - --- Sync Cycle Started ---
+2026-03-15 16:25:21 - --- Sync Cycle Started ---
+2026-03-15 16:25:51 - --- Sync Cycle Started ---
+2026-03-15 16:26:21 - --- Sync Cycle Started ---
+2026-03-15 16:26:30 - --- Sync Cycle Started ---
+2026-03-15 16:26:31 - --- Sync Cycle Started ---
+2026-03-15 16:26:35 - --- Sync Cycle Started ---
+2026-03-15 16:26:37 - --- Sync Cycle Started ---
+2026-03-15 16:26:39 - --- Sync Cycle Started ---
+2026-03-15 16:26:42 - --- Sync Cycle Started ---
+2026-03-15 16:26:49 - --- Sync Cycle Started ---
+2026-03-15 16:27:12 - --- Sync Cycle Started ---
+2026-03-15 16:27:12 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-15 16:27:12 - Successfully pushed to VPS for schedule_periods ID 6
+2026-03-15 16:27:12 - Successfully pushed to VPS for schedule_periods ID 7
+2026-03-15 16:27:13 - Successfully pushed to VPS for schedule_periods ID 8
+2026-03-15 16:27:13 - Successfully pushed to VPS for schedule_periods ID 9
+2026-03-15 16:27:13 - Successfully pushed to VPS for schedule_periods ID 10
+2026-03-15 16:27:13 - Successfully pushed to VPS for schedule_periods ID 11
+2026-03-15 16:27:13 - Successfully pushed to VPS for schedule_periods ID 12
+2026-03-15 16:27:14 - Successfully pushed to VPS for schedule_periods ID 13
+2026-03-15 16:27:14 - Successfully pushed to VPS for schedule_periods ID 14
+2026-03-15 16:27:14 - Successfully pushed to VPS for schedule_periods ID 15
+2026-03-15 16:27:14 - Successfully pushed to VPS for schedule_periods ID 16
+2026-03-15 16:27:14 - Successfully pushed to VPS for schedule_periods ID 17
+2026-03-15 16:27:14 - Successfully pushed to VPS for schedule_periods ID 18
+2026-03-15 16:27:14 - Successfully pushed to VPS for schedule_periods ID 19
+2026-03-15 16:27:15 - Successfully pushed to VPS for schedule_periods ID 20
+2026-03-15 16:27:15 - Successfully pushed to VPS for employee_assignments ID 1
+2026-03-15 16:27:15 - Successfully pushed to VPS for employee_assignments ID 2
+2026-03-15 16:27:15 - Successfully pushed to VPS for employee_assignments ID 3
+2026-03-15 16:27:15 - Successfully pushed to VPS for employee_assignments ID 4
+2026-03-15 16:27:15 - Successfully pushed to VPS for employee_assignments ID 5
+2026-03-15 16:27:16 - Successfully pushed to VPS for employee_assignments ID 6
+2026-03-15 16:27:16 - Successfully pushed to VPS for employee_assignments ID 7
+2026-03-15 16:27:16 - Successfully pushed to VPS for employee_assignments ID 8
+2026-03-15 16:27:16 - Successfully pushed to VPS for employee_assignments ID 9
+2026-03-15 16:27:16 - Successfully pushed to VPS for employee_assignments ID 10
+2026-03-15 16:27:16 - Successfully pushed to VPS for employee_assignments ID 11
+2026-03-15 16:27:16 - Successfully pushed to VPS for notifications ID 12
+2026-03-15 16:27:17 - --- Sync Cycle Started ---
+2026-03-15 16:27:48 - --- Sync Cycle Started ---
+2026-03-15 16:28:18 - --- Sync Cycle Started ---
+2026-03-15 16:28:48 - --- Sync Cycle Started ---
+2026-03-15 16:29:18 - --- Sync Cycle Started ---
+2026-03-15 16:29:48 - --- Sync Cycle Started ---
+2026-03-15 16:30:18 - --- Sync Cycle Started ---
+2026-03-15 16:31:14 - --- Sync Cycle Started ---
+2026-03-15 16:32:14 - --- Sync Cycle Started ---
+2026-03-15 16:33:14 - --- Sync Cycle Started ---
+2026-03-15 16:34:14 - --- Sync Cycle Started ---
+2026-03-15 16:35:14 - --- Sync Cycle Started ---
+2026-03-15 16:36:20 - --- Sync Cycle Started ---
+2026-03-15 16:37:14 - --- Sync Cycle Started ---
+2026-03-15 16:38:14 - --- Sync Cycle Started ---
+2026-03-15 16:39:14 - --- Sync Cycle Started ---
+2026-03-15 16:40:16 - --- Sync Cycle Started ---
+2026-03-15 16:41:14 - --- Sync Cycle Started ---
+2026-03-15 16:41:52 - --- Sync Cycle Started ---
+2026-03-15 16:41:55 - --- Sync Cycle Started ---
+2026-03-15 16:42:16 - --- Sync Cycle Started ---
+2026-03-15 16:42:16 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-15 16:42:16 - Successfully pushed to VPS for schedule_periods ID 6
+2026-03-15 16:42:16 - Successfully pushed to VPS for schedule_periods ID 7
+2026-03-15 16:42:17 - Successfully pushed to VPS for schedule_periods ID 8
+2026-03-15 16:42:17 - Successfully pushed to VPS for schedule_periods ID 9
+2026-03-15 16:42:17 - Successfully pushed to VPS for schedule_periods ID 10
+2026-03-15 16:42:17 - Successfully pushed to VPS for schedule_periods ID 11
+2026-03-15 16:42:17 - Successfully pushed to VPS for schedule_periods ID 12
+2026-03-15 16:42:17 - Successfully pushed to VPS for schedule_periods ID 13
+2026-03-15 16:42:18 - Successfully pushed to VPS for schedule_periods ID 14
+2026-03-15 16:42:18 - Successfully pushed to VPS for schedule_periods ID 15
+2026-03-15 16:42:18 - Successfully pushed to VPS for schedule_periods ID 16
+2026-03-15 16:42:18 - Successfully pushed to VPS for schedule_periods ID 17
+2026-03-15 16:42:18 - Successfully pushed to VPS for schedule_periods ID 18
+2026-03-15 16:42:18 - Successfully pushed to VPS for schedule_periods ID 19
+2026-03-15 16:42:18 - Successfully pushed to VPS for schedule_periods ID 20
+2026-03-15 16:42:19 - Successfully pushed to VPS for schedule_periods ID 21
+2026-03-15 16:42:19 - Successfully pushed to VPS for employee_assignments ID 1
+2026-03-15 16:42:19 - Successfully pushed to VPS for employee_assignments ID 2
+2026-03-15 16:42:19 - Successfully pushed to VPS for employee_assignments ID 3
+2026-03-15 16:42:19 - Successfully pushed to VPS for employee_assignments ID 4
+2026-03-15 16:42:20 - Successfully pushed to VPS for employee_assignments ID 5
+2026-03-15 16:42:20 - Successfully pushed to VPS for employee_assignments ID 6
+2026-03-15 16:42:20 - Successfully pushed to VPS for employee_assignments ID 7
+2026-03-15 16:42:20 - Successfully pushed to VPS for employee_assignments ID 8
+2026-03-15 16:42:20 - Successfully pushed to VPS for employee_assignments ID 9
+2026-03-15 16:42:20 - Successfully pushed to VPS for employee_assignments ID 10
+2026-03-15 16:42:21 - Successfully pushed to VPS for employee_assignments ID 11
+2026-03-15 16:42:21 - Successfully pushed to VPS for employee_assignments ID 12
+2026-03-15 16:42:21 - Successfully pushed to VPS for notifications ID 13
+2026-03-15 16:42:35 - --- Sync Cycle Started ---
+2026-03-15 16:42:51 - --- Sync Cycle Started ---
+2026-03-15 16:42:51 - Successfully pushed to VPS for schedule_requests ID 2
+2026-03-15 16:42:52 - Successfully pushed to VPS for notifications ID 14
+2026-03-15 16:43:15 - --- Sync Cycle Started ---
+2026-03-15 16:43:18 - --- Sync Cycle Started ---
+2026-03-15 16:43:22 - --- Sync Cycle Started ---
+2026-03-15 16:43:52 - --- Sync Cycle Started ---
+2026-03-15 16:44:22 - --- Sync Cycle Started ---
+2026-03-15 16:44:30 - --- Sync Cycle Started ---
+2026-03-15 16:44:31 - Successfully pushed to VPS for schedule_requests ID 2
+2026-03-15 16:45:01 - --- Sync Cycle Started ---

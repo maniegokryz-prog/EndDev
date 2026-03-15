@@ -1220,19 +1220,24 @@ function renderScheduleBlock(schedule, scheduleIndex) {
                     editCurrentlyEditingIndex = scheduleIndex;
 
                     // Fill form fields
+                    // For class/subject/room, treat placeholder defaults (N/A, GENERAL, TBD)
+                    // as empty — don't pre-fill them so they don't get re-saved as real values.
                     document.getElementById('shift_start').value = schedule.startTime;
                     document.getElementById('shift_end').value = schedule.endTime;
-                    document.getElementById('designate_class').value = schedule.class || '';
-                    document.getElementById('designate_subject').value = schedule.subject || '';
-                    document.getElementById('room-number').value = schedule.room_num || '';
+                    const defaultClassValues = ['N/A', 'GENERAL', 'TBD', ''];
+                    document.getElementById('designate_class').value = defaultClassValues.includes((schedule.class || '').toUpperCase()) ? '' : (schedule.class || '');
+                    document.getElementById('designate_subject').value = defaultClassValues.includes((schedule.subject || '').toUpperCase()) ? '' : (schedule.subject || '');
+                    document.getElementById('room-number').value = defaultClassValues.includes((schedule.room_num || '').toUpperCase()) ? '' : (schedule.room_num || '');
 
-                    // Set day buttons
-                    editSelectedDays = [...schedule.days];
+                    // Set day buttons — only select the specific day that was clicked,
+                    // not all days the schedule covers (avoids multi-day confusion)
+                    const clickedDay = scheduleBlock.dataset.day;
+                    editSelectedDays = clickedDay ? [clickedDay] : [...schedule.days];
                     window.editSelectedDays = editSelectedDays;
 
                     console.log('Setting days to active:', editSelectedDays);
 
-                    document.querySelectorAll('.day-btn').forEach(btn => {
+                    document.querySelectorAll('#editScheduleForm .day-btn').forEach(btn => {
                         const btnDay = btn.getAttribute('data-day');
                         if (editSelectedDays.includes(btnDay)) {
                             btn.classList.add('active');
@@ -1490,30 +1495,27 @@ function editSchedule() {
     const currentRole = rolesInput ? rolesInput.value.toLowerCase() : '';
     const isFaculty = currentRole.includes('faculty');
 
-    if (isFaculty && (!designateClass || !designateSubject || !roomNumber)) {
-        const msgEl = document.getElementById('scheduleFacultyMissingMsg');
-        if (msgEl) msgEl.textContent = 'Faculty members must enter class, subject, and room number for schedules!';
-        const modalEl = document.getElementById('scheduleFacultyMissingModal');
-        if (modalEl) {
-            const m = new bootstrap.Modal(modalEl);
-            m.show();
-        }
-        return;
+    if (isFaculty) {
+        // Validation removed: Faculty fields are optional
     }
 
-    // For non-faculty, use default values
-    const finalClass = isFaculty ? designateClass : 'N/A';
-    const finalSubject = isFaculty ? designateSubject : 'General';
-    const finalRoom = isFaculty ? roomNumber : 'TBD';
+    // For non-faculty, or if left blank by faculty, use default values
+    const finalClass = (isFaculty && designateClass) ? designateClass : 'N/A';
+    const finalSubject = (isFaculty && designateSubject) ? designateSubject : 'GENERAL';
+    const finalRoom = (isFaculty && roomNumber) ? roomNumber : 'TBD';
     const currentItem = editAddedSchedules[editCurrentlyEditingIndex];
     const originalColor = currentItem.color;
     const currentStatus = currentItem.status;
 
     // FORCE SYNC: Rebuild selected days from DOM state to ensure accuracy
     window.editSelectedDays = [];
-    document.querySelectorAll('.edit-day-btn.active').forEach(btn => {
+    document.querySelectorAll('#editScheduleForm .day-btn.active').forEach(btn => {
         window.editSelectedDays.push(btn.getAttribute('data-day'));
     });
+    // Fallback: use the editSelectedDays variable if DOM sync yields nothing
+    if (window.editSelectedDays.length === 0 && editSelectedDays.length > 0) {
+        window.editSelectedDays = [...editSelectedDays];
+    }
 
     const updatedSchedule = {
         days: [...window.editSelectedDays],
@@ -1529,13 +1531,32 @@ function editSchedule() {
     console.log('Updating schedule at index', editCurrentlyEditingIndex);
     console.log('Updated schedule data:', updatedSchedule);
 
-    // Resolve overlaps automatically (pass editCurrentlyEditingIndex so it skips itself)
-    const adjustments = resolveScheduleOverlaps(updatedSchedule, editCurrentlyEditingIndex);
+    // --- SPLIT LOGIC ---
+    // If the original schedule covered more days than what we're now editing,
+    // keep those remaining days intact as their own schedule entry.
+    const originalDays = currentItem.days || [];
+    const editedDays = window.editSelectedDays;
+    const remainingDays = originalDays.filter(d => !editedDays.includes(d));
+    let adjustments = [];
 
-    // Update the schedule in the array
-    editAddedSchedules[editCurrentlyEditingIndex] = updatedSchedule;
+    if (remainingDays.length > 0) {
+        // Restore the original entry with only the un-edited days
+        editAddedSchedules[editCurrentlyEditingIndex] = {
+            ...currentItem,
+            days: remainingDays
+        };
+        // Push the updated schedule as a new separate entry
+        editAddedSchedules.push(updatedSchedule);
+        console.log('Split schedule: remaining days kept at index', editCurrentlyEditingIndex, ', updated days pushed as new entry');
+    } else {
+        // All days of the original schedule are being edited — just replace it
+        // Resolve overlaps automatically (pass editCurrentlyEditingIndex so it skips itself)
+        adjustments = resolveScheduleOverlaps(updatedSchedule, editCurrentlyEditingIndex);
+        editAddedSchedules[editCurrentlyEditingIndex] = updatedSchedule;
+        console.log('Full replace at index', editCurrentlyEditingIndex);
+    }
+
     window.editAddedSchedules = editAddedSchedules; // Keep global reference in sync
-
     console.log('Schedule updated in array. All schedules:', editAddedSchedules);
 
     // Re-render calendar

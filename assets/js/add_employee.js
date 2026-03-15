@@ -1539,15 +1539,14 @@ async function addSchedule() {
     const currentRole = rolesInput ? rolesInput.value.trim() : '';
     const isFaculty = currentRole === 'Faculty_Member';
     
-    if (isFaculty && (!designateClass || !designateSubject || !roomNumber)) {
-        showAppAlert('Faculty members must enter class, subject, and room number for schedules!', 'Missing Faculty Details');
-        return;
+    if (isFaculty) {
+        // Validation removed: Faculty fields are optional
     }
     
-    // For non-faculty, use default values
-    const finalClass = isFaculty ? designateClass : 'N/A';
-    const finalSubject = isFaculty ? designateSubject : 'General';
-    const finalRoom = isFaculty ? roomNumber : 'TBD';
+    // For non-faculty, or if left blank by faculty, use default values
+    const finalClass = (isFaculty && designateClass) ? designateClass : 'N/A';
+    const finalSubject = (isFaculty && designateSubject) ? designateSubject : 'GENERAL';
+    const finalRoom = (isFaculty && roomNumber) ? roomNumber : 'TBD';
     
     // Create schedule object
     const scheduleData = {
