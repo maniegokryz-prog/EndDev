@@ -630,7 +630,7 @@ function renderMobileSchedule(container, schedules, showLegend = false) {
     container.innerHTML = html;
 }
 
-function renderVisualSchedule(container, schedules, showLegend = false) {
+function renderVisualSchedule(container, schedules, isPendingRequest = false) {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const timeStart = 7 * 60; // 7:00 AM in minutes
     // Maximum school schedule is 9:00 PM, show up to 9:30 PM so 9:00 PM label appears
@@ -697,7 +697,7 @@ function renderVisualSchedule(container, schedules, showLegend = false) {
     container.style.gridTemplateColumns = '85px repeat(7, 1fr)';
 
     schedules.forEach(sched => {
-        placeScheduleBlock(container, sched, days, timeStart, interval);
+        placeScheduleBlock(container, sched, days, timeStart, interval, isPendingRequest);
     });
 
     // Append Daily Totals Row
@@ -728,7 +728,7 @@ function renderVisualSchedule(container, schedules, showLegend = false) {
     });
 }
 
-function placeScheduleBlock(container, schedule, days, gridStartMinutes, interval) {
+function placeScheduleBlock(container, schedule, days, gridStartMinutes, interval, isPendingRequest = false) {
     const startMins = parseTimeStr(schedule.startTime);
     const endMins = parseTimeStr(schedule.endTime);
     const duration = endMins - startMins;
@@ -757,6 +757,9 @@ function placeScheduleBlock(container, schedule, days, gridStartMinutes, interva
 
             // Status Badge removed per user request
             let statusHtml = '';
+            if (isPendingRequest && (schedule.status === 'added' || schedule.status === 'modified')) {
+                statusHtml = `<div class="badge bg-warning text-dark mb-1 w-100" style="font-size: 0.75em; white-space: normal; line-height: 1.2;">Requested Schedule</div>`;
+            }
 
             block.innerHTML = statusHtml + content;
             block.title = `${schedule.subject || 'Work'} (${formatMinutesToTime(startMins)} - ${formatMinutesToTime(endMins)})`;

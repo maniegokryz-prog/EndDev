@@ -1545,7 +1545,7 @@ $profilePhoto .= '?v=' . microtime(true);
                             </div>
 
                             <div class="form-row">
-                                <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
+                                <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-start;">
                                     <button type="button" id="add-schedule-btn"
                                         class="btn-modern btn-outline add-schedule-btn text-success border-success"
                                         style="min-width: 140px;" onclick="addSchedule()">Add
@@ -1570,9 +1570,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                 </div>
                                 <!-- Indicators removed per user request -->
                                 <div class="calendar-wrapper">
-                                </div>
-                            </div>
-                            <div class="schedule-calendar" id="edit-schedule-calendar">
+                                    <div class="schedule-calendar" id="edit-schedule-calendar">
                                         <div class="time-header"></div>
 
                                         <div class="day-header" data-day="Monday">Mon</div>
@@ -1592,7 +1590,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
                         </div>
 
-                        <div class="form-actions d-flex justify-content-end gap-3 mt-4">
+                        <div class="form-actions d-flex justify-content-start gap-3 mt-4">
                             <button type="button" class="btn-modern btn-outline btn-cancel text-danger border-danger px-4"
                                 style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit"

@@ -1049,8 +1049,10 @@ endif; ?>
 
                         const timeRange = `${formatAmPm(block.startTime)} - ${formatAmPm(block.endTime)}`;
                         
-                        // Status Badge removed per user request
                         let statusHtml = '';
+                        if (block.status === 'added' || block.status === 'modified') {
+                            statusHtml = `<div class="badge bg-warning text-dark mb-1 w-100" style="font-size: 0.75em; white-space: normal; line-height: 1.2;">Requested Schedule</div>`;
+                        }
 
                         html += `
                             <div class="vs-block" style="position: absolute; top: ${startPos}px; left: 0; right: 0; min-height: ${height}px; height: ${height}px; background-color: ${color};">

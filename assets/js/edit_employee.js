@@ -1505,9 +1505,9 @@ function editSchedule() {
     const finalClass = isFaculty ? designateClass : 'N/A';
     const finalSubject = isFaculty ? designateSubject : 'General';
     const finalRoom = isFaculty ? roomNumber : 'TBD';
-    // Create the updated schedule object
     const currentItem = editAddedSchedules[editCurrentlyEditingIndex];
     const originalColor = currentItem.color;
+    const currentStatus = currentItem.status;
 
     // FORCE SYNC: Rebuild selected days from DOM state to ensure accuracy
     window.editSelectedDays = [];
@@ -1522,7 +1522,8 @@ function editSchedule() {
         class: finalClass.toUpperCase(),
         subject: finalSubject.toUpperCase(),
         room_num: finalRoom.toUpperCase(),
-        color: originalColor
+        color: originalColor,
+        status: currentStatus === 'added' ? 'added' : 'modified'
     };
 
     console.log('Updating schedule at index', editCurrentlyEditingIndex);
@@ -1720,6 +1721,7 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
             // Shorten existing schedule - move start time to new schedule's end time
             const oldStart = existingSchedule.startTime;
             existingSchedule.startTime = formatTimeSlot(newEnd);
+            existingSchedule.status = existingSchedule.status === 'added' ? 'added' : 'modified';
             adjustments.push(`Adjusted schedule "${existingSchedule.subject || 'Work'}" on ${commonDays.join(', ')}: ${formatTime(oldStart)} → ${formatTime(existingSchedule.startTime)} (start time moved)`);
         }
         // Case 3: New schedule overlaps the end of existing schedule
@@ -1728,6 +1730,7 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
             // Shorten existing schedule - move end time to new schedule's start time
             const oldEnd = existingSchedule.endTime;
             existingSchedule.endTime = formatTimeSlot(newStart);
+            existingSchedule.status = existingSchedule.status === 'added' ? 'added' : 'modified';
             adjustments.push(`Adjusted schedule "${existingSchedule.subject || 'Work'}" on ${commonDays.join(', ')}: ${formatTime(oldEnd)} → ${formatTime(existingSchedule.endTime)} (end time moved)`);
         }
         // Case 4: New schedule is in the middle of existing schedule (splits it)
@@ -1738,6 +1741,7 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
 
             // Shorten existing schedule to end at new schedule's start
             existingSchedule.endTime = formatTimeSlot(newStart);
+            existingSchedule.status = existingSchedule.status === 'added' ? 'added' : 'modified';
 
             // Create a new schedule for the second part (after new schedule ends)
             const secondPart = {
@@ -1747,7 +1751,8 @@ function resolveScheduleOverlaps(newSchedule, editingIndex = null) {
                 class: existingSchedule.class,
                 subject: existingSchedule.subject,
                 room_num: existingSchedule.room_num,
-                color: existingSchedule.color
+                color: existingSchedule.color,
+                status: existingSchedule.status === 'added' ? 'added' : 'modified'
             };
 
             // Remove common days from existing schedule's second part
