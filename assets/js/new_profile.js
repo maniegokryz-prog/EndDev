@@ -19,7 +19,8 @@ let metricsCharts = {
     present: null,
     absent: null,
     ontime: null,
-    late: null
+    late: null,
+    undertime: null
 };
 
 function initPerformanceMetrics() {
@@ -106,6 +107,12 @@ async function loadPerformanceMetrics() {
         metricsCharts.late = createDonutChart('chartLate', metrics.late.percentage, '#ed8936');
         updateMetricValue('lateValue', metrics.late.count);
         updateMetricValue('lateCount', metrics.late.percentage + '%');
+
+        if (metrics.undertime) {
+            metricsCharts.undertime = createDonutChart('chartUndertime', metrics.undertime.percentage, '#17a2b8');
+            updateMetricValue('undertimeValue', metrics.undertime.count);
+            updateMetricValue('undertimeCount', metrics.undertime.percentage + '%');
+        }
 
         if (loadingEl) loadingEl.style.display = 'none';
         if (contentEl) contentEl.style.display = 'grid'; // Changed to grid (css)

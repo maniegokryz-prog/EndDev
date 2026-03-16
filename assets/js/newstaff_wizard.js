@@ -638,14 +638,14 @@ window.loadPendingList = function (type) {
                         </div>
                         <span class="badge bg-primary rounded-pill">Select</span>
                     `;
-    item.onclick = (e) => {
-        e.preventDefault();
-        // Remove active class from all items in this specific list
-        listEl.querySelectorAll('.list-group-item').forEach(i => i.classList.remove('active'));
-        // Add active class to clicked item
-        item.classList.add('active');
-        selectEmployeeFromList(type, emp);
-    };
+                    item.onclick = (e) => {
+                        e.preventDefault();
+                        // Remove active class from all items in this specific list
+                        listEl.querySelectorAll('.list-group-item').forEach(i => i.classList.remove('active'));
+                        // Add active class to clicked item
+                        item.classList.add('active');
+                        selectEmployeeFromList(type, emp);
+                    };
                     listEl.appendChild(item);
                 });
             } else {

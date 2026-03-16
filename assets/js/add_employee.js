@@ -356,7 +356,7 @@ class EmployeeIDValidator {
                 try {
                     const errorData = JSON.parse(responseText);
                     if (errorData.message) errorMessage = errorData.message;
-                } catch (e) {}
+                } catch (e) { }
                 throw new Error(errorMessage);
             }
             const result = JSON.parse(responseText);
@@ -511,14 +511,14 @@ class EmailValidator {
             this.resetValidationUI(e.target);
             return;
         }
-        
+
         // Check basic email format first
         if (!this.isValidEmailFormat(value)) {
             this.showValidationMessage('error', '✗ Invalid email format', e.target);
             this.setInputValidationState(e.target, 'invalid');
             return;
         }
-        
+
         this.showValidationMessage('checking', 'Checking availability...', e.target);
         this.validationTimeout = setTimeout(() => {
             this.validateEmail(value, e.target);
@@ -586,7 +586,7 @@ class EmailValidator {
                 try {
                     const errorData = JSON.parse(responseText);
                     if (errorData.message) errorMessage = errorData.message;
-                } catch (e) {}
+                } catch (e) { }
                 throw new Error(errorMessage);
             }
             const result = JSON.parse(responseText);
@@ -725,7 +725,7 @@ class PasswordValidator {
             display: none;
             transition: all 0.3s ease;
         `;
-        
+
         // Find the small helper text and insert after it
         const helperText = input.parentNode.parentNode.querySelector('small');
         if (helperText) {
@@ -746,7 +746,7 @@ class PasswordValidator {
             this.resetValidationUI(e.target);
             return;
         }
-        
+
         this.validationTimeout = setTimeout(() => {
             this.validatePassword(value, e.target);
         }, this.validationDelay);
@@ -790,14 +790,14 @@ class PasswordValidator {
                 try {
                     const errorData = JSON.parse(responseText);
                     if (errorData.message) errorMessage = errorData.message;
-                } catch (e) {}
+                } catch (e) { }
                 throw new Error(errorMessage);
             }
             const result = JSON.parse(responseText);
             if (result.success && result.valid) {
                 const strength = result.strength || 'medium';
-                const strengthLabel = strength === 'strong' ? '💪 Strong' : 
-                                    strength === 'medium' ? '👍 Medium' : '⚠ Weak';
+                const strengthLabel = strength === 'strong' ? '💪 Strong' :
+                    strength === 'medium' ? '👍 Medium' : '⚠ Weak';
                 this.showValidationMessage('success', `✓ ${strengthLabel} password`, inputElement);
                 this.setInputValidationState(inputElement, 'valid');
             } else if (result.success && !result.valid) {
@@ -1003,7 +1003,7 @@ function initializeFacultyFieldToggle() {
                     field.disabled = false;
                     field.placeholder = field.id === 'designate_class' ? 'Select or type class name' :
                         field.id === 'designate_subject' ? 'Select or type subject' :
-                        'Select or type room number';
+                            'Select or type room number';
                     field.style.opacity = '1';
                     field.style.cursor = 'text';
                     const customDropdown = field.closest('.custom-dropdown');
@@ -1052,13 +1052,13 @@ function initializeFacultyFieldToggle() {
  * - PasswordValidator
  * - FacultyFieldToggle
  */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize Employee ID Validator
     new EmployeeIDValidator();
-    
+
     // Initialize Email Validator
     new EmailValidator();
-    
+
     // Initialize Password Validator
     new PasswordValidator();
 
@@ -1082,11 +1082,11 @@ document.addEventListener('DOMContentLoaded', function() {
             'Other'
         ];
         const existingRoles = window.existingRoles || [];
-        
+
         // Combine defaults with existing roles, remove duplicates
         const allRoles = [...new Set([...defaultRoles, ...existingRoles])];
         console.log('Role options loaded:', allRoles);
-        
+
         new CustomDropdown(rolesInput, allRoles);
     }
     if (departmentInput) {
@@ -1099,7 +1099,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get class options from PHP
         const classOptions = window.existingClasses || [];
         const classDropdown = new CustomDropdown(classInput, classOptions);
-        classInput.addEventListener('input', function() {
+        classInput.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
     }
@@ -1107,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get subject options from PHP
         const subjectOptions = window.existingSubjects || [];
         const subjectDropdown = new CustomDropdown(subjectInput, subjectOptions);
-        subjectInput.addEventListener('input', function() {
+        subjectInput.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
     }
@@ -1115,7 +1115,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get room options from PHP
         const roomOptions = window.existingRooms || [];
         const roomDropdown = new CustomDropdown(roomInput, roomOptions);
-        roomInput.addEventListener('input', function() {
+        roomInput.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
     }
@@ -1173,19 +1173,19 @@ window.addedSchedules = addedSchedules;
 window.selectedDays = selectedDays;
 
 // Initialize calendar on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeCalendar();
     setupRoleInput();
     setupDepartmentInput();
-    
+
     // Add form submission handler to serialize schedule data
     const form = document.querySelector('form[action="processes/add_employee.php"]');
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             // Serialize schedule data before submission
             const scheduleData = JSON.stringify(addedSchedules);
             document.getElementById('schedule_data').value = scheduleData;
-            
+
             console.log('Form submission - Schedule data:', scheduleData);
             console.log('Total schedules to save:', addedSchedules.length);
         });
@@ -1196,20 +1196,20 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupRoleInput() {
     const roleInput = document.getElementById('roles');
     if (!roleInput) return;
-    
+
     // Add styling for better UX
-    roleInput.addEventListener('focus', function() {
+    roleInput.addEventListener('focus', function () {
         this.style.borderColor = '#007bff';
     });
-    
-    roleInput.addEventListener('blur', function() {
+
+    roleInput.addEventListener('blur', function () {
         this.style.borderColor = '';
         // Trim whitespace from the input
         this.value = this.value.trim();
     });
-    
+
     // Convert to proper case when user types
-    roleInput.addEventListener('input', function() {
+    roleInput.addEventListener('input', function () {
         // Don't auto-format while user is typing, but provide visual feedback
         const value = this.value.trim();
         if (value.length > 0) {
@@ -1217,16 +1217,16 @@ function setupRoleInput() {
             console.log('Role input:', value);
         }
     });
-    
+
     // Format the role properly on blur
-    roleInput.addEventListener('blur', function() {
+    roleInput.addEventListener('blur', function () {
         let value = this.value.trim();
         if (value) {
             // Convert to proper format (first letter caps, replace spaces with underscores for consistency)
-            value = value.split(' ').map(word => 
+            value = value.split(' ').map(word =>
                 word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
             ).join('_');
-            
+
             this.value = value;
         }
     });
@@ -1237,13 +1237,13 @@ function setupRoleInput() {
 function setupDepartmentInput() {
     const deptInput = document.getElementById('department');
     if (!deptInput) return;
-    
+
     // Add styling for better UX
-    deptInput.addEventListener('focus', function() {
+    deptInput.addEventListener('focus', function () {
         this.style.borderColor = '#007bff';
     });
-    
-    deptInput.addEventListener('blur', function() {
+
+    deptInput.addEventListener('blur', function () {
         this.style.borderColor = '';
         // Trim whitespace and format properly
         let value = this.value.trim();
@@ -1252,13 +1252,13 @@ function setupDepartmentInput() {
         //     value = value.split(' ').map(word => 
         //         word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         //     ).join(' ');
-            
+
         //     this.value = value;
         // }
     });
-    
+
     // Provide visual feedback while typing
-    deptInput.addEventListener('input', function() {
+    deptInput.addEventListener('input', function () {
         const value = this.value.trim();
         if (value.length > 0) {
             console.log('Department input:', value);
@@ -1291,11 +1291,11 @@ function toggleDay(button) {
     console.log('toggleDay called for button:', button);
     const day = button.getAttribute('data-day');
     console.log('Day:', day);
-    
+
     // Toggle the active class
     button.classList.toggle('active');
     console.log('Button classes after toggle:', button.className);
-    
+
     // Update selected days array
     if (button.classList.contains('active')) {
         if (!selectedDays.includes(day)) {
@@ -1306,7 +1306,7 @@ function toggleDay(button) {
         selectedDays = selectedDays.filter(d => d !== day);
         console.log('Removed day:', day);
     }
-    
+
     // Update hidden input
     document.getElementById('work_days').value = JSON.stringify(selectedDays);
     console.log('Selected work days:', selectedDays);
@@ -1327,7 +1327,7 @@ function togglePassword(inputId) {
     const passwordInput = document.getElementById(inputId);
     const toggleButton = passwordInput.nextElementSibling;
     const eyeIcon = toggleButton.querySelector('.eye-icon');
-    
+
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         eyeIcon.textContent = '🙈';
@@ -1344,14 +1344,14 @@ function initializeCalendar() {
     const calendar = document.querySelector('.schedule-calendar');
     const timeSlots = generateTimeSlots('07:00', '24:00', 30); // 7AM to 12AM (midnight), 30-minute intervals
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    
+
     // Clear existing grid content (keep headers)
     const existingCells = calendar.querySelectorAll('.time-slot, .calendar-cell');
     existingCells.forEach(cell => cell.remove());
-    
+
     // Set up grid rows (header + time slots)
     calendar.style.gridTemplateRows = `40px repeat(${timeSlots.length}, 40px)`;
-    
+
     // Create time slots and calendar cells
     timeSlots.forEach((timeSlot, timeIndex) => {
         // Time slot label
@@ -1361,7 +1361,7 @@ function initializeCalendar() {
         timeLabel.style.gridColumn = '1';
         timeLabel.style.gridRow = `${timeIndex + 2}`;
         calendar.appendChild(timeLabel);
-        
+
         // Calendar cells for each day
         days.forEach((day, dayIndex) => {
             const cell = document.createElement('div');
@@ -1374,7 +1374,7 @@ function initializeCalendar() {
             calendar.appendChild(cell);
         });
     });
-    
+
     // Render existing schedules
     renderSchedules();
 }
@@ -1383,13 +1383,13 @@ function generateTimeSlots(startTime, endTime, intervalMinutes) {
     const slots = [];
     const start = parseTime(startTime);
     const end = parseTime(endTime);
-    
+
     let current = start;
     while (current < end) {
         slots.push(formatTimeSlot(current));
         current += intervalMinutes;
     }
-    
+
     return slots;
 }
 
@@ -1414,7 +1414,7 @@ function formatTime(timeSlot) {
 function renderSchedules() {
     // Clear existing schedule blocks
     document.querySelectorAll('.schedule-block').forEach(block => block.remove());
-    
+
     // Re-render all schedules with updated indices
     addedSchedules.forEach((schedule, index) => {
         renderScheduleBlock(schedule, index);
@@ -1427,40 +1427,40 @@ function renderScheduleBlock(schedule, scheduleIndex) {
     const baseTimeMinutes = 420; // 7:00 AM in minutes
     const slotDuration = 30; // 30-minute slots
     const slotHeight = 40; // 40px per slot
-    
+
     // Calculate slot positions
     const startSlotIndex = Math.floor((startTimeMinutes - baseTimeMinutes) / slotDuration);
     const endSlotIndex = Math.ceil((endTimeMinutes - baseTimeMinutes) / slotDuration);
     const slotsSpanned = endSlotIndex - startSlotIndex;
-    
+
     schedule.days.forEach(day => {
         const dayIndex = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(day);
-        
+
         if (startSlotIndex >= 0 && endSlotIndex <= 34) { // Within 7AM-12AM range (17 hours * 2 slots = 34 slots)
             // Find the target cell
             const targetCell = document.querySelector(`[data-day="${day}"][data-time-index="${startSlotIndex}"]`);
-            
+
             if (targetCell) {
                 const scheduleBlock = document.createElement('div');
                 const isFacultySchedule = schedule.class !== 'N/A' && schedule.subject !== 'GENERAL' && schedule.room_num !== 'TBD';
                 scheduleBlock.className = isFacultySchedule ? 'schedule-block faculty-schedule' : 'schedule-block non-faculty-schedule';
-                
+
                 // Add unique identifier
                 scheduleBlock.dataset.scheduleId = scheduleIndex;
                 scheduleBlock.dataset.day = day;
                 scheduleBlock.dataset.startTime = schedule.startTime;
                 scheduleBlock.dataset.endTime = schedule.endTime;
-                
+
                 // Apply the schedule's assigned color
                 scheduleBlock.style.background = schedule.color || getRandomScheduleColor();
-                
+
                 // Calculate exact height
                 const exactHeight = slotsSpanned * slotHeight;
                 scheduleBlock.style.height = `${exactHeight}px`;
-                
+
                 // Generate content based on available information
                 let scheduleContent = '';
-                
+
                 if (isFacultySchedule) {
                     // Faculty schedule with full information
                     scheduleContent = `
@@ -1475,14 +1475,14 @@ function renderScheduleBlock(schedule, scheduleIndex) {
                         <div class="schedule-type">Work Schedule</div>
                     `;
                 }
-                
+
                 scheduleBlock.innerHTML = `
                     <div class="schedule-delete-btn" onclick="deleteSchedule(${scheduleIndex}, '${day}')">×</div>
                     <div class="schedule-info">
                         ${scheduleContent}
                     </div>
                 `;
-                
+
                 targetCell.appendChild(scheduleBlock);
             }
         }
@@ -1492,16 +1492,16 @@ function renderScheduleBlock(schedule, scheduleIndex) {
 function checkConsecutiveSchedule(day, timeMinutes, direction) {
     return addedSchedules.some(schedule => {
         if (!schedule.days.includes(day)) return false;
-        
+
         const scheduleStart = parseTime(schedule.startTime);
         const scheduleEnd = parseTime(schedule.endTime);
-        
+
         if (direction === 'before') {
             return Math.abs(scheduleEnd - timeMinutes) <= 1; // Within 1 minute tolerance
         } else if (direction === 'after') {
             return Math.abs(scheduleStart - timeMinutes) <= 1; // Within 1 minute tolerance
         }
-        
+
         return false;
     });
 }
@@ -1513,41 +1513,41 @@ async function addSchedule() {
         showAppAlert('Please select at least one working day first!', 'Missing Work Days');
         return;
     }
-    
+
     // Get shift times
     const shiftStart = document.getElementById('shift_start').value;
     const shiftEnd = document.getElementById('shift_end').value;
-    
+
     if (!shiftStart || !shiftEnd) {
         showAppAlert('Please select both start and end times!', 'Missing Times');
         return;
     }
-    
+
     // Validate time order
     if (shiftStart >= shiftEnd) {
         showAppAlert('Start time must be before end time!', 'Invalid Time');
         return;
     }
-    
+
     // Get class, subject, and room
     const designateClass = document.getElementById('designate_class').value;
     const designateSubject = document.getElementById('designate_subject').value;
     const roomNumber = document.getElementById('room-number').value;
-    
+
     // Check if user is faculty member
     const rolesInput = document.getElementById('roles');
     const currentRole = rolesInput ? rolesInput.value.trim() : '';
     const isFaculty = currentRole === 'Faculty_Member';
-    
+
     if (isFaculty) {
         // Validation removed: Faculty fields are optional
     }
-    
+
     // For non-faculty, or if left blank by faculty, use default values
     const finalClass = (isFaculty && designateClass) ? designateClass : 'N/A';
     const finalSubject = (isFaculty && designateSubject) ? designateSubject : 'GENERAL';
     const finalRoom = (isFaculty && roomNumber) ? roomNumber : 'TBD';
-    
+
     // Create schedule object
     const scheduleData = {
         days: [...selectedDays], // Copy array
@@ -1558,7 +1558,7 @@ async function addSchedule() {
         room_num: finalRoom.toUpperCase(), // Ensure uppercase for consistency
         color: getRandomScheduleColor() // Assign random color to this schedule
     };
-    
+
     // Check for conflicts
     if (checkScheduleConflict(scheduleData)) {
         const proceed = await showAppConfirm('This schedule conflicts with an existing schedule. Do you want to add it anyway?', 'Schedule Conflict');
@@ -1566,11 +1566,11 @@ async function addSchedule() {
             return;
         }
     }
-    
+
     // Add to schedules array
     addedSchedules.push(scheduleData);
     window.addedSchedules = addedSchedules; // Keep global reference in sync
-    
+
     console.log('Schedule created:', scheduleData);
     console.log('All schedules:', addedSchedules);
     console.log('Schedule data for backend:', {
@@ -1581,16 +1581,16 @@ async function addSchedule() {
         subject: scheduleData.subject,
         room_num: scheduleData.room_num
     });
-    
+
     // Re-render calendar
     renderSchedules();
-    
+
     // Show confirmation
     const daysList = selectedDays.join(', ');
     const roleDisplay = isFaculty ? 'Faculty_Member' : 'Non-Faculty';
     const message = `Schedule Added Successfully!\n Role: ${roleDisplay} \n Days: ${daysList} \n Time: ${shiftStart} - ${shiftEnd} \n Class: ${finalClass.toUpperCase()} Subject: ${finalSubject.toUpperCase()} \n Room: ${finalRoom.toUpperCase()}`;
     showAppAlert(message, 'Schedule Added Successfully!', 'success');
-    
+
     // Clear the form for next schedule entry
     clearScheduleForm();
 }
@@ -1601,25 +1601,25 @@ function clearScheduleForm() {
     document.querySelectorAll('.day-btn.active').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Clear time inputs
     document.getElementById('shift_start').value = '';
     document.getElementById('shift_end').value = '';
-    
+
     // Only clear faculty fields if they're enabled (for faculty members)
     const rolesInput = document.getElementById('roles');
     const currentRole = rolesInput ? rolesInput.value.trim() : '';
     const isFaculty = currentRole === 'Faculty_Member';
-    
+
     if (isFaculty) {
         document.getElementById('designate_class').value = '';
         document.getElementById('designate_subject').value = '';
         document.getElementById('room-number').value = '';
     }
-    
+
     // Update hidden input
     document.getElementById('work_days').value = '';
-    
+
     console.log('Schedule form cleared');
 }
 
@@ -1657,12 +1657,12 @@ function checkScheduleConflict(newSchedule) {
         // Check if schedules overlap on any common day
         const commonDays = newSchedule.days.filter(day => existingSchedule.days.includes(day));
         if (commonDays.length === 0) return false;
-        
+
         const newStart = parseTime(newSchedule.startTime);
         const newEnd = parseTime(newSchedule.endTime);
         const existingStart = parseTime(existingSchedule.startTime);
         const existingEnd = parseTime(existingSchedule.endTime);
-        
+
         // Check for time overlap
         return (newStart < existingEnd && newEnd > existingStart);
     });

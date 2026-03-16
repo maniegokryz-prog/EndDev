@@ -828,6 +828,12 @@ $profilePhoto .= '?v=' . microtime(true);
                             <div class="metric-value" id="lateValue">0</div>
                             <div class="metric-percentage" id="lateCount">0%</div>
                         </div>
+                        <div class="metric-item">
+                            <div class="metric-canvas-container"><canvas id="chartUndertime"></canvas></div>
+                            <div class="metric-label">Undertime</div>
+                            <div class="metric-value" id="undertimeValue">0</div>
+                            <div class="metric-percentage" id="undertimeCount">0%</div>
+                        </div>
                     </div>
                 </div>
 
@@ -977,14 +983,20 @@ $profilePhoto .= '?v=' . microtime(true);
                                         class="form-control text-start">
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4 mb-3"><label>First Name</label><input type="text" name="first_name"
-                                            class="form-control"
+                                    <div class="col-md-4 mb-3"><label>First Name</label><input type="text" name="first_name" id="edit_first_name"
+                                            class="form-control" autocapitalize="words"
+                                            style="text-transform:capitalize"
+                                            oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['first_name']); ?>" required></div>
                                     <div class="col-md-4 mb-3"><label>Middle Name</label><input type="text"
-                                            name="middle_name" class="form-control"
+                                            name="middle_name" id="edit_middle_name" class="form-control" autocapitalize="words"
+                                            style="text-transform:capitalize"
+                                            oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['middle_name']); ?>"></div>
-                                    <div class="col-md-4 mb-3"><label>Last Name</label><input type="text" name="last_name"
-                                            class="form-control"
+                                    <div class="col-md-4 mb-3"><label>Last Name</label><input type="text" name="last_name" id="edit_last_name"
+                                            class="form-control" autocapitalize="words"
+                                            style="text-transform:capitalize"
+                                            oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['last_name']); ?>" required></div>
                                 </div>
                                 <div class="mb-3"><label>Email</label><input type="email" name="email" class="form-control"
@@ -1005,11 +1017,15 @@ $profilePhoto .= '?v=' . microtime(true);
                                         <div class="col-md-4 mb-3"><label>Role</label><input type="text" name="roles" id="roles"
                                                 class="form-control"
                                                 value="<?php echo htmlspecialchars($employee['roles']); ?>"></div>
-                                        <div class="col-md-4 mb-3"><label>Department</label><input type="text" name="department"
-                                                class="form-control"
+                                        <div class="col-md-4 mb-3"><label>Department</label><input type="text" name="department" id="edit_department"
+                                                class="form-control" autocapitalize="words"
+                                                style="text-transform:capitalize"
+                                                oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                                 value="<?php echo htmlspecialchars($employee['department']); ?>"></div>
-                                        <div class="col-md-4 mb-3"><label>Position</label><input type="text" name="position"
-                                                class="form-control"
+                                        <div class="col-md-4 mb-3"><label>Position</label><input type="text" name="position" id="edit_position"
+                                                class="form-control" autocapitalize="words"
+                                                style="text-transform:capitalize"
+                                                oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                                 value="<?php echo htmlspecialchars($employee['position']); ?>"></div>
                                     </div>
                                 <?php endif; ?>
@@ -2054,9 +2070,17 @@ $profilePhoto .= '?v=' . microtime(true);
             // Initialize the edit schedule modal calendar when modal is shown
             const editScheduleModal = document.getElementById('editScheduleModal');
             if (editScheduleModal) {
-                editScheduleModal.addEventListener('shown.bs.modal', function () {
 
+                // Track whether the schedule was saved successfully
+                window._editScheduleSaved = false;
+
+                editScheduleModal.addEventListener('shown.bs.modal', function () {
                     console.log('Edit schedule modal opened, initializing calendar...');
+
+                    // Snapshot the schedules BEFORE any user changes (for cancel/restore)
+                    window._editScheduleSnapshot = JSON.parse(JSON.stringify(window.editAddedSchedules || []));
+                    window._editScheduleSaved = false;
+
                     // The initializeCalendar function from edit_employee.js should be available
                     if (typeof initializeCalendar === 'function') {
                         initializeCalendar();
@@ -2065,6 +2089,27 @@ $profilePhoto .= '?v=' . microtime(true);
                     if (typeof renderSchedules === 'function') {
                         console.log('Re-rendering schedules. Total schedules:', window.editAddedSchedules?.length || 0);
                         renderSchedules();
+                    }
+                    // Always clear the form inputs when modal opens so it starts fresh
+                    if (typeof clearScheduleForm === 'function') {
+                        clearScheduleForm();
+                    }
+                });
+
+                // When the modal is closed/dismissed without saving: restore the snapshot
+                editScheduleModal.addEventListener('hidden.bs.modal', function () {
+                    if (typeof clearScheduleForm === 'function') {
+                        clearScheduleForm();
+                    }
+                    // Restore schedules to pre-open state if the user did NOT save
+                    if (!window._editScheduleSaved && window._editScheduleSnapshot !== undefined) {
+                        window.editAddedSchedules = window._editScheduleSnapshot;
+                        // Sync the module-level variable via the global reference
+                        if (typeof editAddedSchedules !== 'undefined') {
+                            try { editAddedSchedules = window.editAddedSchedules; } catch(e) {}
+                        }
+                        window._editScheduleSnapshot = undefined;
+                        console.log('Schedule changes discarded (cancel). Restored to:', window.editAddedSchedules.length, 'schedule(s).');
                     }
                 });
             }
@@ -2075,14 +2120,6 @@ $profilePhoto .= '?v=' . microtime(true);
             const id = '<?php echo htmlspecialchars($employee['employee_id']); ?>';
             window.location.href = `../attendancerep/indirep.php?id=${id}`;
         });
-
-        // Toggle Day helper (global scope for onclick in HTML)
-        window.toggleDay = function (btn) {
-            btn.classList.toggle('active');
-            // Logic to update hidden input handled by edit_employee.js usually, 
-            // but if edit_employee.js uses a different class/id, we might need to shim it.
-            // edit_employee.js likely attaches listeners or we rely on the onclick="toggleDay(this)" attributes I copied.
-        };
     </script>
     <!-- Logout Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">

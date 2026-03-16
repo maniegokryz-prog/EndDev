@@ -280,6 +280,9 @@ async function loadSummary(date = null) {
       document.getElementById('absentPercentage').textContent = summary.absent.count;
       document.getElementById('onTimePercentage').textContent = summary.on_time.count;
       document.getElementById('latePercentage').textContent = summary.late.count;
+      if (document.getElementById('undertimePercentage') && summary.undertime) {
+        document.getElementById('undertimePercentage').textContent = summary.undertime.count;
+      }
 
       console.log('Summary loaded:', {
         date: result.date,
@@ -287,7 +290,8 @@ async function loadSummary(date = null) {
         present: `${summary.present.count} (${Math.round(summary.present.percentage)}%)`,
         absent: `${summary.absent.count} (${Math.round(summary.absent.percentage)}%)`,
         on_time: `${summary.on_time.count} (${Math.round(summary.on_time.percentage)}%)`,
-        late: `${summary.late.count} (${Math.round(summary.late.percentage)}%)`
+        late: `${summary.late.count} (${Math.round(summary.late.percentage)}%)`,
+        undertime: summary.undertime ? `${summary.undertime.count} (${Math.round(summary.undertime.percentage)}%)` : '0 (0%)'
       });
     } else {
       console.error('Failed to load summary:', result.error || 'Unknown error');
@@ -296,6 +300,9 @@ async function loadSummary(date = null) {
       document.getElementById('absentPercentage').textContent = '0';
       document.getElementById('onTimePercentage').textContent = '0';
       document.getElementById('latePercentage').textContent = '0';
+      if (document.getElementById('undertimePercentage')) {
+          document.getElementById('undertimePercentage').textContent = '0';
+      }
     }
   } catch (error) {
     console.error('Error loading summary:', error);
@@ -304,6 +311,9 @@ async function loadSummary(date = null) {
     document.getElementById('absentPercentage').textContent = '0';
     document.getElementById('onTimePercentage').textContent = '0';
     document.getElementById('latePercentage').textContent = '0';
+    if (document.getElementById('undertimePercentage')) {
+        document.getElementById('undertimePercentage').textContent = '0';
+    }
   }
 }
 

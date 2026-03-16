@@ -161,31 +161,38 @@ if (!$hide_sync_status) {
           <div class="col-xl-9 col-lg-8 col-md-8">
             <div class="row g-2">
 
-              <div class="col-3">
+              <div class="col">
                 <div class="card text-center p-3 shadow-sm border-0 clickable-card">
                   <h6 class="fw-semibold text-secondary mb-1">Present</h6>
                   <p id="presentPercentage" class="display-6 fw-bold text-success mb-0">0</p>
                 </div>
               </div>
 
-              <div class="col-3">
+              <div class="col">
                 <div class="card text-center p-3 shadow-sm border-0 clickable-card">
                   <h6 class="fw-semibold text-secondary mb-1">Absent</h6>
                   <p id="absentPercentage" class="display-6 fw-bold text-danger mb-0">0</p>
                 </div>
               </div>
 
-              <div class="col-3">
+              <div class="col">
                 <div class="card text-center p-3 shadow-sm border-0 clickable-card">
                   <h6 class="fw-semibold text-secondary mb-1">On Time</h6>
                   <p id="onTimePercentage" class="display-6 fw-bold text-primary mb-0">0</p>
                 </div>
               </div>
 
-              <div class="col-3">
+              <div class="col">
                 <div class="card text-center p-3 shadow-sm border-0 clickable-card">
                   <h6 class="fw-semibold text-secondary mb-1">Late</h6>
                   <p id="latePercentage" class="display-6 fw-bold text-warning mb-0">0</p>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card text-center p-3 shadow-sm border-0 clickable-card">
+                  <h6 class="fw-semibold text-secondary mb-1">Undertime</h6>
+                  <p id="undertimePercentage" class="display-6 fw-bold text-info mb-0">0</p>
                 </div>
               </div>
 

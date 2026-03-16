@@ -747,6 +747,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('Server response:', data);
 
                     if (data.success) {
+                        // Mark as saved so snapshot-restore on modal close does not undo changes
+                        window._editScheduleSaved = true;
+
                         // Show success modal
                         const msgEl = document.getElementById('scheduleSavedSuccessMsg');
                         if (msgEl) msgEl.textContent = 'Your request has been submitted.';
@@ -876,6 +879,14 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         console.log('No existing schedules found in window.existingSchedules');
         console.log('window.existingSchedules:', window.existingSchedules);
+    }
+
+    // --- Clear the inline schedule editor form whenever the modal is hidden ---
+    const editScheduleModalEl = document.getElementById('editScheduleModal');
+    if (editScheduleModalEl) {
+        editScheduleModalEl.addEventListener('hidden.bs.modal', function () {
+            clearScheduleForm();
+        });
     }
 });
 
@@ -1604,16 +1615,13 @@ function clearScheduleForm() {
     document.getElementById('shift_start').value = '';
     document.getElementById('shift_end').value = '';
 
-    // Only clear faculty fields if they're enabled (for faculty members)
-    const rolesInput = document.getElementById('roles');
-    const currentRole = rolesInput ? rolesInput.value.trim() : '';
-    const isFaculty = currentRole === 'Faculty_Member';
-
-    if (isFaculty) {
-        document.getElementById('designate_class').value = '';
-        document.getElementById('designate_subject').value = '';
-        document.getElementById('room-number').value = '';
-    }
+    // Clear faculty fields unconditionally
+    const classInput = document.getElementById('designate_class');
+    const subjectInput = document.getElementById('designate_subject');
+    const roomInput = document.getElementById('room-number');
+    if (classInput) classInput.value = '';
+    if (subjectInput) subjectInput.value = '';
+    if (roomInput) roomInput.value = '';
 
     // Update hidden input
     document.getElementById('work_days').value = '';

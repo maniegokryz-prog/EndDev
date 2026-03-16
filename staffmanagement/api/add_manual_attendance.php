@@ -276,10 +276,7 @@ function addManualAttendance($conn)
 
             $status = ($timeOutObj) ? 'manual' : 'incomplete';
 
-            error_log("DEBUG: Processing Record - EmpID: $employee_id, Date: $date");
-            error_log("DEBUG: TimeIn: " . var_export($time_in, true));
-            error_log("DEBUG: TimeOut: " . var_export($time_out, true));
-            error_log("DEBUG: Status: $status, ActualHours: $actual_hours");
+            $status = ($timeOutObj) ? 'manual' : 'incomplete';
 
             if ($existing) {
                 // Update existing record

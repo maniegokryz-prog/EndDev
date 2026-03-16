@@ -71,6 +71,7 @@ try {
     $query = "SELECT 
                 status,
                 late_minutes,
+                early_departure_minutes,
                 attendance_date
               FROM daily_attendance 
               WHERE employee_id = ?";
@@ -101,6 +102,7 @@ try {
     $absentCount = 0;        // Absent days (status = absent)
     $onTimeCount = 0;        // Days arrived on time (late_minutes = 0 or NULL)
     $lateCount = 0;          // Days arrived late (late_minutes > 0)
+    $undertimeCount = 0;     // Days left early (early_departure_minutes > 0)
 
     // Process attendance records
     while ($row = $result->fetch_assoc()) {
@@ -119,6 +121,11 @@ try {
             } else if ((int) $lateMinutes > $grace_period_minutes) {
                 $lateCount++;
             }
+
+            // Check if undertime (left early)
+            if (isset($row['early_departure_minutes']) && (int) $row['early_departure_minutes'] > 0) {
+                $undertimeCount++;
+            }
         } elseif ($status === 'absent') {
             $absentCount++;
         }
@@ -132,6 +139,7 @@ try {
     $absentPercentage = $totalScheduledDays > 0 ? round(($absentCount / $totalScheduledDays) * 100, 1) : 0;
     $onTimePercentage = $totalScheduledDays > 0 ? round(($onTimeCount / $totalScheduledDays) * 100, 1) : 0;
     $latePercentage = $totalScheduledDays > 0 ? round(($lateCount / $totalScheduledDays) * 100, 1) : 0;
+    $undertimePercentage = $totalScheduledDays > 0 ? round(($undertimeCount / $totalScheduledDays) * 100, 1) : 0;
 
     // Prepare response
     $response = [
@@ -164,6 +172,11 @@ try {
                 'count' => $lateCount,
                 'percentage' => $latePercentage,
                 'description' => 'Days arrived after scheduled time'
+            ],
+            'undertime' => [
+                'count' => $undertimeCount,
+                'percentage' => $undertimePercentage,
+                'description' => 'Days departed before shift end'
             ]
         ],
         'summary' => [
@@ -171,7 +184,8 @@ try {
             'total_complete' => $completeCount,
             'total_absent' => $absentCount,
             'total_on_time' => $onTimeCount,
-            'total_late' => $lateCount
+            'total_late' => $lateCount,
+            'total_undertime' => $undertimeCount
         ]
     ];
 

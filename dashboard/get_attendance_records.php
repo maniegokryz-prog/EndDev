@@ -454,11 +454,21 @@ try {
         $stmt->execute();
         $late_count = $stmt->get_result()->fetch_assoc()['late'];
 
+        // Get undertime count (has time_in, time_out AND early_departure_minutes > 0)
+        $sql = "SELECT COUNT(*) as undertime 
+                FROM daily_attendance 
+                WHERE attendance_date = ? AND time_in IS NOT NULL AND time_out IS NOT NULL AND early_departure_minutes > 0";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $date);
+        $stmt->execute();
+        $undertime_count = $stmt->get_result()->fetch_assoc()['undertime'];
+
         // Calculate percentages based on total daily_attendance records
         $present_percentage = $total_records > 0 ? round(($present_count / $total_records) * 100, 1) : 0;
         $absent_percentage = $total_records > 0 ? round(($absent_count / $total_records) * 100, 1) : 0;
         $on_time_percentage = $total_records > 0 ? round(($on_time_count / $total_records) * 100, 1) : 0;
         $late_percentage = $total_records > 0 ? round(($late_count / $total_records) * 100, 1) : 0;
+        $undertime_percentage = $total_records > 0 ? round(($undertime_count / $total_records) * 100, 1) : 0;
 
         $response['summary'] = [
             'total_records' => $total_records,
@@ -477,6 +487,10 @@ try {
             'late' => [
                 'count' => $late_count,
                 'percentage' => $late_percentage
+            ],
+            'undertime' => [
+                'count' => $undertime_count,
+                'percentage' => $undertime_percentage
             ]
         ];
     }
@@ -548,7 +562,7 @@ try {
                 'time_out_formatted' => $time_out_formatted,
                 'late_minutes' => $row['late_minutes'] ?? 0,
                 'overtime_minutes' => $row['overtime_minutes'] ?? 0,
-                'undertime_minutes' => $row['undertime_minutes'] ?? 0,
+                'early_departure_minutes' => $row['early_departure_minutes'] ?? 0,
                 'actual_hours' => $row['actual_hours'] ?? null,
                 'hours_worked' => $hours_worked,
                 'status' => $row['status'],
@@ -569,6 +583,8 @@ try {
     echo json_encode([
         'success' => false,
         'error' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
         'date' => isset($date) ? $date : null,
         'type' => isset($type) ? $type : null
     ], JSON_PRETTY_PRINT);

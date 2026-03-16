@@ -220,7 +220,28 @@ try {
             background-color: #fd7e14 !important;
             color: white !important;
         }
+
+        /* Force title case on name fields */
+        #first_name,
+        #middle_name,
+        #last_name,
+        #position,
+        #department {
+            text-transform: capitalize !important;
+        }
     </style>
+    <script>
+        // Title case enforcer — runs before any other script
+        document.addEventListener('keyup', function(e) {
+            var ids = ['first_name','middle_name','last_name','position','department'];
+            if (ids.indexOf(e.target.id) !== -1) {
+                var el = e.target;
+                var pos = el.selectionStart;
+                el.value = el.value.replace(/(^|\s)\S/g, function(c){ return c.toUpperCase(); });
+                el.setSelectionRange(pos, pos);
+            }
+        }, true);
+    </script>
 </head>
 
 <body>
@@ -324,15 +345,15 @@ try {
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="first_name">First Name:</label>
-                                            <input type="text" id="first_name" name="first_name" required>
+                                            <input type="text" id="first_name" name="first_name" required autocapitalize="words" style="text-transform:capitalize" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
                                         </div>
                                         <div class="form-group">
                                             <label for="middle_name">Middle Name:</label>
-                                            <input type="text" id="middle_name" name="middle_name">
+                                            <input type="text" id="middle_name" name="middle_name" autocapitalize="words" style="text-transform:capitalize" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
                                         </div>
                                         <div class="form-group">
                                             <label for="last_name">Last Name:</label>
-                                            <input type="text" id="last_name" name="last_name" required>
+                                            <input type="text" id="last_name" name="last_name" required autocapitalize="words" style="text-transform:capitalize" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
                                         </div>
                                     </div>
 
@@ -359,7 +380,7 @@ try {
                                         </div>
                                         <div class="form-group">
                                             <label for="position">Position:</label>
-                                            <input type="text" id="position" name="position" required>
+                                            <input type="text" id="position" name="position" required autocapitalize="words" style="text-transform:capitalize" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
                                         </div>
                                         <div class="form-group" style="display: none;">
                                             <label for="hire_date">Hire Date:</label>
@@ -1129,6 +1150,26 @@ try {
                 icon.classList.add("bi-eye");
             }
         }
+    </script>
+
+    <!-- Title Case auto-format for name & position fields -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function applyTitleCase(input) {
+                input.addEventListener('input', function () {
+                    const pos = this.selectionStart;
+                    // Capitalize first letter of every word
+                    this.value = this.value.replace(/\b\w/g, c => c.toUpperCase());
+                    // Restore cursor position
+                    this.setSelectionRange(pos, pos);
+                });
+            }
+
+            ['first_name', 'middle_name', 'last_name', 'position'].forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el) applyTitleCase(el);
+            });
+        });
     </script>
 
     <!-- staff.js should handle specific UI interactions like Dropdowns/Autocompletes -->
