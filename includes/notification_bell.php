@@ -58,8 +58,8 @@
         </div>
       </div>
       <div class="modal-footer justify-content-end gap-2">
-        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4" id="deleteAllNotifications">
+        <button type="button" class="btn-modern btn-solid-light-gray btn-gray-hover px-4" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn-modern btn-solid-danger btn-gray-hover px-4" id="deleteAllNotifications">
           <i class="bi bi-trash"></i> Delete All
         </button>
       </div>
@@ -81,8 +81,8 @@
         <p class="mb-0">Are you sure you want to delete this notification? This action cannot be undone.</p>
       </div>
       <div class="modal-footer border-0 justify-content-end gap-2">
-        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4" id="confirmDeleteNotification">
+        <button type="button" class="btn-modern btn-solid-light-gray btn-gray-hover px-4" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn-modern btn-solid-danger btn-gray-hover px-4" id="confirmDeleteNotification">
           <i class="bi bi-trash"></i> Delete
         </button>
       </div>
@@ -105,8 +105,8 @@
           cannot be undone.</p>
       </div>
       <div class="modal-footer border-0 justify-content-end gap-2">
-        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4" id="confirmDeleteAllNotifications">
+        <button type="button" class="btn-modern btn-solid-light-gray btn-gray-hover px-4" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn-modern btn-solid-danger btn-gray-hover px-4" id="confirmDeleteAllNotifications">
           <i class="bi bi-trash"></i> Delete All
         </button>
       </div>
@@ -144,7 +144,7 @@
         </div>
       </div>
       <div class="modal-footer border-0 justify-content-end">
-        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn-modern btn-solid-light-gray btn-gray-hover px-4" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -163,7 +163,7 @@
         <p id="notificationErrorMessage" class="mb-0 fs-6">An error occurred while processing your request.</p>
       </div>
       <div class="modal-footer border-0 justify-content-end">
-        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-5" data-bs-dismiss="modal">OK</button>
+        <button type="button" class="btn-modern btn-solid-light-gray btn-gray-hover px-5" data-bs-dismiss="modal">OK</button>
       </div>
     </div>
   </div>
@@ -221,66 +221,43 @@
     cursor: pointer !important;
   }
 
-  /* Modern Outline Button Hovers */
-  .btn-modern.btn-outline {
-    background-color: transparent !important;
-  }
-
-  /* Base states for the specific colors */
-  .btn-modern.btn-outline.text-secondary {
-    border-color: #6c757d !important;
-    color: #6c757d !important;
-  }
-
-  .btn-modern.btn-outline.text-danger {
-    border-color: #dc3545 !important;
-    color: #dc3545 !important;
-  }
-
-  .btn-modern.btn-outline.text-success {
-    border-color: #198754 !important;
-    color: #198754 !important;
-  }
-
-  .btn-modern.btn-outline.text-primary {
-    border-color: #0d6efd !important;
-    color: #0d6efd !important;
-  }
-
-  .btn-modern.btn-outline.text-warning {
-    border-color: #ffc107 !important;
-    color: #ffc107 !important;
-  }
-
-  /* Hover states */
-  .btn-modern.btn-outline.text-secondary:hover {
-    background-color: #6c757d !important;
-    color: #fff !important;
-    border-color: #6c757d !important;
-  }
-
-  .btn-modern.btn-outline.text-danger:hover {
-    background-color: #dc3545 !important;
-    color: #fff !important;
-    border-color: #dc3545 !important;
-  }
-
-  .btn-modern.btn-outline.text-success:hover {
+  /* Base states for the specific colors - Solid Styles */
+  .btn-solid-success {
     background-color: #198754 !important;
-    color: #fff !important;
     border-color: #198754 !important;
-  }
-
-  .btn-modern.btn-outline.text-primary:hover {
-    background-color: #0d6efd !important;
     color: #fff !important;
-    border-color: #0d6efd !important;
   }
 
-  .btn-modern.btn-outline.text-warning:hover {
+  .btn-solid-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #fff !important;
+  }
+
+  .btn-solid-warning {
     background-color: #ffc107 !important;
-    color: #000 !important;
     border-color: #ffc107 !important;
+    color: #000 !important;
+  }
+
+  .btn-solid-primary {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #fff !important;
+  }
+
+  .btn-solid-light-gray {
+    background-color: #e9ecef !important;
+    border-color: #e9ecef !important;
+    color: #495057 !important;
+  }
+
+  /* Unified Hover for Action Buttons */
+  .btn-modern:hover,
+  .btn-gray-hover:hover {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
   }
 
   /* Disabled state */
@@ -634,7 +611,7 @@
                   <i class="bi bi-clock me-1"></i>${formatTimeAgo(notif.created_at)}
                 </small>
               </div>
-              <button class="btn-modern btn-outline text-danger border-danger ms-2" 
+              <button class="btn-modern btn-solid-danger btn-gray-hover ms-2" 
                       style="width: 32px !important; height: 32px !important; min-width: 32px !important; padding: 0 !important; border-radius: 4px !important;"
                       onclick="deleteNotification(${notif.id})" title="Delete">
                 <i class="bi bi-trash" style="font-size: 14px;"></i>
