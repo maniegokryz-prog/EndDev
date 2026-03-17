@@ -71,6 +71,7 @@ $sql_employees = "CREATE TABLE IF NOT EXISTS employees (
     first_name VARCHAR(255) NOT NULL,
     middle_name VARCHAR(255),
     last_name VARCHAR(255) NOT NULL,
+    suffix VARCHAR(50),
     email VARCHAR(255) UNIQUE,
     phone VARCHAR(255),
     roles TEXT,
@@ -317,6 +318,12 @@ if ($admin_exists->num_rows == 0) {
 }
 
 // --- SCHEMA UPDATES FOR EXISTING INSTALLATIONS ---
+// Check if suffix exists in employees
+$check_suffix = $conn->query("SHOW COLUMNS FROM employees LIKE 'suffix'");
+if ($check_suffix->num_rows == 0) {
+    $conn->query("ALTER TABLE employees ADD COLUMN suffix VARCHAR(50) NULL AFTER last_name");
+}
+
 // Check if cloud_id exists in employee_leaves
 $check_cloud_id = $conn->query("SHOW COLUMNS FROM employee_leaves LIKE 'cloud_id'");
 if ($check_cloud_id->num_rows == 0) {

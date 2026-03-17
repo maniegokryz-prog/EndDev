@@ -56,6 +56,7 @@ def create_database():
             first_name TEXT NOT NULL,
             middle_name TEXT,
             last_name TEXT NOT NULL,
+            suffix TEXT,
             email TEXT,
             phone TEXT,
             department TEXT,
