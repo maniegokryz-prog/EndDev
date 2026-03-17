@@ -35,6 +35,7 @@ class EmployeeUpdater
             $this->validatedData['first_name'] = $_POST['first_name'] ?? '';
             $this->validatedData['middle_name'] = $_POST['middle_name'] ?? '';
             $this->validatedData['last_name'] = $_POST['last_name'] ?? '';
+            $this->validatedData['suffix'] = $_POST['suffix'] ?? '';
             $this->validatedData['email'] = $_POST['email'] ?? '';
             $this->validatedData['phone'] = $_POST['phone'] ?? '';
 
@@ -231,16 +232,17 @@ class EmployeeUpdater
     {
         $stmt = $this->db->prepare("
             UPDATE employees SET
-                first_name = ?, middle_name = ?, last_name = ?, email = ?, phone = ?,
+                first_name = ?, middle_name = ?, last_name = ?, suffix = ?, email = ?, phone = ?,
                 roles = ?, department = ?, position = ?, hire_date = ?, status = ?,
                 updated_at = NOW()
             WHERE id = ?
         ");
         $stmt->bind_param(
-            'ssssssssssi',
+            'sssssssssssi',
             $this->validatedData['first_name'],
             $this->validatedData['middle_name'],
             $this->validatedData['last_name'],
+            $this->validatedData['suffix'],
             $this->validatedData['email'],
             $this->validatedData['phone'],
             $this->validatedData['roles'],
@@ -272,6 +274,7 @@ class EmployeeUpdater
             'first_name' => $this->validatedData['first_name'],
             'middle_name' => $this->validatedData['middle_name'],
             'last_name' => $this->validatedData['last_name'],
+            'suffix' => $this->validatedData['suffix'],
             'email' => $this->validatedData['email'],
             'phone' => $this->validatedData['phone'],
             'roles' => $this->validatedData['roles'],

@@ -20,21 +20,21 @@ try {
     if ($filter === 'pending_face') {
         // Use NOT EXISTS for clearer logic
         $sql = "SELECT 
-                    id, employee_id, first_name, middle_name, last_name, 
+                    id, employee_id, first_name, middle_name, last_name, suffix,
                     roles, department, position, status, profile_photo
                 FROM employees e
                 WHERE e.status = 'active' 
                 AND NOT EXISTS (SELECT 1 FROM face_embeddings fe WHERE fe.employee_id = e.id)";
     } elseif ($filter === 'pending_schedule') {
         $sql = "SELECT 
-                    id, employee_id, first_name, middle_name, last_name, 
+                    id, employee_id, first_name, middle_name, last_name, suffix,
                     roles, department, position, status, profile_photo
                 FROM employees e
                 WHERE e.status = 'active' 
                 AND NOT EXISTS (SELECT 1 FROM employee_schedules es WHERE es.employee_id = e.id AND es.is_active = 1)";
     } else {
         $sql = "SELECT 
-                    id, employee_id, first_name, middle_name, last_name, 
+                    id, employee_id, first_name, middle_name, last_name, suffix,
                     roles, department, position, status, profile_photo
                 FROM employees e
                 WHERE e.status = 'active'";
@@ -62,7 +62,7 @@ try {
 
     // Add search filter
     if (!empty($search)) {
-        $sql .= " AND (CONCAT(e.first_name, ' ', IFNULL(e.middle_name, ''), ' ', e.last_name) LIKE ? 
+        $sql .= " AND (CONCAT(e.first_name, ' ', IFNULL(e.middle_name, ''), ' ', e.last_name, ' ', IFNULL(e.suffix, '')) LIKE ? 
                   OR e.employee_id LIKE ?)";
         $searchParam = "%$search%";
         $params[] = $searchParam;
@@ -108,7 +108,7 @@ try {
 
     $employees = [];
     while ($row = $result->fetch_assoc()) {
-        $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ?? '') . ' ' . $row['last_name']);
+        $fullName = trim(preg_replace('/\s+/', ' ', $row['first_name'] . ' ' . ($row['middle_name'] ?? '') . ' ' . $row['last_name'] . ' ' . ($row['suffix'] ?? '')));
         
         $employees[] = [
             'id' => $row['id'],

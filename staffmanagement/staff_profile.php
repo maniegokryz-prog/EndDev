@@ -103,7 +103,7 @@ class EmployeeDetailViewer
     {
         try {
             $stmt = $this->db->prepare("
-                SELECT id, employee_id, first_name, middle_name, last_name, 
+                SELECT id, employee_id, first_name, middle_name, last_name, suffix,
                        email, phone, roles, department, position, hire_date, 
                        status, created_at, updated_at, profile_photo
                 FROM employees 
@@ -205,6 +205,8 @@ class EmployeeDetailViewer
             $nameParts[] = $this->employee['middle_name'];
         if ($this->employee['last_name'] && $this->employee['last_name'] !== 'N/A')
             $nameParts[] = $this->employee['last_name'];
+        if (isset($this->employee['suffix']) && $this->employee['suffix'] && $this->employee['suffix'] !== 'N/A')
+            $nameParts[] = $this->employee['suffix'];
         return implode(' ', $nameParts);
     }
 }
@@ -983,21 +985,26 @@ $profilePhoto .= '?v=' . microtime(true);
                                         class="form-control text-start">
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4 mb-3"><label>First Name</label><input type="text" name="first_name" id="edit_first_name"
+                                    <div class="col-md-4 col-sm-12 mb-3"><label>First Name</label><input type="text" name="first_name" id="edit_first_name"
                                             class="form-control" autocapitalize="words"
                                             style="text-transform:capitalize"
                                             oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['first_name']); ?>" required></div>
-                                    <div class="col-md-4 mb-3"><label>Middle Name</label><input type="text"
+                                    <div class="col-md-3 col-sm-12 mb-3"><label>Middle Name</label><input type="text"
                                             name="middle_name" id="edit_middle_name" class="form-control" autocapitalize="words"
                                             style="text-transform:capitalize"
                                             oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['middle_name']); ?>"></div>
-                                    <div class="col-md-4 mb-3"><label>Last Name</label><input type="text" name="last_name" id="edit_last_name"
+                                    <div class="col-md-3 col-sm-12 mb-3"><label>Last Name</label><input type="text" name="last_name" id="edit_last_name"
                                             class="form-control" autocapitalize="words"
                                             style="text-transform:capitalize"
                                             oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['last_name']); ?>" required></div>
+                                    <div class="col-md-2 col-sm-12 mb-3"><label>Suffix <span class="text-muted d-none d-lg-inline">(Opt)</span></label><input type="text" name="suffix" id="edit_suffix"
+                                            class="form-control" autocapitalize="words"
+                                            style="text-transform:capitalize"
+                                            oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
+                                            value="<?php echo htmlspecialchars($employee['suffix'] ?? ''); ?>"></div>
                                 </div>
                                 <div class="mb-3"><label>Email</label><input type="email" name="email" class="form-control"
                                         value="<?php echo htmlspecialchars($employee['email']); ?>" required></div>

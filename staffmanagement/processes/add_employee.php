@@ -25,6 +25,7 @@ class EmployeeProcessor
         'first_name' => ['required', 'string', 'max:50'],
         'middle_name' => ['optional', 'string', 'max:50'],
         'last_name' => ['required', 'string', 'max:50'],
+        'suffix' => ['optional', 'string', 'max:20'],
         'email' => ['optional', 'email', 'max:100', 'unique:employees'],
         'phone' => ['required', 'phone', 'max:15'],  // FIXED: Changed from 'string' to 'phone'
         'roles' => ['required', 'custom_role_validation', 'max:100'],
@@ -308,6 +309,7 @@ class EmployeeProcessor
 
             // Set default values
             $middle_name = $this->validatedData['middle_name'] ?? '';
+            $suffix = $this->validatedData['suffix'] ?? null;
             $email = $this->validatedData['email'] ?? '';
             $default_profile_pic = 'assets/profile_pic/user.png';
 
@@ -322,18 +324,19 @@ class EmployeeProcessor
             // FIXED: Added employee_password column
             $stmt = $this->db->prepare("
                 INSERT INTO employees(
-                    employee_id, employee_password, first_name, middle_name, last_name,
+                    employee_id, employee_password, first_name, middle_name, last_name, suffix,
                     email, phone, roles, department, position, hire_date, profile_photo
-                ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
+                ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
             $hire_date = $this->validatedData['hire_date'] ?? null;
             $stmt->bind_param(
-                'ssssssssssss',
+                'sssssssssssss',
                 $this->validatedData['employee_id'],
                 $hashed_password,
                 $this->validatedData['first_name'],
                 $middle_name,
                 $this->validatedData['last_name'],
+                $suffix,
                 $email,
                 $this->validatedData['phone'],
                 $this->validatedData['roles'],
@@ -359,6 +362,7 @@ class EmployeeProcessor
                 'first_name' => $this->validatedData['first_name'],
                 'middle_name' => $middle_name,
                 'last_name' => $this->validatedData['last_name'],
+                'suffix' => $suffix,
                 'email' => $email,
                 'phone' => $this->validatedData['phone'],
                 'roles' => $this->validatedData['roles'],

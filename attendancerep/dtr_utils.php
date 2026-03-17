@@ -515,118 +515,82 @@ function getEmployeeSchedule($conn, $employeeInternalId)
 
 function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '')
 {
-    if (empty($timeInStr) || empty($timeOutStr) || empty($schedule)) {
+    if (empty($timeInStr) || empty($timeOutStr)) {
         return 0;
     }
 
-    $dow = date('w', strtotime($dateStr));
-    // Verify mapped schedule for day (0=Sun, 6=Sat) exists?
-    // Mapped: 0=Monday? No, PHP 'w': 0=Sun, 1=Mon...
-    // DB typically: 0=Mon, 6=Sun in Python. Let's check Python logic
-    // In Python: `day_of_week = log_datetime.weekday()` (0=Mon).
-    // In PHP `date('w')`: 0=Sunday, 1=Monday.
-    // We need to map PHP dow to DB dow.
-    // DB dow: 0=Mon, 1=Tue... 6=Sun.
     $phpDow = (int) date('w', strtotime($dateStr));
     $dbDow = ($phpDow == 0) ? 6 : $phpDow - 1;
 
-    if (!isset($schedule[$dbDow])) {
-        // No schedule logic applied, return raw diff?
-        $tIn = strtotime($timeInStr);
+    $totalMinutes = 0;
+
+    if (empty($schedule) || !isset($schedule[$dbDow])) {
+        // No schedule found — compute raw elapsed minutes (no clamping)
+        $tIn  = strtotime($timeInStr);
         $tOut = strtotime($timeOutStr);
-        return round(($tOut - $tIn) / 60, 2);
-    }
+        $totalMinutes = ($tOut - $tIn) / 60;
+    } else {
+        $periods = $schedule[$dbDow];
+        usort($periods, function ($a, $b) {
+            return strtotime($a['start']) - strtotime($b['start']);
+        });
 
-    $periods = $schedule[$dbDow];
-    // Sort periods by start time to ensure correct First/Last logic
-    usort($periods, function ($a, $b) {
-        return strtotime($a['start']) - strtotime($b['start']);
-    });
+        $firstPeriodStart = $periods[0]['start'];
+        $lastPeriodEnd    = end($periods)['end'];
 
-    $firstPeriodStart = $periods[0]['start'];
-    $lastPeriodEnd = end($periods)['end'];
+        $dateOnly = date('Y-m-d', strtotime($dateStr));
 
-    $dateOnly = date('Y-m-d', strtotime($dateStr));
+        $schedStartTs = strtotime("$dateOnly $firstPeriodStart");
+        $schedEndTs   = strtotime("$dateOnly $lastPeriodEnd");
+        $tInTs  = strtotime("$dateOnly " . date('H:i:s', strtotime($timeInStr)));
+        $tOutTs = strtotime("$dateOnly " . date('H:i:s', strtotime($timeOutStr)));
 
-    // Create timestamps for Day Bounds
-    $schedStartTs = strtotime("$dateOnly $firstPeriodStart");
-    $schedEndTs = strtotime("$dateOnly $lastPeriodEnd");
+        $calcStartTs = max($tInTs, $schedStartTs);
+        $calcEndTs   = min($tOutTs, $schedEndTs);
 
-    $tInTs = strtotime("$dateOnly " . date('H:i:s', strtotime($timeInStr)));
-    $tOutTs = strtotime("$dateOnly " . date('H:i:s', strtotime($timeOutStr)));
-
-    // 1. Determine Effective Global Start (Apply Lateness Rule)
-    $calcStartTs = max($tInTs, $schedStartTs);
-
-    // 2. Determine Effective Global End (Apply Early Out / Overtime Rule)
-    $calcEndTs = min($tOutTs, $schedEndTs);
-
-    // 3. Sum Intersections with Each Period
-    $totalSeconds = 0;
-
-    // If effective start is after effective end (e.g. extremely late), return 0
-    if ($calcStartTs >= $calcEndTs) {
-        return 0;
-    }
-
-    foreach ($periods as $period) {
-        $pStartTs = strtotime("$dateOnly " . $period['start']);
-        $pEndTs = strtotime("$dateOnly " . $period['end']);
-
-        // Calculate Intersection [calcStart, calcEnd] INT [pStart, pEnd]
-        $intStart = max($calcStartTs, $pStartTs);
-        $intEnd = min($calcEndTs, $pEndTs);
-
-        $duration = $intEnd - $intStart;
-        if ($duration > 0) {
-            $totalSeconds += $duration;
+        if ($calcStartTs >= $calcEndTs) {
+            return 0;
         }
-    }
 
-    // Apply Break Deduction for Admin and Non-Teaching Personnel
-    // 5 hours = 300 minutes
-    $totalMinutes = $totalSeconds / 60;
-
-
-
-    // Apply Break Deduction for Admin and Non-Teaching Personnel
-    // Fetch setting from DB (cached static)
-    static $deductionMinutes = null;
-    global $conn; // Ensure connection is available
-
-    if ($deductionMinutes === null) {
-        if (isset($conn)) {
-            $result = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'");
-            if ($result && $row = $result->fetch_assoc()) {
-                $deductionMinutes = (int) $row['setting_value'];
-            } else {
-                $deductionMinutes = 60; // Default if not found
+        $totalSeconds = 0;
+        foreach ($periods as $period) {
+            $pStartTs = strtotime("$dateOnly " . $period['start']);
+            $pEndTs   = strtotime("$dateOnly " . $period['end']);
+            $intStart = max($calcStartTs, $pStartTs);
+            $intEnd   = min($calcEndTs, $pEndTs);
+            $duration = $intEnd - $intStart;
+            if ($duration > 0) {
+                $totalSeconds += $duration;
             }
+        }
+
+        $totalMinutes = $totalSeconds / 60;
+    }
+
+    // ── Break Deduction ─────────────────────────────────────────────────────
+    // Load setting once per request (cached via static variable)
+    static $deductionMinutes = null;
+    if ($deductionMinutes === null) {
+        global $conn;
+        $dbConn = isset($conn) ? $conn : null;
+        if ($dbConn) {
+            $res = $dbConn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'break_deduction_minutes'");
+            $deductionMinutes = ($res && $r2 = $res->fetch_assoc()) ? (int) $r2['setting_value'] : 60;
         } else {
-            $deductionMinutes = 60; // Default fallback
+            $deductionMinutes = 60;
         }
     }
 
-    $roleLower = strtolower(str_replace(['-', '_'], ' ', $employeeRole));
-    $isDeductible = false;
+    $roleLower = strtolower(str_replace(['-', '_', '.'], ' ', $employeeRole));
 
-    if (
-        strpos($roleLower, 'admin') !== false ||
-        strpos($roleLower, 'non teaching') !== false ||
-        strpos($roleLower, 'non staff') !== false ||
-        strpos($roleLower, 'nonstaff') !== false
-    ) {
-        $isDeductible = true;
-    } elseif (
-        strpos($roleLower, 'staff') !== false &&
-        strpos($roleLower, 'teaching') === false &&
-        strpos($roleLower, 'faculty') === false
-    ) {
-        $isDeductible = true;
-    }
+    // Faculty_Member / Teaching roles → NO deduction
+    $hasFaculty     = strpos($roleLower, 'faculty')      !== false;
+    $hasTeaching    = strpos($roleLower, 'teaching')     !== false;
+    $hasNonTeaching = strpos($roleLower, 'non teaching') !== false;
+    $isFacultyExempt = $hasFaculty || ($hasTeaching && !$hasNonTeaching);
 
-    if ($isDeductible) {
-        // If worked > 5 hours (300 mins), apply deduction
+    if (!$isFacultyExempt && $deductionMinutes > 0) {
+        // Applies to admin, staff, non-teaching etc. if worked >= 5 hours
         if ($totalMinutes >= 300) {
             $totalMinutes = max(0, $totalMinutes - $deductionMinutes);
         }

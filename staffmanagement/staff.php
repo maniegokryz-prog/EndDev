@@ -27,7 +27,7 @@ class EmployeeRecordViewer
     try {
       // Build dynamic query with filters
       $query = "SELECT 
-                        employee_id, first_name, middle_name, last_name, 
+                        employee_id, first_name, middle_name, last_name, suffix,
                         email, phone, roles, department, position, hire_date, status
                       FROM employees";
 
@@ -139,6 +139,8 @@ class EmployeeRecordViewer
       $nameParts[] = $employee['middle_name'];
     if ($employee['last_name'])
       $nameParts[] = $employee['last_name'];
+    if (isset($employee['suffix']) && $employee['suffix'] !== 'N/A')
+      $nameParts[] = $employee['suffix'];
 
     $sanitized['full_name'] = htmlspecialchars(implode(' ', $nameParts), ENT_QUOTES, 'UTF-8');
 

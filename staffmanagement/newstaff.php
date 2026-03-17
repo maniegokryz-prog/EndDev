@@ -225,6 +225,7 @@ try {
         #first_name,
         #middle_name,
         #last_name,
+        #suffix,
         #position,
         #department {
             text-transform: capitalize !important;
@@ -233,7 +234,7 @@ try {
     <script>
         // Title case enforcer — runs before any other script
         document.addEventListener('keyup', function(e) {
-            var ids = ['first_name','middle_name','last_name','position','department'];
+            var ids = ['first_name','middle_name','last_name','suffix','position','department'];
             if (ids.indexOf(e.target.id) !== -1) {
                 var el = e.target;
                 var pos = el.selectionStart;
@@ -342,18 +343,22 @@ try {
                                         </div>
                                     </div>
 
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="first_name">First Name:</label>
-                                            <input type="text" id="first_name" name="first_name" required autocapitalize="words" style="text-transform:capitalize" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
+                                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr 80px; gap: 15px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <label for="first_name" style="white-space: nowrap;">First Name:</label>
+                                            <input type="text" id="first_name" name="first_name" required autocapitalize="words" style="text-transform:capitalize; width: 100%; box-sizing: border-box;" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
                                         </div>
-                                        <div class="form-group">
-                                            <label for="middle_name">Middle Name:</label>
-                                            <input type="text" id="middle_name" name="middle_name" autocapitalize="words" style="text-transform:capitalize" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
+                                        <div class="form-group" style="margin: 0;">
+                                            <label for="middle_name" style="white-space: nowrap;">Middle Name:</label>
+                                            <input type="text" id="middle_name" name="middle_name" autocapitalize="words" style="text-transform:capitalize; width: 100%; box-sizing: border-box;" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
                                         </div>
-                                        <div class="form-group">
-                                            <label for="last_name">Last Name:</label>
-                                            <input type="text" id="last_name" name="last_name" required autocapitalize="words" style="text-transform:capitalize" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
+                                        <div class="form-group" style="margin: 0;">
+                                            <label for="last_name" style="white-space: nowrap;">Last Name:</label>
+                                            <input type="text" id="last_name" name="last_name" required autocapitalize="words" style="text-transform:capitalize; width: 100%; box-sizing: border-box;" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
+                                        </div>
+                                        <div class="form-group" style="margin: 0;">
+                                            <label for="suffix" style="white-space: nowrap; overflow: hidden; text-overflow: clip;">Suffix(Opt):</label>
+                                            <input type="text" id="suffix" name="suffix" placeholder="e.g. Jr." autocapitalize="words" style="text-transform:capitalize; width: 100%; box-sizing: border-box;" oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,c=>c.toUpperCase());this.setSelectionRange(p,p);">
                                         </div>
                                     </div>
 

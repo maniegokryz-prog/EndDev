@@ -15,7 +15,7 @@ if (!$employeeId) {
 }
 
 // Fetch employee data
-$stmt = $conn->prepare("SELECT id, employee_id, first_name, middle_name, last_name, roles, hire_date FROM employees WHERE employee_id = ?");
+$stmt = $conn->prepare("SELECT id, employee_id, first_name, middle_name, last_name, suffix, roles, hire_date FROM employees WHERE employee_id = ?");
 $stmt->bind_param("s", $employeeId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -26,7 +26,8 @@ if ($result->num_rows === 0) {
 
 $row = $result->fetch_assoc();
 // Format Name: Last Name, First Name M.I. or Middle Name
-$fullName = strtoupper($row['last_name'] . ', ' . $row['first_name'] . ' ' . ($row['middle_name'] ?? ''));
+$suffix = trim($row['suffix'] ?? '');
+$fullName = strtoupper(trim(preg_replace('/\s+/', ' ', $row['last_name'] . ', ' . $row['first_name'] . ' ' . ($row['middle_name'] ?? '') . ($suffix ? ', ' . $suffix : ''))));
 
 $employee = [
     'internal_id' => $row['id'],

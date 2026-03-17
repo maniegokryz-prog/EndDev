@@ -16,14 +16,14 @@ $hireYear = date('Y'); // Default to current year
 
 if ($id) {
   // Fetch employee data from database
-  $stmt = $conn->prepare("SELECT employee_id, first_name, middle_name, last_name, roles, hire_date, profile_photo FROM employees WHERE employee_id = ?");
+  $stmt = $conn->prepare("SELECT employee_id, first_name, middle_name, last_name, suffix, roles, hire_date, profile_photo FROM employees WHERE employee_id = ?");
   $stmt->bind_param("s", $id);
   $stmt->execute();
   $result = $stmt->get_result();
 
   if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    $fullName = trim($row['first_name'] . ' ' . ($row['middle_name'] ?? '') . ' ' . $row['last_name']);
+    $fullName = trim(preg_replace('/\s+/', ' ', $row['first_name'] . ' ' . ($row['middle_name'] ?? '') . ' ' . $row['last_name'] . ' ' . ($row['suffix'] ?? '')));
 
     $imagePath = $row['profile_photo'];
     $fullPath = $imagePath ? dirname(__DIR__) . '/' . $imagePath : '';

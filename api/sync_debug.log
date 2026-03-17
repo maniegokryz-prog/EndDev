@@ -13093,3 +13093,506 @@
 2026-03-16 17:31:32 - --- Sync Cycle Started ---
 2026-03-16 17:32:03 - --- Sync Cycle Started ---
 2026-03-16 17:32:33 - --- Sync Cycle Started ---
+2026-03-16 17:33:03 - --- Sync Cycle Started ---
+2026-03-16 17:33:33 - --- Sync Cycle Started ---
+2026-03-16 17:34:03 - --- Sync Cycle Started ---
+2026-03-16 17:34:33 - --- Sync Cycle Started ---
+2026-03-16 17:34:47 - --- Sync Cycle Started ---
+2026-03-16 17:34:52 - --- Sync Cycle Started ---
+2026-03-16 17:34:57 - --- Sync Cycle Started ---
+2026-03-16 17:35:28 - --- Sync Cycle Started ---
+2026-03-16 17:35:58 - --- Sync Cycle Started ---
+2026-03-16 17:35:58 - Pulled tables from VPS: schedules, schedule_periods, employee_schedules, daily_attendance, notifications
+2026-03-16 17:35:58 - Successfully pulled and updated local record on schedules with VPS id 3
+2026-03-16 17:35:58 - Successfully pulled and updated local record on schedule_periods with VPS id 26
+2026-03-16 17:35:58 - Successfully pulled and updated local record on schedule_periods with VPS id 27
+2026-03-16 17:35:59 - Successfully pulled and updated local record on employee_schedules with VPS id 3
+2026-03-16 17:35:59 - Successfully pulled and updated local record on daily_attendance with VPS id 7
+2026-03-16 17:35:59 - Successfully pulled and updated local record on notifications with VPS id 16
+2026-03-16 17:36:28 - --- Sync Cycle Started ---
+2026-03-16 17:36:58 - --- Sync Cycle Started ---
+2026-03-16 17:37:28 - --- Sync Cycle Started ---
+2026-03-17 06:14:32 - --- Sync Cycle Started ---
+2026-03-17 06:15:03 - --- Sync Cycle Started ---
+2026-03-17 06:15:32 - --- Sync Cycle Started ---
+2026-03-17 06:15:38 - --- Sync Cycle Started ---
+2026-03-17 06:15:40 - --- Sync Cycle Started ---
+2026-03-17 06:16:11 - --- Sync Cycle Started ---
+2026-03-17 06:16:41 - --- Sync Cycle Started ---
+2026-03-17 06:17:11 - --- Sync Cycle Started ---
+2026-03-17 06:17:41 - --- Sync Cycle Started ---
+2026-03-17 06:18:11 - --- Sync Cycle Started ---
+2026-03-17 06:18:41 - --- Sync Cycle Started ---
+2026-03-17 06:19:19 - --- Sync Cycle Started ---
+2026-03-17 06:19:45 - --- Sync Cycle Started ---
+2026-03-17 06:20:11 - --- Sync Cycle Started ---
+2026-03-17 06:20:41 - --- Sync Cycle Started ---
+2026-03-17 06:21:19 - --- Sync Cycle Started ---
+2026-03-17 06:22:19 - --- Sync Cycle Started ---
+2026-03-17 06:23:19 - --- Sync Cycle Started ---
+2026-03-17 06:24:19 - --- Sync Cycle Started ---
+2026-03-17 06:25:19 - --- Sync Cycle Started ---
+2026-03-17 06:26:19 - --- Sync Cycle Started ---
+2026-03-17 06:27:19 - --- Sync Cycle Started ---
+2026-03-17 06:28:19 - --- Sync Cycle Started ---
+2026-03-17 06:29:19 - --- Sync Cycle Started ---
+2026-03-17 06:30:19 - --- Sync Cycle Started ---
+2026-03-17 06:31:19 - --- Sync Cycle Started ---
+2026-03-17 06:32:19 - --- Sync Cycle Started ---
+2026-03-17 06:33:19 - --- Sync Cycle Started ---
+2026-03-17 06:34:19 - --- Sync Cycle Started ---
+2026-03-17 06:35:19 - --- Sync Cycle Started ---
+2026-03-17 06:36:19 - --- Sync Cycle Started ---
+2026-03-17 06:37:19 - --- Sync Cycle Started ---
+2026-03-17 06:38:19 - --- Sync Cycle Started ---
+2026-03-17 06:39:19 - --- Sync Cycle Started ---
+2026-03-17 06:40:19 - --- Sync Cycle Started ---
+2026-03-17 06:41:19 - --- Sync Cycle Started ---
+2026-03-17 06:42:19 - --- Sync Cycle Started ---
+2026-03-17 06:43:19 - --- Sync Cycle Started ---
+2026-03-17 06:44:19 - --- Sync Cycle Started ---
+2026-03-17 06:45:19 - --- Sync Cycle Started ---
+2026-03-17 06:46:19 - --- Sync Cycle Started ---
+2026-03-17 06:47:19 - --- Sync Cycle Started ---
+2026-03-17 06:48:19 - --- Sync Cycle Started ---
+2026-03-17 06:49:19 - --- Sync Cycle Started ---
+2026-03-17 06:49:41 - --- Sync Cycle Started ---
+2026-03-17 06:49:44 - --- Sync Cycle Started ---
+2026-03-17 06:49:45 - --- Sync Cycle Started ---
+2026-03-17 06:50:08 - --- Sync Cycle Started ---
+2026-03-17 06:50:10 - --- Sync Cycle Started ---
+2026-03-17 06:50:41 - --- Sync Cycle Started ---
+2026-03-17 06:51:11 - --- Sync Cycle Started ---
+2026-03-17 06:51:41 - --- Sync Cycle Started ---
+2026-03-17 06:52:11 - --- Sync Cycle Started ---
+2026-03-17 06:52:41 - --- Sync Cycle Started ---
+2026-03-17 06:52:58 - --- Sync Cycle Started ---
+2026-03-17 06:53:02 - --- Sync Cycle Started ---
+2026-03-17 06:53:02 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-17 06:53:02 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:53:14 - --- Sync Cycle Started ---
+2026-03-17 06:53:14 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-17 06:53:15 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:53:33 - --- Sync Cycle Started ---
+2026-03-17 06:53:33 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-17 06:53:33 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:53:34 - --- Sync Cycle Started ---
+2026-03-17 06:53:35 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-17 06:53:35 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:53:54 - --- Sync Cycle Started ---
+2026-03-17 06:53:54 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-17 06:53:54 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:53:55 - --- Sync Cycle Started ---
+2026-03-17 06:53:55 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-17 06:53:55 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:54:25 - --- Sync Cycle Started ---
+2026-03-17 06:54:26 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-17 06:54:26 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:54:44 - --- Sync Cycle Started ---
+2026-03-17 06:54:44 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:54:44 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:54:49 - --- Sync Cycle Started ---
+2026-03-17 06:54:49 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:54:49 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:55:02 - --- Sync Cycle Started ---
+2026-03-17 06:55:02 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:55:02 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:55:31 - --- Sync Cycle Started ---
+2026-03-17 06:55:31 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:55:31 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:56:01 - --- Sync Cycle Started ---
+2026-03-17 06:56:01 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:56:01 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:56:31 - --- Sync Cycle Started ---
+2026-03-17 06:56:31 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:56:31 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:57:01 - --- Sync Cycle Started ---
+2026-03-17 06:57:01 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:57:01 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:57:31 - --- Sync Cycle Started ---
+2026-03-17 06:57:31 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:57:31 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:58:01 - --- Sync Cycle Started ---
+2026-03-17 06:58:01 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:58:01 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:58:31 - --- Sync Cycle Started ---
+2026-03-17 06:58:31 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:58:31 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 06:59:19 - --- Sync Cycle Started ---
+2026-03-17 06:59:19 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 06:59:19 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:00:03 - --- Sync Cycle Started ---
+2026-03-17 07:00:03 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:00:03 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:00:06 - --- Sync Cycle Started ---
+2026-03-17 07:00:06 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:00:07 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:00:07 - --- Sync Cycle Started ---
+2026-03-17 07:00:07 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:00:07 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:00:09 - --- Sync Cycle Started ---
+2026-03-17 07:00:09 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:00:09 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:00:20 - --- Sync Cycle Started ---
+2026-03-17 07:00:21 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:00:21 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:00:51 - --- Sync Cycle Started ---
+2026-03-17 07:00:51 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:00:51 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:01:21 - --- Sync Cycle Started ---
+2026-03-17 07:01:21 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:01:21 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:01:51 - --- Sync Cycle Started ---
+2026-03-17 07:01:51 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:01:51 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:02:21 - --- Sync Cycle Started ---
+2026-03-17 07:02:21 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:02:21 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:02:51 - --- Sync Cycle Started ---
+2026-03-17 07:02:51 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:02:51 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:03:21 - --- Sync Cycle Started ---
+2026-03-17 07:03:21 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:03:21 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:04:19 - --- Sync Cycle Started ---
+2026-03-17 07:04:19 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:04:19 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:04:41 - --- Sync Cycle Started ---
+2026-03-17 07:04:41 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:04:41 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:04:45 - --- Sync Cycle Started ---
+2026-03-17 07:04:45 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:04:46 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:05:15 - --- Sync Cycle Started ---
+2026-03-17 07:05:15 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:05:16 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:05:45 - --- Sync Cycle Started ---
+2026-03-17 07:05:45 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:05:46 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:06:15 - --- Sync Cycle Started ---
+2026-03-17 07:06:15 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:06:16 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:06:45 - --- Sync Cycle Started ---
+2026-03-17 07:06:45 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:06:46 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:07:15 - --- Sync Cycle Started ---
+2026-03-17 07:07:15 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:07:16 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:07:45 - --- Sync Cycle Started ---
+2026-03-17 07:07:45 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:07:46 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:08:16 - --- Sync Cycle Started ---
+2026-03-17 07:08:16 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:08:16 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:08:46 - --- Sync Cycle Started ---
+2026-03-17 07:08:46 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:08:46 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:09:19 - --- Sync Cycle Started ---
+2026-03-17 07:09:19 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:09:19 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:10:19 - --- Sync Cycle Started ---
+2026-03-17 07:10:19 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:10:19 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:11:19 - --- Sync Cycle Started ---
+2026-03-17 07:11:19 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:11:19 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:11:33 - --- Sync Cycle Started ---
+2026-03-17 07:11:33 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:11:33 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:11:34 - --- Sync Cycle Started ---
+2026-03-17 07:11:35 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:11:35 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:12:05 - --- Sync Cycle Started ---
+2026-03-17 07:12:05 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:12:05 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:12:35 - --- Sync Cycle Started ---
+2026-03-17 07:12:35 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:12:35 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:13:05 - --- Sync Cycle Started ---
+2026-03-17 07:13:05 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:13:05 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:13:35 - --- Sync Cycle Started ---
+2026-03-17 07:13:35 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:13:35 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:14:05 - --- Sync Cycle Started ---
+2026-03-17 07:14:05 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:14:05 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:14:35 - --- Sync Cycle Started ---
+2026-03-17 07:14:35 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:14:35 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:14:55 - --- Sync Cycle Started ---
+2026-03-17 07:14:55 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:14:56 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:15:26 - --- Sync Cycle Started ---
+2026-03-17 07:15:26 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:15:26 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:15:56 - --- Sync Cycle Started ---
+2026-03-17 07:15:56 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:15:56 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:16:26 - --- Sync Cycle Started ---
+2026-03-17 07:16:26 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:16:26 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:16:55 - --- Sync Cycle Started ---
+2026-03-17 07:16:55 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:16:55 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:16:56 - --- Sync Cycle Started ---
+2026-03-17 07:16:56 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:16:56 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:17:05 - --- Sync Cycle Started ---
+2026-03-17 07:17:05 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:17:05 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:17:07 - --- Sync Cycle Started ---
+2026-03-17 07:17:07 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:17:07 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:17:19 - --- Sync Cycle Started ---
+2026-03-17 07:17:19 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:17:19 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:17:50 - --- Sync Cycle Started ---
+2026-03-17 07:17:50 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:17:50 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:18:01 - --- Sync Cycle Started ---
+2026-03-17 07:18:02 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:18:02 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:18:31 - --- Sync Cycle Started ---
+2026-03-17 07:18:32 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:18:32 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:18:33 - --- Sync Cycle Started ---
+2026-03-17 07:18:33 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:18:33 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:18:34 - --- Sync Cycle Started ---
+2026-03-17 07:18:34 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:18:34 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:19:05 - --- Sync Cycle Started ---
+2026-03-17 07:19:05 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:19:05 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:19:35 - --- Sync Cycle Started ---
+2026-03-17 07:19:35 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:19:35 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:20:00 - --- Sync Cycle Started ---
+2026-03-17 07:20:00 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:20:00 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:20:01 - --- Sync Cycle Started ---
+2026-03-17 07:20:01 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:20:01 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:20:03 - --- Sync Cycle Started ---
+2026-03-17 07:20:03 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:20:04 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:20:58 - --- Sync Cycle Started ---
+2026-03-17 07:20:58 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:20:58 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:21:29 - --- Sync Cycle Started ---
+2026-03-17 07:21:29 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:21:29 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:21:59 - --- Sync Cycle Started ---
+2026-03-17 07:21:59 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:21:59 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:22:29 - --- Sync Cycle Started ---
+2026-03-17 07:22:29 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:22:29 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:22:59 - --- Sync Cycle Started ---
+2026-03-17 07:22:59 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:22:59 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:23:29 - --- Sync Cycle Started ---
+2026-03-17 07:23:29 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:23:29 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:23:59 - --- Sync Cycle Started ---
+2026-03-17 07:23:59 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:23:59 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:25:19 - --- Sync Cycle Started ---
+2026-03-17 07:25:19 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:25:19 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:26:19 - --- Sync Cycle Started ---
+2026-03-17 07:26:19 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:26:19 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:26:57 - --- Sync Cycle Started ---
+2026-03-17 07:26:57 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:26:57 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:26:58 - --- Sync Cycle Started ---
+2026-03-17 07:26:58 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:26:58 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:28:43 - --- Sync Cycle Started ---
+2026-03-17 07:28:43 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:28:43 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:28:45 - --- Sync Cycle Started ---
+2026-03-17 07:28:45 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:28:45 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:28:46 - --- Sync Cycle Started ---
+2026-03-17 07:28:46 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:28:47 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:28:56 - --- Sync Cycle Started ---
+2026-03-17 07:28:56 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:28:56 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:28:59 - --- Sync Cycle Started ---
+2026-03-17 07:28:59 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:28:59 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:29:00 - --- Sync Cycle Started ---
+2026-03-17 07:29:00 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:29:01 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:29:02 - --- Sync Cycle Started ---
+2026-03-17 07:29:03 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:29:03 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:33:56 - --- Sync Cycle Started ---
+2026-03-17 07:33:56 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:33:56 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:33:59 - --- Sync Cycle Started ---
+2026-03-17 07:33:59 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:33:59 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:34:13 - --- Sync Cycle Started ---
+2026-03-17 07:34:14 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:34:14 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:34:15 - --- Sync Cycle Started ---
+2026-03-17 07:34:15 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:34:15 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:34:33 - --- Sync Cycle Started ---
+2026-03-17 07:34:33 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:34:33 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:35:58 - --- Sync Cycle Started ---
+2026-03-17 07:35:58 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:35:58 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:35:59 - --- Sync Cycle Started ---
+2026-03-17 07:35:59 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:35:59 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:36:30 - --- Sync Cycle Started ---
+2026-03-17 07:36:30 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:36:30 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:37:00 - --- Sync Cycle Started ---
+2026-03-17 07:37:00 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:37:00 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:37:30 - --- Sync Cycle Started ---
+2026-03-17 07:37:30 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:37:30 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:38:00 - --- Sync Cycle Started ---
+2026-03-17 07:38:00 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:38:00 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:38:30 - --- Sync Cycle Started ---
+2026-03-17 07:38:30 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:38:30 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:38:50 - --- Sync Cycle Started ---
+2026-03-17 07:38:50 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:38:51 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:38:53 - --- Sync Cycle Started ---
+2026-03-17 07:38:53 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:38:53 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:38:54 - --- Sync Cycle Started ---
+2026-03-17 07:38:54 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:38:54 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:47:34 - --- Sync Cycle Started ---
+2026-03-17 07:47:34 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:47:34 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:47:36 - --- Sync Cycle Started ---
+2026-03-17 07:47:36 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:47:36 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:47:39 - --- Sync Cycle Started ---
+2026-03-17 07:47:40 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:47:40 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:47:46 - --- Sync Cycle Started ---
+2026-03-17 07:47:46 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:47:46 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:47:47 - --- Sync Cycle Started ---
+2026-03-17 07:47:48 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:47:48 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:47:52 - --- Sync Cycle Started ---
+2026-03-17 07:47:53 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:47:53 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:59:26 - --- Sync Cycle Started ---
+2026-03-17 07:59:26 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:59:26 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:59:27 - --- Sync Cycle Started ---
+2026-03-17 07:59:27 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:59:27 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:59:29 - --- Sync Cycle Started ---
+2026-03-17 07:59:29 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:59:29 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:59:34 - --- Sync Cycle Started ---
+2026-03-17 07:59:34 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:59:34 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:59:35 - --- Sync Cycle Started ---
+2026-03-17 07:59:35 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:59:36 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:59:37 - --- Sync Cycle Started ---
+2026-03-17 07:59:37 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:59:37 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:59:52 - --- Sync Cycle Started ---
+2026-03-17 07:59:52 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:59:52 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:59:54 - --- Sync Cycle Started ---
+2026-03-17 07:59:54 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:59:54 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 07:59:56 - --- Sync Cycle Started ---
+2026-03-17 07:59:56 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 07:59:56 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:03:47 - --- Sync Cycle Started ---
+2026-03-17 08:03:47 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:03:48 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:03:48 - --- Sync Cycle Started ---
+2026-03-17 08:03:48 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:03:49 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:03:55 - --- Sync Cycle Started ---
+2026-03-17 08:03:55 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:03:55 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:03:58 - --- Sync Cycle Started ---
+2026-03-17 08:03:59 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:03:59 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:04:02 - --- Sync Cycle Started ---
+2026-03-17 08:04:03 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:04:03 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:07:45 - --- Sync Cycle Started ---
+2026-03-17 08:07:46 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:07:46 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:07:47 - --- Sync Cycle Started ---
+2026-03-17 08:07:47 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:07:47 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:07:47 - --- Sync Cycle Started ---
+2026-03-17 08:07:47 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:07:48 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:07:48 - --- Sync Cycle Started ---
+2026-03-17 08:07:48 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:07:48 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:07:55 - --- Sync Cycle Started ---
+2026-03-17 08:07:55 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:07:55 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:07:57 - --- Sync Cycle Started ---
+2026-03-17 08:07:57 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:07:57 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:08:00 - --- Sync Cycle Started ---
+2026-03-17 08:08:00 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:08:00 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:08:03 - --- Sync Cycle Started ---
+2026-03-17 08:08:04 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:08:04 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:10:01 - --- Sync Cycle Started ---
+2026-03-17 08:10:01 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:10:01 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:10:02 - --- Sync Cycle Started ---
+2026-03-17 08:10:03 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:10:03 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:10:04 - --- Sync Cycle Started ---
+2026-03-17 08:10:04 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:10:04 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:10:21 - --- Sync Cycle Started ---
+2026-03-17 08:10:21 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:10:21 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:10:23 - --- Sync Cycle Started ---
+2026-03-17 08:10:24 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:10:24 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:10:33 - --- Sync Cycle Started ---
+2026-03-17 08:10:34 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:10:34 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:10:36 - --- Sync Cycle Started ---
+2026-03-17 08:10:36 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:10:36 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:10:41 - --- Sync Cycle Started ---
+2026-03-17 08:10:41 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:10:41 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:11:00 - --- Sync Cycle Started ---
+2026-03-17 08:11:00 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:11:01 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:11:11 - --- Sync Cycle Started ---
+2026-03-17 08:11:11 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:11:12 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:11:27 - --- Sync Cycle Started ---
+2026-03-17 08:11:27 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:11:27 - Push error on employees ID 3: Invalid JSON from VPS: 
+2026-03-17 08:11:58 - --- Sync Cycle Started ---
+2026-03-17 08:11:58 - Successfully uploaded profile_photo to VPS: assets/profile_pic/121212.png
+2026-03-17 08:11:58 - Push error on employees ID 3: Invalid JSON from VPS: 
