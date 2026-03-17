@@ -196,10 +196,10 @@ if ($id) {
 
     /* Modern Solid Action Buttons */
     .btn-modern {
-      border-radius: 6px !important;
-      padding: 8px 20px !important;
-      font-weight: bold !important;
-      transition: all 0.2s ease !important;
+      border-radius: 8px !important;
+      padding: 10px 24px !important;
+      font-weight: 600 !important;
+      transition: all 0.3s ease !important;
       border: 1px solid transparent !important;
     }
 
@@ -234,10 +234,16 @@ if ($id) {
     }
 
     /* Unified Hover for Action Buttons */
+    .btn-solid-light-gray:hover,
+    .btn-solid-danger:hover,
+    .btn-solid-success:hover,
+    .btn-solid-primary:hover,
+    .btn-solid-warning:hover,
     .btn-gray-hover:hover {
       background-color: #6c757d !important;
       border-color: #6c757d !important;
       color: #fff !important;
+      opacity: 1 !important;
     }
   </style>
 </head>
@@ -361,7 +367,7 @@ if ($id) {
         </div>
 
         <!-- Filter Button -->
-        <button class="btn btn-modern btn-solid-success btn-gray-hover" id="filterBtn">
+        <button class="btn btn-modern btn-solid-light-gray btn-gray-hover" id="filterBtn">
           <i class="bi bi-filter me-1"></i> Filter
         </button>
 
@@ -655,10 +661,10 @@ if ($id) {
           <p class="mb-0 fs-6">Are you sure you want to log out?</p>
         </div>
         <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
-          <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
+          <button type="button" class="btn btn-solid-light-gray px-4" data-bs-dismiss="modal">No</button>
           <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
             <input type="hidden" name="confirm_logout" value="1">
-            <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
+            <button type="submit" class="btn btn-solid-danger px-4">Yes, Log out</button>
           </form>
         </div>
       </div>

@@ -36,6 +36,37 @@ $result = $conn->query($sql);
   <!-- Custom CSS -->
   <link rel="stylesheet" href="../settings/settings.css">
   <link rel="stylesheet" href="attendancerep.css?v=<?php echo time(); ?>">
+  <style>
+    .btn-solid-light-gray {
+        background-color: #e9ecef !important;
+        border-color: #e9ecef !important;
+        color: #495057 !important;
+    }
+    
+    .btn-solid-success {
+        background-color: #198754 !important;
+        border-color: #198754 !important;
+        color: white !important;
+    }
+    
+    .btn-solid-light-gray:hover,
+    .btn-solid-success:hover {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+        color: white !important;
+    }
+
+    /* ID Overrides to ensure consistency */
+    #selectAllBtn {
+        background-color: #198754 !important;
+        border-color: #198754 !important;
+        color: white !important;
+    }
+    #selectAllBtn:hover {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+    }
+  </style>
 
 </head>
 
@@ -90,7 +121,7 @@ if (!function_exists('getCurrentUser')) {
       <!-- Toolbar: Filters & Search Layout -->
       <div class="row g-3 mb-4 align-items-end">
         <div class="col-md-auto">
-          <button class="btn btn-outline-dark fw-bold" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
+          <button class="btn btn-solid-success fw-bold" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
         </div>
         <div class="col-md-3">
           <label for="dateRangePicker" class="form-label small text-muted"><i class="bi bi-calendar3"></i> Date
@@ -109,9 +140,9 @@ if (!function_exists('getCurrentUser')) {
         </div>
 
         <div class="col-md-auto d-flex gap-2">
-          <button class="btn btn-custom-apply px-4 fw-bold"
+          <button class="btn btn-solid-success px-4 fw-bold"
             onclick="applyFilters()">Apply</button>
-          <button class="btn btn-outline-warning px-3 fw-bold" onclick="resetFilters()">Reset</button>
+          <button class="btn btn-solid-light-gray px-3 fw-bold" onclick="resetFilters()">Reset</button>
         </div>
 
         <div class="col-md-3 ms-auto">
@@ -178,7 +209,7 @@ else {
       <!-- Export Buttons -->
       <div class="d-flex justify-content-end gap-2 mt-3">
         <button class="btn btn-outline-warning export-btn fw-bold" onclick="openConfirmModal('PDF')">Export as PDF</button>
-        <button class="btn btn-outline-success export-btn fw-bold" onclick="openConfirmModal('Excel')">Export as Excel</button>
+        <button class="btn btn-solid-success export-btn fw-bold" onclick="openConfirmModal('Excel')">Export as Excel</button>
       </div>
 
     </div> <!-- container-fluid -->
@@ -481,10 +512,10 @@ else {
           <p class="mb-0 fs-6">Are you sure you want to log out?</p>
         </div>
         <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
-          <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
+          <button type="button" class="btn btn-solid-light-gray px-4" data-bs-dismiss="modal">No</button>
           <form method="POST" action="logout.php" style="display: inline;">
             <input type="hidden" name="confirm_logout" value="1">
-            <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
+            <button type="submit" class="btn btn-solid-danger px-4">Yes, Log out</button>
           </form>
         </div>
       </div>

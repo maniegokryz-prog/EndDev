@@ -57,24 +57,6 @@ if (file_exists($configFile)) {
             border-color: #6c757d !important;
             color: white !important;
         }
-
-        .btn-solid-light-gray {
-            background-color: #e9ecef !important;
-            border: 1px solid #e9ecef !important;
-            color: #495057 !important;
-        }
-
-        .btn-solid-danger {
-            background-color: #dc3545 !important;
-            border: 1px solid #dc3545 !important;
-            color: #fff !important;
-        }
-
-        .btn-modern:hover {
-            background-color: #6c757d !important;
-            border-color: #6c757d !important;
-            color: #fff !important;
-        }
     </style>
 </head>
 
@@ -233,10 +215,10 @@ if (file_exists($configFile)) {
                     <p class="mb-0 fs-6">Are you sure you want to log out?</p>
                 </div>
                 <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
-                    <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-solid-light-gray px-4" data-bs-dismiss="modal">No</button>
                     <form method="POST" action="logout.php" style="display: inline;">
                         <input type="hidden" name="confirm_logout" value="1">
-                        <button type="submit" class="btn-modern btn-solid-danger px-4 fw-bold">Yes, Log out</button>
+                        <button type="submit" class="btn btn-solid-danger px-4">Yes, Log out</button>
                     </form>
                 </div>
             </div>

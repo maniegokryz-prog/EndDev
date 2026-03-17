@@ -97,6 +97,12 @@ function renderNavigation($currentPage = '')
     echo ".sidebar .nav-link{display:flex !important;align-items:center !important;padding:10px 12px !important;color:#fff !important;text-decoration:none !important;margin:4px 0 !important;white-space:nowrap !important;font-family:Arial,sans-serif !important;font-weight:normal !important;font-size:15px !important;line-height:1.5 !important;box-sizing:border-box !important;border:1px solid transparent !important;letter-spacing:normal !important;}\n";
     echo ".sidebar .nav-link i{width:30px !important;min-width:30px !important;font-size:18px !important;margin-right:10px !important;text-align:center !important;display:inline-block !important;}\n";
     echo ".sidebar .nav-link.active{background-color:#d8af35 !important;color:#103932 !important;font-weight:normal !important;border-radius:8px !important;margin:4px 0 !important;padding:10px 12px !important;}\n";
+    
+    // Global Solid Button Utilities
+    echo ".btn-solid-light-gray { background-color: #e9ecef !important; border-color: #e9ecef !important; color: #495057 !important; border-radius: 8px !important; padding: 10px 24px !important; font-weight: 600 !important; transition: all 0.3s ease !important; }\n";
+    echo ".btn-solid-danger { background-color: #dc3545 !important; border-color: #dc3545 !important; color: white !important; border-radius: 8px !important; padding: 10px 24px !important; font-weight: 600 !important; transition: all 0.3s ease !important; }\n";
+    echo ".btn-solid-success { background-color: #198754 !important; border-color: #198754 !important; color: white !important; border-radius: 8px !important; padding: 10px 24px !important; font-weight: 600 !important; transition: all 0.3s ease !important; }\n";
+    echo ".btn-solid-light-gray:hover, .btn-solid-danger:hover, .btn-solid-success:hover { background-color: #6c757d !important; border-color: #6c757d !important; color: white !important; opacity: 1 !important; }\n";
     echo "</style>\n";
 
     // Determine current script filename (basename) for URL-based matching

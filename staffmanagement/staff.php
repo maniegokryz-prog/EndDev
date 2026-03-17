@@ -379,16 +379,15 @@ $roles = $viewer->getDistinctRoles();
           <p class="mb-0 fs-6">Are you sure you want to log out?</p>
         </div>
         <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
-          <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
+          <button type="button" class="btn btn-solid-light-gray px-4" data-bs-dismiss="modal">No</button>
           <form id="logoutForm" method="POST" action="logout.php" style="display:inline;">
             <input type="hidden" name="confirm_logout" value="1">
-            <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
+            <button type="submit" class="btn btn-solid-danger px-4">Yes, Log out</button>
           </form>
         </div>
-      </div>
     </div>
   </div>
-
+</div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../dashboard/dashboard.js"></script>
   <script src="staff.js"></script>

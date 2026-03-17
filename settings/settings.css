@@ -426,3 +426,27 @@
 .text-brand-green { color: #083c34 !important; }
 .border-brand-green { border-color: #083c34 !important; }
 .btn-modern.btn-outline.text-brand-green.border-brand-green:hover { background-color: #083c34 !important; color: white !important; }
+
+/* Solid Action Buttons */
+.btn-solid-success {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: white !important;
+}
+.btn-solid-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+}
+.btn-solid-light-gray {
+    background-color: #e9ecef !important;
+    border-color: #e9ecef !important;
+    color: #495057 !important;
+}
+.btn-solid-success:hover,
+.btn-solid-danger:hover,
+.btn-solid-light-gray:hover {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: white !important;
+}

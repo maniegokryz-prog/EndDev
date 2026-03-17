@@ -218,8 +218,8 @@ endif; ?>
                 </div>
 
                 <div class="d-flex justify-content-end gap-3 mt-4">
-                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                     id="btnSubmitCurrentPassChange">Change Password</button>
                 </div>
               </div>
@@ -252,8 +252,8 @@ endif; ?>
                 </div>
 
                 <div class="d-flex justify-content-end gap-3 mt-4">
-                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                     id="changeToStep2">Send OTP</button>
                 </div>
               </div>
@@ -284,8 +284,8 @@ endif; ?>
                 </div>
 
                 <div class="d-flex justify-content-end gap-3 mt-4">
-                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                     id="changeToStep3">Verify OTP</button>
                 </div>
               </div>
@@ -330,8 +330,8 @@ endif; ?>
                 </div>
 
                 <div class="d-flex justify-content-end gap-3 mt-4">
-                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                     id="changeFinalStep">Change Password</button>
                 </div>
               </div>
@@ -434,8 +434,8 @@ endif; ?>
 
 
                 <div class="d-flex justify-content-end gap-3 mt-4">
-                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                     id="saveLeaveSettingsBtn">Save Changes</button>
                 </div>
               </div>
@@ -469,8 +469,8 @@ endif; ?>
                 </div>
 
                 <div class="d-flex justify-content-end gap-3 mt-4">
-                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                     id="saveBreakSettingsBtn">Save Changes</button>
                 </div>
               </div>
@@ -505,8 +505,8 @@ endif; ?>
                 </div>
 
                 <div class="d-flex justify-content-end gap-3 mt-4">
-                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                     id="saveGracePeriodBtn">Save Changes</button>
                 </div>
               </div>
@@ -540,9 +540,9 @@ endif; ?>
                 </h5>
                 <p class="text-muted">Do you want to export all records before deleting them?</p>
                 <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-                  <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
-                  <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" id="exportAndProceedBtn">Export & Continue</button>
-                  <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="proceedDeleteBtn">Delete Without Exporting</button>
+                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
+                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="exportAndProceedBtn">Export & Continue</button>
+                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="proceedDeleteBtn">Delete Without Exporting</button>
                 </div>
               </div>
             </div>
@@ -572,8 +572,8 @@ endif; ?>
                 </form>
               </div>
               <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
-                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
-                <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="confirmDeleteBtn">
+                <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
+                <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="confirmDeleteBtn">
                   <span id="deleteBtnText">Yes, Clear All</span>
                   <span id="deleteBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                     style="display: none;"></span>
@@ -1056,8 +1056,8 @@ endif; ?>
                 This will change the break time duration for all non-faculty members. Are you sure?
               </div>
               <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
-                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" id="cancelBreakChangeBtn">Cancel</button>
-                <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="cancelBreakChangeBtn">Cancel</button>
+                <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                   id="confirmBreakChangeBtn">Yes, Save Changes</button>
               </div>
             </div>
@@ -1074,8 +1074,8 @@ endif; ?>
                 This will update the grace period for employee time-ins. Are you sure?
               </div>
               <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
-                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" id="cancelGracePeriodChangeBtn">Cancel</button>
-                <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="cancelGracePeriodChangeBtn">Cancel</button>
+                <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                   id="confirmGracePeriodChangeBtn">Yes, Save Changes</button>
               </div>
             </div>
@@ -1091,10 +1091,10 @@ endif; ?>
                 <p class="mb-0 fs-6">Are you sure you want to log out?</p>
               </div>
               <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
-                <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-solid-light-gray px-4" data-bs-dismiss="modal">No</button>
                 <form method="POST" action="logout.php" style="display: inline;">
                   <input type="hidden" name="confirm_logout" value="1">
-                  <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
+                  <button type="submit" class="btn btn-solid-danger px-4">Yes, Log out</button>
                 </form>
               </div>
             </div>
