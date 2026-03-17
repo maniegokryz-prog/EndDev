@@ -406,6 +406,13 @@ $profilePhoto .= '?v=' . microtime(true);
             background-image: none !important;
         }
 
+        /* Faculty specific: Increased DTR List Height since Scheduled Leave is hidden */
+        <?php if (isset($employee['roles']) && stripos($employee['roles'], 'faculty') !== false): ?>
+        .dtr-list-vertical {
+            max-height: 540px !important;
+        }
+        <?php endif; ?>
+
 
         /* Responsive Fixes for Modal */
         @media (max-width: 768px) {
@@ -1230,7 +1237,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="text-danger mt-3 fw-bold">Validation Error</h5>
                 <p id="leaveValidationErrorMsg"></p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -1243,7 +1250,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="text-success mt-3 fw-bold">Success</h5>
                 <p id="leaveSuccessMsg"></p>
                 <div class="mt-3">
-                    <button class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                    <button class="btn-modern btn-solid-success fw-bold px-4"
                         onclick="window.location.reload()">OK</button>
                 </div>
             </div>
@@ -1255,8 +1262,8 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 class="text-danger fw-bold">Confirm Delete</h5>
                 <p id="leaveDeleteConfirmMsg"></p>
-                <div class="mt-3"><button class="btn-modern btn-outline text-secondary border-secondary fw-bold me-2" data-bs-dismiss="modal">No</button><button
-                        class="btn-modern btn-outline text-danger border-danger fw-bold" id="leaveDeleteConfirmBtn">Yes, Delete</button></div>
+                <div class="mt-3"><button class="btn-modern btn-solid-light-gray fw-bold me-2 px-4" data-bs-dismiss="modal">No</button><button
+                        class="btn-modern btn-solid-danger fw-bold px-4" id="leaveDeleteConfirmBtn">Yes, Delete</button></div>
             </div>
         </div>
     </div>
@@ -1266,8 +1273,8 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 class="text-success fw-bold">Approve Request</h5>
                 <p id="leaveApproveConfirmMsg"></p>
-                <div class="mt-3 d-flex justify-content-center gap-2"><button class="btn-modern btn-outline text-secondary border-secondary fw-bold" data-bs-dismiss="modal">Cancel</button><button
-                        class="btn-modern btn-outline text-success border-success fw-bold" id="leaveApproveConfirmBtn">Yes, Approve</button></div>
+                <div class="mt-3 d-flex justify-content-center gap-2"><button class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">Cancel</button><button
+                        class="btn-modern btn-solid-success fw-bold px-4" id="leaveApproveConfirmBtn">Yes, Approve</button></div>
             </div>
         </div>
     </div>
@@ -1278,8 +1285,8 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 id="leaveConfirmTitle" class="fw-bold">Confirm</h5>
                 <p id="leaveConfirmMsg"></p>
-                <div class="mt-3 d-flex justify-content-center gap-2"><button class="btn-modern btn-outline text-secondary border-secondary fw-bold" data-bs-dismiss="modal">No</button><button
-                        class="btn-modern btn-outline text-success border-success fw-bold" id="btnConfirmAction">Yes</button></div>
+                <div class="mt-3 d-flex justify-content-center gap-2"><button class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">No</button><button
+                        class="btn-modern btn-solid-success fw-bold px-4" id="btnConfirmAction">Yes</button></div>
             </div>
         </div>
     </div>
@@ -1300,8 +1307,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold" id="confirmRejectBtn">Yes, Reject</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="confirmRejectBtn">Yes, Reject</button>
                 </div>
             </div>
         </div>
@@ -1314,8 +1321,8 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 text-success">Confirm Approval</h5>
                 <p>Are you sure you want to approve this leave request?</p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold" id="confirmApproveBtn">Yes, Approve</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="confirmApproveBtn">Yes, Approve</button>
                 </div>
             </div>
         </div>
@@ -1418,7 +1425,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="text-success">Attendance Saved</h5>
                 <p id="attendanceSuccessMessage">Records saved successfully.</p>
                 <div class="mt-3">
-                    <button class="btn-modern btn-outline text-success border-success fw-bold px-4" data-bs-dismiss="modal">OK</button>
+                    <button class="btn-modern btn-solid-success fw-bold px-4" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -1600,7 +1607,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 text-danger">No Working Day Selected</h5>
                 <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
@@ -1613,7 +1620,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 text-danger">Missing Information</h5>
                 <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
@@ -1626,7 +1633,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
                 <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
@@ -1640,7 +1647,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for
                     schedules!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
@@ -1657,7 +1664,7 @@ $profilePhoto .= '?v=' . microtime(true);
                     <h5 class="fw-bold mb-1 text-success">Schedule Added Successfully</h5>
                     <div id="scheduleAddedSuccessMsg"></div>
                     <div class="mt-4">
-                        <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                        <button type="button" class="btn-modern btn-solid-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
             </div>
@@ -1673,7 +1680,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <p id="schedulePendingConflictMsg">You already have a pending schedule request. Please wait for it to be
                     approved or rejected, or cancel it before submitting a new one.</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" data-bs-dismiss="modal">Understood</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" data-bs-dismiss="modal">Understood</button>
                 </div>
             </div>
         </div>
@@ -1698,10 +1705,10 @@ $profilePhoto .= '?v=' . microtime(true);
                     }
                 </style>
                 <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4 py-2 m-0" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4 py-2 m-0" data-bs-dismiss="modal">Cancel</button>
                     <?php if (isset($pendingRequestId) && $pendingRequestId): ?>
                         <a href="review_schedule_request.php?id=<?php echo urlencode($pendingRequestId); ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>"
-                            class="btn-modern btn-outline text-danger border-danger fw-bold px-4 py-2 m-0 text-decoration-none d-inline-flex align-items-center justify-content-center">View Request</a>
+                            class="btn-modern btn-solid-danger fw-bold px-4 py-2 m-0 text-decoration-none d-inline-flex align-items-center justify-content-center">View Request</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1718,7 +1725,7 @@ $profilePhoto .= '?v=' . microtime(true);
                     <h5 class="fw-bold mb-1 text-success">Schedule Updated Successfully</h5>
                     <div id="scheduleUpdatedSuccessMsg"></div>
                     <div class="mt-4">
-                        <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                        <button type="button" class="btn-modern btn-solid-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
             </div>
@@ -1735,8 +1742,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     <h5 class="fw-bold mb-2 text-danger">Confirm Clear All</h5>
                     <p id="scheduleClearConfirmMsg" class="text-muted">Are you sure you want to clear all schedules?</p>
                     <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
-                        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4 fw-bold" data-bs-dismiss="modal">No, Keep Them</button>
-                        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold" id="scheduleClearConfirmBtn">Yes, Clear All</button>
+                        <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">No, Keep Them</button>
+                        <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold" id="scheduleClearConfirmBtn">Yes, Clear All</button>
                     </div>
                 </div>
             </div>
@@ -1753,8 +1760,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     <h5 class="fw-bold mb-2 text-danger">Confirm Delete</h5>
                     <p id="scheduleDeleteConfirmMsg" class="text-muted">Are you sure you want to delete this schedule block?</p>
                     <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
-                        <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
+                        <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
                     </div>
                 </div>
             </div>
@@ -1771,7 +1778,7 @@ $profilePhoto .= '?v=' . microtime(true);
                     <h5 class="fw-bold mb-2 text-success">Schedules Cleared</h5>
                     <p id="scheduleClearedSuccessMsg" class="text-muted">All schedules have been cleared successfully!</p>
                     <div class="mt-4">
-                        <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                        <button type="button" class="btn-modern btn-solid-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
             </div>
@@ -1788,7 +1795,7 @@ $profilePhoto .= '?v=' . microtime(true);
                     <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'The schedule has been updated directly.' : 'Your request has been submitted.'; ?>
                 </p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -1800,7 +1807,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
                 <p id="scheduleNoDataMsg">No schedules to clear!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-info border-info fw-bold px-4" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-solid-primary fw-bold px-4" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -1821,8 +1828,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     </div>
                 </div>
                 <div class="modal-footer border-top-0 pt-0 justify-content-end gap-2">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4 fw-bold" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold"
+                    <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold"
                         onclick="cancelPendingRequest(<?php echo $pendingRequestId; ?>)">
                         <i class="bi bi-x-circle"></i> Cancel Request
                     </button>
@@ -1907,8 +1914,8 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 modal-title" id="leaveConfirmTitle2">Confirm Action</h5>
                 <p class="mb-4 modal-body-text" id="leaveConfirmMsg2">Are you sure you want to proceed?</p>
                 <div class="d-flex justify-content-center gap-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold" data-bs-dismiss="modal">No, Cancel</button>
-                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold" id="btnConfirmAction2">Yes, Confirm</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">No, Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="btnConfirmAction2">Yes, Confirm</button>
                 </div>
             </div>
         </div>
@@ -1923,8 +1930,8 @@ $profilePhoto .= '?v=' . microtime(true);
                 <p id="cancelPendingRequestConfirmMsg">Are you sure you want to cancel this pending schedule request?
                 </p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4 fw-bold" data-bs-dismiss="modal">No, Keep It</button>
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold" id="cancelPendingRequestConfirmBtn">Yes, Cancel
+                    <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">No, Keep It</button>
+                    <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold" id="cancelPendingRequestConfirmBtn">Yes, Cancel
                         Request</button>
                 </div>
             </div>

@@ -212,6 +212,54 @@ catch (Exception $e) {
                 line-height: 1.3;
             }
         }
+
+        /* Modern Solid Action Buttons */
+        .btn-modern {
+            font-weight: bold !important;
+        }
+
+        .btn-solid-success {
+            background-color: #198754 !important;
+            border: 1px solid #198754 !important;
+            color: #fff !important;
+        }
+
+        .btn-solid-danger {
+            background-color: #dc3545 !important;
+            border: 1px solid #dc3545 !important;
+            color: #fff !important;
+        }
+
+        .btn-solid-warning {
+            background-color: #ffc107 !important;
+            border: 1px solid #ffc107 !important;
+            color: #000 !important;
+        }
+
+        .btn-solid-primary {
+            background-color: #0d6efd !important;
+            border: 1px solid #0d6efd !important;
+            color: #fff !important;
+        }
+
+        .btn-solid-light-gray {
+            background-color: #e9ecef !important;
+            border: 1px solid #e9ecef !important;
+            color: #495057 !important;
+        }
+
+        /* Unified Hover for Action Buttons */
+        .btn-modern.btn-outline:hover,
+        .btn-modern.btn-solid-success:hover,
+        .btn-modern.btn-solid-danger:hover,
+        .btn-modern.btn-solid-warning:hover,
+        .btn-modern.btn-solid-primary:hover,
+        .btn-modern.btn-solid-light-gray:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: #fff !important;
+            background-image: none !important;
+        }
     </style>
 </head>
 
@@ -331,19 +379,19 @@ else: ?>
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column flex-md-row gap-2 mt-3 mt-md-0">
-                                            <button type="button" class="btn-modern btn-outline text-primary border-primary fw-bold edit-request-btn"
+                                            <button type="button" class="btn-modern btn-solid-primary fw-bold edit-request-btn"
                                                 data-req-id="<?php echo $request['id']; ?>"
                                                 data-emp-id="<?php echo htmlspecialchars($request['employee_id_string'], ENT_QUOTES); ?>"
                                                 data-first="<?php echo htmlspecialchars($request['first_name'], ENT_QUOTES); ?>"
                                                 data-last="<?php echo htmlspecialchars($request['last_name'], ENT_QUOTES); ?>">
                                                 <i class="bi bi-pencil-square"></i> Edit
                                             </button>
-                                            <button class="btn-modern btn-outline text-success border-success fw-bold" data-bs-toggle="modal"
+                                            <button class="btn-modern btn-solid-success fw-bold px-4" data-bs-toggle="modal"
                                                 data-bs-target="#confirmActionModal"
                                                 onclick="setupConfirmModal(<?php echo $request['id']; ?>, 'approve')">
                                                 <i class="bi bi-check-circle"></i> Approve
                                             </button>
-                                            <button class="btn-modern btn-outline text-danger border-danger fw-bold"
+                                            <button class="btn-modern btn-solid-danger fw-bold px-4"
                                                 onclick="openRejectModal(<?php echo $request['id']; ?>)">
                                                 <i class="bi bi-x-circle"></i> Reject
                                             </button>
@@ -411,9 +459,9 @@ endif; ?>
                         schedule request? This will automatically update the employee's active schedule.</p>
                 </div>
                 <div class="modal-footer border-0 justify-content-center pb-4 pt-0 gap-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4"
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4"
                          data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4"
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
                         id="confirmActionButton">Yes, Approve Request</button>
                 </div>
             </div>
@@ -438,8 +486,8 @@ endif; ?>
                         reason for rejection.</div>
                 </div>
                 <div class="modal-footer border-0 justify-content-center pt-0 pb-4">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4 me-2" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="confirmRejectBtn"><i
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4 me-2" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="confirmRejectBtn"><i
                             class="bi bi-x-circle me-1"></i>Confirm Reject</button>
                 </div>
             </div>
@@ -556,14 +604,14 @@ endif; ?>
                             <div class="form-row">
                                 <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
                                     <button type="button" id="add-schedule-btn"
-                                        class="btn-modern btn-outline text-success border-success"
+                                        class="btn-modern btn-solid-success fw-bold px-4"
                                         style="min-width: 140px;" onclick="addSchedule()">Add
                                         Schedule</button>
                                     <button type="button" id="edit-schedule-btn"
-                                        class="btn-modern btn-outline text-secondary border-secondary"
+                                        class="btn-modern btn-solid-light-gray fw-bold px-4"
                                         style="min-width: 140px;" onclick="editSchedule()" disabled>Update Selected
                                         Schedule</button>
-                                    <button type="button" class="btn-modern btn-outline text-danger border-danger"
+                                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                                         style="min-width: 140px;" onclick="clearScheduleForm()">Cancel</button>
                                 </div>
                             </div>
@@ -572,7 +620,7 @@ endif; ?>
                                 <div class="schedule-header">
                                     <h3>Schedule</h3>
                                     <button type="button"
-                                        class="btn-modern btn-outline text-danger border-danger fw-bold"
+                                        class="btn-modern btn-solid-danger fw-bold"
                                         style="min-width: 200px;" onclick="clearAllSchedules()">
                                         Clear All Schedules
                                     </button>
@@ -600,10 +648,10 @@ endif; ?>
                         </div>
 
                         <div class="form-actions d-flex justify-content-end gap-3 mt-4">
-                            <button type="button" class="btn-modern btn-outline text-danger border-danger px-4 fw-bold"
+                            <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold"
                                 style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit"
-                                class="btn-modern btn-outline btn-save text-success border-success px-4 fw-bold"
+                                class="btn-modern btn-solid-success btn-save px-4 fw-bold"
                                 style="min-width: 150px;">Save Changes</button>
                         </div>
                     </form>
@@ -622,7 +670,7 @@ endif; ?>
                 <h5 class="fw-bold mb-3 text-warning">No Working Day Selected</h5>
                 <p id="scheduleNoWorkDayMsg">Please select at least one working day first!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
@@ -636,7 +684,7 @@ endif; ?>
                 <h5 class="fw-bold mb-3 text-warning">Missing Information</h5>
                 <p id="scheduleMissingTimeMsg">Please select both start and end times!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
@@ -650,7 +698,7 @@ endif; ?>
                 <h5 class="fw-bold mb-3 text-danger">Invalid Time Range</h5>
                 <p id="scheduleInvalidTimeMsg">Start time must be before end time!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
@@ -665,7 +713,7 @@ endif; ?>
                 <p id="scheduleFacultyMissingMsg">Faculty members must enter class, subject, and room number for
                     schedules!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
@@ -705,9 +753,9 @@ endif; ?>
                 <h5 class="fw-bold mb-3 text-danger">Confirm Clear All</h5>
                 <p id="scheduleClearConfirmMsg">Are you sure you want to clear all schedules?</p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4"
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4"
                         data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn-modern btn-outline text-danger border-danger px-4"
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
                         id="scheduleClearConfirmBtn">Yes, Clear All</button>
                 </div>
             </div>
@@ -721,8 +769,8 @@ endif; ?>
                 <h5 class="fw-bold mb-3 text-danger">Confirm Delete</h5>
                 <p id="scheduleDeleteConfirmMsg">Are you sure you want to delete this schedule?</p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
                 </div>
             </div>
         </div>
@@ -762,7 +810,7 @@ endif; ?>
                 <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
                 <p id="scheduleNoDataMsg">No schedules to clear!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-info text-white" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-solid-primary fw-bold text-white px-4" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>

@@ -33,6 +33,49 @@ if (file_exists($configFile)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../dashboard/dashboard.css">
     <link rel="stylesheet" href="settings.css">
+    <style>
+        .btn-cancel {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        .btn-cancel:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: white !important;
+        }
+
+        .btn-save {
+            background-color: #0d6efd !important;
+            border-color: #0d6efd !important;
+            color: white !important;
+        }
+
+        .btn-save:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: white !important;
+        }
+
+        .btn-solid-light-gray {
+            background-color: #e9ecef !important;
+            border: 1px solid #e9ecef !important;
+            color: #495057 !important;
+        }
+
+        .btn-solid-danger {
+            background-color: #dc3545 !important;
+            border: 1px solid #dc3545 !important;
+            color: #fff !important;
+        }
+
+        .btn-modern:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: #fff !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -109,9 +152,9 @@ if (file_exists($configFile)) {
                                 </div>
 
                                 <div class="d-flex justify-content-end gap-3">
-                                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4"
+                                    <button type="button" class="btn-modern btn-cancel fw-bold px-4"
                                         onclick="window.location.href='settings.php'">Cancel</button>
-                                    <button type="submit" class="btn-modern btn-outline text-primary border-primary fw-bold px-4 d-flex align-items-center">
+                                    <button type="submit" class="btn-modern btn-save fw-bold px-4 d-flex align-items-center">
                                         <span class="spinner-border spinner-border-sm me-2 d-none"
                                             id="saveSpinner"></span>
                                         Save Configuration
@@ -190,10 +233,10 @@ if (file_exists($configFile)) {
                     <p class="mb-0 fs-6">Are you sure you want to log out?</p>
                 </div>
                 <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">No</button>
                     <form method="POST" action="logout.php" style="display: inline;">
                         <input type="hidden" name="confirm_logout" value="1">
-                        <button type="submit" class="btn-modern btn-outline text-danger border-danger px-4">Yes, Log out</button>
+                        <button type="submit" class="btn-modern btn-solid-danger px-4 fw-bold">Yes, Log out</button>
                     </form>
                 </div>
             </div>

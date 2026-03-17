@@ -1084,13 +1084,13 @@ window.openLeaveDetails = function (leave) {
 
     // Buttons
     const actionContainer = document.getElementById('viewLeaveActions');
-    let btns = '<button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold" data-bs-dismiss="modal">Close</button>';
+    let btns = '<button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">Close</button>';
 
     if (window.isAdmin && leave.status === 'pending') {
-        btns += `<button class="btn-modern btn-outline text-success border-success fw-bold ms-2" onclick="showConfirmModal('Approve Leave', 'Are you sure?', 'approve', ${leave.id})">Approve</button>`;
-        btns += `<button class="btn-modern btn-outline text-danger border-danger fw-bold ms-2" onclick="showConfirmModal('Reject Leave', 'Are you sure?', 'reject', ${leave.id})">Reject</button>`;
+        btns += `<button class="btn-modern btn-solid-success fw-bold px-4 ms-2" onclick="showConfirmModal('Approve Leave', 'Are you sure?', 'approve', ${leave.id})">Approve</button>`;
+        btns += `<button class="btn-modern btn-solid-danger fw-bold px-4 ms-2" onclick="showConfirmModal('Reject Leave', 'Are you sure?', 'reject', ${leave.id})">Reject</button>`;
     } else if (!window.isAdmin && leave.status === 'pending') {
-        btns += `<button class="btn-modern btn-outline text-warning border-warning fw-bold ms-2" onclick="showConfirmModal('Cancel Request', 'Cancel this pending request?', 'cancel', ${leave.id})">Cancel</button>`;
+        btns += `<button class="btn-modern btn-solid-light-gray fw-bold px-4 ms-2" onclick="showConfirmModal('Cancel Request', 'Cancel this pending request?', 'cancel', ${leave.id})">Cancel</button>`;
     }
 
     actionContainer.innerHTML = btns;
