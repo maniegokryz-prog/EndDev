@@ -175,6 +175,9 @@ class EmployeeDetailViewer
 
     private function sanitizeData($data)
     {
+        if (!$data || !is_array($data)) {
+            return [];
+        }
         $sanitized = [];
         foreach ($data as $key => $value) {
             if ($value === null || $value === '') {
@@ -196,7 +199,7 @@ class EmployeeDetailViewer
     }
     public function getFullName()
     {
-        if (!$this->employee)
+        if (!$this->employee || !is_array($this->employee))
             return 'Unknown';
         $nameParts = [];
         if ($this->employee['first_name'] && $this->employee['first_name'] !== 'N/A')

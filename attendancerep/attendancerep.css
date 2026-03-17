@@ -598,16 +598,17 @@
    }
  }
 
- /* Custom Apply Button / Outline Green for all buttons */
+ /* Custom Apply Button - Solid Green */
  .btn-custom-apply {
-   background-color: transparent !important;
+   background-color: #103932 !important;
    border-color: #103932 !important;
-   color: #103932 !important;
+   color: white !important;
    transition: all 0.2s ease-in-out;
  }
-
+ 
  .btn-custom-apply:hover {
-   background-color: #103932 !important;
+   background-color: #6c757d !important;
+   border-color: #6c757d !important;
    color: white !important;
  }
 
@@ -638,4 +639,48 @@
      white-space: normal !important;
      line-height: 1.3;
    }
+ }
+ 
+ /* Specific Button Overrides for Export DTR Reports */
+ #selectAllBtn {
+   background-color: #103932 !important;
+   border-color: #103932 !important;
+   color: white !important;
+ }
+ 
+ #selectAllBtn:hover {
+   background-color: #6c757d !important;
+   border-color: #6c757d !important;
+   color: white !important;
+ }
+ 
+ .btn-outline-warning {
+   background-color: #ffc107 !important;
+   border-color: #ffc107 !important;
+   color: black !important;
+ }
+ 
+ .btn-outline-warning:hover {
+   background-color: #6c757d !important;
+   border-color: #6c757d !important;
+   color: white !important;
+ }
+ 
+ .btn-outline-success {
+   background-color: #103932 !important;
+   border-color: #103932 !important;
+   color: white !important;
+ }
+ 
+ .btn-outline-success:hover {
+   background-color: #6c757d !important;
+   border-color: #6c757d !important;
+   color: white !important;
+ }
+ 
+ /* Explicit hover for Batch Export DTR */
+ .btn-batch-export:hover {
+   background-color: #6c757d !important;
+   border-color: #6c757d !important;
+   color: white !important;
  }

@@ -185,42 +185,6 @@ try {
             border-color: #6c757d !important;
         }
 
-        .btn-custom-save-info {
-            background-color: transparent !important;
-            border-color: #198754 !important; /* Bootstrap success green */
-            color: #198754 !important;
-            font-weight: bold;
-            transition: all 0.2s ease-in-out;
-        }
-        .btn-custom-save-info:hover {
-            background-color: #198754 !important;
-            color: white !important;
-        }
-        
-        .btn-custom-capture {
-            background-color: transparent !important;
-            border: 1px solid #0d6efd !important;
-            color: #0d6efd !important;
-            font-weight: bold !important;
-            transition: all 0.2s ease-in-out !important;
-        }
-        .btn-custom-capture:hover {
-            background-color: #0d6efd !important;
-            color: white !important;
-        }
-
-        .btn-custom-skip {
-            background-color: transparent !important;
-            border: 1px solid #fd7e14 !important;
-            color: #fd7e14 !important;
-            font-weight: bold !important;
-            transition: all 0.2s ease-in-out !important;
-        }
-        .btn-custom-skip:hover {
-            background-color: #fd7e14 !important;
-            color: white !important;
-        }
-
         /* Force title case on name fields */
         #first_name,
         #middle_name,

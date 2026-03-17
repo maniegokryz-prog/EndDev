@@ -1467,3 +1467,61 @@
      transform: scale(1.1);
      transition: transform 0.2s ease;
    }
+
+   /* Add New Staff Wizard Button Overrides */
+
+   /* Step 1: Save Personal Information (Green) */
+   .btn-custom-save-info, #save-faces-btn, .btn-save-schedule {
+       background-color: #198754 !important;
+       border-color: #198754 !important;
+       color: white !important;
+       font-weight: bold !important;
+   }
+
+   .btn-custom-save-info:hover, #save-faces-btn:hover, .btn-save-schedule:hover {
+       background-color: #6c757d !important;
+       border-color: #6c757d !important;
+       color: white !important;
+   }
+
+   /* Step 2: Capture Photo (Blue) & Step 3: Add to Schedule (Blue) */
+   .btn-custom-capture, #step3 .btn-outline-primary {
+       background-color: #0d6efd !important;
+       border-color: #0d6efd !important;
+       color: white !important;
+       font-weight: bold !important;
+   }
+
+   .btn-custom-capture:hover, #step3 .btn-outline-primary:hover {
+       background-color: #6c757d !important;
+       border-color: #6c757d !important;
+       color: white !important;
+   }
+
+   /* Step 2: Skip This Angle (Yellow) */
+   .btn-custom-skip {
+       background-color: #ffc107 !important;
+       border-color: #ffc107 !important;
+       color: black !important;
+       font-weight: bold !important;
+   }
+
+   .btn-custom-skip:hover {
+       background-color: #6c757d !important;
+       border-color: #6c757d !important;
+       color: white !important;
+   }
+
+   /* Step 3: Clear All (Red) */
+   #step3 .btn-outline-danger {
+       background-color: #dc3545 !important;
+       border-color: #dc3545 !important;
+       color: white !important;
+       font-weight: bold !important;
+   }
+
+   #step3 .btn-outline-danger:hover {
+       background-color: #6c757d !important;
+       border-color: #6c757d !important;
+       color: white !important;
+   }
