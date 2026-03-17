@@ -81,9 +81,9 @@ $currentUser = getCurrentUser();
 
           <!-- Toolbar -->
           <div class="d-flex flex-wrap align-items-center mb-3 gap-2">
-            <button class="btn-modern btn-outline text-secondary border-secondary btn-sm" id="selectAllBtn">Select All</button>
-            <button class="btn-modern btn-outline text-danger border-danger btn-sm" id="deleteSelectedBtn">Delete Selected</button>
-            <button class="btn-modern btn-outline text-success border-success btn-sm" id="restoreSelectedBtn">Restore Selected</button>
+            <button class="btn btn-solid-light-gray btn-sm" id="selectAllBtn">Select All</button>
+            <button class="btn btn-solid-danger btn-sm" id="deleteSelectedBtn">Delete Selected</button>
+            <button class="btn btn-solid-success btn-sm" id="restoreSelectedBtn">Restore Selected</button>
             <div class="ms-auto">
               <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Search staff name">
             </div>
@@ -157,8 +157,8 @@ $currentUser = getCurrentUser();
                 </form>
               </div>
               <div class="modal-footer border-0 justify-content-center gap-3">
-                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn-modern btn-outline text-danger border-danger fw-bold px-4" id="confirmDeleteBtn">
+                <button type="button" class="btn btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-solid-danger fw-bold px-4" id="confirmDeleteBtn">
                   <span id="deleteBtnText">Delete Permanently</span>
                   <span id="deleteBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                     style="display: none;"></span>
@@ -189,8 +189,8 @@ $currentUser = getCurrentUser();
                 </form>
               </div>
               <div class="modal-footer border-0 justify-content-center gap-3">
-                <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" id="confirmRestoreBtn">
+                <button type="button" class="btn btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-solid-success fw-bold px-4" id="confirmRestoreBtn">
                   <span id="restoreBtnText">Restore Employees</span>
                   <span id="restoreBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                     style="display: none;"></span>

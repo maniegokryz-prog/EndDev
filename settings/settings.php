@@ -406,7 +406,7 @@ endif; ?>
               </div>
 
               <div class="modal-footer border-0 justify-content-center">
-                <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5"
+                <button type="button" class="btn btn-solid-success fw-bold px-5"
                   id="acceptPolicyBtn">Accept</button>
               </div>
 
@@ -433,9 +433,9 @@ endif; ?>
 
 
 
-                <div class="d-flex justify-content-end gap-3 mt-4">
-                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                  <button type="button" class="btn btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-solid-success fw-bold px-4"
                     id="saveLeaveSettingsBtn">Save Changes</button>
                 </div>
               </div>
@@ -504,9 +504,9 @@ endif; ?>
                     placeholder="Enter minutes (e.g. 20)" style="display: none;" min="0">
                 </div>
 
-                <div class="d-flex justify-content-end gap-3 mt-4">
-                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                  <button type="button" class="btn btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-solid-success fw-bold px-4"
                     id="saveGracePeriodBtn">Save Changes</button>
                 </div>
               </div>
@@ -540,9 +540,9 @@ endif; ?>
                 </h5>
                 <p class="text-muted">Do you want to export all records before deleting them?</p>
                 <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
-                  <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="exportAndProceedBtn">Export & Continue</button>
-                  <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="proceedDeleteBtn">Delete Without Exporting</button>
+                  <button type="button" class="btn btn-solid-light-gray fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
+                  <button type="button" class="btn btn-solid-success fw-bold px-4" id="exportAndProceedBtn">Export & Continue</button>
+                  <button type="button" class="btn btn-solid-danger fw-bold px-4" id="proceedDeleteBtn">Delete Without Exporting</button>
                 </div>
               </div>
             </div>
@@ -572,10 +572,10 @@ endif; ?>
                 </form>
               </div>
               <div class="modal-footer border-0 justify-content-center gap-3 pb-4">
-                <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
-                <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="confirmDeleteBtn">
-                  <span id="deleteBtnText">Yes, Clear All</span>
-                  <span id="deleteBtnSpinner" class="spinner-border spinner-border-sm ms-2"
+                <button type="button" class="btn btn-solid-light-gray fw-bold px-4" onclick="window.location.href='settings.php'">Cancel</button>
+                <button type="button" class="btn btn-solid-danger fw-bold px-4" id="confirmDeleteBtn">
+                  <span id="confirmDeleteBtnText">Yes, Clear All</span>
+                  <span id="confirmDeleteBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                     style="display: none;"></span>
                 </button>
               </div>
