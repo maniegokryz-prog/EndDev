@@ -259,6 +259,20 @@ body {
     gap: 0.75rem;
     max-height: 400px;
     overflow-y: auto;
+    padding-right: 4px;
+}
+.dtr-list-vertical::-webkit-scrollbar {
+    width: 6px;
+}
+.dtr-list-vertical::-webkit-scrollbar-track {
+    background: transparent;
+}
+.dtr-list-vertical::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+.dtr-list-vertical::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
 }
 
 .dtr-list-vertical .dtr-item {
@@ -538,12 +552,13 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    color: #000 !important;
 }
 
 .calendar-nav-btn {
-    background: none;
-    border: 1px solid #198754;
-    color: #198754;
+    background: #e9ecef;
+    border: 1px solid #e9ecef;
+    color: #000;
     border-radius: 6px;
     padding: 0.25rem 0.5rem;
     cursor: pointer;
@@ -552,8 +567,9 @@ body {
 }
 
 .calendar-nav-btn:hover {
-    background: #198754 !important;
-    color: white !important;
+    background: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
 }
 
 .calendar-days {
@@ -566,7 +582,7 @@ body {
 
 .weekday-label {
     font-weight: 600;
-    color: var(--text-secondary);
+    color: #000 !important;
     padding: 0.5rem 0;
 }
 
@@ -575,10 +591,12 @@ body {
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s;
+    color: #000;
 }
 
-.calendar-day:hover:not(.empty) {
-    background: #f1f5f9;
+.calendar-day:hover:not(.empty):not(.disabled) {
+    background: #6c757d !important;
+    color: #fff !important;
 }
 
 .calendar-day.selected {

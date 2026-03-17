@@ -406,6 +406,16 @@ $profilePhoto .= '?v=' . microtime(true);
             border: 1px solid #fd7e14 !important;
             color: #fff !important;
         }
+        .btn-solid-primary {
+            background-color: #0d6efd !important;
+            border: 1px solid #0d6efd !important;
+            color: #fff !important;
+        }
+        .btn-solid-light-gray {
+            background-color: #e9ecef !important;
+            border: 1px solid #e9ecef !important;
+            color: #495057 !important;
+        }
 
         /* Unified Hover for Action Buttons */
         .btn-modern.btn-outline:hover,
@@ -413,6 +423,8 @@ $profilePhoto .= '?v=' . microtime(true);
         .btn-modern.btn-solid-danger:hover,
         .btn-modern.btn-solid-warning:hover,
         .btn-modern.btn-solid-orange:hover,
+        .btn-modern.btn-solid-primary:hover,
+        .btn-modern.btn-solid-light-gray:hover,
         .btn-gray-hover:hover {
             background-color: #6c757d !important;
             border-color: #6c757d !important;
@@ -859,7 +871,7 @@ $profilePhoto .= '?v=' . microtime(true);
                             <!-- Popup Date Picker Trigger -->
                             <div class="position-relative">
                                 <button
-                                    class="btn-modern btn-outline btn-sm text-secondary border-secondary d-flex align-items-center gap-2"
+                                    class="btn-modern btn-solid-warning btn-sm d-flex align-items-center gap-2"
                                     id="dateRangeTrigger" title="Select Dates">
                                     <i class="bi bi-calendar3"></i>
                                     <span>Filter Dates</span>
@@ -874,9 +886,9 @@ $profilePhoto .= '?v=' . microtime(true);
                                                 class="bi bi-chevron-right"></i></button>
                                     </div>
                                     <div id="calendar" class="calendar-days p-2"></div>
-                                    <div class="p-2 border-top text-end">
-                                        <button class="btn btn-xs btn-light" id="clearDatesBtn">Clear</button>
-                                        <button class="btn btn-xs btn-primary close-calendar-btn">Done</button>
+                                    <div class="p-2 border-top text-end d-flex justify-content-end gap-2">
+                                        <button class="btn-modern btn-solid-success btn-sm close-calendar-btn">Done</button>
+                                        <button class="btn-modern btn-solid-danger btn-sm" id="clearDatesBtn">Clear</button>
                                     </div>
                                     <!-- Hidden input for value storage -->
                                     <input type="hidden" id="dateRangeInput">
@@ -887,12 +899,12 @@ $profilePhoto .= '?v=' . microtime(true);
                         <!-- Compact Actions -->
                         <div class="d-flex gap-2 mb-3">
                             <?php if ($isAdmin && !$is_ionos_server): ?>
-                                <button class="btn-modern btn-outline btn-sm text-success border-success flex-grow-1"
+                                <button class="btn-modern btn-solid-success btn-sm flex-grow-1"
                                     data-bs-toggle="modal" data-bs-target="#attendanceModal">
                                     <i class="bi bi-plus-lg"></i> Add
                                 </button>
                             <?php endif; ?>
-                            <button class="btn-modern btn-outline btn-sm text-primary border-primary flex-grow-1"
+                            <button class="btn-modern btn-solid-primary btn-sm flex-grow-1"
                                 id="exportDtrBtn">
                                 <i class="bi bi-box-arrow-up-right"></i> Details / Export
                             </button>
@@ -909,7 +921,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         <div class="profile-card leave-section-card">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="card-title mb-0">Scheduled Leave</h4>
-                                <button class="btn-modern btn-outline btn-sm text-success border-success btn-icon-sq"
+                                <button class="btn-modern btn-solid-success btn-sm btn-icon-sq"
                                     data-bs-toggle="modal" data-bs-target="#addLeaveModal" title="Add Request">
                                     <i class="bi bi-plus-lg"></i>
                                 </button>
@@ -1371,21 +1383,21 @@ $profilePhoto .= '?v=' . microtime(true);
                             <div class="col-md-3"><label>Time Out:</label><input type="time" class="form-control"></div>
                             <div class="col-md-3">
                                 <div class="pb-1">
-                                    <button class="btn-modern btn-outline text-warning border-warning btn-sm me-1 clearRow" title="Clear Times"><i
+                                    <button class="btn-modern btn-solid-warning btn-sm me-1 clearRow" title="Clear Times"><i
                                             class="bi bi-eraser"></i></button>
-                                    <button class="btn-modern btn-outline text-danger border-danger btn-sm removeRow" style="display:none;" title="Remove Row"><i
+                                    <button class="btn-modern btn-solid-danger btn-sm removeRow" style="display:none;" title="Remove Row"><i
                                             class="bi bi-x-lg"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="text-center">
-                        <button id="addDayBtn" class="btn-modern btn-outline text-warning border-warning mt-2">+ Add Day</button>
+                        <button id="addDayBtn" class="btn-modern btn-solid-warning mt-2">+ Add Day</button>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-end">
-                    <button class="btn-modern btn-outline text-secondary border-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn-modern btn-outline text-success border-success" id="saveBtn">Save Records</button>
+                <div class="modal-footer justify-content-end gap-2">
+                    <button class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn-modern btn-solid-success fw-bold px-4" id="saveBtn">Save Records</button>
                 </div>
             </div>
         </div>
@@ -1419,8 +1431,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     </form>
                 </div>
                 <div class="modal-footer justify-content-end gap-3 mt-3">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-4" id="btnSaveEditAttendance">Save Changes</button>
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="btnSaveEditAttendance">Save Changes</button>
                 </div>
             </div>
         </div>

@@ -498,11 +498,11 @@ function renderDTRList(records) {
                 </div>
                 ${window.isAdmin ? `
                 <div class="mt-2 d-flex gap-2 align-items-center">
-                    <button class="btn-modern btn-outline btn-sm text-success border-success fw-bold px-3 py-1" onclick='openEditAttendanceModal(${JSON.stringify(record)})'>
+                    <button class="btn-modern btn-solid-light-gray btn-sm fw-bold px-3 py-1 btn-gray-hover" onclick='openEditAttendanceModal(${JSON.stringify(record)})'>
                         <i class="bi bi-pencil-square"></i> Edit
                     </button>
                     ${(record.status && record.status.toLowerCase() === 'visit') ? `
-                    <button class="btn-modern btn-outline btn-sm text-success border-success fw-bold px-3 py-1" onclick="confirmSetOffset(${record.id})">
+                    <button class="btn-modern btn-solid-light-gray btn-sm fw-bold px-3 py-1 btn-gray-hover" onclick="confirmSetOffset(${record.id})">
                         <i class="bi bi-check-circle-fill"></i> Set as Offset
                     </button>` : ''}
                 </div>` : ''}
@@ -1050,7 +1050,7 @@ function loadEmployeeLeaves() {
                             <strong>${leave.leave_type}</strong> ${badge}
                             <div class="small text-muted">${leave.formatted_dates}</div>
                         </div>
-                        <button class="btn-modern btn-outline btn-sm text-success border-success btn-icon-sq" onclick='openLeaveDetails(${JSON.stringify(leave)})' style="width: 32px; height: 32px;">
+                        <button class="btn-modern btn-solid-light-gray btn-sm btn-icon-sq" onclick='openLeaveDetails(${JSON.stringify(leave)})' style="width: 32px; height: 32px;">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -1485,8 +1485,8 @@ function initManualAttendance() {
             '</div>' +
             '<div class=\'col-md-3\'>' +
             '<div class=\'pb-1\'>' +
-            '<button class=\'btn-modern btn-outline text-warning border-warning btn-sm me-1 clearRow\' title=\'Clear Times\'><i class=\'bi bi-eraser\'></i></button>' +
-            '<button class=\'btn-modern btn-outline text-danger border-danger btn-sm removeRow\' title=\'Remove Row\'><i class=\'bi bi-x-lg\'></i></button>' +
+            '<button class=\'btn-modern btn-solid-warning btn-sm me-1 clearRow\' title=\'Clear Times\'><i class=\'bi bi-eraser\'></i></button>' +
+            '<button class=\'btn-modern btn-solid-danger btn-sm removeRow\' title=\'Remove Row\'><i class=\'bi bi-x-lg\'></i></button>' +
             '</div>' +
             '</div>';
         attendanceContainer.appendChild(newRow);
