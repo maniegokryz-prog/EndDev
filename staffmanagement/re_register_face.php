@@ -348,41 +348,31 @@ $fullName = $employee['first_name'] . ' ' . $employee['last_name'];
             white-space: nowrap;
         }
 
-        .btn-outline {
-            background: transparent !important;
-        }
-
-        .btn-outline.text-success {
-            color: #198754 !important;
-            border-color: #198754 !important;
-        }
-
-        .btn-outline.text-warning {
-            color: #ffc107 !important;
-            border-color: #ffc107 !important;
-        }
-
-        .btn-outline.text-primary {
-            color: #0d6efd !important;
-            border-color: #0d6efd !important;
-        }
-
-        .btn-outline.text-success:hover {
-            background: #198754 !important;
+        /* Modern Solid Action Buttons */
+        .btn-solid-primary {
+            background-color: #0d6efd !important;
+            border: 1px solid #0d6efd !important;
             color: #fff !important;
-            border-color: #198754 !important;
         }
-
-        .btn-outline.text-warning:hover {
-            background: #ffc107 !important;
+        .btn-solid-warning {
+            background-color: #ffc107 !important;
+            border: 1px solid #ffc107 !important;
             color: #000 !important;
-            border-color: #ffc107 !important;
+        }
+        .btn-solid-success {
+            background-color: #198754 !important;
+            border: 1px solid #198754 !important;
+            color: #fff !important;
         }
 
-        .btn-outline.text-primary:hover {
-            background: #0d6efd !important;
+        /* Unified Hover for Action Buttons */
+        .btn-modern.btn-solid-primary:hover,
+        .btn-modern.btn-solid-warning:hover,
+        .btn-modern.btn-solid-success:hover,
+        .btn-modern.btn-outline:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
             color: #fff !important;
-            border-color: #0d6efd !important;
         }
     </style>
 </head>
@@ -489,9 +479,9 @@ else {
                     <p id="angle-instruction" class="mb-3">Look directly at the camera with a neutral expression</p>
                     <div class="d-flex justify-content-start gap-2">
                         <button type="button" id="capture-btn"
-                            class="btn-modern btn-outline text-primary border-primary px-4">Capture Photo</button>
+                            class="btn-modern btn-solid-primary px-4">Capture Photo</button>
                         <button type="button" id="skip-btn"
-                            class="btn-modern btn-outline text-warning border-warning px-4">Skip This
+                            class="btn-modern btn-solid-warning px-4">Skip This
                             Angle</button>
                     </div>
                 </div>
@@ -503,7 +493,7 @@ else {
 
                 <div class="mt-4 pt-3 border-top d-flex justify-content-end">
                     <button type="button" id="save-faces-btn"
-                        class="btn-modern btn-outline text-success border-success px-5 py-2 fw-bold" disabled
+                        class="btn-modern btn-solid-success px-5 py-2 fw-bold" disabled
                         onclick="submitFaceData()">
                         Save Face Registration
                     </button>

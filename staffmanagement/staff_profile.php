@@ -385,36 +385,39 @@ $profilePhoto .= '?v=' . microtime(true);
             color: #fff !important;
         }
 
-        /* Modern Outline Button Hovers */
-        .btn-modern.btn-outline.text-secondary:hover {
-            background-color: #6c757d !important;
-            background-image: none !important;
-            color: #fff !important;
-            border-color: #6c757d !important;
-        }
-
-        .btn-modern.btn-outline.text-success:hover {
+        /* Modern Solid Action Buttons */
+        .btn-solid-success {
             background-color: #198754 !important;
+            border: 1px solid #198754 !important;
             color: #fff !important;
-            border-color: #198754 !important;
         }
-
-        .btn-modern.btn-outline.text-danger:hover {
+        .btn-solid-danger {
             background-color: #dc3545 !important;
+            border: 1px solid #dc3545 !important;
             color: #fff !important;
-            border-color: #dc3545 !important;
         }
-
-        .btn-modern.btn-outline.text-warning:hover {
+        .btn-solid-warning {
             background-color: #ffc107 !important;
+            border: 1px solid #ffc107 !important;
             color: #000 !important;
-            border-color: #ffc107 !important;
+        }
+        .btn-solid-orange {
+            background-color: #fd7e14 !important; /* Light Orange */
+            border: 1px solid #fd7e14 !important;
+            color: #fff !important;
         }
 
-        .btn-modern.btn-outline.text-primary:hover {
-            background-color: #0d6efd !important;
+        /* Unified Hover for Action Buttons */
+        .btn-modern.btn-outline:hover,
+        .btn-modern.btn-solid-success:hover,
+        .btn-modern.btn-solid-danger:hover,
+        .btn-modern.btn-solid-warning:hover,
+        .btn-modern.btn-solid-orange:hover,
+        .btn-gray-hover:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
             color: #fff !important;
-            border-color: #0d6efd !important;
+            background-image: none !important;
         }
 
 
@@ -755,18 +758,18 @@ $profilePhoto .= '?v=' . microtime(true);
                                 </div>
                             </div>
                             <div class="action-buttons">
-                                <button class="btn-modern btn-outline text-success border-success"
+                                <button class="btn-modern btn-solid-success btn-gray-hover"
                                     data-bs-toggle="modal" data-bs-target="#editInfoModal">
                                     <i class="bi bi-pencil"></i> Edit Info
                                 </button>
                                 <?php if ($isAdmin): ?>
-                                    <button class="btn-modern btn-outline text-danger border-danger" data-bs-toggle="modal"
+                                    <button class="btn-modern btn-solid-danger btn-gray-hover" data-bs-toggle="modal"
                                         data-bs-target="#removeEmployeeModal">
                                         <i class="bi bi-trash"></i> Remove
                                     </button>
                                     <?php if (!$hide_re_register_face_button): ?>
                                         <a href="re_register_face.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>"
-                                            class="btn-modern btn-outline text-warning border-warning"
+                                            class="btn-modern btn-solid-warning btn-gray-hover"
                                             title="Re-register Face Data">
                                             <i class="bi bi-person-bounding-box"></i> Re-register Face
                                         </a>
@@ -955,7 +958,7 @@ $profilePhoto .= '?v=' . microtime(true);
     <!-- ========================= MODALS ========================= -->
 
     <!-- Edit Info Modal (Ported) -->
-    <div class="modal fade" id="editInfoModal" tabindex="-1" aria-labelledby="editInfoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editInfoModal" tabindex="-1" aria-labelledby="editInfoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content p-4">
                 <div class="modal-header border-0">
@@ -1039,11 +1042,11 @@ $profilePhoto .= '?v=' . microtime(true);
                                                 value="<?php echo htmlspecialchars($employee['position']); ?>"></div>
                                     </div>
                                 <?php endif; ?>
-                                <div class="mt-4 d-flex flex-column flex-md-row justify-content-md-end gap-2">
-                                    <button type="button" class="btn-modern btn-outline text-danger border-danger"
-                                        data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn-modern btn-outline text-success border-success">Save
+                                <div class="mt-4 d-flex justify-content-end gap-2">
+                                    <button type="submit" class="btn-modern btn-solid-success btn-sm px-4">Save
                                         Changes</button>
+                                    <button type="button" class="btn-modern btn-solid-danger btn-sm px-4"
+                                        data-bs-dismiss="modal">Cancel</button>
                                 </div>
                             </form>
                         <?php else: ?>
@@ -1073,38 +1076,9 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Remove Employee Modal -->
-    <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4">
-                <style>
-                    .btn-outline-custom-gray {
-                        background-color: transparent !important;
-                        border: 2px solid #6c757d !important;
-                        color: #6c757d !important;
-                        transition: all 0.2s ease;
-                        font-weight: bold !important;
-                        border-radius: 6px;
-                    }
-
-                    .btn-outline-custom-gray:hover {
-                        background-color: #6c757d !important;
-                        color: #fff !important;
-                    }
-
-                    .btn-outline-custom-red {
-                        background-color: transparent !important;
-                        border: 2px solid #dc3545 !important;
-                        color: #dc3545 !important;
-                        transition: all 0.2s ease;
-                        font-weight: bold !important;
-                        border-radius: 6px;
-                    }
-
-                    .btn-outline-custom-red:hover {
-                        background-color: #dc3545 !important;
-                        color: #fff !important;
-                    }
-                </style>
                 <h5 class="fw-bold mb-3 text-danger text-center">Confirm Employee Removal</h5>
                 <p class="text-center">This will move the employee to the archive. Enter your admin password to confirm.
                 </p>
@@ -1115,13 +1089,13 @@ $profilePhoto .= '?v=' . microtime(true);
                             required placeholder="Enter password">
                         <div id="passwordError" class="text-danger small mt-1" style="display: none;"></div>
                     </div>
-                    <div class="d-flex justify-content-center gap-3 mt-4">
-                        <button type="button" class="btn btn-outline-custom-gray" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-outline-custom-red" id="confirmRemoveBtn">
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="submit" class="btn-modern btn-solid-orange btn-sm px-4" id="confirmRemoveBtn">
                             <span id="removeBtnText">Remove Employee</span>
                             <span id="removeBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                                 style="display: none;"></span>
                         </button>
+                        <button type="button" class="btn-modern btn-solid-danger btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </form>
             </div>
