@@ -321,22 +321,12 @@ $profilePhoto .= '?v=' . microtime(true);
         }
 
         /* Add Schedule Button - Green Outline */
-        #editScheduleModal .add-schedule-btn {
-            background: transparent !important;
-            color: #198754 !important;
-            border: 1px solid #198754 !important;
-            box-shadow: none !important;
-        }
+
 
         /* Update Selected Schedule Button - Gray Outline */
-        #editScheduleModal .edit-schedule-btn {
-            background: transparent !important;
-            color: #6c757d !important;
-            border: 1px solid #6c757d !important;
-            box-shadow: none !important;
-        }
 
-        /* Clear All & Cancel Buttons - Lighter Red & Shared Sizing */
+
+        /* Clear All & Cancel Buttons - Shared Sizing */
         #editScheduleModal .clear-schedules-btn,
         #editScheduleModal .btn-cancel,
         #editScheduleModal .btn-save {
@@ -346,16 +336,10 @@ $profilePhoto .= '?v=' . microtime(true);
             transition: all 0.2s ease;
         }
 
-        /* Clear/Cancel - Red Outline */
+        /* Clear/Cancel Sizing */
         #editScheduleModal .clear-schedules-btn,
         #editScheduleModal .btn-cancel {
-            background: transparent !important;
-            background-image: none !important; /* Clear gradient from styles.css */
-            color: #dc3545 !important;
-            border: 1px solid #dc3545 !important;
-            box-shadow: none !important;
             min-width: 150px;
-            font-weight: bold !important; /* Bold as requested */
         }
 
         /* Default Bold for all modal buttons */
@@ -363,25 +347,15 @@ $profilePhoto .= '?v=' . microtime(true);
             font-weight: bold !important;
         }
 
-        /* Hover states matching border colors */
+        /* Unified Hover states to Gray #6c757d */
         #editScheduleModal .add-schedule-btn:hover,
-        #editScheduleModal .btn-save:hover {
-            background-color: #198754 !important;
-            border-color: #198754 !important;
-            color: #fff !important;
-        }
-
-        #editScheduleModal .edit-schedule-btn:hover {
-            background-color: #6c757d !important;
-            border-color: #6c757d !important;
-            color: #fff !important;
-        }
-
+        #editScheduleModal .btn-save:hover,
+        #editScheduleModal .edit-schedule-btn:hover,
         #editScheduleModal .clear-schedules-btn:hover,
         #editScheduleModal .btn-cancel:hover {
-            background-color: #dc3545 !important;
-            background-image: none !important; /* Clear gradient on hover too */
-            border-color: #dc3545 !important;
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            background-image: none !important;
             color: #fff !important;
         }
 
@@ -938,12 +912,12 @@ $profilePhoto .= '?v=' . microtime(true);
                     <div class="card-header-custom">
                         <h3 class="card-title">Schedule</h3>
                         <?php if ($isAdmin && isset($pendingRequestId) && $pendingRequestId): ?>
-                            <button class="btn-modern btn-outline btn-sm text-success border-success" data-bs-toggle="modal"
+                            <button class="btn-modern btn-solid-success btn-sm btn-gray-hover" data-bs-toggle="modal"
                                 data-bs-target="#adminPendingRequestWarningModal">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
                         <?php else: ?>
-                            <button class="btn-modern btn-outline btn-sm text-success border-success" data-bs-toggle="modal"
+                            <button class="btn-modern btn-solid-success btn-sm btn-gray-hover" data-bs-toggle="modal"
                                 data-bs-target="#editScheduleModal">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
@@ -1559,14 +1533,14 @@ $profilePhoto .= '?v=' . microtime(true);
                             <div class="form-row">
                                 <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-start;">
                                     <button type="button" id="add-schedule-btn"
-                                        class="btn-modern btn-outline add-schedule-btn text-success border-success"
+                                        class="btn-modern btn-solid-success add-schedule-btn btn-gray-hover"
                                         style="min-width: 140px;" onclick="addSchedule()">Add
                                         Schedule</button>
                                     <button type="button" id="edit-schedule-btn"
-                                        class="btn-modern btn-outline edit-schedule-btn text-secondary border-secondary"
+                                        class="btn-modern btn-solid-warning edit-schedule-btn btn-gray-hover"
                                         style="min-width: 140px;" onclick="editSchedule()" disabled>Update Selected
                                         Schedule</button>
-                                    <button type="button" class="btn-modern btn-outline btn-cancel text-danger border-danger"
+                                    <button type="button" class="btn-modern btn-solid-danger btn-cancel btn-gray-hover"
                                         style="min-width: 140px;" onclick="clearScheduleForm()">Cancel</button>
                                 </div>
                             </div>
@@ -1575,7 +1549,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                 <div class="schedule-header">
                                     <h3>Schedule</h3>
                                     <button type="button"
-                                        class="btn-modern btn-outline clear-schedules-btn text-danger border-danger"
+                                        class="btn-modern btn-solid-danger clear-schedules-btn btn-gray-hover"
                                         style="min-width: 200px;" onclick="clearAllSchedules()">
                                         Clear All Schedules
                                     </button>
@@ -1602,14 +1576,14 @@ $profilePhoto .= '?v=' . microtime(true);
 
                         </div>
 
-                        <div class="form-actions d-flex justify-content-start gap-3 mt-4">
-                            <button type="button" class="btn-modern btn-outline btn-cancel text-danger border-danger px-4"
-                                style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
+                        <div class="form-actions d-flex justify-content-end gap-3 mt-4">
                             <button type="submit"
-                                class="btn-modern btn-outline btn-save text-success border-success px-4"
+                                class="btn-modern btn-solid-success btn-save btn-gray-hover px-4"
                                 style="min-width: 150px;">
                                 <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'Save Schedule' : 'Submit Request'; ?>
                             </button>
+                            <button type="button" class="btn-modern btn-solid-danger btn-cancel btn-gray-hover px-4"
+                                style="min-width: 150px;" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </form>
                 </div>

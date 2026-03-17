@@ -193,6 +193,52 @@ if ($id) {
       color: white !important;
       font-weight: 500;
     }
+
+    /* Modern Solid Action Buttons */
+    .btn-modern {
+      border-radius: 6px !important;
+      padding: 8px 20px !important;
+      font-weight: bold !important;
+      transition: all 0.2s ease !important;
+      border: 1px solid transparent !important;
+    }
+
+    .btn-solid-primary {
+      background-color: #0d6efd !important;
+      border-color: #0d6efd !important;
+      color: #fff !important;
+    }
+
+    .btn-solid-success {
+      background-color: #198754 !important;
+      border-color: #198754 !important;
+      color: #fff !important;
+    }
+
+    .btn-solid-danger {
+      background-color: #dc3545 !important;
+      border-color: #dc3545 !important;
+      color: #fff !important;
+    }
+
+    .btn-solid-warning {
+      background-color: #ffc107 !important;
+      border-color: #ffc107 !important;
+      color: #000 !important;
+    }
+
+    .btn-solid-light-gray {
+      background-color: #e9ecef !important;
+      border-color: #e9ecef !important;
+      color: #495057 !important;
+    }
+
+    /* Unified Hover for Action Buttons */
+    .btn-gray-hover:hover {
+      background-color: #6c757d !important;
+      border-color: #6c757d !important;
+      color: #fff !important;
+    }
   </style>
 </head>
 
@@ -248,9 +294,6 @@ if ($id) {
         <h2 class="display-4 text-dark mb-0">
           <?php echo isAdmin() ? 'Individual Report' : 'My Attendance'; ?>
         </h2>
-        <?php if (isAdmin()): ?>
-          <a href="../staffmanagement/staff_profile.php?id=<?= $id ?>" class="btn btn-outline-secondary">&larr; Back</a>
-        <?php endif; ?>
       </div>
 
       <?php if ($employee): ?>
@@ -263,7 +306,7 @@ if ($id) {
 
               <!-- ✅ SHOW PROFILE BUTTON -->
               <div class="mt-2">
-                <a a href="../staffmanagement/staff_profile.php?id=<?= $id ?>" class="btn btn-outline-primary btn-sm">
+                <a href="../staffmanagement/staff_profile.php?id=<?= $id ?>" class="btn btn-modern btn-solid-primary btn-sm btn-gray-hover">
                   Show Profile
                 </a>
               </div>
@@ -277,7 +320,7 @@ if ($id) {
         <div class="d-flex gap-2">
           <!-- Month -->
           <div class="dropdown">
-            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="monthDropdown"
+            <button class="btn btn-modern btn-solid-primary dropdown-toggle btn-gray-hover" type="button" id="monthDropdown"
               data-bs-toggle="dropdown" aria-expanded="false">
               <span id="selectedMonth">Select Month</span>
             </button>
@@ -299,7 +342,7 @@ if ($id) {
 
           <!-- Year -->
           <div class="dropdown">
-            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="yearDropdown"
+            <button class="btn btn-modern btn-solid-primary dropdown-toggle btn-gray-hover" type="button" id="yearDropdown"
               data-bs-toggle="dropdown" aria-expanded="false">
               <span id="selectedYear">Year</span>
             </button>
@@ -318,19 +361,19 @@ if ($id) {
         </div>
 
         <!-- Filter Button -->
-        <button class="btn btn-primary" id="filterBtn">
+        <button class="btn btn-modern btn-solid-success btn-gray-hover" id="filterBtn">
           <i class="bi bi-filter me-1"></i> Filter
         </button>
 
         <!-- Reset Button -->
-        <button class="btn btn-outline-secondary" id="resetBtn">
+        <button class="btn btn-modern btn-solid-light-gray btn-gray-hover" id="resetBtn">
           <i class="bi bi-arrow-clockwise me-1"></i> Reset Filter
         </button>
 
         <!-- Export - Admin Only -->
         <?php if (isAdmin()): ?>
           <div class="dropdown ms-auto">
-            <button class="btn btn-outline-success dropdown-toggle" type="button" id="exportDropdown"
+            <button class="btn btn-modern btn-solid-success dropdown-toggle btn-gray-hover" type="button" id="exportDropdown"
               data-bs-toggle="dropdown" aria-expanded="false">
               <i class="bi bi-download me-1"></i> Export
             </button>

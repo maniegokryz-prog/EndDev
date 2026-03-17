@@ -446,26 +446,9 @@
    color: #fff !important;
  }
 
- /* Filter Button Styling - Outline Style */
- #filterBtn {
-   background-color: transparent !important;
-   color: #103932 !important;
-   border: 1px solid #103932 !important;
-   transition: all 0.2s ease;
- }
+  /* Removed specific #filterBtn overrides to allow btn-solid classes to work */
 
- #filterBtn:hover {
-   background-color: #103932 !important;
-   color: #fff !important;
-   border-color: #103932 !important;
- }
-
- /* Reset Button Styling */
- #resetBtn:hover {
-   background-color: #6c757d;
-   color: white;
-   border-color: #6c757d;
- }
+  /* Removed specific #resetBtn overrides to allow btn-solid classes to work */
 
  /* Responsive adjustments for filter row */
  @media (max-width: 768px) {
