@@ -1186,11 +1186,11 @@ $profilePhoto .= '?v=' . microtime(true);
                         <label class="form-check-label" for="autoApprove"><strong>Auto-approve</strong> (Admin)</label>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-end">
-                    <button class="btn-modern btn-outline text-secondary border-secondary fw-bold" onclick="cancelLeaveRequest ? cancelLeaveRequest() : null"
-                        data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn-modern btn-outline text-success border-success fw-bold" onclick="confirmLeave ? confirmLeave() : null"
+                <div class="modal-footer justify-content-end gap-2">
+                    <button class="btn-modern btn-solid-success fw-bold px-4" onclick="confirmLeave ? confirmLeave() : null"
                         id="btnSubmitLeave">Submit Request</button>
+                    <button class="btn-modern btn-solid-danger fw-bold px-4" onclick="cancelLeaveRequest ? cancelLeaveRequest() : null"
+                        data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>

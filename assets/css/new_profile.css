@@ -162,7 +162,7 @@ body {
 .dtr-item:hover {
     background: #edf2f7;
     transform: translateX(4px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .dtr-item.present {
@@ -257,20 +257,24 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    max-height: 400px;
+    max-height: 300px;
     overflow-y: auto;
     padding-right: 4px;
 }
+
 .dtr-list-vertical::-webkit-scrollbar {
     width: 6px;
 }
+
 .dtr-list-vertical::-webkit-scrollbar-track {
     background: transparent;
 }
+
 .dtr-list-vertical::-webkit-scrollbar-thumb {
     background: #cbd5e0;
     border-radius: 3px;
 }
+
 .dtr-list-vertical::-webkit-scrollbar-thumb:hover {
     background: #a0aec0;
 }
@@ -313,6 +317,19 @@ body {
 .profile-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.leave-item-card {
+    border: 1px solid #e2e8f0 !important;
+    border-left: 5px solid #103932 !important; /* Thick 'line' for visibility */
+    background-color: #ffffff !important;
+    transition: all 0.2s ease;
+    margin: 0 !important; /* Reset margin to rely on container gap */
+}
+
+.leave-item-card:hover {
+    background-color: #fff !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
 }
 
 .card-header-custom {
@@ -699,6 +716,7 @@ body {
     gap: 0.5rem;
     white-space: nowrap;
 }
+
 .btn-icon-sq {
     width: 38px;
     height: 38px;
@@ -708,6 +726,7 @@ body {
     justify-content: center;
     border-radius: 6px;
 }
+
 .btn-icon-sq i {
     font-size: 1.1rem;
 }
@@ -761,7 +780,8 @@ body {
 
 .btn-outline.text-warning:hover {
     background: #ffc107 !important;
-    color: #000 !important; /* Black text for yellow background */
+    color: #000 !important;
+    /* Black text for yellow background */
     border-color: #ffc107 !important;
 }
 
@@ -823,15 +843,35 @@ body {
 #leaveList.leave-list-vertical {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    height: auto;
-    /* Fill the flexible card */
-    max-height: 250px;
-    /* Increased visibility for multiple items */
+    gap: 1.25rem; /* Increased gap between requests */
+    height: 150px;
+    max-height: 150px;
     overflow-y: auto;
-    /* Scroll if content exceeds card height */
-    padding-right: 10px;
-    padding-bottom: 5px;
+    padding: 15px 8px; /* Padding for breathing room on the first/last items */
+    scroll-snap-type: y mandatory;
+    /* Removed justify-content: center to fix the top-item clipping bug */
+}
+
+#leaveList.leave-list-vertical .leave-item-card {
+    scroll-snap-align: center; /* Always snap to center */
+    flex-shrink: 0;
+}
+
+#leaveList.leave-list-vertical::-webkit-scrollbar {
+    width: 6px;
+}
+
+#leaveList.leave-list-vertical::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#leaveList.leave-list-vertical::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+#leaveList.leave-list-vertical::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
 }
 
 /* Calendar Popup Buttons */
@@ -850,7 +890,8 @@ body {
 
 .close-calendar-btn {
     background: transparent !important;
-    border: 1px solid #103932 !important; /* Primary theme color */
+    border: 1px solid #103932 !important;
+    /* Primary theme color */
     color: #103932 !important;
     font-weight: bold !important;
     transition: all 0.2s;
@@ -1045,7 +1086,8 @@ body {
         flex-direction: column !important;
         overflow-x: hidden !important;
         max-height: 400px !important;
-        gap: 0.5rem !important; /* Minimized gap between cards */
+        gap: 0.5rem !important;
+        /* Minimized gap between cards */
     }
 
     #leaveList .leave-item-card {
@@ -1058,7 +1100,8 @@ body {
     }
 
     #leaveList .card .d-flex {
-        flex-direction: row !important; /* Keep items side-by-side but ensure wrapping or better distribution */
+        flex-direction: row !important;
+        /* Keep items side-by-side but ensure wrapping or better distribution */
         align-items: center !important;
         justify-content: space-between !important;
     }
@@ -1070,9 +1113,11 @@ body {
             align-items: flex-start !important;
             gap: 0.75rem;
         }
+
         #leaveList .card .btn-icon-sq {
             align-self: flex-end;
-            margin-top: -1.5rem; /* Pull up eye icon slightly if space allows */
+            margin-top: -1.5rem;
+            /* Pull up eye icon slightly if space allows */
         }
     }
 
