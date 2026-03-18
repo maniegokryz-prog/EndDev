@@ -194,6 +194,100 @@ try {
         #department {
             text-transform: capitalize !important;
         }
+        .modal-content { border-radius: 12px; }
+        
+        /* Wizard Success Modal Button Style Overrides */
+        .btn-gray {
+            background-color: #dee2e6 !important;
+            border-color: #dee2e6 !important;
+            color: #212529 !important;
+        }
+        .btn-gray:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: white !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        }
+        .btn-blue {
+            background-color: #0d6efd !important;
+            border-color: #0d6efd !important;
+            color: white !important;
+        }
+        .btn-blue:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: white !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        }
+
+        /* Modern Button Styles for Modals */
+        .btn-modern {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .btn-outline {
+            background: transparent !important;
+            border: 1px solid #cbd5e0 !important;
+            color: #2d3748 !important;
+        }
+
+        .btn-outline.text-primary.border-primary {
+            border-color: #0d6efd !important;
+            color: #0d6efd !important;
+        }
+
+        .btn-outline.text-primary.border-primary:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: white !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        }
+
+        .btn-outline.text-secondary.border-secondary {
+            border-color: #6c757d !important;
+            color: #6c757d !important;
+        }
+
+        .btn-outline.text-secondary.border-secondary:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: white !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        }
+
+        /* Updated Logout/Cancel Modal Button Styles */
+        .btn-solid-light-gray {
+            background-color: #dee2e6 !important; /* light gray */
+            border-color: #dee2e6 !important;
+            color: #212529 !important; /* dark text for light bg */
+        }
+        .btn-solid-light-gray:hover {
+            background-color: #6c757d !important; /* gray hover */
+            border-color: #6c757d !important;
+            color: white !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        }
+        .btn-solid-danger {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+        }
+        .btn-solid-danger:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: white !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        }
     </style>
     <script>
         // Title case enforcer — runs before any other script
@@ -613,8 +707,8 @@ try {
                     Action completed successfully!
                 </div>
                 <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn-modern btn-outline text-primary border-primary px-4" id="wizardNextBtn" style="display:none">Proceed to Next Step</button>
+                    <button type="button" class="btn-modern btn-gray px-4" id="wizardCloseBtn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-modern btn-blue px-4" id="wizardNextBtn" style="display:none">Proceed to Next Step</button>
                 </div>
             </div>
         </div>
@@ -648,7 +742,7 @@ try {
                     <!-- Message injected via JS -->
                 </div>
                 <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" data-confirm-cancel>Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray px-4" data-confirm-cancel>Cancel</button>
                     <button type="button" class="btn-modern btn-outline text-primary border-primary px-4" data-confirm-ok>OK</button>
                 </div>
             </div>
@@ -691,7 +785,7 @@ try {
                     <p class="text-muted px-3" id="timeValidationModalMessage">Start time must be before end time!</p>
                 </div>
                 <div class="d-flex justify-content-center gap-3 mt-3">
-                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-5" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -726,7 +820,7 @@ try {
                     <p id="appConfirmModalMessage" class="mb-0"></p>
                 </div>
                 <div class="modal-footer border-0 justify-content-center gap-2 pb-4">
-                    <button type="button" class="btn-modern btn-outline text-secondary border-secondary px-4" id="appConfirmCancel">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray px-4" id="appConfirmCancel">Cancel</button>
                     <button type="button" class="btn-modern btn-outline text-primary border-primary px-4" id="appConfirmOk">OK</button>
                 </div>
             </div>

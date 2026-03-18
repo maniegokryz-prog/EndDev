@@ -38,9 +38,9 @@ $result = $conn->query($sql);
   <link rel="stylesheet" href="attendancerep.css?v=<?php echo time(); ?>">
   <style>
     .btn-solid-light-gray {
-        background-color: #e9ecef !important;
-        border-color: #e9ecef !important;
-        color: #495057 !important;
+        background-color: #dee2e6 !important;
+        border-color: #dee2e6 !important;
+        color: #212529 !important;
     }
     
     .btn-solid-success {
@@ -54,6 +54,50 @@ $result = $conn->query($sql);
         background-color: #6c757d !important;
         border-color: #6c757d !important;
         color: white !important;
+    }
+
+    .btn-modern {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .btn-outline {
+        background: transparent !important;
+        border: 1px solid #cbd5e0 !important;
+        color: #2d3748 !important;
+    }
+
+    .btn-outline.text-danger.border-danger {
+        border-color: #dc3545 !important;
+        color: #dc3545 !important;
+    }
+
+    .btn-outline.text-danger.border-danger:hover {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+        color: white !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+    }
+
+    .btn-outline.text-success.border-success {
+        border-color: #198754 !important;
+        color: #198754 !important;
+    }
+
+    .btn-outline.text-success.border-success:hover {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+        color: white !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
     }
 
     /* ID Overrides to ensure consistency */
@@ -225,8 +269,8 @@ else {
         </div>
         <p class="mb-4">Confirm DTR Report for <span id="staffCount" class="fw-bold">0</span> staff as <span id="exportType" class="fw-bold"></span>?</p>
         <div class="d-flex justify-content-center gap-3">
-          <button class="btn-modern btn-outline text-secondary border-secondary fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn-modern btn-outline text-success border-success fw-bold px-4" id="confirmExportBtn">Yes</button>
+          <button class="btn-modern btn-solid-success fw-bold px-4" id="confirmExportBtn">Yes</button>
+          <button class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>

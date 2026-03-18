@@ -386,9 +386,9 @@ $profilePhoto .= '?v=' . microtime(true);
             color: #fff !important;
         }
         .btn-solid-light-gray {
-            background-color: #e9ecef !important;
-            border: 1px solid #e9ecef !important;
-            color: #495057 !important;
+            background-color: #dee2e6 !important; /* Fixed to #dee2e6 for consistency */
+            border: 1px solid #dee2e6 !important;
+            color: #212529 !important; /* Darker text for white/light-gray background */
         }
 
         /* Unified Hover for Action Buttons */
@@ -404,6 +404,15 @@ $profilePhoto .= '?v=' . microtime(true);
             border-color: #6c757d !important;
             color: #fff !important;
             background-image: none !important;
+        }
+
+        /* Fixed Alignment for Profile Action Buttons */
+        .action-buttons .btn-modern {
+            vertical-align: middle !important;
+            height: 38px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         /* Faculty specific: Increased DTR List Height since Scheduled Leave is hidden */
@@ -756,17 +765,18 @@ $profilePhoto .= '?v=' . microtime(true);
                                     <i class="bi bi-pencil"></i> Edit Info
                                 </button>
                                 <?php if ($isAdmin): ?>
+                                    <?php if (!$hide_re_register_face_button): ?>
+                                        <button type="button" 
+                                            onclick="window.location.href='re_register_face.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>'"
+                                            class="btn-modern btn-solid-warning btn-gray-hover"
+                                            title="Re-register Face Data">
+                                            <i class="bi bi-person-bounding-box"></i> Re-register Face
+                                        </button>
+                                    <?php endif; ?>
                                     <button class="btn-modern btn-solid-danger btn-gray-hover" data-bs-toggle="modal"
                                         data-bs-target="#removeEmployeeModal">
                                         <i class="bi bi-trash"></i> Remove
                                     </button>
-                                    <?php if (!$hide_re_register_face_button): ?>
-                                        <a href="re_register_face.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>"
-                                            class="btn-modern btn-solid-warning btn-gray-hover"
-                                            title="Re-register Face Data">
-                                            <i class="bi bi-person-bounding-box"></i> Re-register Face
-                                        </a>
-                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -852,7 +862,7 @@ $profilePhoto .= '?v=' . microtime(true);
                             <!-- Popup Date Picker Trigger -->
                             <div class="position-relative">
                                 <button
-                                    class="btn-modern btn-solid-warning btn-sm d-flex align-items-center gap-2"
+                                    class="btn-modern btn-solid-light-gray btn-sm d-flex align-items-center gap-2"
                                     id="dateRangeTrigger" title="Select Dates">
                                     <i class="bi bi-calendar3"></i>
                                     <span>Filter Dates</span>
