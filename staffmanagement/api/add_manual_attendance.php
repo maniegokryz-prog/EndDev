@@ -274,10 +274,10 @@ function addManualAttendance($conn)
             $check_stmt->execute();
             $existing = $check_stmt->get_result()->fetch_assoc();
 
-            $status_base = ($timeOutObj) ? 'manual' : 'incomplete';
+            $status_base = ($timeOutObj) ? 'manual' : 'manual incomplete';
             
             // Build composite status
-            if ($status_base === 'manual') {
+            if (strpos($status_base, 'manual') !== false) {
                 if ($late_minutes > 0) {
                     $status_base .= ' late';
                 }

@@ -307,7 +307,9 @@ class SyncManager:
                 try:
                     # Check if record exists in MySQL
                     mysql_cursor.execute("""
-                        SELECT id, time_in, time_out, actual_hours, status FROM daily_attendance 
+                        SELECT id, time_in, time_out, actual_hours, status,
+                               late_minutes, early_departure_minutes, overtime_minutes
+                        FROM daily_attendance 
                         WHERE employee_id = %s AND attendance_date = %s
                     """, (employee_id, attendance_date))
                     
@@ -320,6 +322,9 @@ class SyncManager:
                         # Correct indices based on new SELECT
                         remote_actual_hours = existing[3]
                         remote_status = existing[4]
+                        remote_late_minutes = existing[5]
+                        remote_early_minutes = existing[6]
+                        remote_overtime = existing[7]
                         
                         # MERGE LOGIC: Don't overwrite valid remote data with local None
                         # If local is None/Empty but remote has value, keep remote value
@@ -339,11 +344,32 @@ class SyncManager:
                         if (actual_hours is None or actual_hours == 0) and remote_actual_hours:
                             final_actual_hours = remote_actual_hours
                             print(f"    ℹ️  Preserving remote Actual Hours: {remote_actual_hours}")
+                            
+                        # MERGE LOGIC: Preserve metrics if local is empty/zero and remote isn't
+                        final_late_minutes = late_minutes
+                        if (not late_minutes or late_minutes == 0) and remote_late_minutes:
+                            final_late_minutes = remote_late_minutes
+                            
+                        final_early_minutes = early_departure_minutes
+                        if (not early_departure_minutes or early_departure_minutes == 0) and remote_early_minutes:
+                            final_early_minutes = remote_early_minutes
+                            
+                        final_overtime = overtime_minutes
+                        if (not overtime_minutes or overtime_minutes == 0) and remote_overtime:
+                            final_overtime = remote_overtime
                         
                         final_status = status
-                        if (not status or status == 'incomplete') and (remote_status == 'complete' or remote_status == 'manual'):
+                        if (not status or status == 'incomplete') and ('complete' in remote_status or 'manual' in remote_status):
                             final_status = remote_status
                             print(f"    ℹ️  Preserving remote Status: {remote_status}")
+                            
+                        # Upgrade to complete if both time markers are present but status is stuck on incomplete
+                        if final_time_in and final_time_out and 'incomplete' in final_status:
+                            final_status = final_status.replace('incomplete', 'complete').replace('  ', ' ').strip()
+                            if final_late_minutes and final_late_minutes > 0 and 'late' not in final_status:
+                                final_status += ' late'
+                            if final_early_minutes and final_early_minutes > 0 and 'undertime' not in final_status:
+                                final_status += ' undertime'
 
                         # Update existing record in MySQL
                         mysql_cursor.execute("""
@@ -356,7 +382,7 @@ class SyncManager:
                                 sync_status = 0
                             WHERE employee_id = %s AND attendance_date = %s
                         """, (final_time_in, final_time_out, scheduled_hours, final_actual_hours,
-                              late_minutes, early_departure_minutes, overtime_minutes,
+                              final_late_minutes, final_early_minutes, final_overtime,
                               break_time_minutes, final_status, notes, calculated_at,
                               employee_id, attendance_date))
                         print(f"  ✓ Updated: Employee {employee_id}, Date {attendance_date}, Status: {final_status}")
