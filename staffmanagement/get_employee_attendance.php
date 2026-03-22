@@ -243,7 +243,9 @@ try {
         $is_undertime = strpos($status_lower, 'undertime') !== false;
 
         $badge_html_parts = [];
-        $inject_span_style = '</span><span style="background: #fff3cd; color: #856404; padding: 0.35em 0.8em; border-radius: 0.3rem; font-weight: 600; display: inline-block; margin-left: 0.5rem; font-size: 0.9rem;">';
+        // Inject a span style that perfectly matches the compact .dtr-status class from the new profile UI 
+        // fallback inline styles added so it looks exact everywhere including legacy staffinfo.php
+        $inject_span_style = '</span><span class="dtr-status" style="background: #edf2f7; color: #718096; padding: 2px 6px; border-radius: 4px; font-weight: 500; display: inline-block; margin-left: 0.5rem; font-size: 0.75rem; white-space: nowrap;">';
 
         if ($base_status === 'complete') {
             $status_info['badge_class'] = 'success';
