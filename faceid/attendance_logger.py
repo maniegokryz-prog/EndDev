@@ -8,6 +8,8 @@ It provides functions to:
 3. Query attendance records
 4. Handle attendance-related database operations
 
+Added this comment to check if git is working
+
 This module is used by the Kiosk face recognition system to record attendance.
 """
 
