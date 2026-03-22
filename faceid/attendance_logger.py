@@ -153,17 +153,30 @@ class AttendanceLogger:
             if one_session_per_day and effective_log_type == 'time_in':
                 # If we are trying to Time In, check if we ALREADY completed a session (i.e. have a time_out)
                 cursor.execute("""
-                    SELECT 1 FROM daily_attendance 
+                    SELECT break_out, break_in FROM daily_attendance 
                     WHERE employee_id = ? AND attendance_date = ? AND time_out IS NOT NULL
                 """, (employee_db_id, log_date))
-                if cursor.fetchone():
-                    print(f"  🛑 Single Session blocked for {employee_name} (Already completed today)")
-                    conn.close()
-                    return {
-                        'success': False,
-                        'status': 'completed',
-                        'message': "Attendance Completed"
-                    }
+                
+                row = cursor.fetchone()
+                if row:
+                    break_out, break_in = row
+                    
+                    # Check if this is an NTP returning from lunch
+                    role = emp_info.get('role', '') if emp_info else ""
+                    role_clean = role.lower().replace('-', ' ').replace('_', ' ').strip()
+                    is_ntp = 'non teaching staff' in role_clean or 'admin' in role_clean
+                    is_lunch_return = is_ntp and break_out and not break_in
+                    
+                    if not is_lunch_return:
+                        print(f"  🛑 Single Session blocked for {employee_name} (Already completed today)")
+                        conn.close()
+                        return {
+                            'success': False,
+                            'status': 'completed',
+                            'message': "Attendance Completed"
+                        }
+                    else:
+                        print(f"  ▶️ Permitting Lunch In (override Single Session block) for {employee_name}")
 
             # B. Check Min Work Duration (Prevent accidental early Time Out)
             if min_work_minutes > 0 and effective_log_type == 'time_out':
