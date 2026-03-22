@@ -26725,3 +26725,159 @@
 2026-03-22 09:50:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
 2026-03-22 09:50:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
 2026-03-22 09:50:00 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:51:00 - --- Sync Cycle Started ---
+2026-03-22 09:51:00 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:51:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:51:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:51:00 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:52:00 - --- Sync Cycle Started ---
+2026-03-22 09:52:00 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:52:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:52:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:52:01 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:53:00 - --- Sync Cycle Started ---
+2026-03-22 09:53:00 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:53:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:53:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:53:00 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:54:00 - --- Sync Cycle Started ---
+2026-03-22 09:54:00 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:54:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:54:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:54:00 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:55:00 - --- Sync Cycle Started ---
+2026-03-22 09:55:00 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:55:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:55:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:55:00 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:56:00 - --- Sync Cycle Started ---
+2026-03-22 09:56:00 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:56:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:56:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:56:00 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:57:00 - --- Sync Cycle Started ---
+2026-03-22 09:57:00 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:57:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:57:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:57:00 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:58:00 - --- Sync Cycle Started ---
+2026-03-22 09:58:00 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:58:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:58:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:58:00 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:59:00 - --- Sync Cycle Started ---
+2026-03-22 09:59:00 - Successfully pushed to VPS for attendance_logs ID 7
+2026-03-22 09:59:00 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:00 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:00 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:59:01 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:59:05 - --- Sync Cycle Started ---
+2026-03-22 09:59:05 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:05 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:05 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:59:06 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:59:06 - --- Sync Cycle Started ---
+2026-03-22 09:59:06 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:06 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:06 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:59:07 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:59:08 - --- Sync Cycle Started ---
+2026-03-22 09:59:08 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:08 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:08 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:59:08 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:59:17 - --- Sync Cycle Started ---
+2026-03-22 09:59:17 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:17 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:17 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:59:17 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 09:59:47 - --- Sync Cycle Started ---
+2026-03-22 09:59:47 - Successfully pushed to VPS for attendance_logs ID 8
+2026-03-22 09:59:47 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:47 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 09:59:47 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 09:59:48 - Push error on notifications ID 3: Invalid JSON from VPS: 
+2026-03-22 10:00:17 - --- Sync Cycle Started ---
+2026-03-22 10:00:55 - --- Sync Cycle Started ---
+2026-03-22 10:00:56 - --- Sync Cycle Started ---
+2026-03-22 10:00:57 - --- Sync Cycle Started ---
+2026-03-22 10:01:27 - --- Sync Cycle Started ---
+2026-03-22 10:01:57 - --- Sync Cycle Started ---
+2026-03-22 10:01:57 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-22 10:01:58 - Successfully pushed to VPS for employees ID 1
+2026-03-22 10:02:13 - --- Sync Cycle Started ---
+2026-03-22 10:02:13 - Successfully pushed to VPS for schedules ID 1
+2026-03-22 10:02:13 - Successfully pushed to VPS for schedule_periods ID 1
+2026-03-22 10:02:13 - Successfully pushed to VPS for schedule_periods ID 2
+2026-03-22 10:02:13 - Successfully pushed to VPS for schedule_periods ID 3
+2026-03-22 10:02:13 - Successfully pushed to VPS for schedule_periods ID 4
+2026-03-22 10:02:13 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-22 10:02:13 - Successfully pushed to VPS for employee_schedules ID 1
+2026-03-22 10:02:13 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 00:02:40 - --- Sync Cycle Started ---
+2026-03-22 00:02:40 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 00:02:40 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 00:02:41 - --- Sync Cycle Started ---
+2026-03-22 00:02:41 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 00:02:41 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 00:02:42 - --- Sync Cycle Started ---
+2026-03-22 00:02:42 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 00:02:42 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 00:02:54 - --- Sync Cycle Started ---
+2026-03-22 00:02:55 - Successfully pushed to VPS for attendance_logs ID 1
+2026-03-22 00:02:55 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 00:02:55 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 00:02:55 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 04:03:18 - --- Sync Cycle Started ---
+2026-03-22 04:03:18 - Successfully pushed to VPS for attendance_logs ID 2
+2026-03-22 04:03:18 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 04:03:18 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 04:03:18 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 04:03:23 - --- Sync Cycle Started ---
+2026-03-22 04:03:23 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 04:03:23 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 04:03:23 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 04:03:25 - --- Sync Cycle Started ---
+2026-03-22 04:03:25 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 04:03:25 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 04:03:25 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 04:03:27 - --- Sync Cycle Started ---
+2026-03-22 04:03:27 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 04:03:27 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 04:03:27 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 05:03:56 - --- Sync Cycle Started ---
+2026-03-22 05:03:56 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 05:03:56 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 05:03:56 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 05:03:57 - --- Sync Cycle Started ---
+2026-03-22 05:03:57 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 05:03:58 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 05:03:58 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 05:03:59 - --- Sync Cycle Started ---
+2026-03-22 05:03:59 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 05:03:59 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 05:03:59 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 05:04:30 - --- Sync Cycle Started ---
+2026-03-22 05:04:30 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 05:04:30 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 05:04:30 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 10:05:18 - --- Sync Cycle Started ---
+2026-03-22 10:05:18 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 10:05:18 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 10:05:18 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 10:05:48 - --- Sync Cycle Started ---
+2026-03-22 10:05:48 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 10:05:48 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 10:05:48 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 10:06:18 - --- Sync Cycle Started ---
+2026-03-22 10:06:18 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 10:06:18 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 10:06:18 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 10:06:48 - --- Sync Cycle Started ---
+2026-03-22 10:06:48 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 10:06:48 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 10:06:48 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-22 10:07:18 - --- Sync Cycle Started ---
+2026-03-22 10:07:18 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
+2026-03-22 10:07:18 - Push error on notifications ID 1: Invalid JSON from VPS: 
+2026-03-22 10:07:18 - Push error on notifications ID 2: Invalid JSON from VPS: 
