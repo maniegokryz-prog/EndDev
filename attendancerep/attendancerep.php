@@ -34,6 +34,8 @@ class AttendanceReportViewer {
                         da.employee_id,
                         da.attendance_date,
                         da.time_in,
+                        da.break_out,
+                        da.break_in,
                         da.time_out,
                         da.scheduled_hours,
                         da.actual_hours,

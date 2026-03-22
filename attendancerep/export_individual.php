@@ -85,7 +85,7 @@ foreach ($periods as $key => $period) {
     $y = $period['year'];
     $m = $period['month'];
 
-    $sql = "SELECT attendance_date, time_in, time_out, actual_hours, status, notes FROM daily_attendance 
+    $sql = "SELECT attendance_date, time_in, break_out, break_in, time_out, actual_hours, status, notes FROM daily_attendance 
             WHERE employee_id = ? AND MONTH(attendance_date) = ? AND YEAR(attendance_date) = ? AND status != 'visit'";
 
     $stmt = $conn->prepare($sql);

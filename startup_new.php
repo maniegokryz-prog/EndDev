@@ -141,6 +141,8 @@ $sql_daily_attendance = "CREATE TABLE IF NOT EXISTS daily_attendance (
     employee_id INT NOT NULL,
     attendance_date DATE NOT NULL,
     time_in TIME,
+    break_out TIME DEFAULT NULL,
+    break_in TIME DEFAULT NULL,
     time_out TIME,
     scheduled_hours DECIMAL(5,2),
     actual_hours DECIMAL(5,2),
@@ -317,11 +319,22 @@ if ($admin_exists->num_rows == 0) {
     }
 }
 
-// --- SCHEMA UPDATES FOR EXISTING INSTALLATIONS ---
 // Check if suffix exists in employees
 $check_suffix = $conn->query("SHOW COLUMNS FROM employees LIKE 'suffix'");
 if ($check_suffix->num_rows == 0) {
     $conn->query("ALTER TABLE employees ADD COLUMN suffix VARCHAR(50) NULL AFTER last_name");
+}
+
+// Check if break_out exists in daily_attendance
+$check_break_out = $conn->query("SHOW COLUMNS FROM daily_attendance LIKE 'break_out'");
+if ($check_break_out->num_rows == 0) {
+    $conn->query("ALTER TABLE daily_attendance ADD COLUMN break_out TIME DEFAULT NULL AFTER time_in");
+}
+
+// Check if break_in exists in daily_attendance
+$check_break_in = $conn->query("SHOW COLUMNS FROM daily_attendance LIKE 'break_in'");
+if ($check_break_in->num_rows == 0) {
+    $conn->query("ALTER TABLE daily_attendance ADD COLUMN break_in TIME DEFAULT NULL AFTER break_out");
 }
 
 // Check if cloud_id exists in employee_leaves

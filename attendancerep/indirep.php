@@ -74,6 +74,8 @@ if ($id) {
     $query = "SELECT 
                         attendance_date, 
                         time_in, 
+                        break_out,
+                        break_in,
                         time_out, 
                         scheduled_hours, 
                         actual_hours, 

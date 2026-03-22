@@ -92,6 +92,8 @@ function addManualAttendance($conn)
             $date = $record['date'] ?? '';
             $time_in = $record['time_in'] ?? '';
             $time_out = $record['time_out'] ?? null; // Allow null/empty
+            $break_out = $record['break_out'] ?? null;
+            $break_in = $record['break_in'] ?? null;
 
             // Validate required fields (Time In is required, Time Out is optional)
             if (empty($date) || empty($time_in)) {
@@ -102,6 +104,12 @@ function addManualAttendance($conn)
             // Treat empty string time_out as null
             if ($time_out !== null && trim($time_out) === '') {
                 $time_out = null;
+            }
+            if ($break_out !== null && trim($break_out) === '') {
+                $break_out = null;
+            }
+            if ($break_in !== null && trim($break_in) === '') {
+                $break_in = null;
             }
 
             // Validate date format
@@ -292,6 +300,8 @@ function addManualAttendance($conn)
                 $sql = "UPDATE daily_attendance 
                         SET time_in = ?, 
                             time_out = ?, 
+                            break_out = ?,
+                            break_in = ?,
                             scheduled_hours = ?,
                             actual_hours = ?,
                             late_minutes = ?,
@@ -306,9 +316,11 @@ function addManualAttendance($conn)
                     continue;
                 }
                 $stmt->bind_param(
-                    "ssddiiisis",
+                    "ssssddiiisis",
                     $time_in,
                     $time_out,
+                    $break_out,
+                    $break_in,
                     $scheduled_hours,
                     $actual_hours,
                     $late_minutes,
@@ -321,20 +333,22 @@ function addManualAttendance($conn)
             } else {
                 // Insert new record
                 $sql = "INSERT INTO daily_attendance 
-                        (employee_id, attendance_date, time_in, time_out, scheduled_hours, actual_hours, 
+                        (employee_id, attendance_date, time_in, time_out, break_out, break_in, scheduled_hours, actual_hours, 
                          late_minutes, early_departure_minutes, overtime_minutes, status) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     $errors[] = "Record " . ($index + 1) . ": Failed to prepare INSERT statement - " . $conn->error;
                     continue;
                 }
                 $stmt->bind_param(
-                    "isssddiiis",
+                    "isssssddiiis",
                     $employee_id,
                     $date,
                     $time_in,
                     $time_out,
+                    $break_out,
+                    $break_in,
                     $scheduled_hours,
                     $actual_hours,
                     $late_minutes,
@@ -357,6 +371,8 @@ function addManualAttendance($conn)
                     'attendance_date' => $date,
                     'time_in' => $time_in,
                     'time_out' => $time_out,
+                    'break_out' => $break_out,
+                    'break_in' => $break_in,
                     'scheduled_hours' => $scheduled_hours,
                     'actual_hours' => $actual_hours,
                     'late_minutes' => $late_minutes,
@@ -414,17 +430,23 @@ function updateTimeOut($conn)
         $employee_id = $data['employee_id'] ?? null;
         $date = $data['date'] ?? null;
         $time_out = $data['time_out'] ?? null;
+        $break_out = $data['break_out'] ?? null;
+        $break_in = $data['break_in'] ?? null;
 
-        if (!$record_id || !$employee_id || !$date || !$time_out) {
-            throw new Exception('Missing required fields: record_id, employee_id, date, time_out');
+        if ($time_out !== null && trim($time_out) === '') $time_out = null;
+        if ($break_out !== null && trim($break_out) === '') $break_out = null;
+        if ($break_in !== null && trim($break_in) === '') $break_in = null;
+
+        if (!$record_id || !$employee_id || !$date) {
+            throw new Exception('Missing required fields: record_id, employee_id, date');
         }
 
         $conn->begin_transaction();
 
         // First, verify the record exists and is incomplete or manual (needs completion)
+        // AND handle the case where we're just updating break times for an already complete record
         $check_sql = "SELECT id, time_in, status FROM daily_attendance 
-                     WHERE id = ? AND employee_id = ? AND attendance_date = ? 
-                     AND (status = 'incomplete' OR status = 'manual')";
+                     WHERE id = ? AND employee_id = ? AND attendance_date = ?";
         $check_stmt = $conn->prepare($check_sql);
 
         if (!$check_stmt) {
@@ -562,6 +584,8 @@ function updateTimeOut($conn)
         // Update the record
         $update_sql = "UPDATE daily_attendance 
                       SET time_out = ?, 
+                          break_out = ?,
+                          break_in = ?,
                           actual_hours = ?, 
                           late_minutes = ?, 
                           early_departure_minutes = ?, 
@@ -576,8 +600,10 @@ function updateTimeOut($conn)
         }
 
         $update_stmt->bind_param(
-            'sdiiii',
+            'sssddiiii',
             $time_out,
+            $break_out,
+            $break_in,
             $actual_minutes,
             $late_minutes,
             $early_departure_minutes,

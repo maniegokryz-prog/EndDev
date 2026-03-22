@@ -274,7 +274,7 @@ class SyncManager:
             cutoff_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
             
             local_cursor.execute("""
-                SELECT id, employee_id, attendance_date, time_in, time_out,
+                SELECT id, employee_id, attendance_date, time_in, break_out, break_in, time_out,
                        scheduled_hours, actual_hours, late_minutes, 
                        early_departure_minutes, overtime_minutes, break_time_minutes,
                        status, notes, calculated_at
@@ -299,7 +299,7 @@ class SyncManager:
             failed_count = 0
             
             for record in records:
-                (rec_id, employee_id, attendance_date, time_in, time_out,
+                (rec_id, employee_id, attendance_date, time_in, break_out, break_in, time_out,
                  scheduled_hours, actual_hours, late_minutes, 
                  early_departure_minutes, overtime_minutes, break_time_minutes,
                  status, notes, calculated_at) = record
@@ -307,8 +307,8 @@ class SyncManager:
                 try:
                     # Check if record exists in MySQL
                     mysql_cursor.execute("""
-                        SELECT id, time_in, time_out, actual_hours, status,
-                               late_minutes, early_departure_minutes, overtime_minutes
+                        SELECT id, time_in, break_out, break_in, time_out, actual_hours, status,
+                               late_minutes, early_departure_minutes, overtime_minutes, break_time_minutes
                         FROM daily_attendance 
                         WHERE employee_id = %s AND attendance_date = %s
                     """, (employee_id, attendance_date))
@@ -318,13 +318,16 @@ class SyncManager:
                     if existing:
                         mysql_id = existing[0]
                         remote_time_in = existing[1]
-                        remote_time_out = existing[2]
+                        remote_break_out = existing[2]
+                        remote_break_in = existing[3]
+                        remote_time_out = existing[4]
                         # Correct indices based on new SELECT
-                        remote_actual_hours = existing[3]
-                        remote_status = existing[4]
-                        remote_late_minutes = existing[5]
-                        remote_early_minutes = existing[6]
-                        remote_overtime = existing[7]
+                        remote_actual_hours = existing[5]
+                        remote_status = existing[6]
+                        remote_late_minutes = existing[7]
+                        remote_early_minutes = existing[8]
+                        remote_overtime = existing[9]
+                        remote_break_time = existing[10]
                         
                         # MERGE LOGIC: Don't overwrite valid remote data with local None
                         # If local is None/Empty but remote has value, keep remote value
@@ -333,6 +336,14 @@ class SyncManager:
                         if (not time_in or str(time_in) == '00:00:00') and remote_time_in:
                              final_time_in = remote_time_in
                              print(f"    ℹ️  Preserving remote Time In: {remote_time_in}")
+
+                        final_break_out = break_out
+                        if (not break_out or str(break_out) == '00:00:00') and remote_break_out:
+                             final_break_out = remote_break_out
+
+                        final_break_in = break_in
+                        if (not break_in or str(break_in) == '00:00:00') and remote_break_in:
+                             final_break_in = remote_break_in
 
                         final_time_out = time_out
                         if (not time_out or str(time_out) == '00:00:00') and remote_time_out:
@@ -374,14 +385,14 @@ class SyncManager:
                         # Update existing record in MySQL
                         mysql_cursor.execute("""
                             UPDATE daily_attendance
-                            SET time_in = %s, time_out = %s,
+                            SET time_in = %s, break_out = %s, break_in = %s, time_out = %s,
                                 scheduled_hours = %s, actual_hours = %s,
                                 late_minutes = %s, early_departure_minutes = %s,
                                 overtime_minutes = %s, break_time_minutes = %s,
                                 status = %s, notes = %s, calculated_at = %s,
                                 sync_status = 0
                             WHERE employee_id = %s AND attendance_date = %s
-                        """, (final_time_in, final_time_out, scheduled_hours, final_actual_hours,
+                        """, (final_time_in, final_break_out, final_break_in, final_time_out, scheduled_hours, final_actual_hours,
                               final_late_minutes, final_early_minutes, final_overtime,
                               break_time_minutes, final_status, notes, calculated_at,
                               employee_id, attendance_date))
@@ -393,12 +404,12 @@ class SyncManager:
                         # Insert new record into MySQL
                         mysql_cursor.execute("""
                             INSERT INTO daily_attendance
-                            (employee_id, attendance_date, time_in, time_out,
+                            (employee_id, attendance_date, time_in, break_out, break_in, time_out,
                              scheduled_hours, actual_hours, late_minutes,
                              early_departure_minutes, overtime_minutes, break_time_minutes,
                              status, notes, calculated_at)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        """, (employee_id, attendance_date, time_in, time_out,
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        """, (employee_id, attendance_date, time_in, break_out, break_in, time_out,
                               scheduled_hours, actual_hours, late_minutes,
                               early_departure_minutes, overtime_minutes, break_time_minutes,
                               status, notes, calculated_at))
@@ -468,7 +479,7 @@ class SyncManager:
             # Fetch employees updated since last sync
             mysql_cursor.execute("""
                 SELECT id, employee_id, first_name, middle_name, last_name,
-                       email, phone, department, position, status, profile_photo,
+                       email, phone, roles, department, position, status, profile_photo,
                        created_at, updated_at
                 FROM employees
                 WHERE updated_at >= %s OR created_at >= %s
@@ -495,13 +506,13 @@ class SyncManager:
                     local_cursor.execute("""
                         UPDATE employees
                         SET employee_id = ?, first_name = ?, middle_name = ?,
-                            last_name = ?, email = ?, phone = ?, department = ?,
+                            last_name = ?, email = ?, phone = ?, roles = ?, department = ?,
                             position = ?, status = ?, profile_photo = ?,
                             updated_at = ?, last_synced = ?
                         WHERE id = ?
                     """, (
                         emp['employee_id'], emp['first_name'], emp['middle_name'],
-                        emp['last_name'], emp['email'], emp['phone'], emp['department'],
+                        emp['last_name'], emp['email'], emp['phone'], emp['roles'], emp['department'],
                         emp['position'], emp['status'], emp['profile_photo'],
                         emp['updated_at'], datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                         emp['id']
@@ -513,12 +524,12 @@ class SyncManager:
                     local_cursor.execute("""
                         INSERT INTO employees 
                         (id, employee_id, first_name, middle_name, last_name,
-                         email, phone, department, position, status, profile_photo,
+                         email, phone, roles, department, position, status, profile_photo,
                          created_at, updated_at, last_synced)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
                         emp['id'], emp['employee_id'], emp['first_name'], emp['middle_name'],
-                        emp['last_name'], emp['email'], emp['phone'], emp['department'],
+                        emp['last_name'], emp['email'], emp['phone'], emp['roles'], emp['department'],
                         emp['position'], emp['status'], emp['profile_photo'],
                         emp['created_at'], emp['updated_at'], 
                         datetime.now().strftime('%Y-%m-%d %H:%M:%S')

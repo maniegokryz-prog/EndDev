@@ -112,7 +112,7 @@ class AttendanceLogger:
                         last_time = datetime.strptime(last_time_str, '%Y-%m-%d %H:%M:%S')
                         time_diff = (now - last_time).total_seconds() / 60.0
                         
-                        if time_diff < cooldown_minutes:
+                        if 0 <= time_diff < cooldown_minutes:
                             print(f"  ⏳ Cooldown active for {employee_name} (Last: {last_time_str}, Diff: {time_diff:.1f}m)")
                             conn.close()
                             
@@ -306,10 +306,16 @@ class AttendanceLogger:
             # Don't close yet, we need it for subsequent queries
             pass
 
+        # Get employee info for NTP check
+        emp_info = self.get_employee_by_db_id(employee_db_id)
+        role = emp_info.get('role', '') if emp_info else ""
+        role_clean = role.lower().replace('-', ' ').replace('_', ' ').strip()
+        is_ntp = 'non teaching staff' in role_clean or 'admin' in role_clean
+
         # 1. Check daily_attendance FIRST (Synced from server/manual entry)
         # This is the Source of Truth for "Current Session Status"
         cursor.execute("""
-            SELECT time_in, time_out, status
+            SELECT time_in, time_out, status, break_out, break_in
             FROM daily_attendance 
             WHERE employee_id = ? AND attendance_date = ?
         """, (employee_db_id, today))
@@ -321,7 +327,15 @@ class AttendanceLogger:
             d_time_in = daily_record[0]
             d_time_out = daily_record[1]
             d_status = daily_record[2]
+            d_break_out = daily_record[3]
+            d_break_in = daily_record[4]
             
+            # NTP 3rd punch logic (Lunch In)
+            if is_ntp and d_time_in and d_break_out and not d_break_in:
+                # 3rd punch should be 'time_in'
+                if close_conn: conn.close()
+                return 'time_in'
+
             # Check for generic "empty" values for Time Out
             # Including '00:00', '00:00:00' which might come from some SQL defaults
             is_out_empty = (not d_time_out or 
@@ -338,7 +352,7 @@ class AttendanceLogger:
                 
             # If we have Time In AND Time Out -> Session Completed
             # If explicit 'complete' status -> Session Completed
-            if (d_time_in and not is_out_empty) or d_status == 'complete':
+            if (d_time_in and not is_out_empty) or 'complete' in str(d_status).lower():
                  # Enforce one session per day check here if needed, 
                  # but usually we default to 'time_in' (new session) or blocked.
                  # If one_session_per_day is enforced elsewhere, we just return 'time_in' 
@@ -499,6 +513,11 @@ class AttendanceLogger:
             emp_info = self.get_employee_by_db_id(employee_db_id)
             employee_code = emp_info['employee_id'] if emp_info else str(employee_db_id)
             employee_name = emp_info['full_name'] if emp_info else "Unknown"
+            role = emp_info.get('role', '') if emp_info else ""
+            # Robust role detection for NTP as requested by user
+            role_clean = role.lower().replace('-', ' ').replace('_', ' ').strip()
+            is_ntp = 'non teaching staff' in role_clean or 'admin' in role_clean
+            is_faculty = not is_ntp
             
             cursor = conn.cursor()
             log_date = log_datetime.strftime('%Y-%m-%d')
@@ -508,9 +527,9 @@ class AttendanceLogger:
             
             print(f"     🔍 Checking for existing daily_attendance record...")
             
-            # Check if daily_attendance record exists
+            # Check if daily_attendance record exists - include break columns
             cursor.execute("""
-                SELECT id, time_in, time_out, late_minutes, status FROM daily_attendance
+                SELECT id, time_in, time_out, late_minutes, status, break_out, break_in FROM daily_attendance
                 WHERE employee_id = ? AND attendance_date = ?
             """, (employee_db_id, log_date))
             
@@ -576,13 +595,33 @@ class AttendanceLogger:
                 
                 return
 
-            if log_type == 'time_in':
+            elif log_type == 'time_in':
                 print(f"     🕐 Processing TIME IN...")
                 
                 # SAFEGUARD: Check if existing record already has a valid time_in
                 if existing_record and existing_record[1]: 
-                     print(f"     ⚠️  Warning: Attempting to overwrite Time In.")
-                     return
+                     if is_faculty:
+                         print(f"     ⚠️  Warning: Attempting to overwrite Time In.")
+                         return
+                     else:
+                         # Non-Teaching Staff 3rd Punch (Lunch In)
+                         print(f"     🕐 Processing LUNCH IN (3rd punch)...")
+                         if len(existing_record) > 5 and existing_record[5] and not existing_record[6]:
+                             break_in_str = log_time_only
+                             cursor.execute("""
+                                 UPDATE daily_attendance
+                                 SET break_in = ?, status = 'incomplete', time_out = NULL
+                                 WHERE id = ?
+                             """, (break_in_str, existing_record[0]))
+                             conn.commit()
+                             print(f"     ✓ Updated break_in (Lunch In)")
+                             log_daily_attendance_update(employee_code, employee_name, "lunch_in", 
+                                                       {"break_in": break_in_str})
+                         else:
+                             break_out_val = existing_record[5] if len(existing_record) > 5 else None
+                             break_in_val = existing_record[6] if len(existing_record) > 6 else None
+                             print(f"     ⚠️  Warning: 3rd punch attempted but state is invalid (break_out: {break_out_val}, break_in: {break_in_val}).")
+                         return
                 
                 late_minutes = 0
                 if schedule_periods:
@@ -644,6 +683,39 @@ class AttendanceLogger:
             elif log_type == 'time_out':
                 # Handle TIME OUT
                 print(f"DEBUG: Handling TIME OUT for Existing ID: {existing_record[0] if existing_record else 'None'}")
+                
+                # Check for Non-Teaching Lunch Out
+                if not is_faculty and existing_record and existing_record[1] and (len(existing_record) > 5 and not existing_record[5]):
+                    # Configurability for Automatic Skip Countermeasure
+                    AUTO_SKIP_BREAK_HOURS = 6.0
+                    skip_lunch = False
+                    
+                    try:
+                        t_in_str = existing_record[1]
+                        t_in_parts = list(map(int, t_in_str.split(':')))
+                        t_in_dt = log_datetime.replace(hour=t_in_parts[0], minute=t_in_parts[1], second=t_in_parts[2] if len(t_in_parts)>2 else 0, microsecond=0)
+                        hours_elapsed = (log_datetime - t_in_dt).total_seconds() / 3600.0
+                        if hours_elapsed >= AUTO_SKIP_BREAK_HOURS:
+                            skip_lunch = True
+                            print(f"     ⏩ AUTO-SKIP LUNCH: {hours_elapsed:.2f} hours elapsed since Time In ({t_in_str}). Skipping to Day Out.")
+                    except Exception:
+                        pass
+                        
+                    if not skip_lunch:
+                        # Non-Teaching Staff 2nd Punch (Lunch Out)
+                        print(f"     🚪 Processing LUNCH OUT (2nd punch)...")
+                        break_out_str = log_time_only
+                        # We set time_out to mirror break_out so UI is happy, but keep actual_hours at 0
+                        cursor.execute("""
+                            UPDATE daily_attendance
+                            SET break_out = ?, time_out = ?, status = 'incomplete'
+                            WHERE id = ?
+                        """, (break_out_str, break_out_str, existing_record[0]))
+                        conn.commit()
+                        print(f"     ✓ Updated break_out (Lunch Out)")
+                        log_daily_attendance_update(employee_code, employee_name, "lunch_out", 
+                                                  {"break_out": break_out_str})
+                        return
                 
                 # Helper to calculate hours
                 def calculate_hours(t_in, t_out):
@@ -775,6 +847,23 @@ class AttendanceLogger:
                     if early_departure_minutes > 0 and 'undertime' not in status:
                         status += ' undertime'
 
+                # Deduct lunch break
+                break_time_minutes = 0
+                if len(existing_record) > 6 and existing_record[5] and existing_record[6]:
+                    try:
+                        b_out_parts = list(map(int, existing_record[5].split(':')))
+                        b_in_parts = list(map(int, existing_record[6].split(':')))
+                        b_out_dt = log_datetime.replace(hour=b_out_parts[0], minute=b_out_parts[1], second=b_out_parts[2] if len(b_out_parts)>2 else 0, microsecond=0)
+                        b_in_dt = log_datetime.replace(hour=b_in_parts[0], minute=b_in_parts[1], second=b_in_parts[2] if len(b_in_parts)>2 else 0, microsecond=0)
+                        break_secs = (b_in_dt - b_out_dt).total_seconds()
+                        if break_secs > 0:
+                            break_time_minutes = int(break_secs / 60)
+                            print(f"     ☕ Deducting {break_time_minutes} min for lunch break")
+                            actual_hours = round(actual_hours - break_time_minutes, 2)
+                            if actual_hours < 0: actual_hours = 0
+                    except Exception:
+                        pass
+
                 # Update the record (scheduled_hours was already set during time_in)
                 print(f"     📝 Updating daily_attendance record with time_out...")
                 cursor.execute("""
@@ -783,11 +872,12 @@ class AttendanceLogger:
                         actual_hours = ?,
                         early_departure_minutes = ?,
                         overtime_minutes = ?,
+                        break_time_minutes = ?,
                         status = ?,
                         calculated_at = ?
                     WHERE id = ?
                 """, (log_time_only, actual_hours, 
-                      early_departure_minutes, overtime_minutes, status, 
+                      early_departure_minutes, overtime_minutes, break_time_minutes, status, 
                       log_time_str, existing_record[0]))
                 
                 print(f"     ✓ Update query executed")
@@ -984,7 +1074,7 @@ class AttendanceLogger:
             
             cursor.execute("""
                 SELECT id, employee_id, first_name, middle_name, last_name,
-                       email, phone, department, position, status
+                       email, phone, roles, department, position, status
                 FROM employees
                 WHERE employee_id = ?
             """, (employee_code,))
@@ -1002,9 +1092,10 @@ class AttendanceLogger:
                     'full_name': f"{row[2]} {row[4]}",
                     'email': row[5],
                     'phone': row[6],
-                    'department': row[7],
-                    'position': row[8],
-                    'status': row[9]
+                    'role': row[7],
+                    'department': row[8],
+                    'position': row[9],
+                    'status': row[10]
                 }
             return None
             
@@ -1028,7 +1119,7 @@ class AttendanceLogger:
             
             cursor.execute("""
                 SELECT id, employee_id, first_name, middle_name, last_name,
-                       email, phone, department, position, status
+                       email, phone, roles, department, position, status
                 FROM employees
                 WHERE id = ?
             """, (db_id,))
@@ -1046,9 +1137,10 @@ class AttendanceLogger:
                     'full_name': f"{row[2]} {row[4]}",
                     'email': row[5],
                     'phone': row[6],
-                    'department': row[7],
-                    'position': row[8],
-                    'status': row[9]
+                    'role': row[7],
+                    'department': row[8],
+                    'position': row[9],
+                    'status': row[10]
                 }
             return None
             

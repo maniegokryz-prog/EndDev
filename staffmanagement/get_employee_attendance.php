@@ -309,6 +309,8 @@ try {
             'time_in_formatted' => $time_in_formatted,
             'time_out' => $row['time_out'],
             'time_out_formatted' => $time_out_formatted,
+            'break_out' => $row['break_out'] ?? null,
+            'break_in' => $row['break_in'] ?? null,
             'late_minutes' => $row['late_minutes'] ?? 0,
             'overtime_minutes' => $row['overtime_minutes'] ?? 0,
             'actual_hours' => $row['actual_hours'] ?? null,

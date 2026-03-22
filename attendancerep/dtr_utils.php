@@ -215,11 +215,23 @@ function renderDTRForm($employee, $data, $isExcel = false)
                 }
             }
 
+            // BREAK OUT (Lunch Out)
+            if (!empty($r['break_out'])) {
+                $bOutTs = strtotime($r['break_out']);
+                $amOut = date('g:i', $bOutTs);
+            }
+
+            // BREAK IN (Lunch In)
+            if (!empty($r['break_in'])) {
+                $bInTs = strtotime($r['break_in']);
+                $pmIn = date('g:i', $bInTs);
+            }
+
             // TIME OUT
             if (!empty($r['time_out'])) {
                 $outTs = strtotime($r['time_out']);
                 $outStr = date('g:i', $outTs);
-                if (date('a', $outTs) === 'am') {
+                if (date('a', $outTs) === 'am' && empty($amOut)) {
                     $amOut = $outStr; // Early departure in AM
                 } else {
                     $pmOut = $outStr;

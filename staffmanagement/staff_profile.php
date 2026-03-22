@@ -235,6 +235,11 @@ if (!$loadSuccess || !$employee) {
 $editor = new EmployeeEditor($conn);
 $editor->loadEmployee($employee_id);
 
+// Role detection for NTP
+$isNTP = (strpos(strtolower($employee['roles'] ?? ''), 'non teaching staff') !== false ||
+          strpos(strtolower($employee['roles'] ?? ''), 'non-teaching staff') !== false ||
+          strpos(strtolower($employee['roles'] ?? ''), 'admin') !== false);
+
 // Prepare Schedule Data for JS
 $scheduleColors = ['#4a7c59', '#8b4a6b', '#b85450', '#5b9bd5', '#ffc000', '#c55a11', '#7030a0', '#0070c0', '#00b050', '#ff6b6b'];
 $processedSchedules = [];
@@ -1370,8 +1375,15 @@ $profilePhoto .= '?v=' . microtime(true);
                                         style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
                                 </div>
                             </div>
-                            <div class="col-md-3"><label>Time In:</label><input type="time" class="form-control"></div>
-                            <div class="col-md-3"><label>Time Out:</label><input type="time" class="form-control"></div>
+                            <?php if ($isNTP): ?>
+                                <div class="col-md-2"><label>Time In:</label><input type="time" class="form-control"></div>
+                                <div class="col-md-2"><label>Break Out:</label><input type="time" class="form-control"></div>
+                                <div class="col-md-2"><label>Break In:</label><input type="time" class="form-control"></div>
+                                <div class="col-md-2"><label>Time Out:</label><input type="time" class="form-control"></div>
+                            <?php else: ?>
+                                <div class="col-md-3"><label>Time In:</label><input type="time" class="form-control"></div>
+                                <div class="col-md-3"><label>Time Out:</label><input type="time" class="form-control"></div>
+                            <?php endif; ?>
                             <div class="col-md-3">
                                 <div class="pb-1">
                                     <button class="btn-modern btn-solid-warning btn-sm me-1 clearRow" title="Clear Times"><i
@@ -1409,11 +1421,21 @@ $profilePhoto .= '?v=' . microtime(true);
                             <input type="hidden" id="editAttDateValue">
                         </div>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="<?php echo $isNTP ? 'col-md-3' : 'col-md-6'; ?> mb-3">
                                 <label class="form-label">Time In</label>
                                 <input type="time" class="form-control" id="editAttTimeIn">
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <?php if ($isNTP): ?>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Break Out</label>
+                                <input type="time" class="form-control" id="editAttBreakOut">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Break In</label>
+                                <input type="time" class="form-control" id="editAttBreakIn">
+                            </div>
+                            <?php endif; ?>
+                            <div class="<?php echo $isNTP ? 'col-md-3' : 'col-md-6'; ?> mb-3">
                                 <label class="form-label">Time Out</label>
                                 <input type="time" class="form-control" id="editAttTimeOut">
                             </div>

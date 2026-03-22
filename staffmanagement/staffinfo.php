@@ -2206,8 +2206,18 @@ $schedules = $viewer->getSchedules();
               </div>
             <?php endif; ?>
 
+            <?php
+            $roleLower = strtolower(str_replace(['-', '_', '.'], ' ', $employee['roles'] ?? ''));
+            $hasFaculty = strpos($roleLower, 'faculty') !== false;
+            $hasTeaching = strpos($roleLower, 'teaching') !== false;
+            $hasNonTeaching = strpos($roleLower, 'non teaching') !== false;
+            $isFacultyExempt = $hasFaculty || ($hasTeaching && !$hasNonTeaching);
+            $isNTP = !$isFacultyExempt;
+            
+            $colClass = $isNTP ? 'col-md-2' : 'col-md-3';
+            ?>
             <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered modal-lg">
+              <div class="modal-dialog modal-dialog-centered modal-xl">
                 <div class="modal-content p-3">
                   <div class="modal-header">
                     <h5 class="modal-title">Manual Attendance Record</h5>
@@ -2215,23 +2225,33 @@ $schedules = $viewer->getSchedules();
                   <div class="modal-body">
                     <div id="attendanceContainer">
                       <div class="attendance-row row mb-3 align-items-start">
-                        <div class="col-md-3">
+                        <div class="<?php echo $colClass; ?>">
                           <label>Date:</label>
-                          <input type="date" class="form-control">
+                          <input type="date" class="form-control date-input">
                           <div class="schedule-error-container" style="min-height: 0;">
                             <small class="text-danger schedule-error d-block"
                               style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
                           </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="<?php echo $colClass; ?>">
                           <label>Time In:</label>
-                          <input type="time" class="form-control">
+                          <input type="time" class="form-control time-in-input">
                         </div>
-                        <div class="col-md-3">
+                        <?php if ($isNTP): ?>
+                        <div class="<?php echo $colClass; ?>">
+                          <label>Break Out:</label>
+                          <input type="time" class="form-control break-out-input">
+                        </div>
+                        <div class="<?php echo $colClass; ?>">
+                          <label>Break In:</label>
+                          <input type="time" class="form-control break-in-input">
+                        </div>
+                        <?php endif; ?>
+                        <div class="<?php echo $colClass; ?>">
                           <label>Time Out:</label>
-                          <input type="time" class="form-control">
+                          <input type="time" class="form-control time-out-input">
                         </div>
-                        <div class="col-md-3">
+                        <div class="<?php echo $colClass; ?>">
                           <div style="margin-top: 32px;">
                             <button class="btn btn-warning btn-sm me-1 clearRow" title="Clear Times"><i
                                 class="bi bi-eraser"></i></button>
@@ -2368,7 +2388,7 @@ $schedules = $viewer->getSchedules();
                   const dateInput = row.querySelector('input[type="date"]');
                   const timeInputs = row.querySelectorAll('input[type="time"]');
                   const timeInInput = timeInputs[0];
-                  const timeOutInput = timeInputs[1];
+                  const timeOutInput = timeInputs[timeInputs.length - 1];
 
                   if (dateInput && timeInInput && timeOutInput) {
                     // Remove any existing listeners by cloning the element
@@ -2402,28 +2422,45 @@ $schedules = $viewer->getSchedules();
                 addDayBtn.addEventListener('click', () => {
                   const newRow = document.createElement('div');
                   newRow.classList.add('attendance-row', 'row', 'mb-3', 'align-items-start');
-                  newRow.innerHTML = `
-        <div class="col-md-3">
-          <label>Date:</label>
-          <input type="date" class="form-control">
-          <div class="schedule-error-container" style="min-height: 0;">
-            <small class="text-danger schedule-error d-block" style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <label>Time In:</label>
-          <input type="time" class="form-control">
-        </div>
-        <div class="col-md-3">
-          <label>Time Out:</label>
-          <input type="time" class="form-control">
-        </div>
-        <div class="col-md-3">
-          <div style="margin-top: 32px;">
-            <button class="btn btn-warning btn-sm me-1 clearRow" title="Clear Times"><i class="bi bi-eraser"></i></button>
-            <button class="btn btn-danger btn-sm removeRow"><i class="bi bi-dash-lg"></i></button>
-          </div>
-        </div>`;
+                  const isNTPUser = <?php echo json_encode($isNTP); ?>;
+                  const colCls = isNTPUser ? "col-md-2" : "col-md-3";
+                  let rowHtml = `
+                    <div class="${colCls}">
+                      <label>Date:</label>
+                      <input type="date" class="form-control date-input">
+                      <div class="schedule-error-container" style="min-height: 0;">
+                        <small class="text-danger schedule-error d-block" style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
+                      </div>
+                    </div>
+                    <div class="${colCls}">
+                      <label>Time In:</label>
+                      <input type="time" class="form-control time-in-input">
+                    </div>`;
+                    
+                  if (isNTPUser) {
+                    rowHtml += `
+                    <div class="${colCls}">
+                      <label>Break Out:</label>
+                      <input type="time" class="form-control break-out-input">
+                    </div>
+                    <div class="${colCls}">
+                      <label>Break In:</label>
+                      <input type="time" class="form-control break-in-input">
+                    </div>`;
+                  }
+                  
+                  rowHtml += `
+                    <div class="${colCls}">
+                      <label>Time Out:</label>
+                      <input type="time" class="form-control time-out-input">
+                    </div>
+                    <div class="${colCls}">
+                      <div style="margin-top: 32px;">
+                        <button class="btn btn-warning btn-sm me-1 clearRow" title="Clear Times"><i class="bi bi-eraser"></i></button>
+                        <button class="btn btn-danger btn-sm removeRow"><i class="bi bi-dash-lg"></i></button>
+                      </div>
+                    </div>`;
+                  newRow.innerHTML = rowHtml;
                   attendanceContainer.appendChild(newRow);
 
                   // Attach date listener to the new row
@@ -2457,9 +2494,20 @@ $schedules = $viewer->getSchedules();
                   // Collect all records
                   rows.forEach((row, index) => {
                     const inputs = row.querySelectorAll('input');
-                    const date = inputs[0].value;  // First input is date
-                    const timeIn = inputs[1].value;  // Second input is time in
-                    const timeOut = inputs[2].value;  // Third input is time out
+                    const isNTPUser = <?php echo json_encode($isNTP); ?>;
+                    const date = inputs[0].value;
+                    const timeIn = inputs[1].value;
+                    let timeOut = '';
+                    let breakOut = '';
+                    let breakIn = '';
+                    
+                    if (isNTPUser && inputs.length >= 5) {
+                        breakOut = inputs[2].value;
+                        breakIn = inputs[3].value;
+                        timeOut = inputs[4].value;
+                    } else {
+                        timeOut = inputs[2].value;
+                    }
 
                     if (!date || !timeIn) {
                       if (!hasError) validationMessage = `Date and Time In are required in row ${index + 1}`;
@@ -2470,6 +2518,8 @@ $schedules = $viewer->getSchedules();
                     records.push({
                       date: date,
                       time_in: timeIn,
+                      break_out: breakOut,
+                      break_in: breakIn,
                       time_out: timeOut
                     });
                   });
@@ -2635,6 +2685,18 @@ $schedules = $viewer->getSchedules();
                       <label class="form-label fw-bold">Time In:</label>
                       <p id="editTimeIn" class="mb-0"></p>
                     </div>
+                    <?php if ($isNTP): ?>
+                    <div class="mb-3">
+                      <label for="editBreakOut" class="form-label fw-bold">Break Out (Lunch Out):</label>
+                      <input type="time" class="form-control" id="editBreakOut">
+                      <small class="text-muted">Optional: Record lunch start time</small>
+                    </div>
+                    <div class="mb-3">
+                      <label for="editBreakIn" class="form-label fw-bold">Break In (Lunch In):</label>
+                      <input type="time" class="form-control" id="editBreakIn">
+                      <small class="text-muted">Optional: Record return from lunch</small>
+                    </div>
+                    <?php endif; ?>
                     <div class="mb-3">
                       <label for="editTimeOut" class="form-label fw-bold">Time Out: <span
                           class="text-danger">*</span></label>
@@ -2787,11 +2849,12 @@ $schedules = $viewer->getSchedules();
                   };
 
                   // Check if record is incomplete with time_in but no time_out
-                  // Check if record is incomplete OR manual with time_in but no time_out
-                  const showEditButton = isAdmin &&
-                    (record.status === 'incomplete' || record.status === 'manual') &&
-                    record.time_in &&
-                    !record.time_out;
+                  // Check if record is incomplete OR manual with time_in but no time_out, or if the user is NTP allow them to fix breaks
+                  const isNTPUser = <?php echo json_encode($isNTP); ?>;
+                  const showEditButton = isAdmin && (
+                    ((record.status === 'incomplete' || record.status === 'manual') && record.time_in && !record.time_out) ||
+                    (isNTPUser && record.time_in)
+                  );
 
                   // Debug logging
                   console.log(`\nDate: ${record.formatted_date}`);
@@ -2833,8 +2896,11 @@ $schedules = $viewer->getSchedules();
                             data-formatted-date="${record.formatted_date}"
                             data-time-in="${record.time_in}"
                             data-time-in-formatted="${timeIn}"
+                            data-break-out="${record.break_out || ''}"
+                            data-break-in="${record.break_in || ''}"
+                            data-time-out="${record.time_out || ''}"
                             style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                      <i class="bi bi-pencil-square"></i> Add Time Out
+                      <i class="bi bi-pencil-square"></i> Edit Attendance
                     </button>
                   ` : ''}
                 </div>
@@ -2854,8 +2920,11 @@ $schedules = $viewer->getSchedules();
                     const formattedDate = this.dataset.formattedDate;
                     const timeIn = this.dataset.timeIn;
                     const timeInFormatted = this.dataset.timeInFormatted;
+                    const breakOut = this.dataset.breakOut;
+                    const breakIn = this.dataset.breakIn;
+                    const timeOut = this.dataset.timeOut;
 
-                    openEditTimeOutModal(recordId, date, formattedDate, timeIn, timeInFormatted);
+                    openEditTimeOutModal(recordId, date, formattedDate, timeIn, timeInFormatted, breakOut, breakIn, timeOut);
                   });
                 });
               }
@@ -2999,7 +3068,7 @@ $schedules = $viewer->getSchedules();
               // Edit Time Out Modal Functions
               let currentEditRecord = null;
 
-              function openEditTimeOutModal(recordId, date, formattedDate, timeIn, timeInFormatted) {
+              function openEditTimeOutModal(recordId, date, formattedDate, timeIn, timeInFormatted, breakOut, breakIn, timeOut) {
                 currentEditRecord = {
                   id: recordId,
                   date: date,
@@ -3011,7 +3080,10 @@ $schedules = $viewer->getSchedules();
                 // Set the modal content
                 document.getElementById('editDate').textContent = formattedDate;
                 document.getElementById('editTimeIn').textContent = timeInFormatted;
-                document.getElementById('editTimeOut').value = '';
+                document.getElementById('editTimeOut').value = timeOut || '';
+                
+                if (document.getElementById('editBreakOut')) document.getElementById('editBreakOut').value = breakOut || '';
+                if (document.getElementById('editBreakIn')) document.getElementById('editBreakIn').value = breakIn || '';
 
                 // Show the modal
                 const editModal = new bootstrap.Modal(document.getElementById('editTimeOutModal'));
@@ -3021,14 +3093,18 @@ $schedules = $viewer->getSchedules();
               // Handle confirm button in edit modal
               document.getElementById('confirmEditTimeOut').addEventListener('click', function () {
                 const timeOut = document.getElementById('editTimeOut').value;
+                const breakOutEl = document.getElementById('editBreakOut');
+                const breakInEl = document.getElementById('editBreakIn');
+                const breakOut = breakOutEl ? breakOutEl.value : null;
+                const breakIn = breakInEl ? breakInEl.value : null;
 
-                if (!timeOut) {
-                  alert('Please select a time out.');
+                if (!timeOut && (!breakOut && !breakIn)) {
+                  alert('Please enter a time value.');
                   return;
                 }
 
                 // Format time out for display
-                const timeOutFormatted = formatTime12Hour(timeOut);
+                const timeOutFormatted = timeOut ? formatTime12Hour(timeOut) : 'N/A';
 
                 // Set confirmation modal content
                 document.getElementById('confirmDate').textContent = currentEditRecord.formattedDate;
@@ -3038,6 +3114,8 @@ $schedules = $viewer->getSchedules();
                 // Store time out in current record
                 currentEditRecord.timeOut = timeOut;
                 currentEditRecord.timeOutFormatted = timeOutFormatted;
+                currentEditRecord.breakOut = breakOut;
+                currentEditRecord.breakIn = breakIn;
 
                 // Hide edit modal and show confirmation modal
                 const editModal = bootstrap.Modal.getInstance(document.getElementById('editTimeOutModal'));
@@ -3063,7 +3141,9 @@ $schedules = $viewer->getSchedules();
                       record_id: currentEditRecord.id,
                       employee_id: employeeInternalId,
                       date: currentEditRecord.date,
-                      time_out: currentEditRecord.timeOut
+                      time_out: currentEditRecord.timeOut,
+                      break_out: currentEditRecord.breakOut,
+                      break_in: currentEditRecord.breakIn
                     })
                   });
 

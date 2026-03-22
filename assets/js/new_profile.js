@@ -1466,29 +1466,42 @@ function initManualAttendance() {
 
     // Add another day
     addDayBtn.addEventListener('click', () => {
+        const roleStr = (window.employeeRole || '').toLowerCase();
+        const isNTP = roleStr.includes('non teaching staff') || roleStr.includes('non-teaching staff') || roleStr.includes('admin');
+
         const newRow = document.createElement('div');
         newRow.classList.add('attendance-row', 'row', 'mb-3', 'align-items-end');
-        newRow.innerHTML = '<div class=\'col-md-3\'>' +
-            '<label>Date:</label>' +
-            '<input type=\'date\' class=\'form-control\'>' +
-            '<div class=\'schedule-error-container\' style=\'min-height: 0;\'>' +
-            '<small class=\'text-danger schedule-error d-block\' style=\'display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;\'></small>' +
-            '</div>' +
-            '</div>' +
-            '<div class=\'col-md-3\'>' +
-            '<label>Time In:</label>' +
-            '<input type=\'time\' class=\'form-control\'>' +
-            '</div>' +
-            '<div class=\'col-md-3\'>' +
-            '<label>Time Out:</label>' +
-            '<input type=\'time\' class=\'form-control\'>' +
-            '</div>' +
-            '<div class=\'col-md-3\'>' +
-            '<div class=\'pb-1\'>' +
-            '<button class=\'btn-modern btn-solid-warning btn-sm me-1 clearRow\' title=\'Clear Times\'><i class=\'bi bi-eraser\'></i></button>' +
-            '<button class=\'btn-modern btn-solid-danger btn-sm removeRow\' title=\'Remove Row\'><i class=\'bi bi-x-lg\'></i></button>' +
-            '</div>' +
-            '</div>';
+
+        let inputsHtml = '';
+        if (isNTP) {
+            inputsHtml = `
+                <div class="col-md-2"><label>Time In:</label><input type="time" class="form-control"></div>
+                <div class="col-md-2"><label>Break Out:</label><input type="time" class="form-control"></div>
+                <div class="col-md-2"><label>Break In:</label><input type="time" class="form-control"></div>
+                <div class="col-md-2"><label>Time Out:</label><input type="time" class="form-control"></div>
+            `;
+        } else {
+            inputsHtml = `
+                <div class="col-md-3"><label>Time In:</label><input type="time" class="form-control"></div>
+                <div class="col-md-3"><label>Time Out:</label><input type="time" class="form-control"></div>
+            `;
+        }
+
+        newRow.innerHTML = `
+            <div class="col-md-3">
+                <label>Date:</label>
+                <input type="date" class="form-control">
+                <div class="schedule-error-container" style="min-height: 0;">
+                    <small class="text-danger schedule-error d-block" style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
+                </div>
+            </div>
+            ${inputsHtml}
+            <div class="${isNTP ? 'col-md-1' : 'col-md-3'}">
+                <div class="pb-1">
+                    <button class="btn-modern btn-solid-warning btn-sm me-1 clearRow" title="Clear Times"><i class="bi bi-eraser"></i></button>
+                    <button class="btn-modern btn-solid-danger btn-sm removeRow" title="Remove Row"><i class="bi bi-x-lg"></i></button>
+                </div>
+            </div>`;
         attendanceContainer.appendChild(newRow);
 
         attachDateListener(newRow);
@@ -1522,21 +1535,35 @@ function initManualAttendance() {
 
         rows.forEach((row, index) => {
             const inputs = row.querySelectorAll('input');
-            const date = inputs[0].value;
-            const timeIn = inputs[1].value;
-            const timeOut = inputs[2].value;
+            const roleStr = (window.employeeRole || '').toLowerCase();
+            const isNTP = roleStr.includes('non teaching staff') || roleStr.includes('non-teaching staff') || roleStr.includes('admin');
 
-            if (!date || !timeIn) {
-                if (!hasError) validationMessage = 'Date and Time In are required in row ' + (index + 1);
+            const date = inputs[0].value;
+
+            if (!date) {
+                if (!hasError) validationMessage = 'Date is required in row ' + (index + 1);
                 hasError = true;
                 return;
             }
 
-            records.push({
-                date: date,
-                time_in: timeIn,
-                time_out: timeOut
-            });
+            let record = { date: date };
+            if (isNTP) {
+                record.time_in = inputs[1].value;
+                record.break_out = inputs[2].value;
+                record.break_in = inputs[3].value;
+                record.time_out = inputs[4].value;
+            } else {
+                record.time_in = inputs[1].value;
+                record.time_out = inputs[2].value;
+            }
+
+            if (!record.time_in) {
+                if (!hasError) validationMessage = 'Time In is required in row ' + (index + 1);
+                hasError = true;
+                return;
+            }
+
+            records.push(record);
         });
 
         if (hasError || records.length === 0) {
@@ -1630,6 +1657,13 @@ window.openEditAttendanceModal = function (record) {
     document.getElementById('editAttDateValue').value = record.attendance_date; // YYYY-MM-DD
     document.getElementById('editAttTimeIn').value = record.time_in || '';
     document.getElementById('editAttTimeOut').value = record.time_out || '';
+    
+    // Break fields ( NTP only )
+    const breakOutEl = document.getElementById('editAttBreakOut');
+    const breakInEl = document.getElementById('editAttBreakIn');
+    if (breakOutEl) breakOutEl.value = record.break_out || '';
+    if (breakInEl) breakInEl.value = record.break_in || '';
+
     document.getElementById('editAttError').classList.add('d-none');
 
     // Show Modal
@@ -1664,14 +1698,23 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Reuse existing add_manual_attendance.php logic which handles UPDATE if record exists
                 const employeeId = window.employeeInternalId;
+                const roleStr = (window.employeeRole || '').toLowerCase();
+                const isNTP = roleStr.includes('non teaching staff') || roleStr.includes('non-teaching staff') || roleStr.includes('admin');
+
+                let record = {
+                    date: date,
+                    time_in: timeIn,
+                    time_out: timeOut
+                };
+
+                if (isNTP) {
+                    record.break_out = document.getElementById('editAttBreakOut').value;
+                    record.break_in = document.getElementById('editAttBreakIn').value;
+                }
 
                 const payload = {
                     employee_id: employeeId,
-                    records: [{
-                        date: date,
-                        time_in: timeIn,
-                        time_out: timeOut
-                    }]
+                    records: [record]
                 };
 
                 const response = await fetch('api/add_manual_attendance.php?action=add_manual', {
