@@ -414,25 +414,54 @@ if ($id) {
                 <?php foreach ($attendanceRecords as $record): ?>
                   <?php
                   // Determine status and badge
-                  $status = strtolower(trim($record['status']));
-                  $badgeClass = 'bg-secondary';
-                  $statusLabel = 'Unknown';
-
-                  if ($status === 'complete') {
-                    $badgeClass = 'badge-present';
-                    $statusLabel = 'Present';
-                  } elseif ($status === 'incomplete') {
-                    $badgeClass = 'badge-incomplete';
-                    $statusLabel = 'Incomplete';
-                  } elseif ($status === 'absent') {
-                    $badgeClass = 'badge-absent';
-                    $statusLabel = 'Absent';
-                  } elseif ($status === 'manual') {
-                    $badgeClass = 'badge-manual';
-                    $statusLabel = 'Manual';
-                  } elseif ($status === 'leave') {
-                    $badgeClass = 'badge-leave';
-                    $statusLabel = 'On Leave';
+                  $status_lower = strtolower(trim($record['status']));
+                  
+                  $html_badges = '';
+                  
+                  $base_status = '';
+                  if (strpos($status_lower, 'manual') !== false) {
+                      $base_status = 'manual';
+                  } elseif (strpos($status_lower, 'complete') !== false || strpos($status_lower, 'present') !== false) {
+                      $base_status = 'complete';
+                  } elseif (strpos($status_lower, 'visit') !== false) {
+                      $base_status = 'visit';
+                  } elseif (strpos($status_lower, 'incomplete') !== false) {
+                      $base_status = 'incomplete';
+                  } elseif (strpos($status_lower, 'absent') !== false) {
+                      $base_status = 'absent';
+                  } elseif (strpos($status_lower, 'leave') !== false) {
+                      $base_status = 'leave';
+                  }
+                  
+                  $is_late = strpos($status_lower, 'late') !== false;
+                  $is_undertime = strpos($status_lower, 'undertime') !== false;
+                  
+                  if ($base_status === 'complete') {
+                      if (!$is_late && !$is_undertime) {
+                          $html_badges .= '<span class="badge badge-present me-1">On-time</span>';
+                      } else {
+                          $html_badges .= '<span class="badge bg-warning text-dark me-1">Complete</span>';
+                      }
+                  } elseif ($base_status === 'manual') {
+                      $badge_class = ($is_late || $is_undertime) ? 'bg-warning text-dark' : 'badge-manual';
+                      $html_badges .= '<span class="badge ' . $badge_class . ' me-1">Manual</span>';
+                  } elseif ($base_status === 'incomplete') {
+                      $html_badges .= '<span class="badge badge-incomplete me-1">Incomplete</span>';
+                  } elseif ($base_status === 'absent') {
+                      $html_badges .= '<span class="badge badge-absent me-1">Absent</span>';
+                  } elseif ($base_status === 'leave') {
+                      $html_badges .= '<span class="badge badge-leave me-1">On Leave</span>';
+                  } elseif ($base_status === 'visit') {
+                      $html_badges .= '<span class="badge bg-info text-dark me-1">Visit</span>';
+                  } else {
+                      $html_badges .= '<span class="badge bg-secondary me-1">' . ucfirst(trim($record['status'])) . '</span>';
+                  }
+                  
+                  if ($is_late) {
+                      $html_badges .= '<span class="badge bg-warning text-dark me-1">Late</span>';
+                  }
+                  if ($is_undertime) {
+                      $html_badges .= '<span class="badge bg-warning text-dark me-1">Undertime</span>';
                   }
 
                   // Format date
@@ -472,7 +501,7 @@ if ($id) {
                     <td><?= $timeOut ?></td>
                     <td><?= $scheduledHoursDisplay ?></td>
                     <td><?= $actualHoursDisplay ?></td>
-                    <td><span class="badge <?= $badgeClass ?>"><?= $statusLabel ?></span></td>
+                    <td><?= $html_badges ?></td>
                   </tr>
                 <?php endforeach; ?>
               <?php else: ?>

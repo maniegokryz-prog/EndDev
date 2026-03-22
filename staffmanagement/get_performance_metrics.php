@@ -107,26 +107,25 @@ try {
     // Process attendance records
     while ($row = $result->fetch_assoc()) {
         $status = strtolower(trim($row['status']));
-        $lateMinutes = $row['late_minutes'];
 
         $totalScheduledDays++;
 
         // Count by status
-        if ($status === 'complete' || $status === 'manual') {
+        if (strpos($status, 'complete') !== false || strpos($status, 'manual') !== false) {
             $completeCount++;
 
             // Check if on time or late
-            if ($lateMinutes === null || (int) $lateMinutes <= $grace_period_minutes) {
+            if (strpos($status, 'late') === false) {
                 $onTimeCount++;
-            } else if ((int) $lateMinutes > $grace_period_minutes) {
+            } else {
                 $lateCount++;
             }
 
             // Check if undertime (left early)
-            if (isset($row['early_departure_minutes']) && (int) $row['early_departure_minutes'] > 0) {
+            if (strpos($status, 'undertime') !== false) {
                 $undertimeCount++;
             }
-        } elseif ($status === 'absent') {
+        } elseif (strpos($status, 'absent') !== false) {
             $absentCount++;
         }
         // Note: 'incomplete' status is not counted in any metric

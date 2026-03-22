@@ -760,7 +760,13 @@ class AttendanceLogger:
                         actual_hours = 0
                         import traceback
                         traceback.print_exc()
-                
+                # Handle composite status
+                if status == 'complete':
+                    if (late_minutes and late_minutes > 0):
+                        status += ' late'
+                    if early_departure_minutes > 0:
+                        status += ' undertime'
+
                 # Update the record (scheduled_hours was already set during time_in)
                 print(f"     📝 Updating daily_attendance record with time_out...")
                 cursor.execute("""

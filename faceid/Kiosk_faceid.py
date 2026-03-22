@@ -34,7 +34,7 @@ ENABLE_LOGOUT_RESTRICTION = True
 ENABLE_LOGIN_COOLDOWN = True
 LOGIN_COOLDOWN_MINUTES = 5
 ENABLE_SINGLE_SESSION = True      # Block re-entry after Time Out
-MIN_WORK_DURATION_MINUTES = 60    # Min minutes before Time Out allowed
+MIN_WORK_DURATION_MINUTES = 1   # Min minutes before Time Out allowed
 
 # Brand Colors (OpenCV uses BGR)
 COLOR_PRIMARY_DARK = (62, 77, 27)      # #1b4d3e (Dark Green)

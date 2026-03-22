@@ -274,9 +274,18 @@ function addManualAttendance($conn)
             $check_stmt->execute();
             $existing = $check_stmt->get_result()->fetch_assoc();
 
-            $status = ($timeOutObj) ? 'manual' : 'incomplete';
-
-            $status = ($timeOutObj) ? 'manual' : 'incomplete';
+            $status_base = ($timeOutObj) ? 'manual' : 'incomplete';
+            
+            // Build composite status
+            if ($status_base === 'manual') {
+                if ($late_minutes > 0) {
+                    $status_base .= ' late';
+                }
+                if ($early_departure_minutes > 0) {
+                    $status_base .= ' undertime';
+                }
+            }
+            $status = $status_base;
 
             if ($existing) {
                 // Update existing record
@@ -541,6 +550,15 @@ function updateTimeOut($conn)
         // Calculate overtime
         $overtime_minutes = max(0, $actual_minutes - $scheduled_minutes);
 
+        // Build composite status
+        $status_base = 'manual'; // User manually timed out, so it becomes manual
+        if ($late_minutes > 0) {
+            $status_base .= ' late';
+        }
+        if ($early_departure_minutes > 0) {
+            $status_base .= ' undertime';
+        }
+
         // Update the record
         $update_sql = "UPDATE daily_attendance 
                       SET time_out = ?, 
@@ -548,7 +566,7 @@ function updateTimeOut($conn)
                           late_minutes = ?, 
                           early_departure_minutes = ?, 
                           overtime_minutes = ?,
-                          status = 'complete'
+                          status = ?
                       WHERE id = ?";
 
         $update_stmt = $conn->prepare($update_sql);
@@ -564,6 +582,7 @@ function updateTimeOut($conn)
             $late_minutes,
             $early_departure_minutes,
             $overtime_minutes,
+            $status_base,
             $record_id
         );
 
@@ -583,7 +602,7 @@ function updateTimeOut($conn)
                 'late_minutes' => $late_minutes,
                 'early_departure_minutes' => $early_departure_minutes,
                 'overtime_minutes' => $overtime_minutes,
-                'status' => 'complete'
+                'status' => $status_base
             ]
         ]);
 

@@ -162,62 +162,83 @@ class AttendanceReportViewer {
     }
     
     private function determineStatus($record) {
-        $status = $record['status'];
+        $status_lower = strtolower(trim($record['status']));
         
-        // Complete status - has both time_in and time_out
-        if ($status === 'complete') {
-            return [
-                'display' => 'Complete',
-                'class' => 'status-complete-dot'
-            ];
+        $base_status = '';
+        if (strpos($status_lower, 'manual') !== false) {
+            $base_status = 'manual';
+        } elseif (strpos($status_lower, 'complete') !== false || strpos($status_lower, 'present') !== false) {
+            $base_status = 'complete';
+        } elseif (strpos($status_lower, 'absent') !== false) {
+            $base_status = 'absent';
+        } elseif (strpos($status_lower, 'incomplete') !== false) {
+            $base_status = 'incomplete';
+        } elseif (strpos($status_lower, 'visit') !== false) {
+            $base_status = 'visit';
         }
+
+        $is_late = strpos($status_lower, 'late') !== false;
+        $is_undertime = strpos($status_lower, 'undertime') !== false;
         
-        // Absent status
-        if ($status === 'absent') {
-            return [
-                'display' => 'Absent',
-                'class' => 'status-absent-dot'
-            ];
-        }
+        // Build display text
+        $display_parts = [];
+        $css_class = 'status-incomplete-dot'; // Default
         
-        // Manual status
-        if ($status === 'manual') {
-            return [
-                'display' => 'Manual',
-                'class' => 'status-manual-dot'
-            ];
-        }
-        
-        // Incomplete status - check different scenarios
-        if ($status === 'incomplete') {
+        if ($base_status === 'complete') {
+            $display_parts[] = 'Complete';
+            $css_class = 'status-complete-dot';
+            if ($is_late || $is_undertime) {
+                $css_class = 'status-late-dot'; 
+            }
+        } elseif ($base_status === 'manual') {
+            $display_parts[] = 'Manual';
+            $css_class = 'status-manual-dot';
+            if ($is_late || $is_undertime) {
+                $css_class = 'status-late-dot'; 
+            }
+        } elseif ($base_status === 'absent') {
+            $display_parts[] = 'Absent';
+            $css_class = 'status-absent-dot';
+        } elseif ($base_status === 'visit') {
+            $display_parts[] = 'Visit';
+            $css_class = 'status-ontime-dot';
+        } elseif ($base_status === 'incomplete') {
             // No time_in yet - Not Arrived
             if (empty($record['time_in'])) {
-                return [
-                    'display' => 'Not Arrived',
-                    'class' => 'status-not-arrived-dot'
-                ];
-            }
-            
-            // Has time_in but no time_out - check if late or on-time
-            if (!empty($record['time_in']) && empty($record['time_out'])) {
-                if ($record['late_minutes'] > $this->gracePeriodMinutes) {
-                    return [
-                        'display' => 'Late',
-                        'class' => 'status-late-dot'
-                    ];
-                } else {
-                    return [
-                        'display' => 'On-Time',
-                        'class' => 'status-ontime-dot'
-                    ];
+                $display_parts[] = 'Not Arrived';
+                $css_class = 'status-not-arrived-dot';
+            } else {
+                $display_parts[] = 'Incomplete';
+                $css_class = 'status-incomplete-dot';
+                
+                // If it's incomplete but we know they were late...
+                if (!empty($record['time_in']) && empty($record['time_out'])) {
+                    if ($record['late_minutes'] > $this->gracePeriodMinutes) {
+                        $display_parts[] = 'Late';
+                        $css_class = 'status-late-dot';
+                    } else {
+                        // Just On-Time (incomplete)
+                        $display_parts[0] = 'On-Time (Incomplete)';
+                        $css_class = 'status-ontime-dot';
+                    }
                 }
+            }
+        } else {
+            $display_parts[] = ucfirst(trim($record['status']));
+        }
+        
+        if ($base_status !== 'incomplete') {
+            if ($is_late) {
+                $display_parts[] = 'Late';
+            }
+            if ($is_undertime) {
+                $display_parts[] = 'Undertime';
             }
         }
         
-        // Default fallback for incomplete
         return [
-            'display' => 'Incomplete',
-            'class' => 'status-incomplete-dot'
+            'display' => implode(' • ', $display_parts),
+            'class' => $css_class
         ];
     }
     

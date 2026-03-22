@@ -226,43 +226,77 @@ try {
         // Trim and lowercase for comparison
         $status_lower = strtolower(trim($row['status']));
 
-        if ($status_lower === 'complete' || $status_lower === 'present') {
+        $base_status = '';
+        if (strpos($status_lower, 'manual') !== false) {
+            $base_status = 'manual';
+        } elseif (strpos($status_lower, 'complete') !== false || strpos($status_lower, 'present') !== false) {
+            $base_status = 'complete';
+        } elseif (strpos($status_lower, 'visit') !== false) {
+            $base_status = 'visit';
+        } elseif (strpos($status_lower, 'incomplete') !== false) {
+            $base_status = 'incomplete';
+        } elseif (strpos($status_lower, 'absent') !== false) {
+            $base_status = 'absent';
+        }
 
-            // Check grace period instead of strictly > 0
-            if (isset($row['late_minutes']) && $row['late_minutes'] > $grace_period_minutes) {
-                // Return 'warning' badge so frontend treats it as "Late"
+        $is_late = strpos($status_lower, 'late') !== false;
+        $is_undertime = strpos($status_lower, 'undertime') !== false;
+
+        $badge_html_parts = [];
+        $inject_span_style = '</span><span style="background: #fff3cd; color: #856404; padding: 0.35em 0.8em; border-radius: 0.3rem; font-weight: 600; display: inline-block; margin-left: 0.5rem; font-size: 0.9rem;">';
+
+        if ($base_status === 'complete') {
+            $status_info['badge_class'] = 'success';
+            $status_info['icon_class'] = 'bg-success';
+            $status_info['icon'] = 'bi-check-lg';
+            
+            if (!$is_late && !$is_undertime) {
+                $badge_html_parts[] = 'On-time';
+            } else {
+                $badge_html_parts[] = 'Complete';
                 $status_info['badge_class'] = 'warning text-dark';
-                $status_info['badge_text'] = 'Late (' . $row['late_minutes'] . 'm)';
                 $status_info['icon_class'] = 'bg-warning';
                 $status_info['icon'] = 'bi-exclamation-circle-fill';
-            } else {
-                $status_info['badge_class'] = 'success';
-                $status_info['badge_text'] = 'On-time';
-                $status_info['icon_class'] = 'bg-success';
-                $status_info['icon'] = 'bi-check-lg';
             }
-
-        } elseif ($status_lower === 'visit') {
-            $status_info['badge_class'] = 'info text-dark';
-            $status_info['badge_text'] = 'Visit';
-            $status_info['icon_class'] = 'bg-info text-dark';
-            $status_info['icon'] = 'bi-person-badge';
-        } elseif ($status_lower === 'incomplete') {
-            $status_info['badge_class'] = 'warning text-dark';
-            $status_info['badge_text'] = 'Incomplete';
-            $status_info['icon_class'] = 'bg-warning';
-            $status_info['icon'] = 'bi-exclamation-circle-fill';
-        } elseif ($status_lower === 'absent') {
-            $status_info['badge_class'] = 'danger';
-            $status_info['badge_text'] = 'Absent';
-            $status_info['icon_class'] = 'bg-danger';
-            $status_info['icon'] = 'bi-x-circle-fill';
-        } elseif ($status_lower === 'manual') {
+        } elseif ($base_status === 'manual') {
             $status_info['badge_class'] = 'manual';
-            $status_info['badge_text'] = 'Manual';
             $status_info['icon_class'] = 'bg-manual';
             $status_info['icon'] = 'bi-pencil-square';
+            $badge_html_parts[] = 'Manual';
+            
+            if ($is_late || $is_undertime) {
+                $status_info['badge_class'] = 'warning text-dark';
+                $status_info['icon_class'] = 'bg-warning';
+                $status_info['icon'] = 'bi-exclamation-circle-fill';
+            }
+        } elseif ($base_status === 'visit') {
+            $status_info['badge_class'] = 'info text-dark';
+            $status_info['icon_class'] = 'bg-info text-dark';
+            $status_info['icon'] = 'bi-person-badge';
+            $badge_html_parts[] = 'Visit';
+        } elseif ($base_status === 'incomplete') {
+            $status_info['badge_class'] = 'warning text-dark';
+            $status_info['icon_class'] = 'bg-warning';
+            $status_info['icon'] = 'bi-exclamation-circle-fill';
+            $badge_html_parts[] = 'Incomplete';
+        } elseif ($base_status === 'absent') {
+            $status_info['badge_class'] = 'danger';
+            $status_info['icon_class'] = 'bg-danger';
+            $status_info['icon'] = 'bi-x-circle-fill';
+            $badge_html_parts[] = 'Absent';
+        } else {
+            $badge_html_parts[] = ucfirst($row['status']);
         }
+
+        if ($is_late) {
+            $badge_html_parts[] = 'Late'; // late_minutes is available, but tags look cleaner
+        }
+        if ($is_undertime) {
+            $badge_html_parts[] = 'Undertime';
+        }
+
+        // Generate the text. If multiple parts, we use the span hack to create multiple distinct badges.
+        $status_info['badge_text'] = implode($inject_span_style, $badge_html_parts);
 
         $attendance_records[] = [
             'id' => $row['id'],
