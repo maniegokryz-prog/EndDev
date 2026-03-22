@@ -657,11 +657,17 @@ class AttendanceLogger:
                 if existing_record:
                     # Update existing record (scheduled_hours already set by initializer)
                     print(f"     📝 Updating time_in for existing record...")
+                    curr_status = existing_record[4] if len(existing_record) > 4 and existing_record[4] else 'incomplete'
+                    if 'manual' in curr_status:
+                        new_status = 'manual late' if late_minutes > 0 else 'manual'
+                    else:
+                        new_status = 'incomplete late' if late_minutes > 0 else 'incomplete'
+                    
                     cursor.execute("""
                         UPDATE daily_attendance
-                        SET time_in = ?, late_minutes = ?, calculated_at = ?
+                        SET time_in = ?, late_minutes = ?, status = ?, calculated_at = ?
                         WHERE id = ?
-                    """, (log_time_only, late_minutes, log_time_str, existing_record[0]))
+                    """, (log_time_only, late_minutes, new_status, log_time_str, existing_record[0]))
                     print(f"     ✓ Updated existing record")
                 else:
                     # Create new record
