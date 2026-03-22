@@ -229,12 +229,12 @@ try {
         $base_status = '';
         if (strpos($status_lower, 'manual') !== false) {
             $base_status = 'manual';
+        } elseif (strpos($status_lower, 'incomplete') !== false) {
+            $base_status = 'incomplete';
         } elseif (strpos($status_lower, 'complete') !== false || strpos($status_lower, 'present') !== false) {
             $base_status = 'complete';
         } elseif (strpos($status_lower, 'visit') !== false) {
             $base_status = 'visit';
-        } elseif (strpos($status_lower, 'incomplete') !== false) {
-            $base_status = 'incomplete';
         } elseif (strpos($status_lower, 'absent') !== false) {
             $base_status = 'absent';
         }

@@ -510,7 +510,7 @@ class AttendanceLogger:
             
             # Check if daily_attendance record exists
             cursor.execute("""
-                SELECT id, time_in, time_out, late_minutes FROM daily_attendance
+                SELECT id, time_in, time_out, late_minutes, status FROM daily_attendance
                 WHERE employee_id = ? AND attendance_date = ?
             """, (employee_db_id, log_date))
             
@@ -629,11 +629,12 @@ class AttendanceLogger:
                         print(f"     ⏰ Scheduled hours: {scheduled_hours} min ({scheduled_hours/60.0:.2f}h)")
                     
                     print(f"     📝 Creating new daily_attendance record...")
+                    new_status = 'incomplete late' if late_minutes > 0 else 'incomplete'
                     cursor.execute("""
                         INSERT INTO daily_attendance
                         (employee_id, attendance_date, time_in, late_minutes, scheduled_hours, status, calculated_at)
-                        VALUES (?, ?, ?, ?, ?, 'incomplete', ?)
-                    """, (employee_db_id, log_date, log_time_only, late_minutes, scheduled_hours, log_time_str))
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (employee_db_id, log_date, log_time_only, late_minutes, scheduled_hours, new_status, log_time_str))
                     print(f"     ✓ Created new record with scheduled_hours={scheduled_hours} min")
                 
                 print(f"     📊 Daily attendance updated: time_in recorded, late_minutes={late_minutes}")
@@ -689,9 +690,16 @@ class AttendanceLogger:
                 
                 print(f"     🔢 Calculating actual hours and status...")
                 
-                # Determine status: complete if both time_in and time_out exist
-                status = 'complete' if time_in_str and log_time_str else 'incomplete'
-                print(f"     ✓ Status determined: {status}")
+                existing_status_val = existing_record[4] if len(existing_record) > 4 and existing_record[4] else ''
+                is_manual = 'manual' in existing_status_val.lower()
+                
+                # Determine status: complete if both time_in and time_out exist (unless it was manual)
+                base_status = 'manual' if is_manual else 'complete'
+                if not time_in_str:
+                    base_status = 'manual' if is_manual else 'incomplete'
+                    
+                status = base_status
+                print(f"     ✓ Status determined: {status} (from base {existing_status_val})")
                 
                 # Calculate actual_hours with schedule clamping
                 actual_hours = 0
@@ -761,10 +769,10 @@ class AttendanceLogger:
                         import traceback
                         traceback.print_exc()
                 # Handle composite status
-                if status == 'complete':
-                    if (late_minutes and late_minutes > 0):
+                if 'complete' in status or 'manual' in status:
+                    if (late_minutes and late_minutes > 0) and 'late' not in status:
                         status += ' late'
-                    if early_departure_minutes > 0:
+                    if early_departure_minutes > 0 and 'undertime' not in status:
                         status += ' undertime'
 
                 # Update the record (scheduled_hours was already set during time_in)

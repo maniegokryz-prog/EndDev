@@ -111,7 +111,9 @@ try {
         $totalScheduledDays++;
 
         // Count by status
-        if (strpos($status, 'complete') !== false || strpos($status, 'manual') !== false) {
+        if (strpos($status, 'incomplete') !== false) {
+            // 'incomplete' status is not counted in performance metrics since the day isn't over
+        } elseif (strpos($status, 'complete') !== false || strpos($status, 'manual') !== false) {
             $completeCount++;
 
             // Check if on time or late
@@ -128,7 +130,6 @@ try {
         } elseif (strpos($status, 'absent') !== false) {
             $absentCount++;
         }
-        // Note: 'incomplete' status is not counted in any metric
     }
 
     $stmt->close();
