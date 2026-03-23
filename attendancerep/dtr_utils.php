@@ -736,8 +736,8 @@ function exportNativeXLSXHistoryWorkbook($allExcelData, $filename)
         'border-style' => 'thin'
     ];
 
-    // Col widths: Date(18), TimeIn(12), TimeOut(12), Hours(12), Status(25)
-    $col_options = ['widths' => [18, 12, 12, 12, 25]];
+    // Col widths: Date(18), TimeIn(12), BreakOut(12), BreakIn(12), TimeOut(12), Hours(12), Status(25)
+    $col_options = ['widths' => [18, 12, 12, 12, 12, 12, 25]];
 
     foreach ($allExcelData as $employeeGroup) {
         $employee = $employeeGroup['employee'];
@@ -773,39 +773,43 @@ function exportNativeXLSXHistoryWorkbook($allExcelData, $filename)
         }
         $writer->writeSheetRow($sheetName, [""], $styleDataCenter); // Spacer
 
-        // Merge the top rows across 5 columns
-        $writer->markMergedCell($sheetName, 0, 0, 0, 4);
-        $writer->markMergedCell($sheetName, 1, 0, 1, 4);
-        $writer->markMergedCell($sheetName, 2, 0, 2, 4);
-        $writer->markMergedCell($sheetName, 3, 0, 3, 4);
+        // Merge the top rows across 7 columns
+        $writer->markMergedCell($sheetName, 0, 0, 0, 6);
+        $writer->markMergedCell($sheetName, 1, 0, 1, 6);
+        $writer->markMergedCell($sheetName, 2, 0, 2, 6);
+        $writer->markMergedCell($sheetName, 3, 0, 3, 6);
         if ($dateRangeStr) {
-            $writer->markMergedCell($sheetName, 4, 0, 4, 4);
-            $writer->markMergedCell($sheetName, 5, 0, 5, 4); // Spacer merge
+            $writer->markMergedCell($sheetName, 4, 0, 4, 6);
+            $writer->markMergedCell($sheetName, 5, 0, 5, 6); // Spacer merge
         } else {
-            $writer->markMergedCell($sheetName, 4, 0, 4, 4); // Spacer merge if no date range
+            $writer->markMergedCell($sheetName, 4, 0, 4, 6); // Spacer merge if no date range
         }
 
 
         // Table Header Setup using suppress_row because we write a styled row manually next
         $writer->writeSheetHeader($sheetName, [
             'Date' => 'string',
-            'Time In' => 'string',
-            'Time Out' => 'string',
+            'AM Arrival' => 'string',
+            'AM Departure' => 'string',
+            'PM Arrival' => 'string',
+            'PM Departure' => 'string',
             'Total Hours' => 'string',
             'Notes / Status' => 'string',
         ], array_merge($col_options, ['suppress_row' => true]));
 
         // Write Styled Table Header
-        $writer->writeSheetRow($sheetName, ['Date', 'Time In', 'Time Out', 'Total Hours', 'Notes / Status'], $styleHeader);
+        $writer->writeSheetRow($sheetName, ['Date', 'AM Arrival', 'AM Departure', 'PM Arrival', 'PM Departure', 'Total Hours', 'Notes / Status'], $styleHeader);
 
         if (empty($attendanceRecords)) {
-            $writer->writeSheetRow($sheetName, ['No records found.', '', '', '', ''], $styleDataCell);
+            $writer->writeSheetRow($sheetName, ['No records found.', '', '', '', '', '', ''], $styleDataCell);
             $rowNum = $dateRangeStr ? 7 : 6;
-            $writer->markMergedCell($sheetName, $rowNum, 0, $rowNum, 4);
+            $writer->markMergedCell($sheetName, $rowNum, 0, $rowNum, 6);
         } else {
             foreach ($attendanceRecords as $date => $data) {
                 $dateStr = $data['attendance_date'];
                 $timeIn = (!empty($data['time_in']) && $data['time_in'] !== '00:00:00') ? date('h:i A', strtotime($data['time_in'])) : '-';
+                $breakOut = (!empty($data['break_out']) && $data['break_out'] !== '00:00:00') ? date('h:i A', strtotime($data['break_out'])) : '-';
+                $breakIn = (!empty($data['break_in']) && $data['break_in'] !== '00:00:00') ? date('h:i A', strtotime($data['break_in'])) : '-';
                 $timeOut = (!empty($data['time_out']) && $data['time_out'] !== '00:00:00') ? date('h:i A', strtotime($data['time_out'])) : '-';
 
                 // Hours
@@ -832,6 +836,8 @@ function exportNativeXLSXHistoryWorkbook($allExcelData, $filename)
                 $writer->writeSheetRow($sheetName, [
                     date('F j, Y', strtotime($dateStr)),
                     $timeIn,
+                    $breakOut,
+                    $breakIn,
                     $timeOut,
                     $hours,
                     $notes

@@ -45,7 +45,7 @@ foreach ($employees as $row) {
     ];
 
     // Fetch all attendance for this employee
-    $sql = "SELECT attendance_date, time_in, time_out, actual_hours, status, notes FROM daily_attendance 
+    $sql = "SELECT attendance_date, time_in, time_out, break_out, break_in, actual_hours, status, notes FROM daily_attendance 
             WHERE employee_id = ? AND status != 'visit' ORDER BY attendance_date ASC";
 
     $stmt = $conn->prepare($sql);

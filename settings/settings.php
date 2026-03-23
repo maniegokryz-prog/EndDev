@@ -689,8 +689,8 @@ endif; ?>
           document.getElementById("confirmDeleteBtn").addEventListener("click", async function () {
             const password = document.getElementById('clearPasswordInput').value.trim();
             const errorDiv = document.getElementById('clearPasswordError');
-            const btnText = document.getElementById('deleteBtnText');
-            const btnSpinner = document.getElementById('deleteBtnSpinner');
+            const btnText = document.getElementById('confirmDeleteBtnText');
+            const btnSpinner = document.getElementById('confirmDeleteBtnSpinner');
 
             if (!password) {
               errorDiv.textContent = 'Please enter your password';
