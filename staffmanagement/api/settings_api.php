@@ -11,16 +11,16 @@ header('Content-Type: application/json');
 $GLOBALS['error_reporting_configured'] = true;
 
 // ── Cloud Sync Helper ────────────────────────────────────────────────────────
-// Push a single system_settings row to Hostinger after local save.
-// Fires asynchronously (best-effort) — local save is never blocked by this.
+// Pushes a setting to Hostinger via the dedicated sync_settings.php endpoint.
+// Falls back silently — local save is never blocked.
 function pushSettingToCloud($key, $value) {
-    $cloudUrl = 'http://bpcfaceid.com/api/sync_endpoint.php';
-    $apiKey   = 'lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo';
+    $apiKey  = 'lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo';
+    // Use the dedicated settings sync endpoint (no whitelist restrictions)
+    $cloudUrl = 'http://bpcfaceid.com/api/sync_settings.php';
 
     $payload = http_build_query([
-        'action' => 'push',
-        'table'  => 'system_settings',
-        'data'   => json_encode(['setting_key' => $key, 'setting_value' => (string)$value]),
+        'setting_key'   => $key,
+        'setting_value' => (string)$value,
     ]);
 
     $opts = [
@@ -28,13 +28,15 @@ function pushSettingToCloud($key, $value) {
             'method'  => 'POST',
             'header'  => "Content-Type: application/x-www-form-urlencoded\r\nX-API-KEY: $apiKey\r\n",
             'content' => $payload,
-            'timeout' => 4,
+            'timeout' => 5,
             'ignore_errors' => true,
         ],
     ];
     @file_get_contents($cloudUrl, false, stream_context_create($opts));
 }
 // ────────────────────────────────────────────────────────────────────────────
+
+
 
 try {
     require_once __DIR__ . '/../../db_connection.php';
