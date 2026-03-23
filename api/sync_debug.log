@@ -28250,3 +28250,256 @@
 2026-03-23 15:30:05 - Push error on daily_attendance ID 1: Invalid JSON from VPS: 
 2026-03-23 15:30:05 - Push error on notifications ID 1: Invalid JSON from VPS: 
 2026-03-23 15:30:05 - Push error on notifications ID 2: Invalid JSON from VPS: 
+2026-03-23 07:36:28 - --- Sync Cycle Started ---
+2026-03-23 07:36:29 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-23 07:36:29 - Successfully pushed to VPS for employees ID 1
+2026-03-23 07:36:47 - --- Sync Cycle Started ---
+2026-03-23 07:36:51 - --- Sync Cycle Started ---
+2026-03-23 07:36:55 - --- Sync Cycle Started ---
+2026-03-23 07:37:00 - --- Sync Cycle Started ---
+2026-03-23 07:37:30 - --- Sync Cycle Started ---
+2026-03-23 07:37:31 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-23 07:37:31 - Successfully pushed to VPS for employees ID 2
+2026-03-23 07:38:01 - --- Sync Cycle Started ---
+2026-03-23 07:38:12 - --- Sync Cycle Started ---
+2026-03-23 07:38:12 - Pulled tables from VPS: schedule_requests, notifications
+2026-03-23 07:38:12 - Successfully pulled and updated local record on schedule_requests with VPS id 1
+2026-03-23 07:38:12 - Successfully pulled and updated local record on notifications with VPS id 1
+2026-03-23 07:38:14 - --- Sync Cycle Started ---
+2026-03-23 07:38:44 - --- Sync Cycle Started ---
+2026-03-23 07:39:14 - --- Sync Cycle Started ---
+2026-03-23 07:39:14 - Pulled tables from VPS: schedules, schedule_requests, schedule_periods, employee_schedules, notifications
+2026-03-23 07:39:14 - Successfully pulled and updated local record on schedules with VPS id 1
+2026-03-23 07:39:14 - Successfully pulled and updated local record on schedule_requests with VPS id 1
+2026-03-23 07:39:14 - Successfully pulled and updated local record on schedule_periods with VPS id 1
+2026-03-23 07:39:14 - Successfully pulled and updated local record on schedule_periods with VPS id 2
+2026-03-23 07:39:14 - Successfully pulled and updated local record on schedule_periods with VPS id 3
+2026-03-23 07:39:14 - Successfully pulled and updated local record on schedule_periods with VPS id 4
+2026-03-23 07:39:15 - Successfully pulled and updated local record on schedule_periods with VPS id 5
+2026-03-23 07:39:15 - Successfully pulled and updated local record on schedule_periods with VPS id 6
+2026-03-23 07:39:15 - Successfully pulled and updated local record on employee_schedules with VPS id 1
+2026-03-23 07:39:15 - Successfully pulled and updated local record on notifications with VPS id 2
+2026-03-23 07:39:15 - Successfully pulled and updated local record on notifications with VPS id 3
+2026-03-23 07:39:45 - --- Sync Cycle Started ---
+2026-03-23 07:40:15 - --- Sync Cycle Started ---
+2026-03-23 07:40:44 - --- Sync Cycle Started ---
+2026-03-23 07:40:44 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:40:45 - --- Sync Cycle Started ---
+2026-03-23 07:40:45 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:40:46 - --- Sync Cycle Started ---
+2026-03-23 07:40:46 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:40:48 - --- Sync Cycle Started ---
+2026-03-23 07:40:48 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:02 - --- Sync Cycle Started ---
+2026-03-23 07:41:02 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:09 - --- Sync Cycle Started ---
+2026-03-23 07:41:09 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:10 - --- Sync Cycle Started ---
+2026-03-23 07:41:11 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:27 - --- Sync Cycle Started ---
+2026-03-23 07:41:27 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:28 - --- Sync Cycle Started ---
+2026-03-23 07:41:28 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:30 - --- Sync Cycle Started ---
+2026-03-23 07:41:30 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:32 - --- Sync Cycle Started ---
+2026-03-23 07:41:32 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:39 - --- Sync Cycle Started ---
+2026-03-23 07:41:39 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:40 - --- Sync Cycle Started ---
+2026-03-23 07:41:40 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:46 - --- Sync Cycle Started ---
+2026-03-23 07:41:47 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:49 - --- Sync Cycle Started ---
+2026-03-23 07:41:50 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:41:51 - --- Sync Cycle Started ---
+2026-03-23 07:41:52 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:42:21 - --- Sync Cycle Started ---
+2026-03-23 07:42:22 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:42:51 - --- Sync Cycle Started ---
+2026-03-23 07:42:52 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:43:06 - --- Sync Cycle Started ---
+2026-03-23 07:43:06 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:43:36 - --- Sync Cycle Started ---
+2026-03-23 07:43:36 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:44:06 - --- Sync Cycle Started ---
+2026-03-23 07:44:06 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:44:08 - --- Sync Cycle Started ---
+2026-03-23 07:44:08 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:44:38 - --- Sync Cycle Started ---
+2026-03-23 07:44:38 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:45:05 - --- Sync Cycle Started ---
+2026-03-23 07:45:05 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:45:07 - --- Sync Cycle Started ---
+2026-03-23 07:45:07 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:45:07 - --- Sync Cycle Started ---
+2026-03-23 07:45:07 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:45:11 - --- Sync Cycle Started ---
+2026-03-23 07:45:11 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:45:41 - --- Sync Cycle Started ---
+2026-03-23 07:45:41 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:46:01 - --- Sync Cycle Started ---
+2026-03-23 07:46:01 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:46:31 - --- Sync Cycle Started ---
+2026-03-23 07:46:31 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:47:01 - --- Sync Cycle Started ---
+2026-03-23 07:47:01 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:47:31 - --- Sync Cycle Started ---
+2026-03-23 07:47:31 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:48:01 - --- Sync Cycle Started ---
+2026-03-23 07:48:01 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:48:31 - --- Sync Cycle Started ---
+2026-03-23 07:48:31 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:49:01 - --- Sync Cycle Started ---
+2026-03-23 07:49:01 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:49:31 - --- Sync Cycle Started ---
+2026-03-23 07:49:31 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:49:38 - --- Sync Cycle Started ---
+2026-03-23 07:49:38 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:51:24 - --- Sync Cycle Started ---
+2026-03-23 07:51:25 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:51:55 - --- Sync Cycle Started ---
+2026-03-23 07:51:55 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:52:08 - --- Sync Cycle Started ---
+2026-03-23 07:52:08 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:52:10 - --- Sync Cycle Started ---
+2026-03-23 07:52:10 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:52:41 - --- Sync Cycle Started ---
+2026-03-23 07:53:11 - --- Sync Cycle Started ---
+2026-03-23 07:53:41 - --- Sync Cycle Started ---
+2026-03-23 07:54:11 - --- Sync Cycle Started ---
+2026-03-23 07:54:41 - --- Sync Cycle Started ---
+2026-03-23 07:54:53 - --- Sync Cycle Started ---
+2026-03-23 07:55:23 - --- Sync Cycle Started ---
+2026-03-23 07:55:23 - Failed to upload profile_photo: Failed to save uploaded file
+2026-03-23 07:55:23 - Successfully pushed to VPS for employees ID 1
+2026-03-23 07:55:42 - --- Sync Cycle Started ---
+2026-03-23 07:55:42 - Successfully pushed to VPS for schedules ID 1
+2026-03-23 07:55:42 - Successfully pushed to VPS for schedule_periods ID 1
+2026-03-23 07:55:42 - Successfully pushed to VPS for schedule_periods ID 2
+2026-03-23 07:55:42 - Successfully pushed to VPS for schedule_periods ID 3
+2026-03-23 07:55:43 - Successfully pushed to VPS for schedule_periods ID 4
+2026-03-23 07:55:43 - Successfully pushed to VPS for schedule_periods ID 5
+2026-03-23 07:55:43 - Successfully pushed to VPS for employee_schedules ID 1
+2026-03-23 07:55:43 - Successfully pushed to VPS for notifications ID 1
+2026-03-23 07:56:13 - --- Sync Cycle Started ---
+2026-03-23 07:56:43 - --- Sync Cycle Started ---
+2026-03-23 07:57:01 - --- Sync Cycle Started ---
+2026-03-23 07:57:01 - Pulled tables from VPS: daily_attendance
+2026-03-23 07:57:01 - Successfully pulled and updated local record on daily_attendance with VPS id 1
+2026-03-23 07:57:31 - --- Sync Cycle Started ---
+2026-03-23 07:58:01 - --- Sync Cycle Started ---
+2026-03-23 07:58:31 - --- Sync Cycle Started ---
+2026-03-23 07:59:01 - --- Sync Cycle Started ---
+2026-03-23 07:59:31 - --- Sync Cycle Started ---
+2026-03-23 07:59:41 - --- Sync Cycle Started ---
+2026-03-23 07:59:42 - Successfully pushed to VPS for daily_attendance ID 2
+2026-03-23 08:00:12 - --- Sync Cycle Started ---
+2026-03-23 08:00:42 - --- Sync Cycle Started ---
+2026-03-23 08:01:12 - --- Sync Cycle Started ---
+2026-03-23 08:01:42 - --- Sync Cycle Started ---
+2026-03-23 08:02:12 - --- Sync Cycle Started ---
+2026-03-23 08:02:42 - --- Sync Cycle Started ---
+2026-03-23 08:03:12 - --- Sync Cycle Started ---
+2026-03-23 08:03:42 - --- Sync Cycle Started ---
+2026-03-23 08:04:12 - --- Sync Cycle Started ---
+2026-03-23 08:04:42 - --- Sync Cycle Started ---
+2026-03-23 08:05:11 - --- Sync Cycle Started ---
+2026-03-23 08:05:12 - --- Sync Cycle Started ---
+2026-03-23 08:05:18 - --- Sync Cycle Started ---
+2026-03-23 08:05:19 - --- Sync Cycle Started ---
+2026-03-23 08:05:25 - --- Sync Cycle Started ---
+2026-03-23 08:05:26 - --- Sync Cycle Started ---
+2026-03-23 08:05:28 - --- Sync Cycle Started ---
+2026-03-23 08:12:37 - --- Sync Cycle Started ---
+2026-03-23 08:12:39 - --- Sync Cycle Started ---
+2026-03-23 08:12:46 - --- Sync Cycle Started ---
+2026-03-23 08:12:48 - --- Sync Cycle Started ---
+2026-03-23 08:12:57 - --- Sync Cycle Started ---
+2026-03-23 08:13:04 - --- Sync Cycle Started ---
+2026-03-23 08:13:05 - --- Sync Cycle Started ---
+2026-03-23 08:13:11 - --- Sync Cycle Started ---
+2026-03-23 08:13:12 - --- Sync Cycle Started ---
+2026-03-23 08:13:13 - --- Sync Cycle Started ---
+2026-03-23 08:13:28 - --- Sync Cycle Started ---
+2026-03-23 08:13:59 - --- Sync Cycle Started ---
+2026-03-23 08:14:29 - --- Sync Cycle Started ---
+2026-03-23 08:14:59 - --- Sync Cycle Started ---
+2026-03-23 08:15:10 - --- Sync Cycle Started ---
+2026-03-23 08:15:12 - --- Sync Cycle Started ---
+2026-03-23 08:15:42 - --- Sync Cycle Started ---
+2026-03-23 08:16:12 - --- Sync Cycle Started ---
+2026-03-23 08:16:42 - --- Sync Cycle Started ---
+2026-03-23 08:16:48 - --- Sync Cycle Started ---
+2026-03-23 08:16:50 - --- Sync Cycle Started ---
+2026-03-23 08:17:15 - --- Sync Cycle Started ---
+2026-03-23 08:17:16 - Successfully pushed to VPS for daily_attendance ID 3
+2026-03-23 08:17:38 - --- Sync Cycle Started ---
+2026-03-23 08:18:08 - --- Sync Cycle Started ---
+2026-03-23 08:18:09 - --- Sync Cycle Started ---
+2026-03-23 08:18:18 - --- Sync Cycle Started ---
+2026-03-23 08:18:20 - --- Sync Cycle Started ---
+2026-03-23 08:18:30 - --- Sync Cycle Started ---
+2026-03-23 08:19:55 - --- Sync Cycle Started ---
+2026-03-23 08:20:26 - --- Sync Cycle Started ---
+2026-03-23 08:20:56 - --- Sync Cycle Started ---
+2026-03-23 08:21:21 - --- Sync Cycle Started ---
+2026-03-23 08:21:23 - --- Sync Cycle Started ---
+2026-03-23 08:21:48 - --- Sync Cycle Started ---
+2026-03-23 08:21:48 - Successfully pushed to VPS for daily_attendance ID 4
+2026-03-23 08:21:49 - --- Sync Cycle Started ---
+2026-03-23 08:22:15 - --- Sync Cycle Started ---
+2026-03-23 08:22:17 - --- Sync Cycle Started ---
+2026-03-23 08:22:18 - --- Sync Cycle Started ---
+2026-03-23 08:22:40 - --- Sync Cycle Started ---
+2026-03-23 08:22:40 - Successfully pushed to VPS for daily_attendance ID 1
+2026-03-23 08:25:06 - --- Sync Cycle Started ---
+2026-03-23 08:25:09 - --- Sync Cycle Started ---
+2026-03-23 08:25:11 - --- Sync Cycle Started ---
+2026-03-23 08:25:41 - --- Sync Cycle Started ---
+2026-03-23 08:26:00 - --- Sync Cycle Started ---
+2026-03-23 08:26:01 - Successfully pushed to VPS for daily_attendance ID 5
+2026-03-23 08:26:02 - --- Sync Cycle Started ---
+2026-03-23 08:34:10 - --- Sync Cycle Started ---
+2026-03-23 08:34:11 - --- Sync Cycle Started ---
+2026-03-23 08:34:42 - --- Sync Cycle Started ---
+2026-03-23 08:35:12 - --- Sync Cycle Started ---
+2026-03-23 08:35:42 - --- Sync Cycle Started ---
+2026-03-23 08:36:12 - --- Sync Cycle Started ---
+2026-03-23 08:36:42 - --- Sync Cycle Started ---
+2026-03-23 08:37:11 - --- Sync Cycle Started ---
+2026-03-23 08:37:13 - --- Sync Cycle Started ---
+2026-03-23 08:37:43 - --- Sync Cycle Started ---
+2026-03-23 08:38:14 - --- Sync Cycle Started ---
+2026-03-23 08:38:44 - --- Sync Cycle Started ---
+2026-03-23 08:39:14 - --- Sync Cycle Started ---
+2026-03-23 08:39:44 - --- Sync Cycle Started ---
+2026-03-23 08:40:14 - --- Sync Cycle Started ---
+2026-03-23 08:40:58 - --- Sync Cycle Started ---
+2026-03-23 08:41:04 - --- Sync Cycle Started ---
+2026-03-23 08:41:35 - --- Sync Cycle Started ---
+2026-03-23 08:42:04 - --- Sync Cycle Started ---
+2026-03-23 08:42:35 - --- Sync Cycle Started ---
+2026-03-23 08:43:05 - --- Sync Cycle Started ---
+2026-03-23 08:43:35 - --- Sync Cycle Started ---
+2026-03-23 08:44:05 - --- Sync Cycle Started ---
+2026-03-23 08:44:42 - --- Sync Cycle Started ---
+2026-03-23 08:45:42 - --- Sync Cycle Started ---
+2026-03-23 08:45:45 - --- Sync Cycle Started ---
+2026-03-23 08:46:15 - --- Sync Cycle Started ---
+2026-03-23 08:46:45 - --- Sync Cycle Started ---
+2026-03-23 08:47:15 - --- Sync Cycle Started ---
+2026-03-23 08:47:45 - --- Sync Cycle Started ---
+2026-03-23 08:48:11 - --- Sync Cycle Started ---
+2026-03-23 08:48:42 - --- Sync Cycle Started ---
+2026-03-23 08:49:11 - --- Sync Cycle Started ---
+2026-03-23 08:49:41 - --- Sync Cycle Started ---
+2026-03-23 08:50:12 - --- Sync Cycle Started ---
+2026-03-23 08:50:42 - --- Sync Cycle Started ---
+2026-03-23 08:51:12 - --- Sync Cycle Started ---
+2026-03-23 08:51:43 - --- Sync Cycle Started ---
+2026-03-23 08:52:12 - --- Sync Cycle Started ---
+2026-03-23 08:52:42 - --- Sync Cycle Started ---
+2026-03-23 08:52:45 - --- Sync Cycle Started ---
+2026-03-23 08:53:16 - --- Sync Cycle Started ---
+2026-03-23 08:53:46 - --- Sync Cycle Started ---

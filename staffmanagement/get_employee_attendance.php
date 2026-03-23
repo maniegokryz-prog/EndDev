@@ -183,7 +183,7 @@ try {
         // Format hours worked
         // Dynamic recalculation to bypass DB log penalty for older records
         if (!empty($row['time_in']) && !empty($row['time_out'])) {
-            $row['actual_hours'] = calculateActualHoursWithClamping($row['time_in'], $row['time_out'], $schedule, $row['attendance_date'], $employee_info['roles']);
+            $row['actual_hours'] = calculateActualHoursWithClamping($row['time_in'], $row['time_out'], $schedule, $row['attendance_date'], $employee_info['roles'], $row['break_out'], $row['break_in']);
         }
 
         $hours_worked = null;

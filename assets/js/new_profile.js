@@ -1437,7 +1437,7 @@ function initManualAttendance() {
         if (!timeInputs || timeInputs.length < 2) return;
 
         const timeInInput = timeInputs[0];
-        const timeOutInput = timeInputs[1];
+        const timeOutInput = timeInputs[timeInputs.length - 1];
 
         if (dateInput && timeInInput && timeOutInput) {
             const oldVal = dateInput.value;
@@ -1497,9 +1497,9 @@ function initManualAttendance() {
             </div>
             ${inputsHtml}
             <div class="${isNTP ? 'col-md-1' : 'col-md-3'}">
-                <div class="pb-1">
-                    <button class="btn-modern btn-solid-warning btn-sm me-1 clearRow" title="Clear Times"><i class="bi bi-eraser"></i></button>
-                    <button class="btn-modern btn-solid-danger btn-sm removeRow" title="Remove Row"><i class="bi bi-x-lg"></i></button>
+                <div class="pb-1 d-flex align-items-center">
+                    <button type="button" class="btn-modern btn-solid-warning btn-sm me-1 clearRow" title="Clear Times" style="width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; display: inline-flex; justify-content: center; align-items: center;"><i class="bi bi-eraser"></i></button>
+                    <button type="button" class="btn-modern btn-solid-danger btn-sm removeRow" title="Remove Row" style="width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; display: inline-flex; justify-content: center; align-items: center;"><i class="bi bi-x-lg"></i></button>
                 </div>
             </div>`;
         attendanceContainer.appendChild(newRow);

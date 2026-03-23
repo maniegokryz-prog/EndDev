@@ -98,7 +98,7 @@ foreach ($periods as $key => $period) {
         // RECALCULATE ACTUAL HOURS DYNAMICALLY
         // This ensures the "Last Hour" / Clamping rules apply even to historic data
         if (!empty($r['time_in']) && !empty($r['time_out'])) {
-            $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role']);
+            $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role'], $r['break_out'], $r['break_in']);
         }
 
         $d = (int) date('j', strtotime($r['attendance_date']));

@@ -126,7 +126,9 @@ if ($id) {
           $row['time_out'],
           $schedule,
           $row['attendance_date'],
-          $employee['role']
+          $employee['role'],
+          $row['break_out'],
+          $row['break_in']
         );
       }
       $attendanceRecords[] = $row;

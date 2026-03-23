@@ -58,7 +58,7 @@ foreach ($employees as $row) {
 
     while ($r = $res->fetch_assoc()) {
         if (!empty($r['time_in']) && !empty($r['time_out'])) {
-            $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role']);
+            $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role'], $r['break_out'], $r['break_in']);
         }
         $attendanceRecords[$r['attendance_date']] = $r;
     }

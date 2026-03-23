@@ -37,7 +37,7 @@ if ($row = $res->fetch_assoc()) {
         $tIn = '08:00:00';
         $tOut = '15:00:00'; // 3:00 PM
         echo "Test Calc: In $tIn, Out $tOut<br>";
-        $hours = calculateActualHoursWithClamping($tIn, $tOut, $schedule, $date, $row['roles']);
+        $hours = calculateActualHoursWithClamping($tIn, $tOut, $schedule, $date, $row['roles'], null, null);
         echo "Calculated Hours: $hours (Expected 3.5 if clamped to 3.5h schedule)<br>";
     } else {
         echo "Schedule NOT FOUND for Monday.<br>";

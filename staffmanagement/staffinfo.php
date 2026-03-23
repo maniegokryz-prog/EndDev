@@ -866,6 +866,9 @@ $schedules = $viewer->getSchedules();
               <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Save Failed</h5>
                 <p id="attendanceErrorMessage">An error occurred while saving records.</p>
+                <div class="mt-3">
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
               </div>
             </div>
           </div>

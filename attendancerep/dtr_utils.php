@@ -525,7 +525,7 @@ function getEmployeeSchedule($conn, $employeeInternalId)
 }
 
 
-function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '')
+function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '', $breakOutStr = null, $breakInStr = null)
 {
     if (empty($timeInStr) || empty($timeOutStr)) {
         return 0;
@@ -601,7 +601,19 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
     $hasNonTeaching = strpos($roleLower, 'non teaching') !== false;
     $isFacultyExempt = $hasFaculty || ($hasTeaching && !$hasNonTeaching);
 
-    if (!$isFacultyExempt && $deductionMinutes > 0) {
+    // Calculate manual break time if provided
+    $manualBreakMinutes = 0;
+    if (!empty($breakOutStr) && !empty($breakInStr)) {
+        $bOutTs = strtotime(date('Y-m-d', strtotime($dateStr)) . ' ' . $breakOutStr);
+        $bInTs  = strtotime(date('Y-m-d', strtotime($dateStr)) . ' ' . $breakInStr);
+        if ($bInTs > $bOutTs) {
+            $manualBreakMinutes = ($bInTs - $bOutTs) / 60;
+        }
+    }
+
+    if ($manualBreakMinutes > 0) {
+        $totalMinutes = max(0, $totalMinutes - $manualBreakMinutes);
+    } else if (!$isFacultyExempt && $deductionMinutes > 0) {
         // Applies to admin, staff, non-teaching etc. if worked >= 5 hours
         if ($totalMinutes >= 300) {
             $totalMinutes = max(0, $totalMinutes - $deductionMinutes);

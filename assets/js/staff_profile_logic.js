@@ -755,7 +755,7 @@ function attachDateListener(row) {
     const timeInputs = row.querySelectorAll('input[type="time"]');
     if (dateInput && timeInputs.length >= 2) {
         const timeIn = timeInputs[0];
-        const timeOut = timeInputs[1];
+        const timeOut = timeInputs[timeInputs.length - 1];
 
         // Clone to remove old listeners
         const newDateInput = dateInput.cloneNode(true);

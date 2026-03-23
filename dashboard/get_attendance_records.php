@@ -531,7 +531,7 @@ try {
             // Dynamic recalculation to bypass DB log penalty for older records
             if (!empty($row['time_in']) && !empty($row['time_out'])) {
                 $schedule = getEmployeeSchedule($conn, $row['employee_id']);
-                $row['actual_hours'] = calculateActualHoursWithClamping($row['time_in'], $row['time_out'], $schedule, $row['attendance_date'], $row['roles']);
+                $row['actual_hours'] = calculateActualHoursWithClamping($row['time_in'], $row['time_out'], $schedule, $row['attendance_date'], $row['roles'], $row['break_out'], $row['break_in']);
             }
 
             $hours_worked = null;

@@ -1385,10 +1385,10 @@ $profilePhoto .= '?v=' . microtime(true);
                                 <div class="col-md-3"><label>Time Out:</label><input type="time" class="form-control"></div>
                             <?php endif; ?>
                             <div class="col-md-3">
-                                <div class="pb-1">
-                                    <button class="btn-modern btn-solid-warning btn-sm me-1 clearRow" title="Clear Times"><i
+                                <div class="pb-1 d-flex align-items-center">
+                                    <button type="button" class="btn-modern btn-solid-warning btn-sm me-1 clearRow" title="Clear Times" style="width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; display: inline-flex; justify-content: center; align-items: center;"><i
                                             class="bi bi-eraser"></i></button>
-                                    <button class="btn-modern btn-solid-danger btn-sm removeRow" style="display:none;" title="Remove Row"><i
+                                    <button type="button" class="btn-modern btn-solid-danger btn-sm removeRow" style="display:none; width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; justify-content: center; align-items: center;" title="Remove Row"><i
                                             class="bi bi-x-lg"></i></button>
                                 </div>
                             </div>
@@ -1467,6 +1467,9 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 class="text-danger">Save Failed</h5>
                 <p id="attendanceErrorMessage"></p>
+                <div class="mt-3">
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>

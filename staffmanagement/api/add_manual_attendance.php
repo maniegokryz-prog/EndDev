@@ -32,7 +32,8 @@ try {
             throw new Exception('Invalid action');
     }
 
-} catch (Exception $e) {
+}
+catch (Exception $e) {
     http_response_code(400);
     error_log("Manual Attendance Error: " . $e->getMessage());
     error_log("Stack trace: " . $e->getTraceAsString());
@@ -227,7 +228,7 @@ function addManualAttendance($conn)
                     ];
                 }
                 $scheduleToPass = [$dayOfWeekDb => $formatted_schedule];
-                $actual_hours = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole);
+                $actual_hours = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole, $break_out, $break_in);
 
                 // Debug logging to a custom file
                 file_put_contents(
@@ -268,7 +269,8 @@ function addManualAttendance($conn)
                     // Left early (undertime)
                     $early_interval = $timeOutObj->diff($scheduled_end);
                     $early_departure_minutes = ($early_interval->h * 60) + $early_interval->i;
-                } else if ($timeOutObj > $scheduled_end) {
+                }
+                else if ($timeOutObj > $scheduled_end) {
                     // Overtime
                     $overtime_interval = $scheduled_end->diff($timeOutObj);
                     $overtime_minutes = ($overtime_interval->h * 60) + $overtime_interval->i;
@@ -283,7 +285,7 @@ function addManualAttendance($conn)
             $existing = $check_stmt->get_result()->fetch_assoc();
 
             $status_base = ($timeOutObj) ? 'manual' : 'manual incomplete';
-            
+
             // Build composite status
             if (strpos($status_base, 'manual') !== false) {
                 if ($late_minutes > 0) {
@@ -330,7 +332,8 @@ function addManualAttendance($conn)
                     $employee_id,
                     $date
                 );
-            } else {
+            }
+            else {
                 // Insert new record
                 $sql = "INSERT INTO daily_attendance 
                         (employee_id, attendance_date, time_in, time_out, break_out, break_in, scheduled_hours, actual_hours, 
@@ -380,7 +383,8 @@ function addManualAttendance($conn)
                     'overtime_minutes' => $overtime_minutes,
                     'status' => $status
                 ], $action, $whereClause);
-            } else {
+            }
+            else {
                 $errors[] = "Record " . ($index + 1) . ": Database error - " . $stmt->error;
                 error_log("Manual Attendance SQL Error: " . $stmt->error . " | SQL: " . $sql);
             }
@@ -401,11 +405,13 @@ function addManualAttendance($conn)
             }
 
             echo json_encode($response);
-        } else {
+        }
+        else {
             throw new Exception('No records were added. Errors: ' . implode('; ', $errors));
         }
 
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
         $conn->rollback();
         throw $e;
     }
@@ -433,9 +439,12 @@ function updateTimeOut($conn)
         $break_out = $data['break_out'] ?? null;
         $break_in = $data['break_in'] ?? null;
 
-        if ($time_out !== null && trim($time_out) === '') $time_out = null;
-        if ($break_out !== null && trim($break_out) === '') $break_out = null;
-        if ($break_in !== null && trim($break_in) === '') $break_in = null;
+        if ($time_out !== null && trim($time_out) === '')
+            $time_out = null;
+        if ($break_out !== null && trim($break_out) === '')
+            $break_out = null;
+        if ($break_in !== null && trim($break_in) === '')
+            $break_in = null;
 
         if (!$record_id || !$employee_id || !$date) {
             throw new Exception('Missing required fields: record_id, employee_id, date');
@@ -513,7 +522,7 @@ function updateTimeOut($conn)
 
         // Calculate actual hours worked (in minutes)
         $scheduleToPass = [$dayOfWeekDb => $formatted_schedule];
-        $actual_minutes = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole);
+        $actual_minutes = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole, $break_out, $break_in);
 
         $time_in_dt = new DateTime($date . ' ' . $time_in);
         $time_out_dt = new DateTime($date . ' ' . $time_out);
@@ -632,7 +641,8 @@ function updateTimeOut($conn)
             ]
         ]);
 
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
         if (isset($conn)) {
             $conn->rollback();
         }
