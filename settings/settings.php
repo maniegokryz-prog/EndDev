@@ -493,7 +493,7 @@ endif; ?>
 
                 <div class="form-check form-switch mb-3">
                   <input class="form-check-input" type="checkbox" id="deductLateTimeToggle" checked>
-                  <label class="form-check-label fw-semibold" for="deductLateTimeToggle">Apply Grace Period Waiver</label>
+                  <label class="form-check-label fw-semibold" for="deductLateTimeToggle">Apply Late Deduction</label>
                   <div class="small text-muted">If disabled, exact late time will be deducted regardless of grace period.</div>
                 </div>
 
@@ -514,6 +514,24 @@ endif; ?>
                   <button type="button" class="btn btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
                   <button type="button" class="btn btn-solid-success fw-bold px-4"
                     id="saveGracePeriodBtn">Save Changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🔹 TOGGLE CONFIRMATION MODAL -->
+        <div class="modal fade" id="gracePeriodToggleConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center border-0 shadow-lg p-3">
+              <div class="modal-body pb-4">
+                <i class="bi bi-question-circle-fill text-success mb-3" style="font-size:3rem;"></i>
+                <h5 class="mb-3" id="gracePeriodToggleConfirmTitle">Turn ON Late Deduction?</h5>
+                <p class="text-muted mb-4" id="gracePeriodToggleConfirmMsg">If enabled, employees arriving late but within the grace period will not have that time deducted.</p>
+                
+                <div class="d-flex justify-content-center gap-3">
+                  <button type="button" class="btn btn-solid-danger fw-bold px-4" id="cancelToggleBtn">Cancel</button>
+                  <button type="button" class="btn btn-solid-success fw-bold px-4" id="confirmToggleBtn">Yes, Confirm</button>
                 </div>
               </div>
             </div>
@@ -973,6 +991,50 @@ endif; ?>
                     }
                   })
                   .catch(err => console.error('Fetch error:', err));
+              });
+            }
+
+            const toggle = document.getElementById('deductLateTimeToggle');
+            const toggleModalEl = document.getElementById('gracePeriodToggleConfirmModal');
+            let pendingToggleState = null;
+
+            if (toggle && toggleModalEl) {
+              const toggleModal = new bootstrap.Modal(toggleModalEl);
+              const mainModalEl = document.getElementById('gracePeriodModal');
+              const mainModal = bootstrap.Modal.getOrCreateInstance(mainModalEl);
+              
+              toggle.addEventListener('change', function (e) {
+                // Prevent immediate UI change - revert it
+                const isChecking = this.checked;
+                this.checked = !isChecking; 
+                pendingToggleState = isChecking;
+
+                // Update modal text based on state
+                document.getElementById('gracePeriodToggleConfirmTitle').textContent = isChecking ? 
+                  'Turn ON Late Deduction?' : 'Turn OFF Late Deduction?';
+                
+                document.getElementById('gracePeriodToggleConfirmMsg').textContent = isChecking ?
+                  'If enabled, employees arriving late but within the grace period will not have that time deducted.' :
+                  'If disabled, exact late minutes will ALWAYS be deducted from actual hours worked, regardless of the grace period.';
+                
+                // Hide main modal, show confirmation
+                mainModal.hide();
+                toggleModal.show();
+              });
+
+              document.getElementById('cancelToggleBtn').addEventListener('click', function() {
+                toggleModal.hide();
+                mainModal.show();
+                pendingToggleState = null;
+              });
+
+              document.getElementById('confirmToggleBtn').addEventListener('click', function() {
+                if (pendingToggleState !== null) {
+                  toggle.checked = pendingToggleState;
+                }
+                toggleModal.hide();
+                mainModal.show();
+                pendingToggleState = null;
               });
             }
 
