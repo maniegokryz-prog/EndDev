@@ -557,6 +557,45 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
         $tInTs  = strtotime("$dateOnly " . date('H:i:s', strtotime($timeInStr)));
         $tOutTs = strtotime("$dateOnly " . date('H:i:s', strtotime($timeOutStr)));
 
+        // --- Grace Period & Late Deduction Logic ---
+        static $graceSettings = null;
+        if ($graceSettings === null) {
+            global $conn;
+            $dbConn = isset($conn) ? $conn : null;
+            $graceSettings = ['minutes' => 0, 'deduct' => 1];
+            if ($dbConn) {
+                $res = $dbConn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('grace_period_minutes', 'deduct_late_time')");
+                if ($res) {
+                    while ($r = $res->fetch_assoc()) {
+                        if ($r['setting_key'] === 'grace_period_minutes') {
+                            $graceSettings['minutes'] = (int) $r['setting_value'];
+                        } elseif ($r['setting_key'] === 'deduct_late_time') {
+                            $graceSettings['deduct'] = (int) $r['setting_value'];
+                        }
+                    }
+                }
+            }
+        }
+
+        $lateSeconds = $tInTs - $schedStartTs;
+        if ($lateSeconds > 0) {
+            $lateMinutes = $lateSeconds / 60;
+            if ($graceSettings['deduct'] == 1) {
+                if ($lateMinutes <= $graceSettings['minutes']) {
+                    // Late but within grace period -> count as exactly on time
+                    $tInTs = $schedStartTs;
+                } else {
+                    // Exceeds grace period -> apply WHOLE HOUR deduction penalty
+                    // e.g. 16 mins late -> 1 hour penalty (tInTs becomes schedStartTs + 1 hour)
+                    // e.g. 65 mins late -> 2 hour penalty
+                    $penaltyHours = ceil($lateMinutes / 60);
+                    $tInTs = $schedStartTs + ($penaltyHours * 3600);
+                }
+            }
+            // If toggle is OFF, we do nothing to $tInTs, effectively deducting exact minutes (no waiver or hour penalty).
+        }
+        // -------------------------------------------
+
         $calcStartTs = max($tInTs, $schedStartTs);
         $calcEndTs   = min($tOutTs, $schedEndTs);
 

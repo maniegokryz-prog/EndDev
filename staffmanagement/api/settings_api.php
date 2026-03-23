@@ -97,15 +97,23 @@ try {
     }
 
     if ($action === 'get_grace_period') {
-        $sql = "SELECT setting_value FROM system_settings WHERE setting_key = 'grace_period_minutes'";
+        $sql = "SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('grace_period_minutes', 'deduct_late_time')";
         $result = $conn->query($sql);
 
         $minutes = 0; // Default
-        if ($result && $row = $result->fetch_assoc()) {
-            $minutes = (int) $row['setting_value'];
+        $deduct = 1; // Default to true (ON)
+
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                if ($row['setting_key'] === 'grace_period_minutes') {
+                    $minutes = (int) $row['setting_value'];
+                } elseif ($row['setting_key'] === 'deduct_late_time') {
+                    $deduct = (int) $row['setting_value'];
+                }
+            }
         }
 
-        echo json_encode(['success' => true, 'grace_period_minutes' => $minutes]);
+        echo json_encode(['success' => true, 'grace_period_minutes' => $minutes, 'deduct_late_time' => $deduct]);
         exit;
     }
 
@@ -121,13 +129,24 @@ try {
             $minutes = 0; // Ensure non-negative
         }
 
-        $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('grace_period_minutes', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
-        $stmt->bind_param("s", $minutes);
+        $deduct = isset($_POST['deduct_late_time']) ? (int)$_POST['deduct_late_time'] : 1;
 
-        if ($stmt->execute()) {
+        $conn->begin_transaction();
+
+        try {
+            $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('grace_period_minutes', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+            $stmt->bind_param("s", $minutes);
+            $stmt->execute();
+
+            $stmt2 = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('deduct_late_time', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+            $stmt2->bind_param("s", $deduct);
+            $stmt2->execute();
+
+            $conn->commit();
             echo json_encode(['success' => true, 'message' => 'Grace period updated']);
-        } else {
-            echo json_encode(['success' => false, 'error' => 'Update failed: ' . $conn->error]);
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo json_encode(['success' => false, 'error' => 'Update failed: ' . $e->getMessage()]);
         }
         exit;
     }

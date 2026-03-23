@@ -491,6 +491,12 @@ endif; ?>
                   as late. This applies only to the display tag.
                 </div>
 
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="deductLateTimeToggle" checked>
+                  <label class="form-check-label fw-semibold" for="deductLateTimeToggle">Apply Grace Period Waiver</label>
+                  <div class="small text-muted">If disabled, exact late time will be deducted regardless of grace period.</div>
+                </div>
+
                 <div class="mb-3">
                   <label for="gracePeriodSelect" class="form-label fw-semibold">Grace Period</label>
                   <select class="form-select" id="gracePeriodSelect">
@@ -956,6 +962,12 @@ endif; ?>
                         gracePeriodCustomInput.style.display = 'block';
                         gracePeriodCustomInput.value = minutes;
                       }
+
+                      // Set toggle state
+                      const toggle = document.getElementById('deductLateTimeToggle');
+                      if (toggle) {
+                          toggle.checked = (data.deduct_late_time == 1);
+                      }
                     } else {
                       console.error('Failed to load settings:', data.error);
                     }
@@ -1018,6 +1030,8 @@ endif; ?>
                 const formData = new FormData();
                 formData.append('action', 'update_grace_period');
                 formData.append('grace_period_minutes', minutes);
+                const isDeductOn = document.getElementById('deductLateTimeToggle').checked ? 1 : 0;
+                formData.append('deduct_late_time', isDeductOn);
 
                 fetch('../staffmanagement/api/settings_api.php', { method: 'POST', body: formData })
                   .then(res => res.json())
