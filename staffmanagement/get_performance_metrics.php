@@ -112,7 +112,11 @@ try {
 
         // Count by status
         if (strpos($status, 'incomplete') !== false) {
-            // 'incomplete' status is not counted in performance metrics since the day isn't over
+            // 'incomplete' status is not counted as full attendance since the day isn't over
+            // But if the user logged in late, we can already count the late occurrence
+            if (strpos($status, 'late') !== false) {
+                $lateCount++;
+            }
         } elseif (strpos($status, 'complete') !== false || strpos($status, 'manual') !== false) {
             $completeCount++;
 
