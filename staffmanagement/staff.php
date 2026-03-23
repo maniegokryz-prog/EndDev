@@ -5,8 +5,9 @@ require_once '../navigation.php';
 
 require '../db_connection.php';
 
-// TOGGLE: Set to true to hide the Add New Staff button entirely
-$hide_add_staff_button = false;
+// TOGGLE: Auto-hide the Add New Staff button when not on localhost
+$isLocalhost = in_array($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost', ['localhost', '127.0.0.1', '::1', 'localhost:80']);
+$hide_add_staff_button = !$isLocalhost;
 
 // Get current user info
 $currentUser = getCurrentUser();

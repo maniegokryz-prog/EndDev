@@ -4,8 +4,9 @@ require_once '../auth_guard.php';
 require_once '../navigation.php';
 require '../db_connection.php';
 
-// TOGGLE: Set to true to hide the Re-register Face button entirely (for VPS deployment)
-$hide_re_register_face_button = false;
+// TOGGLE: Auto-hide the Re-register Face button when not on localhost
+$isLocalhost = in_array($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost', ['localhost', '127.0.0.1', '::1', 'localhost:80']);
+$hide_re_register_face_button = !$isLocalhost;
 
 // Get current user info
 $currentUser = getCurrentUser();
