@@ -15,8 +15,8 @@ $GLOBALS['error_reporting_configured'] = true;
 // Falls back silently — local save is never blocked.
 function pushSettingToCloud($key, $value) {
     $apiKey  = 'lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo';
-    // Use the dedicated settings sync endpoint (no whitelist restrictions)
-    $cloudUrl = 'http://bpcfaceid.com/api/sync_settings.php';
+    // Confirmed live at: http://srv1412737.hstgr.cloud/api/sync_settings.php
+    $cloudUrl = 'http://srv1412737.hstgr.cloud/api/sync_settings.php';
 
     $payload = http_build_query([
         'setting_key'   => $key,

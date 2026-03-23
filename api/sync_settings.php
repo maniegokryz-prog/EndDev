@@ -19,7 +19,11 @@ if ($request_key !== $API_KEY) {
     exit;
 }
 
-require_once __DIR__ . '/../../db_connection.php';
+// Find db_connection.php — works on both localhost (/EndDev/api/) and Hostinger (/api/)
+$db_conn_path = file_exists(__DIR__ . '/../../db_connection.php')
+    ? __DIR__ . '/../../db_connection.php'
+    : __DIR__ . '/../db_connection.php';
+require_once $db_conn_path;
 
 $key   = $_POST['setting_key']   ?? '';
 $value = $_POST['setting_value'] ?? '';
