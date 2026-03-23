@@ -397,9 +397,69 @@ foreach ($tables_to_sync as $table) {
     }
 }
 
-header('Location: dashboard/dashboard.php');
-// echo "All tables and indexes created successfully.<br>";
+// ============================================================
+// PATCH: system_settings sync support in api/sync_endpoint.php
+// This ensures Hostinger's sync endpoint accepts system_settings
+// ============================================================
+$syncEndpointPath = __DIR__ . '/api/sync_endpoint.php';
+if (file_exists($syncEndpointPath)) {
+    $sc = file_get_contents($syncEndpointPath);
+    $scPatched = false;
 
-// Do not close the connection here if you need to use it in other included files
-// $conn->close();
+    // 1. Add system_settings to allowed_tables whitelist
+    if (strpos($sc, "'system_settings'") === false && strpos($sc, '"system_settings"') === false) {
+        $sc = str_replace("'notifications'\n    ];", "'notifications',\n        'system_settings'\n    ];", $sc);
+        $sc = str_replace("'notifications'\r\n    ];", "'notifications',\r\n        'system_settings'\r\n    ];", $sc);
+        $scPatched = true;
+    }
+
+    // 2. Add 'push' case to switch if missing
+    if (strpos($sc, "case 'push':") === false) {
+        $sc = preg_replace(
+            '/(switch\s*\(\$action\)\s*\{[\r\n]+\s*)(case\s)/m',
+            "$1case 'push':\n            handleUpsert(\$conn, \$table, \$data);\n            break;\n\n        $2",
+            $sc,
+            1
+        );
+        $scPatched = true;
+    }
+
+    // 3. Add handleUpsert function if missing
+    if (strpos($sc, 'function handleUpsert') === false) {
+        $upsertFunc = "\nfunction handleUpsert(\$conn, \$table, \$data) {\n" .
+            "    if (empty(\$data) || !is_array(\$data)) { echo json_encode(['success'=>true]); return; }\n" .
+            "    \$cols = array_keys(\$data); \$vals = array_values(\$data);\n" .
+            "    \$cs = implode(', ', array_map(function(\$c){ return \"`\$c`\"; }, \$cols));\n" .
+            "    \$vs = implode(', ', array_fill(0, count(\$vals), '?'));\n" .
+            "    \$us = implode(', ', array_map(function(\$c){ return \"`\$c`=VALUES(`\$c`)\"; }, \$cols));\n" .
+            "    \$sql = \"INSERT INTO `\$table` (\$cs) VALUES (\$vs) ON DUPLICATE KEY UPDATE \$us\";\n" .
+            "    \$s = \$conn->prepare(\$sql);\n" .
+            "    if (!\$s) throw new Exception(\$conn->error);\n" .
+            "    \$s->bind_param(str_repeat('s', count(\$vals)), ...\$vals);\n" .
+            "    \$s->execute();\n" .
+            "    echo json_encode(['success'=>true, 'message'=>'Upserted']);\n" .
+            "}\n";
+        $sc = preg_replace('/\?>\s*$/', $upsertFunc . "\n?>", $sc);
+        $scPatched = true;
+    }
+
+    if ($scPatched) {
+        file_put_contents($syncEndpointPath, $sc);
+    }
+}
+// ============================================================
+// END PATCH
+// ============================================================
+
+// Also ensure default settings exist (break_deduction_minutes, grace_period_minutes, deduct_late_time)
+$defaults = [
+    'break_deduction_minutes' => '60',
+    'grace_period_minutes'    => '0',
+    'deduct_late_time'        => '1',
+];
+foreach ($defaults as $key => $val) {
+    $conn->query("INSERT IGNORE INTO system_settings (setting_key, setting_value) VALUES ('$key', '$val')");
+}
+
+header('Location: dashboard/dashboard.php');
 ?>

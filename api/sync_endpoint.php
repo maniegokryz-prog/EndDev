@@ -137,7 +137,8 @@ function syncPullUpdates($conn)
         'leave_types',
         'employee_leaves',
         'employee_assignments',
-        'notifications'
+        'notifications',
+        'system_settings'
     ];
 
     $changes = [];
@@ -226,4 +227,19 @@ function syncUploadFile()
         echo json_encode(['success' => false, 'error' => 'Failed to save uploaded file']);
     }
 }
+
+function handleUpsert($conn, $table, $data) {
+    if (empty($data) || !is_array($data)) { echo json_encode(['success'=>true]); return; }
+    $cols = array_keys($data); $vals = array_values($data);
+    $cs = implode(', ', array_map(function($c){ return "`$c`"; }, $cols));
+    $vs = implode(', ', array_fill(0, count($vals), '?'));
+    $us = implode(', ', array_map(function($c){ return "`$c`=VALUES(`$c`)"; }, $cols));
+    $sql = "INSERT INTO `$table` ($cs) VALUES ($vs) ON DUPLICATE KEY UPDATE $us";
+    $s = $conn->prepare($sql);
+    if (!$s) throw new Exception($conn->error);
+    $s->bind_param(str_repeat('s', count($vals)), ...$vals);
+    $s->execute();
+    echo json_encode(['success'=>true, 'message'=>'Upserted']);
+}
+
 ?>
