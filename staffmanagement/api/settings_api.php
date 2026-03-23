@@ -10,6 +10,32 @@ header('Content-Type: application/json');
 // Define global flag to prevent db_connection from setting standard headers/error handling if needed
 $GLOBALS['error_reporting_configured'] = true;
 
+// ── Cloud Sync Helper ────────────────────────────────────────────────────────
+// Push a single system_settings row to Hostinger after local save.
+// Fires asynchronously (best-effort) — local save is never blocked by this.
+function pushSettingToCloud($key, $value) {
+    $cloudUrl = 'http://bpcfaceid.com/api/sync_endpoint.php';
+    $apiKey   = 'lD9OcrtiWGxmSRCV1YpdqwAk5JPygLfo';
+
+    $payload = http_build_query([
+        'action' => 'push',
+        'table'  => 'system_settings',
+        'data'   => json_encode(['setting_key' => $key, 'setting_value' => (string)$value]),
+    ]);
+
+    $opts = [
+        'http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\nX-API-KEY: $apiKey\r\n",
+            'content' => $payload,
+            'timeout' => 4,
+            'ignore_errors' => true,
+        ],
+    ];
+    @file_get_contents($cloudUrl, false, stream_context_create($opts));
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 try {
     require_once __DIR__ . '/../../db_connection.php';
 
@@ -47,10 +73,11 @@ try {
         if ($days < 0)
             $days = 0;
 
-        $stmt = $conn->prepare("UPDATE system_settings SET setting_value = ? WHERE setting_key = 'leave_notice_period_days'");
+        $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('leave_notice_period_days', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
         $stmt->bind_param("s", $days);
 
         if ($stmt->execute()) {
+            pushSettingToCloud('leave_notice_period_days', $days);
             echo json_encode(['success' => true, 'message' => 'Settings updated']);
         } else {
             echo json_encode(['success' => false, 'error' => 'Update failed: ' . $conn->error]);
@@ -83,12 +110,11 @@ try {
             $minutes = 0; // Ensure non-negative
         }
 
-        // Use ON DUPLICATE KEY UPDATE logic if key might not exist?
-        // But init script handled it. Let's stick to update, or better: INSERT ... ON DUPLICATE
         $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES ('break_deduction_minutes', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
         $stmt->bind_param("s", $minutes);
 
         if ($stmt->execute()) {
+            pushSettingToCloud('break_deduction_minutes', $minutes);
             echo json_encode(['success' => true, 'message' => 'Break settings updated']);
         } else {
             echo json_encode(['success' => false, 'error' => 'Update failed: ' . $conn->error]);
@@ -143,6 +169,11 @@ try {
             $stmt2->execute();
 
             $conn->commit();
+
+            // Push both settings to Hostinger cloud
+            pushSettingToCloud('grace_period_minutes', $minutes);
+            pushSettingToCloud('deduct_late_time', $deduct);
+
             echo json_encode(['success' => true, 'message' => 'Grace period updated']);
         } catch (Exception $e) {
             $conn->rollback();
