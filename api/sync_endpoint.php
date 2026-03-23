@@ -51,6 +51,10 @@ switch ($action) {
         fetchNotifications($conn);
         break;
 
+    case 'fetch_settings': // Hostinger serving system_settings to Localhost
+        fetchSettings($conn);
+        break;
+
     case 'mark_synced': // Localhost telling VPS it pulled successfully
         $ids = $_POST['ids'] ?? '';
         if (is_string($ids))
@@ -174,6 +178,21 @@ function fetchNotifications($conn)
     }
 
     echo json_encode(['success' => true, 'data' => $notifications]);
+}
+
+function fetchSettings($conn)
+{
+    $sql = "SELECT setting_key, setting_value FROM system_settings";
+    $result = $conn->query($sql);
+
+    $settings = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $settings[$row['setting_key']] = $row['setting_value'];
+        }
+    }
+
+    echo json_encode(['success' => true, 'data' => $settings]);
 }
 
 function syncMarkSynced($conn, $table, $ids)

@@ -188,6 +188,27 @@ if ($pullResponse && isset($pullResponse['success']) && $pullResponse['success']
     $results['errors'][] = "Pull request failed: " . ($pullResponse['error'] ?? 'Unknown network error');
 }
 
+// --- STEP 3: PULL SYSTEM SETTINGS FROM VPS ---
+$settingsResponse = sendToVPS('fetch_settings', '', []);
+
+if ($settingsResponse && isset($settingsResponse['success']) && $settingsResponse['success'] && !empty($settingsResponse['data'])) {
+    $vps_settings = $settingsResponse['data'];
+    $settings_pulled = 0;
+
+    foreach ($vps_settings as $key => $value) {
+        $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+        if ($stmt) {
+            $stmt->bind_param("ss", $key, $value);
+            if ($stmt->execute()) {
+                $settings_pulled++;
+            }
+        }
+    }
+    logSync("Successfully pulled $settings_pulled system_settings from VPS.");
+} else if ($settingsResponse && isset($settingsResponse['success']) && $settingsResponse['success'] === false) {
+    $results['errors'][] = "Fetch settings failed: " . ($settingsResponse['error'] ?? 'Unknown network error');
+}
+
 echo json_encode([
     'success' => true,
     'message' => 'Sync cycle complete',
