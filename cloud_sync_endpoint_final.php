@@ -57,13 +57,17 @@ try {
         'holidays',
         'leave_types',
         'employee_leaves',
-        'notifications'
+        'notifications',
+        'system_settings'
     ];
 
     if ($table && !in_array($table, $allowed_tables))
         throw new Exception("Table not allowed");
 
     switch ($action) {
+        case 'push': // Generic upsert from localhost → Hostinger
+            handleUpsert($conn, $table, $data);
+            break;
         case 'fetch_pending_leaves':
             fetchPendingLeaves($conn);
             break;
@@ -263,6 +267,37 @@ function upsertNotifications($conn, $batch)
     }
 
     echo json_encode(['success' => true, 'message' => "Upserted $updated notification(s)", 'count' => $updated]);
+}
+
+function handleUpsert($conn, $table, $data)
+{
+    if (empty($data) || !is_array($data)) {
+        echo json_encode(['success' => true, 'message' => 'No data']);
+        return;
+    }
+
+    $columns = array_keys($data);
+    $values  = array_values($data);
+
+    $cols_sql = implode(', ', array_map(fn($c) => "`$c`", $columns));
+    $vals_sql = implode(', ', array_fill(0, count($values), '?'));
+
+    // Build ON DUPLICATE KEY UPDATE clause
+    $update_parts = array_map(fn($c) => "`$c` = VALUES(`$c`)", $columns);
+    $update_sql   = implode(', ', $update_parts);
+
+    $sql  = "INSERT INTO `$table` ($cols_sql) VALUES ($vals_sql) ON DUPLICATE KEY UPDATE $update_sql";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) throw new Exception("Prepare failed: " . $conn->error);
+
+    $types = str_repeat('s', count($values));
+    $stmt->bind_param($types, ...$values);
+
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true, 'message' => 'Upserted successfully']);
+    } else {
+        throw new Exception($stmt->error);
+    }
 }
 
 function handleInsert($conn, $table, $data)
