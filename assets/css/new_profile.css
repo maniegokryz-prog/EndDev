@@ -321,15 +321,17 @@ body {
 
 .leave-item-card {
     border: 1px solid #e2e8f0 !important;
-    border-left: 5px solid #103932 !important; /* Thick 'line' for visibility */
+    border-left: 5px solid #103932 !important;
+    /* Thick 'line' for visibility */
     background-color: #ffffff !important;
     transition: all 0.2s ease;
-    margin: 0 !important; /* Reset margin to rely on container gap */
+    margin: 0 !important;
+    /* Reset margin to rely on container gap */
 }
 
 .leave-item-card:hover {
     background-color: #fff !important;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
 .card-header-custom {
@@ -843,17 +845,20 @@ body {
 #leaveList.leave-list-vertical {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem; /* Increased gap between requests */
+    gap: 1.25rem;
+    /* Increased gap between requests */
     height: 150px;
     max-height: 150px;
     overflow-y: auto;
-    padding: 15px 8px; /* Padding for breathing room on the first/last items */
+    padding: 15px 8px;
+    /* Padding for breathing room on the first/last items */
     scroll-snap-type: y mandatory;
     /* Removed justify-content: center to fix the top-item clipping bug */
 }
 
 #leaveList.leave-list-vertical .leave-item-card {
-    scroll-snap-align: center; /* Always snap to center */
+    scroll-snap-align: center;
+    /* Always snap to center */
     flex-shrink: 0;
 }
 
@@ -1177,4 +1182,17 @@ body {
 
 .flex-column {
     flex-direction: column !important;
+}
+/* Responsive Centering for Performance Metrics */
+@media (max-width: 768px) {
+    .metrics-row {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 0.75rem !important;
+    }
+    .metric-item {
+        flex: 0 1 calc(50% - 0.5rem) !important;
+        min-width: 140px !important;
+    }
 }

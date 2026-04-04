@@ -585,8 +585,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Main Content -->
-    <div class="content pt-2" id="content">
-        <div class="container-fluid px-4 pb-4 pt-2">
+    <div class="content pt-1" id="content">
+        <div class="container-fluid px-4 pb-4">
 
             <?php
             // Check for pending schedule requests

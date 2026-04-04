@@ -69,7 +69,7 @@ $csrfToken = $_SESSION['csrf_token'];
     </nav>
   </div>
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <div class="content pt-3" id="content">
+  <div class="content pt-1" id="content">
     <div class="container-fluid">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="display-4 text-dark">Settings</h2>

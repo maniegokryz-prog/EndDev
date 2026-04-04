@@ -153,7 +153,7 @@ if (!function_exists('getCurrentUser')) {
     </nav>
   </div>
 
-  <div class="content pt-3" id="content">
+  <div class="content pt-1" id="content">
     <div class="container-fluid">
 
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2 gap-md-3">
@@ -164,9 +164,6 @@ if (!function_exists('getCurrentUser')) {
 
       <!-- Toolbar: Filters & Search Layout -->
       <div class="row g-3 mb-4 align-items-end">
-        <div class="col-md-auto">
-          <button class="btn btn-solid-success fw-bold" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
-        </div>
         <div class="col-md-3">
           <label for="dateRangePicker" class="form-label small text-muted"><i class="bi bi-calendar3"></i> Date
             Range</label>
@@ -183,7 +180,8 @@ if (!function_exists('getCurrentUser')) {
           </select>
         </div>
 
-        <div class="col-md-auto d-flex gap-2">
+        <div class="col-md-auto d-flex gap-2 flex-wrap">
+          <button class="btn btn-solid-success fw-bold" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
           <button class="btn btn-solid-success px-4 fw-bold"
             onclick="applyFilters()">Apply</button>
           <button class="btn btn-solid-light-gray px-3 fw-bold" onclick="resetFilters()">Reset</button>

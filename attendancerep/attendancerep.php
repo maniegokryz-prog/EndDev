@@ -12,24 +12,27 @@ date_default_timezone_set('Asia/Manila');
 // Get current user info
 $currentUser = getCurrentUser();
 
-class AttendanceReportViewer {
-    private $db;
-    private $attendanceRecords = [];
-    private $errors = [];
-    private $gracePeriodMinutes = 0;
-    
-    public function __construct($database, $gracePeriodMinutes = 0) {
-        $this->db = $database;
-        $this->gracePeriodMinutes = $gracePeriodMinutes;
-    }
-    
-    public function loadTodayAttendance($filters = []) {
-        try {
-            // Get date from filters or use current date
-            $currentDate = !empty($filters['date']) ? $filters['date'] : date('Y-m-d');
-            
-            // Build query to fetch daily attendance with employee details
-            $query = "SELECT 
+class AttendanceReportViewer
+{
+  private $db;
+  private $attendanceRecords = [];
+  private $errors = [];
+  private $gracePeriodMinutes = 0;
+
+  public function __construct($database, $gracePeriodMinutes = 0)
+  {
+    $this->db = $database;
+    $this->gracePeriodMinutes = $gracePeriodMinutes;
+  }
+
+  public function loadTodayAttendance($filters = [])
+  {
+    try {
+      // Get date from filters or use current date
+      $currentDate = !empty($filters['date']) ? $filters['date'] : date('Y-m-d');
+
+      // Build query to fetch daily attendance with employee details
+      $query = "SELECT 
                         da.id,
                         da.employee_id,
                         da.attendance_date,
@@ -55,214 +58,234 @@ class AttendanceReportViewer {
                       FROM daily_attendance da
                       INNER JOIN employees e ON da.employee_id = e.id
                       WHERE da.attendance_date = ? AND da.status != 'visit'";
-            
-            $whereConditions = [];
-            $params = [$currentDate];
-            $types = 's';
-            
-            // Apply filters
-            if (!empty($filters['role']) && $filters['role'] !== 'All Roles') {
-                $whereConditions[] = "e.roles = ?";
-                $params[] = $filters['role'];
-                $types .= 's';
-            }
-            
-            if (!empty($filters['department']) && $filters['department'] !== 'All Departments') {
-                $whereConditions[] = "e.department = ?";
-                $params[] = $filters['department'];
-                $types .= 's';
-            }
-            
-            if (!empty($filters['search'])) {
-                $whereConditions[] = "(e.first_name LIKE ? OR e.last_name LIKE ? OR e.employee_id LIKE ?)";
-                $searchTerm = '%' . $filters['search'] . '%';
-                $params[] = $searchTerm;
-                $params[] = $searchTerm;
-                $params[] = $searchTerm;
-                $types .= 'sss';
-            }
-            
-            
-            // Add additional WHERE conditions
-            if (!empty($whereConditions)) {
-                $query .= " AND " . implode(" AND ", $whereConditions);
-            }
-            
-            $query .= " ORDER BY da.time_in DESC, e.last_name, e.first_name";
-            
-            // Prepare and execute
-            $stmt = $this->db->prepare($query);
-            if (!$stmt) {
-                throw new Exception('Failed to prepare statement: ' . $this->db->error);
-            }
-            
-            $stmt->bind_param($types, ...$params);
-            
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to execute query: ' . $stmt->error);
-            }
-            
-            $result = $stmt->get_result();
-            
-            $this->attendanceRecords = [];
-            while ($row = $result->fetch_assoc()) {
-                $this->attendanceRecords[] = $this->processAttendanceRecord($row);
-            }
-            
-            $stmt->close();
-            
-            return true;
-            
-        } catch (Exception $e) {
-            $this->errors[] = "Database error: " . $e->getMessage();
-            return false;
-        }
-    }
-    
-    private function processAttendanceRecord($record) {
-        // Build full name
-        $nameParts = [];
-        if ($record['first_name']) $nameParts[] = $record['first_name'];
-        if ($record['middle_name']) $nameParts[] = $record['middle_name'];
-        if ($record['last_name']) $nameParts[] = $record['last_name'];
-        $fullName = implode(' ', $nameParts);
-        
-        // Determine status display
-        $statusInfo = $this->determineStatus($record);
-        
-        // Calculate vacant hours (break time converted to hours)
-        $vacantHours = $record['break_time_minutes'] ? round($record['break_time_minutes'] / 60, 1) : 0;
-        
-        // Calculate actual hours dynamically to bypass penalty from DB logs
-        if (!empty($record['time_in']) && !empty($record['time_out'])) {
-            $schedule = getEmployeeSchedule($this->db, $record['employee_id']);
-            $record['actual_hours'] = calculateActualHoursWithClamping($record['time_in'], $record['time_out'], $schedule, $record['attendance_date'], $record['roles'], $record['break_out'], $record['break_in']);
-        }
-        
-        $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 1) : 0;
-        $actualHours = $record['actual_hours'] ? round($record['actual_hours'] / 60, 1) : 0;
-        
-        return [
-            'id' => $record['id'],
-            'employee_id' => htmlspecialchars($record['employee_id_string'], ENT_QUOTES, 'UTF-8'),
-            'full_name' => htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8'),
-            'role' => htmlspecialchars($record['roles'] ?? 'N/A', ENT_QUOTES, 'UTF-8'),
-            'department' => htmlspecialchars($record['department'] ?? 'N/A', ENT_QUOTES, 'UTF-8'),
-            'profile_photo' => $record['profile_photo'] ?? '../assets/profile_pic/user.png',
-            'attendance_date' => $record['attendance_date'],
-            'time_in' => $record['time_in'] ? date('g:i A', strtotime($record['time_in'])) : 'N/A',
-            'time_out' => $record['time_out'] ? date('g:i A', strtotime($record['time_out'])) : 'N/A',
-            'vacant_hours' => $vacantHours,
-            'actual_hours' => $actualHours,
-            'scheduled_hours' => $scheduledHours,
-            'late_minutes' => $record['late_minutes'] ?? 0,
-            'status' => $record['status'],
-            'status_display' => $statusInfo['display'],
-            'status_class' => $statusInfo['class'],
-            'notes' => $record['notes']
-        ];
-    }
-    
-    private function determineStatus($record) {
-        $status_lower = strtolower(trim($record['status']));
-        
-        $base_status = '';
-        if (strpos($status_lower, 'manual') !== false) {
-            $base_status = 'manual';
-        } elseif (strpos($status_lower, 'incomplete') !== false) {
-            $base_status = 'incomplete';
-        } elseif (strpos($status_lower, 'complete') !== false || strpos($status_lower, 'present') !== false) {
-            $base_status = 'complete';
-        } elseif (strpos($status_lower, 'absent') !== false) {
-            $base_status = 'absent';
-        } elseif (strpos($status_lower, 'visit') !== false) {
-            $base_status = 'visit';
-        }
 
-        $is_late = strpos($status_lower, 'late') !== false;
-        $is_undertime = strpos($status_lower, 'undertime') !== false;
-        
-        // Build display text
-        $display_parts = [];
-        $css_class = 'status-incomplete-dot'; // Default
-        
-        if ($base_status === 'complete') {
-            $display_parts[] = 'Complete';
-            $css_class = 'status-complete-dot';
-            if ($is_late || $is_undertime) {
-                $css_class = 'status-late-dot'; 
-            }
-        } elseif ($base_status === 'manual') {
-            $display_parts[] = 'Manual';
-            $css_class = 'status-manual-dot';
-            if ($is_late || $is_undertime) {
-                $css_class = 'status-late-dot'; 
-            }
-        } elseif ($base_status === 'absent') {
-            $display_parts[] = 'Absent';
-            $css_class = 'status-absent-dot';
-        } elseif ($base_status === 'visit') {
-            $display_parts[] = 'Visit';
+      $whereConditions = [];
+      $params = [$currentDate];
+      $types = 's';
+
+      // Apply filters
+      if (!empty($filters['role']) && $filters['role'] !== 'All Roles') {
+        $whereConditions[] = "e.roles = ?";
+        $params[] = $filters['role'];
+        $types .= 's';
+      }
+
+      if (!empty($filters['department']) && $filters['department'] !== 'All Departments') {
+        $whereConditions[] = "e.department = ?";
+        $params[] = $filters['department'];
+        $types .= 's';
+      }
+
+      if (!empty($filters['search'])) {
+        $whereConditions[] = "(e.first_name LIKE ? OR e.last_name LIKE ? OR e.employee_id LIKE ?)";
+        $searchTerm = '%' . $filters['search'] . '%';
+        $params[] = $searchTerm;
+        $params[] = $searchTerm;
+        $params[] = $searchTerm;
+        $types .= 'sss';
+      }
+
+
+      // Add additional WHERE conditions
+      if (!empty($whereConditions)) {
+        $query .= " AND " . implode(" AND ", $whereConditions);
+      }
+
+      $query .= " ORDER BY da.time_in DESC, e.last_name, e.first_name";
+
+      // Prepare and execute
+      $stmt = $this->db->prepare($query);
+      if (!$stmt) {
+        throw new Exception('Failed to prepare statement: ' . $this->db->error);
+      }
+
+      $stmt->bind_param($types, ...$params);
+
+      if (!$stmt->execute()) {
+        throw new Exception('Failed to execute query: ' . $stmt->error);
+      }
+
+      $result = $stmt->get_result();
+
+      $this->attendanceRecords = [];
+      while ($row = $result->fetch_assoc()) {
+        $this->attendanceRecords[] = $this->processAttendanceRecord($row);
+      }
+
+      $stmt->close();
+
+      return true;
+
+    }
+    catch (Exception $e) {
+      $this->errors[] = "Database error: " . $e->getMessage();
+      return false;
+    }
+  }
+
+  private function processAttendanceRecord($record)
+  {
+    // Build full name
+    $nameParts = [];
+    if ($record['first_name'])
+      $nameParts[] = $record['first_name'];
+    if ($record['middle_name'])
+      $nameParts[] = $record['middle_name'];
+    if ($record['last_name'])
+      $nameParts[] = $record['last_name'];
+    $fullName = implode(' ', $nameParts);
+
+    // Determine status display
+    $statusInfo = $this->determineStatus($record);
+
+    // Calculate vacant hours (break time converted to hours)
+    $vacantHours = $record['break_time_minutes'] ? round($record['break_time_minutes'] / 60, 1) : 0;
+
+    // Calculate actual hours dynamically to bypass penalty from DB logs
+    if (!empty($record['time_in']) && !empty($record['time_out'])) {
+      $schedule = getEmployeeSchedule($this->db, $record['employee_id']);
+      $record['actual_hours'] = calculateActualHoursWithClamping($record['time_in'], $record['time_out'], $schedule, $record['attendance_date'], $record['roles'], $record['break_out'], $record['break_in']);
+    }
+
+    $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 1) : 0;
+    $actualHours = $record['actual_hours'] ? round($record['actual_hours'] / 60, 1) : 0;
+
+    return [
+      'id' => $record['id'],
+      'employee_id' => htmlspecialchars($record['employee_id_string'], ENT_QUOTES, 'UTF-8'),
+      'full_name' => htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8'),
+      'role' => htmlspecialchars($record['roles'] ?? 'N/A', ENT_QUOTES, 'UTF-8'),
+      'department' => htmlspecialchars($record['department'] ?? 'N/A', ENT_QUOTES, 'UTF-8'),
+      'profile_photo' => $record['profile_photo'] ?? '../assets/profile_pic/user.png',
+      'attendance_date' => $record['attendance_date'],
+      'time_in' => $record['time_in'] ? date('g:i A', strtotime($record['time_in'])) : 'N/A',
+      'time_out' => $record['time_out'] ? date('g:i A', strtotime($record['time_out'])) : 'N/A',
+      'vacant_hours' => $vacantHours,
+      'actual_hours' => $actualHours,
+      'scheduled_hours' => $scheduledHours,
+      'late_minutes' => $record['late_minutes'] ?? 0,
+      'status' => $record['status'],
+      'status_display' => $statusInfo['display'],
+      'status_class' => $statusInfo['class'],
+      'notes' => $record['notes']
+    ];
+  }
+
+  private function determineStatus($record)
+  {
+    $status_lower = strtolower(trim($record['status']));
+
+    $base_status = '';
+    if (strpos($status_lower, 'manual') !== false) {
+      $base_status = 'manual';
+    }
+    elseif (strpos($status_lower, 'incomplete') !== false) {
+      $base_status = 'incomplete';
+    }
+    elseif (strpos($status_lower, 'complete') !== false || strpos($status_lower, 'present') !== false) {
+      $base_status = 'complete';
+    }
+    elseif (strpos($status_lower, 'absent') !== false) {
+      $base_status = 'absent';
+    }
+    elseif (strpos($status_lower, 'visit') !== false) {
+      $base_status = 'visit';
+    }
+
+    $is_late = strpos($status_lower, 'late') !== false;
+    $is_undertime = strpos($status_lower, 'undertime') !== false;
+
+    // Build display text
+    $display_parts = [];
+    $css_class = 'status-incomplete-dot'; // Default
+
+    if ($base_status === 'complete') {
+      $display_parts[] = 'Complete';
+      $css_class = 'status-complete-dot';
+      if ($is_late || $is_undertime) {
+        $css_class = 'status-late-dot';
+      }
+    }
+    elseif ($base_status === 'manual') {
+      $display_parts[] = 'Manual';
+      $css_class = 'status-manual-dot';
+      if ($is_late || $is_undertime) {
+        $css_class = 'status-late-dot';
+      }
+    }
+    elseif ($base_status === 'absent') {
+      $display_parts[] = 'Absent';
+      $css_class = 'status-absent-dot';
+    }
+    elseif ($base_status === 'visit') {
+      $display_parts[] = 'Visit';
+      $css_class = 'status-ontime-dot';
+    }
+    elseif ($base_status === 'incomplete') {
+      // No time_in yet - Not Arrived
+      if (empty($record['time_in'])) {
+        $display_parts[] = 'Not Arrived';
+        $css_class = 'status-not-arrived-dot';
+      }
+      else {
+        $display_parts[] = 'Incomplete';
+        $css_class = 'status-incomplete-dot';
+
+        // If it's incomplete but we know they were late...
+        if (!empty($record['time_in']) && empty($record['time_out'])) {
+          if ($record['late_minutes'] > $this->gracePeriodMinutes) {
+            $display_parts[] = 'Late';
+            $css_class = 'status-late-dot';
+          }
+          else {
+            // Just On-Time (incomplete)
+            $display_parts[0] = 'On-Time (Incomplete)';
             $css_class = 'status-ontime-dot';
-        } elseif ($base_status === 'incomplete') {
-            // No time_in yet - Not Arrived
-            if (empty($record['time_in'])) {
-                $display_parts[] = 'Not Arrived';
-                $css_class = 'status-not-arrived-dot';
-            } else {
-                $display_parts[] = 'Incomplete';
-                $css_class = 'status-incomplete-dot';
-                
-                // If it's incomplete but we know they were late...
-                if (!empty($record['time_in']) && empty($record['time_out'])) {
-                    if ($record['late_minutes'] > $this->gracePeriodMinutes) {
-                        $display_parts[] = 'Late';
-                        $css_class = 'status-late-dot';
-                    } else {
-                        // Just On-Time (incomplete)
-                        $display_parts[0] = 'On-Time (Incomplete)';
-                        $css_class = 'status-ontime-dot';
-                    }
-                }
-            }
-        } else {
-            $display_parts[] = ucfirst(trim($record['status']));
+          }
         }
-        
-        if ($base_status !== 'incomplete') {
-            if ($is_late) {
-                $display_parts[] = 'Late';
-            }
-            if ($is_undertime) {
-                $display_parts[] = 'Undertime';
-            }
-        }
-        
-        return [
-            'display' => implode(' • ', $display_parts),
-            'class' => $css_class
-        ];
+      }
     }
-    
-    public function getAttendanceRecords() {
-        return $this->attendanceRecords;
+    else {
+      $display_parts[] = ucfirst(trim($record['status']));
     }
-    
-    public function getErrors() {
-        return $this->errors;
+
+    if ($base_status !== 'incomplete') {
+      if ($is_late) {
+        $display_parts[] = 'Late';
+      }
+      if ($is_undertime) {
+        $display_parts[] = 'Undertime';
+      }
     }
-    
-    public function hasErrors() {
-        return !empty($this->errors);
-    }
+
+    return [
+      'display' => implode(' • ', $display_parts),
+      'class' => $css_class
+    ];
+  }
+
+  public function getAttendanceRecords()
+  {
+    return $this->attendanceRecords;
+  }
+
+  public function getErrors()
+  {
+    return $this->errors;
+  }
+
+  public function hasErrors()
+  {
+    return !empty($this->errors);
+  }
 }
 
 // Fetch grace period setting from database
 $grace_period_minutes = 0;
 if ($grace_result = $conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'grace_period_minutes'")) {
-    if ($grace_row = $grace_result->fetch_assoc()) {
-        $grace_period_minutes = (int)$grace_row['setting_value'];
-    }
+  if ($grace_row = $grace_result->fetch_assoc()) {
+    $grace_period_minutes = (int)$grace_row['setting_value'];
+  }
 }
 
 // Initialize the viewer
@@ -273,9 +296,9 @@ $departmentQuery = "SELECT DISTINCT department FROM employees WHERE department I
 $departmentResult = $conn->query($departmentQuery);
 $departments = [];
 if ($departmentResult) {
-    while ($row = $departmentResult->fetch_assoc()) {
-        $departments[] = $row['department'];
-    }
+  while ($row = $departmentResult->fetch_assoc()) {
+    $departments[] = $row['department'];
+  }
 }
 
 // Fetch all unique roles from employees table
@@ -283,17 +306,17 @@ $roleQuery = "SELECT DISTINCT roles FROM employees WHERE roles IS NOT NULL AND r
 $roleResult = $conn->query($roleQuery);
 $roles = [];
 if ($roleResult) {
-    while ($row = $roleResult->fetch_assoc()) {
-        $roles[] = $row['roles'];
-    }
+  while ($row = $roleResult->fetch_assoc()) {
+    $roles[] = $row['roles'];
+  }
 }
 
 // Process filter parameters
 $filters = [
-    'role' => $_GET['role'] ?? '',
-    'department' => $_GET['department'] ?? '',
-    'search' => $_GET['search'] ?? '',
-    'date' => $_GET['date'] ?? date('Y-m-d') // Default to today in Manila timezone
+  'role' => $_GET['role'] ?? '',
+  'department' => $_GET['department'] ?? '',
+  'search' => $_GET['search'] ?? '',
+  'date' => $_GET['date'] ?? date('Y-m-d') // Default to today in Manila timezone
 ];
 
 // Load attendance records for selected date
@@ -304,16 +327,17 @@ $currentDate = date('F d, Y', strtotime($selectedDate)); // Format: November 11,
 
 // Handle AJAX Request
 if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
-    if (empty($attendanceRecords)) {
-        echo '<tr>
+  if (empty($attendanceRecords)) {
+    echo '<tr>
           <td colspan="7" class="text-center py-4 text-muted">
             <i class="bi bi-inbox fs-1 d-block mb-2"></i>
             No attendance records found for ' . $currentDate . '
           </td>
         </tr>';
-    } else {
-        foreach ($attendanceRecords as $record) {
-            echo '<tr data-id="' . $record['employee_id'] . '">
+  }
+  else {
+    foreach ($attendanceRecords as $record) {
+      echo '<tr data-id="' . $record['employee_id'] . '">
               <td>
                 <div class="d-flex align-items-center">
                   <img src="../' . $record['profile_photo'] . '" 
@@ -335,9 +359,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
               <td>' . number_format($record['actual_hours'], 1) . ' hr</td>
               <td><span class="status-dot ' . $record['status_class'] . '"></span> ' . $record['status_display'] . '</td>
             </tr>';
-        }
     }
-    exit; // Stop further execution for AJAX requests
+  }
+  exit; // Stop further execution for AJAX requests
 }?>
 <!DOCTYPE html>
 <html lang="en">
@@ -407,7 +431,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
         <span class="text-dark text-nowrap">Selected Date: <strong id="selectedDateDisplay"><?php echo $currentDate; ?></strong></span>
         <?php if (isAdmin()): ?>
         <a href="exporep.php" class="btn btn-batch-export fw-bold text-nowrap">Batch Export DTR</a>
-        <?php endif; ?>
+        <?php
+endif; ?>
       </div>
   </div>
 
@@ -431,7 +456,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
                     <?php echo $isSelected ? 'selected' : ''; ?>>
               <?php echo htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8'); ?>
             </option>
-          <?php endforeach; ?>
+          <?php
+endforeach; ?>
         </select>
     </div>
     <div class="col-md-3">
@@ -440,10 +466,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
         <option value="">All</option>
         <?php foreach ($departments as $department): ?>
           <option value="<?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>" 
-                  <?php echo (isset($filters['department']) && $filters['department'] === $department) ? 'selected' : ''; ?>>
+                  <?php echo(isset($filters['department']) && $filters['department'] === $department) ? 'selected' : ''; ?>>
             <?php echo htmlspecialchars($department, ENT_QUOTES, 'UTF-8'); ?>
           </option>
-        <?php endforeach; ?>
+        <?php
+endforeach; ?>
       </select>
     </div>
     <div class="col-md-auto d-flex align-items-end">
@@ -480,7 +507,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
             No attendance records found for <?php echo $currentDate; ?>
           </td>
         </tr>
-        <?php else: ?>
+        <?php
+else: ?>
           <?php foreach ($attendanceRecords as $record): ?>
         <tr data-id="<?php echo $record['employee_id']; ?>">
           <td>
@@ -504,8 +532,10 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
           <td><?php echo number_format($record['actual_hours'], 1); ?> hr</td>
           <td><span class="status-dot <?php echo $record['status_class']; ?>"></span> <?php echo $record['status_display']; ?></td>
         </tr>
-          <?php endforeach; ?>
-        <?php endif; ?>
+          <?php
+  endforeach; ?>
+        <?php
+endif; ?>
       </tbody>
     </table>
   </div>

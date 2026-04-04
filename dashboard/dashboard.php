@@ -82,7 +82,7 @@ if (!$hide_sync_status) {
   </div>
   <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
-  <div class="content" id="content">
+  <div class="content pt-1" id="content">
     <div class="container-fluid">
 
       <div class="d-flex align-items-center justify-content-between">

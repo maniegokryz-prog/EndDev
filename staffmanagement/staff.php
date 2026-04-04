@@ -294,7 +294,7 @@ $roles = $viewer->getDistinctRoles();
     </nav>
   </div>
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <div class="content pt-3" id="content">
+  <div class="content pt-1" id="content">
     <div class="container-fluid">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2 gap-md-3">
         <h2 class="display-4 text-dark mb-0">Staff Management</h2>
