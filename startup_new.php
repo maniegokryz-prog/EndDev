@@ -197,6 +197,46 @@ $sql_employee_leaves = "CREATE TABLE IF NOT EXISTS employee_leaves (
 )";
 createTable($conn, $sql_employee_leaves, "employee_leaves");
 
+// Offset Schedule Requests table
+$sql_offset_requests = "CREATE TABLE IF NOT EXISTS offset_schedule_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    original_schedule_id INT NOT NULL,
+    original_day_of_week INT NULL,
+    requested_date DATE NOT NULL,
+    status ENUM('pending', 'approved', 'rejected', 'completed', 'cancelled') DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
+    FOREIGN KEY (original_schedule_id) REFERENCES schedules(id) ON DELETE CASCADE
+)";
+createTable($conn, $sql_offset_requests, "offset_schedule_requests");
+
+// CTO Requests table
+$sql_cto_requests = "CREATE TABLE IF NOT EXISTS cto_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    requested_date DATE NOT NULL,
+    hours_used DECIMAL(5,2) NOT NULL,
+    status ENUM('pending', 'approved', 'rejected', 'completed', 'cancelled') DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+)";
+createTable($conn, $sql_cto_requests, "cto_requests");
+
+// Time Bank Ledger table
+$sql_time_bank = "CREATE TABLE IF NOT EXISTS time_bank_ledger (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    transaction_type ENUM('earned', 'used', 'expired') NOT NULL,
+    hours DECIMAL(5,2) NOT NULL,
+    source_id INT DEFAULT NULL,
+    description TEXT,
+    reference_date DATE NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+)";
+createTable($conn, $sql_time_bank, "time_bank_ledger");
+
 //Admin users table
 $sql_admin_users = "CREATE TABLE IF NOT EXISTS admin_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -275,6 +315,47 @@ $sql_schedule_requests = "CREATE TABLE IF NOT EXISTS schedule_requests (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 createTable($conn, $sql_schedule_requests, "schedule_requests");
+
+// Offset Schedule Requests table
+$sql_offset_requests = "CREATE TABLE IF NOT EXISTS offset_schedule_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    original_schedule_id INT NOT NULL,
+    requested_date DATE NOT NULL,
+    status ENUM('pending','approved','rejected','completed','cancelled') DEFAULT 'pending',
+    admin_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
+    FOREIGN KEY (original_schedule_id) REFERENCES schedules(id) ON DELETE CASCADE
+)";
+createTable($conn, $sql_offset_requests, "offset_schedule_requests");
+
+// CTO Requests table
+$sql_cto_requests = "CREATE TABLE IF NOT EXISTS cto_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    requested_date DATE NOT NULL,
+    hours_used DECIMAL(5,2) NOT NULL,
+    status ENUM('pending', 'approved', 'rejected', 'completed', 'cancelled') DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+)";
+createTable($conn, $sql_cto_requests, "cto_requests");
+
+// Time Bank Ledger table
+$sql_time_bank = "CREATE TABLE IF NOT EXISTS time_bank_ledger (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    hours DECIMAL(5,2) NOT NULL,
+    transaction_type ENUM('earned','used','expired') NOT NULL,
+    reference_date DATE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+)";
+createTable($conn, $sql_time_bank, "time_bank_ledger");
+
 
 // Insert default settings if they don't exist
 $check_setting = $conn->query("SELECT id FROM system_settings WHERE setting_key = 'leave_notice_period_days'");
@@ -362,7 +443,9 @@ $tables_to_sync = [
     'leave_types',
     'employee_leaves',
     'employee_assignments',
-    'notifications'
+    'notifications',
+    'offset_schedule_requests',
+    'time_bank_ledger'
 ];
 
 foreach ($tables_to_sync as $table) {

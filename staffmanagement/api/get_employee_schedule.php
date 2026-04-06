@@ -35,19 +35,40 @@ try {
     $dayOfWeek = $dateObj->format('w'); // 0 (Sunday) to 6 (Saturday)
     $dayOfWeekDb = ($dayOfWeek == 0) ? 6 : ($dayOfWeek - 1);
 
-    // Get all schedule periods for this employee on this day
-    $sql = "SELECT sp.start_time, sp.end_time
-            FROM employee_schedules es
-            JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
-            WHERE es.employee_id = ? 
-              AND es.is_active = 1
-              AND sp.is_active = 1
-              AND sp.day_of_week = ?
-              AND (es.end_date IS NULL OR es.end_date >= ?)
-            ORDER BY sp.start_time ASC";
+    // Check for approved offset schedule first
+    $stmt_offset = $conn->prepare("SELECT original_schedule_id, original_day_of_week FROM offset_schedule_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed') LIMIT 1");
+    $stmt_offset->bind_param("is", $employee_id, $date);
+    $stmt_offset->execute();
+    $res_offset = $stmt_offset->get_result();
+    $offsetRow = $res_offset->fetch_assoc();
+    $stmt_offset->close();
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iis", $employee_id, $dayOfWeekDb, $date);
+    if ($offsetRow) {
+        // If an offset exists, use its schedule periods
+        $sql = "SELECT start_time, end_time
+                FROM schedule_periods 
+                WHERE schedule_id = ? 
+                  AND day_of_week = ? 
+                  AND is_active = 1
+                ORDER BY start_time ASC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $offsetRow['original_schedule_id'], $offsetRow['original_day_of_week']);
+    } else {
+        // Fallback to normal employee schedule lookup
+        $sql = "SELECT sp.start_time, sp.end_time
+                FROM employee_schedules es
+                JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                WHERE es.employee_id = ? 
+                  AND es.is_active = 1
+                  AND sp.is_active = 1
+                  AND sp.day_of_week = ?
+                  AND (es.end_date IS NULL OR es.end_date >= ?)
+                ORDER BY sp.start_time ASC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iis", $employee_id, $dayOfWeekDb, $date);
+    }
+
+
     $stmt->execute();
     $result = $stmt->get_result();
     $schedule_periods = $result->fetch_all(MYSQLI_ASSOC);

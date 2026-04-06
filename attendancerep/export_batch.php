@@ -117,8 +117,8 @@ foreach ($employeeIds as $empId) {
 
         $attendanceMap = [];
         while ($r = $res->fetch_assoc()) {
-            if (!empty($r['time_in']) && !empty($r['time_out'])) {
-                $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role'], $r['break_out'], $r['break_in']);
+            if (!isset($r['actual_hours']) || $r['actual_hours'] === null) {
+                $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role'], $r['break_out'], $r['break_in'], $employee['internal_id']);
             }
             $d = (int) date('j', strtotime($r['attendance_date']));
             $attendanceMap[$d] = $r;

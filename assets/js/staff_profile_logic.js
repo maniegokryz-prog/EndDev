@@ -12,6 +12,21 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
+    // TIME BANK & OFFSET LOGIC
+    // ==========================================
+    if (employeeInternalId) {
+        fetch(`api/offset_schedule_api.php?action=get_time_bank&employee_id=${employeeInternalId}`)
+            .then(res => res.json())
+            .then(data => {
+                const tbVal = document.getElementById('timeBankValue');
+                if (tbVal && data.success) {
+                    tbVal.innerHTML = `${data.balance} <small style="font-size:12px;">hrs</small>`;
+                }
+            })
+            .catch(err => console.error("Error fetching time bank:", err));
+    }
+
+    // ==========================================
     // LEAVE MANAGEMENT LOGIC
     // ==========================================
 
@@ -763,4 +778,45 @@ function attachDateListener(row) {
 
         newDateInput.addEventListener('change', () => populateScheduleTimes(newDateInput, timeIn, timeOut));
     }
+}
+
+// OFFSET REQUEST LOGIC
+function submitOffsetRequest() {
+    const selectStr = document.getElementById('offsetScheduleId').value;
+    const requestedDate = document.getElementById('offsetRequestedDate').value;
+    
+    if (!selectStr || !requestedDate) {
+        showErrorModal("Please fill out all required fields.");
+        return;
+    }
+
+    const parts = selectStr.split('-');
+    if (parts.length !== 2) {
+        showErrorModal("Invalid schedule selection.");
+        return;
+    }
+    const scheduleId = parts[0];
+    const dayOfWeek = parts[1];
+
+    const formData = new FormData();
+    formData.append('action', 'submit_request');
+    formData.append('employee_id', employeeInternalId);
+    formData.append('original_schedule_id', scheduleId);
+    formData.append('original_day_of_week', dayOfWeek);
+    formData.append('requested_date', requestedDate);
+
+    fetch('api/offset_schedule_api.php', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                bootstrap.Modal.getInstance(document.getElementById('requestOffsetModal')).hide();
+                showSuccessModal(result.message);
+                setTimeout(() => window.location.reload(), 2000);
+            } else {
+                showErrorModal(result.error);
+            }
+        })
+        .catch(e => {
+            showErrorModal("Network Error: " + e.message);
+        });
 }

@@ -606,6 +606,32 @@ $profilePhoto .= '?v=' . microtime(true);
                 $stmt->close();
             } catch (Exception $e) {
             }
+
+            // Check for pending/approved OFFSET schedule requests
+            $hasOffsetRequests = false;
+            $offsetRequestsList = [];
+            try {
+                $stmt = $conn->prepare("
+                    SELECT r.*, s.schedule_name,
+                           MIN(sp.start_time) as min_start,
+                           MAX(sp.end_time) as max_end,
+                           SUM(TIMESTAMPDIFF(MINUTE, sp.start_time, sp.end_time)) as total_mins
+                    FROM offset_schedule_requests r 
+                    JOIN schedules s ON r.original_schedule_id = s.id 
+                    LEFT JOIN schedule_periods sp ON (s.id = sp.schedule_id AND r.original_day_of_week = sp.day_of_week AND sp.is_active = 1)
+                    WHERE r.employee_id = ? AND r.status IN ('pending', 'approved') 
+                    GROUP BY r.id
+                    ORDER BY r.created_at DESC
+                ");
+                $stmt->bind_param("i", $employee['id']);
+                $stmt->execute();
+                $res = $stmt->get_result();
+                while ($row = $res->fetch_assoc()) {
+                    $hasOffsetRequests = true;
+                    $offsetRequestsList[] = $row;
+                }
+                $stmt->close();
+            } catch (Exception $e) {}
             ?>
 
             <?php if ($hasPendingRequest): ?>
@@ -742,6 +768,8 @@ $profilePhoto .= '?v=' . microtime(true);
                 </script>
             <?php endif; ?>
 
+
+
             <!-- Top Section: Info & Metrics Grid -->
             <div class="top-section-grid">
 
@@ -851,6 +879,14 @@ $profilePhoto .= '?v=' . microtime(true);
                             <div class="metric-value" id="undertimeValue">0</div>
                             <div class="metric-percentage" id="undertimeCount">0%</div>
                         </div>
+                        <div class="metric-item">
+                            <div class="metric-canvas-container" style="display:flex;align-items:center;justify-content:center;background:#f8f9fa;border-radius:50%;width:50px;height:50px;margin:0 auto 10px auto;">
+                                <i class="bi bi-bank" style="font-size:24px; color:#198754;"></i>
+                            </div>
+                            <div class="metric-label">Time Bank</div>
+                            <div class="metric-value text-success" id="timeBankValue">0 <small style="font-size:12px;">hrs</small></div>
+                            <div class="metric-percentage" style="color:#198754;">Balance</div>
+                        </div>
                     </div>
                 </div>
 
@@ -934,17 +970,23 @@ $profilePhoto .= '?v=' . microtime(true);
                 <div class="profile-card schedule-section-card">
                     <div class="card-header-custom">
                         <h3 class="card-title">Schedule</h3>
-                        <?php if ($isAdmin && isset($pendingRequestId) && $pendingRequestId): ?>
-                            <button class="btn-modern btn-solid-success btn-sm btn-gray-hover" data-bs-toggle="modal"
-                                data-bs-target="#adminPendingRequestWarningModal">
-                                <i class="bi bi-pencil"></i> Edit
+                        <div class="d-flex gap-2">
+                            <button class="btn-modern btn-solid-warning btn-sm btn-gray-hover" data-bs-toggle="modal"
+                                data-bs-target="#requestOffsetModal">
+                                <i class="bi bi-clock-history"></i> Request Offset
                             </button>
-                        <?php else: ?>
-                            <button class="btn-modern btn-solid-success btn-sm btn-gray-hover" data-bs-toggle="modal"
-                                data-bs-target="#editScheduleModal">
-                                <i class="bi bi-pencil"></i> Edit
-                            </button>
-                        <?php endif; ?>
+                            <?php if ($isAdmin && isset($pendingRequestId) && $pendingRequestId): ?>
+                                <button class="btn-modern btn-solid-success btn-sm btn-gray-hover" data-bs-toggle="modal"
+                                    data-bs-target="#adminPendingRequestWarningModal">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </button>
+                            <?php else: ?>
+                                <button class="btn-modern btn-solid-success btn-sm btn-gray-hover" data-bs-toggle="modal"
+                                    data-bs-target="#editScheduleModal">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
                     <div class="schedule-container">
                         <!-- Desktop View (d-none d-md-grid) -->
@@ -2321,6 +2363,162 @@ $profilePhoto .= '?v=' . microtime(true);
             }
         }
     </style>
+
+    <!-- Combined Offset/CTO Modal -->
+    <div class="modal fade" id="requestOffsetModal" tabindex="-1" aria-labelledby="requestOffsetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Offset & Time Bank Management</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <ul class="nav nav-tabs mb-3" id="offsetTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold text-dark" id="offset-request-tab" data-bs-toggle="tab" data-bs-target="#offset-request" type="button" role="tab">Request Offset</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-dark" id="offset-history-tab" data-bs-toggle="tab" data-bs-target="#offset-history" type="button" role="tab">Offset History</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-dark" id="cto-request-tab" data-bs-toggle="tab" data-bs-target="#cto-request" type="button" role="tab">Use Time Bank</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-dark" id="cto-history-tab" data-bs-toggle="tab" data-bs-target="#cto-history" type="button" role="tab">Time Bank History</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="offsetTabsContent">
+                        <!-- Request Offset Tab -->
+                        <div class="tab-pane fade show active p-2" id="offset-request" role="tabpanel">
+                            <form id="requestOffsetForm">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Select Schedule to Mirror</label>
+                                    <select class="form-select" id="offsetScheduleId" required>
+                                        <option value="">-- Select Schedule --</option>
+                                        <?php
+                                        $stmt = $conn->prepare("
+                                            SELECT DISTINCT s.id, sp.day_of_week, 
+                                                   MIN(sp.start_time) as min_start, 
+                                                   MAX(sp.end_time) as max_end,
+                                                   SUM(TIMESTAMPDIFF(MINUTE, sp.start_time, sp.end_time)) as total_mins
+                                            FROM employee_schedules es 
+                                            JOIN schedules s ON es.schedule_id = s.id 
+                                            JOIN schedule_periods sp ON s.id = sp.schedule_id
+                                            WHERE es.employee_id = ? AND es.is_active = 1 AND sp.is_active = 1
+                                            GROUP BY s.id, sp.day_of_week
+                                            ORDER BY sp.day_of_week ASC
+                                        ");
+                                        $stmt->bind_param("i", $employee['id']);
+                                        $stmt->execute();
+                                        $res_s = $stmt->get_result();
+                                        $daysArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                                        while ($s = $res_s->fetch_assoc()) {
+                                            $dayName = $daysArray[$s['day_of_week']] ?? 'Unknown';
+                                            $start = date("g:i A", strtotime($s['min_start']));
+                                            $end = date("g:i A", strtotime($s['max_end']));
+                                            $hours = round($s['total_mins'] / 60, 2);
+                                            
+                                            $val = $s['id'] . '-' . $s['day_of_week'];
+                                            echo "<option value='{$val}'>Mirror my {$dayName} Schedule ({$start} - {$end}, {$hours} hrs)</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Date of Work (Off-day)</label>
+                                    <input type="date" class="form-control" id="offsetRequestedDate" required>
+                                    <small class="text-muted">Pick the future day you intend to work on this mirrored schedule.</small>
+                                </div>
+                                <button type="button" class="btn btn-primary w-100 fw-bold mt-2" onclick="submitOffsetRequest()">Submit Request</button>
+                            </form>
+                        </div>
+                        
+                        <!-- History and Status Tab -->
+                        <div class="tab-pane fade p-2" id="offset-history" role="tabpanel" aria-labelledby="offset-history-tab">
+                            <?php if (!$hasOffsetRequests): ?>
+                                <div class="text-center text-muted p-4">
+                                    <i class="bi bi-inbox fs-1"></i>
+                                    <p class="mt-2">No pending or approved offset requests found.</p>
+                                </div>
+                            <?php else: ?>
+                                <div class="d-flex flex-column gap-3">
+                                <?php foreach ($offsetRequestsList as $offset): ?>
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <?php 
+                                                $reqDayName = $daysArray[$offset['original_day_of_week']] ?? 'Unknown';
+                                                $statusColor = $offset['status'] === 'approved' ? 'success' : 'warning';
+                                                
+                                                // Format times and calculate hours if available
+                                                $timeString = "";
+                                                if (!empty($offset['min_start']) && !empty($offset['max_end'])) {
+                                                    $startOut = date("g:i A", strtotime($offset['min_start']));
+                                                    $endOut = date("g:i A", strtotime($offset['max_end']));
+                                                    $hrsOut = round(($offset['total_mins'] ?? 0) / 60, 2);
+                                                    $timeString = "{$startOut} - {$endOut} ({$hrsOut} hrs)";
+                                                } else {
+                                                    $timeString = "Time unspecified";
+                                                }
+                                                ?>
+                                                <h6 class="mb-0 fw-bold">Date: <?php echo date('F d, Y l', strtotime($offset['requested_date'])); ?></h6>
+                                                <span class="badge bg-<?php echo $statusColor; ?> text-<?php echo $offset['status'] === 'approved' ? 'white' : 'dark'; ?> text-uppercase"><?php echo htmlspecialchars($offset['status']); ?></span>
+                                            </div>
+                                            <p class="mb-3 small text-secondary">
+                                                <strong>Mirrored Schedule:</strong> <?php echo $reqDayName; ?> Schedule <span>&bull;</span> <?php echo $timeString; ?>
+                                            </p>
+                                            <div class="d-flex gap-2">
+                                                <?php if ($isAdmin): ?>
+                                                    <?php if ($offset['status'] === 'pending'): ?>
+                                                        <button class="btn btn-success btn-sm fw-semibold px-3 flex-grow-1" onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'approved')">Approve</button>
+                                                        <button class="btn btn-danger btn-sm fw-semibold px-3 flex-grow-1" onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'rejected')">Reject</button>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                                <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id'] && $offset['status'] === 'pending'): ?>
+                                                    <button class="btn btn-outline-danger btn-sm fw-semibold flex-grow-1" onclick="cancelOffsetRequest(<?php echo $offset['id']; ?>)">Cancel Request</button>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        </div>
+
+                        <!-- CTO Request Tab -->
+                        <div class="tab-pane fade p-2" id="cto-request" role="tabpanel">
+                            <form id="requestCtoForm">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Date to Apply CTO</label>
+                                    <input type="date" class="form-control" id="ctoRequestedDate" required>
+                                    <small class="text-muted">Pick the scheduled work day you wish to offset.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Hours to Use</label>
+                                    <input type="number" step="0.5" min="0.5" class="form-control" id="ctoHoursUsed" required>
+                                    <small class="text-muted">Minimum 0.5 hours. Example: 1.0, 1.5, 2.0</small>
+                                </div>
+                                <button type="button" class="btn btn-success w-100 fw-bold mt-2" onclick="submitCtoRequest()">Submit CTO</button>
+                            </form>
+                        </div>
+                        
+                        <!-- CTO History and Status Tab -->
+                        <div class="tab-pane fade p-2" id="cto-history" role="tabpanel">
+                            <!-- Populated dynamically or via PHP. For simplicity we will fetch via JS -->
+                            <div id="ctoHistoryContainer" class="d-flex flex-column gap-3">
+                                <div class="text-center text-muted p-4">
+                                    <i class="bi bi-hourglass fs-1"></i>
+                                    <p class="mt-2">Loading CTO History...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 <script>
@@ -2347,6 +2545,205 @@ $profilePhoto .= '?v=' . microtime(true);
         }
     });
 
+</script>
+
+<script>
+function submitOffsetRequest() {
+    const selectStr = document.getElementById('offsetScheduleId').value;
+    const requestedDate = document.getElementById('offsetRequestedDate').value;
+    
+    if (!selectStr || !requestedDate) {
+        alert("Please fill out all required fields.");
+        return;
+    }
+
+    const parts = selectStr.split('-');
+    if (parts.length !== 2) {
+        alert("Invalid schedule selection.");
+        return;
+    }
+    const scheduleId = parts[0];
+    const dayOfWeek = parts[1];
+
+    const formData = new FormData();
+    formData.append('action', 'submit_request');
+    
+    // Fallback if employeeInternalId is not exposed globally, we echo the ID
+    const empId = typeof window.employeeInternalId !== 'undefined' ? window.employeeInternalId : <?php echo json_encode($employee['id']); ?>;
+    
+    formData.append('employee_id', empId);
+    formData.append('original_schedule_id', scheduleId);
+    formData.append('original_day_of_week', dayOfWeek);
+    formData.append('requested_date', requestedDate);
+
+    fetch('api/offset_schedule_api.php', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                const modalEl = document.getElementById('requestOffsetModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                alert('Offset schedule requested successfully.');
+                setTimeout(() => window.location.reload(), 500);
+            } else {
+                alert("Error: " + result.error);
+            }
+        })
+        .catch(e => {
+            alert("Network Error: " + e.message);
+        });
+}
+function updateOffsetStatus(reqId, status) {
+    if (!confirm(`Are you sure you want to ${status} this offset request?`)) return;
+    const fd = new FormData();
+    fd.append('action', 'admin_update_status');
+    fd.append('request_id', reqId);
+    fd.append('status', status);
+    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => {
+        if(d.success) window.location.reload();
+        else alert('Error: ' + d.error);
+    }).catch(e => alert('Network error'));
+}
+function cancelOffsetRequest(reqId) {
+    if (!confirm("Are you sure you want to cancel this offset request?")) return;
+    const fd = new FormData();
+    fd.append('action', 'cancel_request');
+    fd.append('request_id', reqId);
+    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => {
+        if(d.success) window.location.reload();
+        else alert('Error: ' + d.error);
+    }).catch(e => alert('Network error'));
+}
+
+// CTO JS Functions
+function submitCtoRequest() {
+    const requestedDate = document.getElementById('ctoRequestedDate').value;
+    const hoursUsed = document.getElementById('ctoHoursUsed').value;
+    
+    if (!requestedDate || !hoursUsed) {
+        alert("Please fill out all required fields.");
+        return;
+    }
+
+    const fd = new FormData();
+    fd.append('action', 'submit_cto');
+    fd.append('employee_id', window.employeeInternalId);
+    fd.append('requested_date', requestedDate);
+    fd.append('hours_used', hoursUsed);
+
+    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                alert('CTO schedule requested successfully.');
+                window.location.reload();
+            } else {
+                alert("Error: " + result.error);
+            }
+        })
+        .catch(e => alert("Network Error: " + e.message));
+}
+
+function loadCtoHistory() {
+    const container = document.getElementById('ctoHistoryContainer');
+    if (!container) return;
+    
+    const action = window.isAdmin ? 'admin_get_cto_requests' : 'get_employee_cto_requests';
+    const params = window.isAdmin ? '' : `&employee_id=${window.employeeInternalId}`;
+    
+    fetch(`api/offset_schedule_api.php?action=${action}${params}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success || !data.data || data.data.length === 0) {
+                container.innerHTML = `<div class="text-center text-muted p-4"><i class="bi bi-inbox fs-1"></i><p class="mt-2">No pending or approved CTO requests found.</p></div>`;
+                return;
+            }
+            
+            let html = '';
+            data.data.forEach(req => {
+                const badgeColor = req.status === 'approved' ? 'success' : (req.status === 'pending' ? 'warning' : 'secondary');
+                const adminNameStr = window.isAdmin ? `<h6 class="mb-1">${req.first_name} ${req.last_name} (${req.emp_code})</h6>` : '';
+                
+                let adminActions = '';
+                if (window.isAdmin && req.status === 'pending') {
+                    adminActions = `
+                        <button class="btn btn-success btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'approved')">Approve</button>
+                        <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'rejected')">Reject</button>
+                    `;
+                }
+                
+                let userActions = '';
+                if (!window.isAdmin && req.status === 'pending') {
+                    userActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="cancelCtoRequest(${req.id})">Cancel</button>`;
+                }
+
+                html += `
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        ${adminNameStr}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0 fw-bold">Date: ${req.requested_date}</h6>
+                            <span class="badge bg-${badgeColor} text-uppercase">${req.status}</span>
+                        </div>
+                        <p class="mb-3 small text-secondary">
+                            <strong>Hours to specificially use:</strong> ${parseFloat(req.hours_used).toFixed(2)} hrs
+                        </p>
+                        <div class="d-flex gap-2">
+                            ${adminActions}
+                            ${userActions}
+                        </div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        })
+        .catch(err => {
+            container.innerHTML = '<div class="text-danger p-3">Failed to load history</div>';
+        });
+}
+
+function updateCtoStatus(reqId, status) {
+    if (!confirm(`Are you sure you want to ${status} this CTO request?`)) return;
+    const fd = new FormData();
+    fd.append('action', 'admin_update_cto_status');
+    fd.append('request_id', reqId);
+    fd.append('status', status);
+    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => {
+        if(d.success) loadCtoHistory();
+        else alert('Error: ' + d.error);
+    });
+}
+
+function cancelCtoRequest(reqId) {
+    if (!confirm("Are you sure you want to cancel this CTO request?")) return;
+    const fd = new FormData();
+    fd.append('action', 'cancel_cto_request');
+    fd.append('request_id', reqId);
+    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => {
+        if(d.success) loadCtoHistory();
+        else alert('Error: ' + d.error);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Load CTO history when modal is opened or tab is clicked
+    const requestOffsetModal = document.getElementById('requestOffsetModal');
+    if(requestOffsetModal) {
+        requestOffsetModal.addEventListener('show.bs.modal', loadCtoHistory);
+    }
+    const ctoHistoryTab = document.getElementById('cto-history-tab');
+    if(ctoHistoryTab) {
+        ctoHistoryTab.addEventListener('click', loadCtoHistory);
+    }
+});
 </script>
 
 </html>

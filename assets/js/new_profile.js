@@ -10,7 +10,25 @@ document.addEventListener('DOMContentLoaded', () => {
     initScheduleDisplay();
     initDTR();
     initLeaveManagement();
+    initTimeBank();
 });
+
+// ==========================================
+// Time Bank logic
+// ==========================================
+function initTimeBank() {
+    if (window.employeeInternalId) {
+        fetch(`api/offset_schedule_api.php?action=get_time_bank&employee_id=${window.employeeInternalId}`)
+            .then(res => res.json())
+            .then(data => {
+                const tbVal = document.getElementById('timeBankValue');
+                if (tbVal && data.success) {
+                    tbVal.innerHTML = `${data.balance} <small style="font-size:12px;">hrs</small>`;
+                }
+            })
+            .catch(err => console.error("Error fetching time bank:", err));
+    }
+}
 
 // ==========================================
 // Performance Metrics (Chart.js)
@@ -531,9 +549,42 @@ function getStatusColor(badgeClass) {
 // ==========================================
 // Visual Schedule
 // ==========================================
-function initScheduleDisplay() {
+async function initScheduleDisplay() {
     const calendar = document.getElementById('visualScheduleCalendar');
     const mobileContainer = document.getElementById('mobileScheduleView');
+
+    // Fetch offset schedules
+    if (window.employeeInternalId) {
+        try {
+            const res = await fetch(`api/offset_schedule_api.php?action=get_requests&employee_id=${window.employeeInternalId}`);
+            const data = await res.json();
+            if (data.success && data.data) {
+                // Determine the current date range displayed in the calendar (for simplicity, we'll just merge pending/approved ones into the weekly view, or maybe just approved? We should show both as per plan)
+                if (!window.schedulesData) window.schedulesData = [];
+                data.data.forEach(req => {
+                    if (req.status === 'pending' || req.status === 'approved') {
+                        // Extract start/end time from schedule details
+                        const dt = new Date(req.requested_date);
+                        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        const dayName = daysOfWeek[dt.getDay()];
+                        
+                        window.schedulesData.push({
+                            startTime: req.start_time.substring(0, 5),
+                            endTime: req.end_time.substring(0, 5),
+                            subject: req.subject_code ? req.subject_code : 'Offset Schedule',
+                            class: req.designate_class ? req.designate_class : 'OFFSET',
+                            room_num: req.room_num ? req.room_num : '',
+                            days: [dayName],
+                            color: req.status === 'approved' ? '#f59e0b' : '#fb923c', // Orange-ish for offset
+                            offsetStatus: req.status
+                        });
+                    }
+                });
+            }
+        } catch (e) {
+            console.error('Error fetching offset schedules:', e);
+        }
+    }
 
     if (!window.schedulesData || window.schedulesData.length === 0) {
         if (calendar) calendar.innerHTML = '<p class="text-center text-muted p-4">No schedule assigned.</p>';
@@ -606,7 +657,12 @@ function renderMobileSchedule(container, schedules, showLegend = false) {
                 const isFaculty = !isDefaultClass && !isDefaultSubject;
 
                 const displaySubject = isFaculty ? s.subject : 'Work Schedule';
-                const displayClass = isFaculty ? `<span class="badge bg-secondary">${s.class}</span>` : '';
+                let displayClass = isFaculty ? `<span class="badge bg-secondary">${s.class}</span>` : '';
+                
+                if (s.offsetStatus) {
+                    displayClass = `<span class="badge bg-dark">OFFSET (${s.offsetStatus.toUpperCase()})</span> ` + displayClass;
+                }
+
                 const displayRoom = (isFaculty && s.room_num && !['TBD'].includes(s.room_num.toUpperCase())) ? `<div class="small text-muted mt-1"><i class="bi bi-geo-alt me-1"></i> ${s.room_num}</div>` : '';
 
                 daysHtml += `
@@ -780,6 +836,9 @@ function placeScheduleBlock(container, schedule, days, gridStartMinutes, interva
             let statusHtml = '';
             if (isPendingRequest && (schedule.status === 'added' || schedule.status === 'modified')) {
                 statusHtml = `<div class="badge bg-warning text-dark mb-1 w-100" style="font-size: 0.75em; white-space: normal; line-height: 1.2;">Requested Schedule</div>`;
+            }
+            if (schedule.offsetStatus) {
+                statusHtml = `<div class="badge bg-dark mb-1 w-100" style="font-size: 0.75em; white-space: normal; line-height: 1.2;">OFFSET (${schedule.offsetStatus.toUpperCase()})</div>`;
             }
 
             block.innerHTML = statusHtml + content;

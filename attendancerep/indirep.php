@@ -120,7 +120,7 @@ if ($id) {
 
     while ($row = $result->fetch_assoc()) {
       // Recalculate actual_hours for display consistency
-      if (!empty($row['time_in']) && !empty($row['time_out'])) {
+      if (!isset($row['actual_hours']) || $row['actual_hours'] === null) {
         $row['actual_hours'] = calculateActualHoursWithClamping(
           $row['time_in'],
           $row['time_out'],
@@ -128,7 +128,8 @@ if ($id) {
           $row['attendance_date'],
           $employee['role'],
           $row['break_out'],
-          $row['break_in']
+          $row['break_in'],
+          $employeeInternalId
         );
       }
       $attendanceRecords[] = $row;

@@ -142,9 +142,9 @@ class AttendanceReportViewer
     $vacantHours = $record['break_time_minutes'] ? round($record['break_time_minutes'] / 60, 1) : 0;
 
     // Calculate actual hours dynamically to bypass penalty from DB logs
-    if (!empty($record['time_in']) && !empty($record['time_out'])) {
+    if (!isset($record['actual_hours']) || $record['actual_hours'] === null) {
       $schedule = getEmployeeSchedule($this->db, $record['employee_id']);
-      $record['actual_hours'] = calculateActualHoursWithClamping($record['time_in'], $record['time_out'], $schedule, $record['attendance_date'], $record['roles'], $record['break_out'], $record['break_in']);
+      $record['actual_hours'] = calculateActualHoursWithClamping($record['time_in'], $record['time_out'], $schedule, $record['attendance_date'], $record['roles'], $record['break_out'], $record['break_in'], $record['employee_id']);
     }
 
     $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 1) : 0;

@@ -181,9 +181,9 @@ try {
         }
 
         // Format hours worked
-        // Dynamic recalculation to bypass DB log penalty for older records
-        if (!empty($row['time_in']) && !empty($row['time_out'])) {
-            $row['actual_hours'] = calculateActualHoursWithClamping($row['time_in'], $row['time_out'], $schedule, $row['attendance_date'], $employee_info['roles'], $row['break_out'], $row['break_in']);
+        // Only dynamically calculate if it's missing from the DB to preserve historical offset/CTO logic
+        if (!isset($row['actual_hours']) || $row['actual_hours'] === null) {
+            $row['actual_hours'] = calculateActualHoursWithClamping($row['time_in'], $row['time_out'], $schedule, $row['attendance_date'], $employee_info['roles'], $row['break_out'], $row['break_in'], $employee_id);
         }
 
         $hours_worked = null;
@@ -235,6 +235,8 @@ try {
             $base_status = 'complete';
         } elseif (strpos($status_lower, 'visit') !== false) {
             $base_status = 'visit';
+        } elseif (strpos($status_lower, 'cto') !== false) {
+            $base_status = 'cto';
         } elseif (strpos($status_lower, 'absent') !== false) {
             $base_status = 'absent';
         }
@@ -276,6 +278,11 @@ try {
             $status_info['icon_class'] = 'bg-info text-dark';
             $status_info['icon'] = 'bi-person-badge';
             $badge_html_parts[] = 'Visit';
+        } elseif ($base_status === 'cto') {
+            $status_info['badge_class'] = 'success text-white';
+            $status_info['icon_class'] = 'bg-success';
+            $status_info['icon'] = 'bi-bank';
+            $badge_html_parts[] = 'CTO Used';
         } elseif ($base_status === 'incomplete') {
             $status_info['badge_class'] = 'warning text-dark';
             $status_info['icon_class'] = 'bg-warning';

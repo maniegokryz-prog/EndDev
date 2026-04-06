@@ -14,7 +14,8 @@ require_once '../../attendancerep/dtr_utils.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
-ini_set('error_log', '../../logs/manual_attendance_errors.log');
+// Removed custom error log to prevent missing directory warnings
+// ini_set('error_log', '../../logs/manual_attendance_errors.log');
 
 try {
     $action = $_GET['action'] ?? $_POST['action'] ?? '';
@@ -150,20 +151,58 @@ function addManualAttendance($conn)
             // Convert PHP's day format (0=Sunday) to database format (0=Monday, 6=Sunday)
             $dayOfWeekDb = ($dayOfWeek == 0) ? 6 : ($dayOfWeek - 1);
 
-            $sql = "SELECT sp.start_time, sp.end_time
-                    FROM employee_schedules es
-                    JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
-                    WHERE es.employee_id = ? 
-                      AND es.is_active = 1
-                      AND sp.day_of_week = ?
-                      AND sp.is_active = 1
-                      AND (es.end_date IS NULL OR es.end_date >= ?)
-                    ORDER BY sp.start_time ASC";
-            $schedule_stmt = $conn->prepare($sql);
-            $schedule_stmt->bind_param("iis", $employee_id, $dayOfWeekDb, $date);
-            $schedule_stmt->execute();
-            $schedule_result = $schedule_stmt->get_result();
-            $schedule_periods = $schedule_result->fetch_all(MYSQLI_ASSOC);
+            // Check if employee has an approved offset schedule for this date
+            $sqlOffset = "SELECT r.id as request_id, r.status as req_status, r.original_schedule_id, r.original_day_of_week 
+                          FROM offset_schedule_requests r 
+                          WHERE r.employee_id = ? AND r.requested_date = ? AND r.status IN ('approved', 'completed')";
+            $stmtOffset = $conn->prepare($sqlOffset);
+            if (!$stmtOffset) {
+                error_log("Prepare offset failed: " . $conn->error);
+            }
+            $stmtOffset->bind_param("is", $employee_id, $date);
+            $stmtOffset->execute();
+            $offset_result = $stmtOffset->get_result();
+            $offset_data = $offset_result->fetch_assoc();
+            
+            $is_offset_day = false;
+            $offset_req_id = null;
+            $offset_req_status = null;
+
+            if ($offset_data) {
+                // Fetch the detailed periods for the offset schedule for the SPECIFIC day they requested
+                $source_day_of_week = $offset_data['original_day_of_week'];
+                $sqlOffsetPeriods = "SELECT start_time, end_time FROM schedule_periods WHERE schedule_id = ? AND is_active = 1 AND day_of_week = ? ORDER BY start_time ASC";
+                $stmtOffsetPeriods = $conn->prepare($sqlOffsetPeriods);
+                $stmtOffsetPeriods->bind_param("ii", $offset_data['original_schedule_id'], $source_day_of_week);
+                $stmtOffsetPeriods->execute();
+                $res_periods = $stmtOffsetPeriods->get_result()->fetch_all(MYSQLI_ASSOC);
+                
+                if(empty($res_periods)) {
+                    $errors[] = "Record " . ($index + 1) . ": Associated mirrored schedule has no active time periods to offset.";
+                    continue;
+                } else {
+                    $schedule_periods = $res_periods;
+                }
+                
+                $is_offset_day = true;
+                $offset_req_id = $offset_data['request_id'];
+                $offset_req_status = $offset_data['req_status'];
+            } else {
+                $sql = "SELECT sp.start_time, sp.end_time
+                        FROM employee_schedules es
+                        JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                        WHERE es.employee_id = ? 
+                          AND es.is_active = 1
+                          AND sp.day_of_week = ?
+                          AND sp.is_active = 1
+                          AND (es.end_date IS NULL OR es.end_date >= ?)
+                        ORDER BY sp.start_time ASC";
+                $schedule_stmt = $conn->prepare($sql);
+                $schedule_stmt->bind_param("iis", $employee_id, $dayOfWeekDb, $date);
+                $schedule_stmt->execute();
+                $schedule_result = $schedule_stmt->get_result();
+                $schedule_periods = $schedule_result->fetch_all(MYSQLI_ASSOC);
+            }
 
             if (empty($schedule_periods)) {
                 $errors[] = "Record " . ($index + 1) . " (" . $dateObj->format('M d, Y') . "): No schedule found for this day";
@@ -228,7 +267,7 @@ function addManualAttendance($conn)
                     ];
                 }
                 $scheduleToPass = [$dayOfWeekDb => $formatted_schedule];
-                $actual_hours = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole, $break_out, $break_in);
+                $actual_hours = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole, $break_out, $break_in, $employee_id);
 
                 // Debug logging to a custom file
                 file_put_contents(
@@ -364,6 +403,26 @@ function addManualAttendance($conn)
             if ($stmt->execute()) {
                 $success_count++;
 
+                // If it is an offset day and we have actual_hours (time out provided), credit the Time Bank
+                if ($is_offset_day && $timeOutObj && $actual_hours > 0 && $offset_req_status === 'approved') {
+                    // Check if already credited
+                    $checkLedger = $conn->prepare("SELECT id FROM time_bank_ledger WHERE source_id = ? AND transaction_type = 'earned'");
+                    $checkLedger->bind_param("i", $offset_req_id);
+                    $checkLedger->execute();
+                    if ($checkLedger->get_result()->num_rows == 0) {
+                        $worked_hours = round($actual_hours / 60, 2);
+                        
+                        $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule')");
+                        $ledgerStmt->bind_param("idi", $employee_id, $worked_hours, $offset_req_id);
+                        $ledgerStmt->execute();
+                        
+                        $updateReq = $conn->prepare("UPDATE offset_schedule_requests SET status = 'completed' WHERE id = ?");
+                        $updateReq->bind_param("i", $offset_req_id);
+                        $updateReq->execute();
+                        $offset_req_status = 'completed'; // Prevent re-triggering in same request
+                    }
+                }
+
                 // Sync to cloud database
                 require_once __DIR__ . '/../../db_cloud_sync.php';
                 $action = $existing ? 'update' : 'insert';
@@ -491,21 +550,55 @@ function updateTimeOut($conn)
         $dayOfWeek = $dateObj->format('w'); // 0 (Sunday) to 6 (Saturday)
         $dayOfWeekDb = ($dayOfWeek == 0) ? 6 : ($dayOfWeek - 1); // Convert to 0=Monday format
 
-        $schedule_sql = "SELECT 
-                            SUM(TIMESTAMPDIFF(MINUTE, sp.start_time, sp.end_time)) as scheduled_minutes
-                         FROM employee_schedules es
-                         JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
-                         WHERE es.employee_id = ? 
-                         AND es.is_active = 1
-                         AND sp.day_of_week = ?
-                         AND sp.is_active = 1
-                         AND (es.end_date IS NULL OR es.end_date >= ?)";
+        // Check for offset schedule
+        $sqlOffset = "SELECT r.id as request_id, r.status as req_status, r.original_schedule_id, r.original_day_of_week
+                      FROM offset_schedule_requests r 
+                      WHERE r.employee_id = ? AND r.requested_date = ? AND r.status IN ('approved', 'completed')";
+        $stmtOffset = $conn->prepare($sqlOffset);
+        $stmtOffset->bind_param("is", $employee_id, $date);
+        $stmtOffset->execute();
+        $offset_result = $stmtOffset->get_result();
+        $offset_data = $offset_result->fetch_assoc();
 
-        $schedule_stmt = $conn->prepare($schedule_sql);
-        $schedule_stmt->bind_param('iis', $employee_id, $dayOfWeekDb, $date);
-        $schedule_stmt->execute();
-        $schedule_result = $schedule_stmt->get_result();
-        $schedule_data = $schedule_result->fetch_all(MYSQLI_ASSOC);
+        $is_offset_day = false;
+        $offset_req_id = null;
+        $offset_req_status = null;
+        
+        if ($offset_data) {
+            $source_day_of_week = $offset_data['original_day_of_week'];
+            $sqlOffsetPeriods = "SELECT start_time, end_time, TIMESTAMPDIFF(MINUTE, start_time, end_time) as scheduled_minutes FROM schedule_periods WHERE schedule_id = ? AND is_active = 1 AND day_of_week = ? ORDER BY start_time ASC";
+            $stmtOffsetPeriods = $conn->prepare($sqlOffsetPeriods);
+            $stmtOffsetPeriods->bind_param("ii", $offset_data['original_schedule_id'], $source_day_of_week);
+            $stmtOffsetPeriods->execute();
+            $res_periods = $stmtOffsetPeriods->get_result()->fetch_all(MYSQLI_ASSOC);
+            
+            if(empty($res_periods)) {
+                 throw new Exception('Associated mirrored schedule has no active time periods to offset.');
+            } else {
+                $schedule_data = $res_periods;
+            }
+
+            $is_offset_day = true;
+            $offset_req_id = $offset_data['request_id'];
+            $offset_req_status = $offset_data['req_status'];
+        } else {
+            $schedule_sql = "SELECT 
+                                sp.start_time, sp.end_time, 
+                                TIMESTAMPDIFF(MINUTE, sp.start_time, sp.end_time) as scheduled_minutes
+                             FROM employee_schedules es
+                             JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                             WHERE es.employee_id = ? 
+                             AND es.is_active = 1
+                             AND sp.day_of_week = ?
+                             AND sp.is_active = 1
+                             AND (es.end_date IS NULL OR es.end_date >= ?)";
+
+            $schedule_stmt = $conn->prepare($schedule_sql);
+            $schedule_stmt->bind_param('iis', $employee_id, $dayOfWeekDb, $date);
+            $schedule_stmt->execute();
+            $schedule_result = $schedule_stmt->get_result();
+            $schedule_data = $schedule_result->fetch_all(MYSQLI_ASSOC);
+        }
 
         $scheduled_minutes = 0;
         $formatted_schedule = [];
@@ -522,7 +615,7 @@ function updateTimeOut($conn)
 
         // Calculate actual hours worked (in minutes)
         $scheduleToPass = [$dayOfWeekDb => $formatted_schedule];
-        $actual_minutes = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole, $break_out, $break_in);
+        $actual_minutes = calculateActualHoursWithClamping($time_in, $time_out, $scheduleToPass, $date, $employeeRole, $break_out, $break_in, $employee_id);
 
         $time_in_dt = new DateTime($date . ' ' . $time_in);
         $time_out_dt = new DateTime($date . ' ' . $time_out);
@@ -623,6 +716,23 @@ function updateTimeOut($conn)
 
         if (!$update_stmt->execute()) {
             throw new Exception('Failed to update record: ' . $update_stmt->error);
+        }
+
+        // Output Time Bank ledger logic for updateTimeOut
+        if ($is_offset_day && $actual_minutes > 0 && $offset_req_status === 'approved') {
+            $checkLedger = $conn->prepare("SELECT id FROM time_bank_ledger WHERE source_id = ? AND transaction_type = 'earned'");
+            $checkLedger->bind_param("i", $offset_req_id);
+            $checkLedger->execute();
+            if ($checkLedger->get_result()->num_rows == 0) {
+                $worked_hours = round($actual_minutes / 60, 2);
+                $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule')");
+                $ledgerStmt->bind_param("idi", $employee_id, $worked_hours, $offset_req_id);
+                $ledgerStmt->execute();
+                
+                $updateReq = $conn->prepare("UPDATE offset_schedule_requests SET status = 'completed' WHERE id = ?");
+                $updateReq->bind_param("i", $offset_req_id);
+                $updateReq->execute();
+            }
         }
 
         $conn->commit();

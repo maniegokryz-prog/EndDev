@@ -376,6 +376,8 @@ function renderExcelHistoryTable($employee, $attendanceRecords)
                 $notes = 'Manual Entry';
             } elseif ($data['status'] === 'visit') {
                 $notes = 'Visit';
+            } elseif ($data['status'] === 'cto') {
+                $notes = 'Time Bank CTO';
             } else {
                 $notes = 'Biometric Scan'; // Default assumption
             }
@@ -525,9 +527,19 @@ function getEmployeeSchedule($conn, $employeeInternalId)
 }
 
 
-function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '', $breakOutStr = null, $breakInStr = null)
+function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '', $breakOutStr = null, $breakInStr = null, $employeeId = null)
 {
     if (empty($timeInStr) || empty($timeOutStr)) {
+        if ($employeeId && isset($GLOBALS['conn'])) {
+            $ctoStmt = $GLOBALS['conn']->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'");
+            $dateOnly = date('Y-m-d', strtotime($dateStr));
+            $ctoStmt->bind_param("is", $employeeId, $dateOnly);
+            $ctoStmt->execute();
+            $ctoRes = $ctoStmt->get_result()->fetch_assoc();
+            if ($ctoRes && floatval($ctoRes['hours_used']) > 0) {
+                return round(floatval($ctoRes['hours_used']) * 60, 2);
+            }
+        }
         return 0;
     }
 
@@ -658,6 +670,26 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
             $totalMinutes = max(0, $totalMinutes - $deductionMinutes);
         }
     }
+
+    // --- CTO Ingestion & Forgiveness ---
+    if ($employeeId && isset($conn)) {
+        $ctoStmt = $conn->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'");
+        $dateOnly = date('Y-m-d', strtotime($dateStr));
+        $ctoStmt->bind_param("is", $employeeId, $dateOnly);
+        $ctoStmt->execute();
+        $ctoRes = $ctoStmt->get_result()->fetch_assoc();
+
+        if ($ctoRes && floatval($ctoRes['hours_used']) > 0) {
+            $ctoMins = floatval($ctoRes['hours_used']) * 60;
+            
+            // The employee actually gets credited these CTO hours on top of their worked schedule
+            // Wait, if they arrived late, they lost minutes previously. We just add the CTO back.
+            // Option 1 & 2 perfectly integrated:
+            $totalMinutes += $ctoMins;
+        }
+        $ctoStmt->close();
+    }
+    // ------------------------------------
 
     return round($totalMinutes, 2);
 }
