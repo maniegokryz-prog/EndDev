@@ -238,8 +238,8 @@ $editor->loadEmployee($employee_id);
 
 // Role detection for NTP
 $isNTP = (strpos(strtolower($employee['roles'] ?? ''), 'non teaching staff') !== false ||
-          strpos(strtolower($employee['roles'] ?? ''), 'non-teaching staff') !== false ||
-          strpos(strtolower($employee['roles'] ?? ''), 'admin') !== false);
+    strpos(strtolower($employee['roles'] ?? ''), 'non-teaching staff') !== false ||
+    strpos(strtolower($employee['roles'] ?? ''), 'admin') !== false);
 
 // Prepare Schedule Data for JS
 $scheduleColors = ['#4a7c59', '#8b4a6b', '#b85450', '#5b9bd5', '#ffc000', '#c55a11', '#7030a0', '#0070c0', '#00b050', '#ff6b6b'];
@@ -371,30 +371,38 @@ $profilePhoto .= '?v=' . microtime(true);
             border: 1px solid #198754 !important;
             color: #fff !important;
         }
+
         .btn-solid-danger {
             background-color: #dc3545 !important;
             border: 1px solid #dc3545 !important;
             color: #fff !important;
         }
+
         .btn-solid-warning {
             background-color: #ffc107 !important;
             border: 1px solid #ffc107 !important;
             color: #000 !important;
         }
+
         .btn-solid-orange {
-            background-color: #fd7e14 !important; /* Light Orange */
+            background-color: #fd7e14 !important;
+            /* Light Orange */
             border: 1px solid #fd7e14 !important;
             color: #fff !important;
         }
+
         .btn-solid-primary {
             background-color: #0d6efd !important;
             border: 1px solid #0d6efd !important;
             color: #fff !important;
         }
+
         .btn-solid-light-gray {
-            background-color: #dee2e6 !important; /* Fixed to #dee2e6 for consistency */
+            background-color: #dee2e6 !important;
+            /* Fixed to #dee2e6 for consistency */
             border: 1px solid #dee2e6 !important;
-            color: #212529 !important; /* Darker text for white/light-gray background */
+            color: #212529 !important;
+            /* Darker text for white/light-gray background */
         }
 
         /* Unified Hover for Action Buttons */
@@ -423,9 +431,10 @@ $profilePhoto .= '?v=' . microtime(true);
 
         /* Faculty specific: Increased DTR List Height since Scheduled Leave is hidden */
         <?php if (isset($employee['roles']) && stripos($employee['roles'], 'faculty') !== false): ?>
-        .dtr-list-vertical {
-            max-height: 540px !important;
-        }
+            .dtr-list-vertical {
+                max-height: 540px !important;
+            }
+
         <?php endif; ?>
 
 
@@ -576,10 +585,10 @@ $profilePhoto .= '?v=' . microtime(true);
             <small class="role"><?php echo htmlspecialchars(ucfirst($currentUser['role'] ?? 'User')); ?></small>
         </div>
         <nav class="nav flex-column px-2">
-            <?php 
-                $isOwnProfile = (isset($currentUser['employee_id']) && isset($employee['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']);
-                $navLabel = $isOwnProfile ? ($isAdmin ? 'My Profile' : 'My Info') : ($isAdmin ? 'Staff Management' : 'My Info');
-                renderNavigation($navLabel); 
+            <?php
+            $isOwnProfile = (isset($currentUser['employee_id']) && isset($employee['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']);
+            $navLabel = $isOwnProfile ? ($isAdmin ? 'My Profile' : 'My Info') : ($isAdmin ? 'Staff Management' : 'My Info');
+            renderNavigation($navLabel);
             ?>
         </nav>
     </div>
@@ -631,23 +640,26 @@ $profilePhoto .= '?v=' . microtime(true);
                     $offsetRequestsList[] = $row;
                 }
                 $stmt->close();
-            } catch (Exception $e) {}
+            } catch (Exception $e) {
+            }
             ?>
 
             <?php if ($hasPendingRequest): ?>
                 <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id']): ?>
-                    <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex flex-column align-items-start gap-3 px-4 py-3" role="alert">
+                    <div class="alert alert-warning mb-4 border-0 shadow-sm d-flex flex-column align-items-start gap-3 px-4 py-3"
+                        role="alert">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-exclamation-circle fs-4 m-0 text-warning-emphasis"></i>
                             <div class="lh-sm m-0">
                                 <strong>Pending Schedule Request:</strong> You have submitted a schedule edit request that is
-                                currently waiting for Admin approval. Your previous active schedule is shown below until the new one is approved.
+                                currently waiting for Admin approval. Your previous active schedule is shown below until the new
+                                one is approved.
                             </div>
                         </div>
-                        <button class="btn btn-dark btn-sm fw-semibold text-nowrap m-0 px-4 py-2 btn-gray-hover" data-bs-toggle="modal"
-                                data-bs-target="#viewPendingRequestModal"
-                                onclick="try { renderPendingRequestCalendar(); } catch(e) { alert('Function error: ' + e.message); console.error(e); }">
-                                <i class="bi bi-eye"></i> View Request
+                        <button class="btn btn-dark btn-sm fw-semibold text-nowrap m-0 px-4 py-2 btn-gray-hover"
+                            data-bs-toggle="modal" data-bs-target="#viewPendingRequestModal"
+                            onclick="try { renderPendingRequestCalendar(); } catch(e) { alert('Function error: ' + e.message); console.error(e); }">
+                            <i class="bi bi-eye"></i> View Request
                         </button>
                     </div>
                 <?php elseif ($isAdmin): ?>
@@ -748,7 +760,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                             newBtn.disabled = false;
                                             newBtn.innerHTML = originalHtml;
                                         }
-                                    } catch(e) {
+                                    } catch (e) {
                                         console.error("Server returned invalid data:", text);
                                         alert("An error occurred during cancellation. Please check your connection and try again.");
                                         newBtn.disabled = false;
@@ -794,16 +806,15 @@ $profilePhoto .= '?v=' . microtime(true);
                                 </div>
                             </div>
                             <div class="action-buttons">
-                                <button class="btn-modern btn-solid-success btn-gray-hover"
-                                    data-bs-toggle="modal" data-bs-target="#editInfoModal">
+                                <button class="btn-modern btn-solid-success btn-gray-hover" data-bs-toggle="modal"
+                                    data-bs-target="#editInfoModal">
                                     <i class="bi bi-pencil"></i> Edit Info
                                 </button>
                                 <?php if ($isAdmin): ?>
                                     <?php if (!$hide_re_register_face_button): ?>
-                                        <button type="button" 
+                                        <button type="button"
                                             onclick="window.location.href='re_register_face.php?id=<?php echo htmlspecialchars($employee['employee_id']); ?>'"
-                                            class="btn-modern btn-solid-warning btn-gray-hover"
-                                            title="Re-register Face Data">
+                                            class="btn-modern btn-solid-warning btn-gray-hover" title="Re-register Face Data">
                                             <i class="bi bi-person-bounding-box"></i> Re-register Face
                                         </button>
                                     <?php endif; ?>
@@ -880,11 +891,13 @@ $profilePhoto .= '?v=' . microtime(true);
                             <div class="metric-percentage" id="undertimeCount">0%</div>
                         </div>
                         <div class="metric-item">
-                            <div class="metric-canvas-container" style="display:flex;align-items:center;justify-content:center;background:#f8f9fa;border-radius:50%;width:50px;height:50px;margin:0 auto 10px auto;">
+                            <div class="metric-canvas-container"
+                                style="display:flex;align-items:center;justify-content:center;background:#f8f9fa;border-radius:50%;width:50px;height:50px;margin:0 auto 10px auto;">
                                 <i class="bi bi-bank" style="font-size:24px; color:#198754;"></i>
                             </div>
                             <div class="metric-label">Time Bank</div>
-                            <div class="metric-value text-success" id="timeBankValue">0 <small style="font-size:12px;">hrs</small></div>
+                            <div class="metric-value text-success" id="timeBankValue">0 <small
+                                    style="font-size:12px;">hrs</small></div>
                             <div class="metric-percentage" style="color:#198754;">Balance</div>
                         </div>
                     </div>
@@ -903,8 +916,7 @@ $profilePhoto .= '?v=' . microtime(true);
                             <h4 class="card-title mb-0">Daily Time Record</h4>
                             <!-- Popup Date Picker Trigger -->
                             <div class="position-relative">
-                                <button
-                                    class="btn-modern btn-solid-light-gray btn-sm d-flex align-items-center gap-2"
+                                <button class="btn-modern btn-solid-light-gray btn-sm d-flex align-items-center gap-2"
                                     id="dateRangeTrigger" title="Select Dates">
                                     <i class="bi bi-calendar3"></i>
                                     <span>Filter Dates</span>
@@ -920,8 +932,10 @@ $profilePhoto .= '?v=' . microtime(true);
                                     </div>
                                     <div id="calendar" class="calendar-days p-2"></div>
                                     <div class="p-2 border-top text-end d-flex justify-content-end gap-2">
-                                        <button class="btn-modern btn-solid-success btn-sm close-calendar-btn">Done</button>
-                                        <button class="btn-modern btn-solid-danger btn-sm" id="clearDatesBtn">Clear</button>
+                                        <button
+                                            class="btn-modern btn-solid-success btn-sm close-calendar-btn">Done</button>
+                                        <button class="btn-modern btn-solid-danger btn-sm"
+                                            id="clearDatesBtn">Clear</button>
                                     </div>
                                     <!-- Hidden input for value storage -->
                                     <input type="hidden" id="dateRangeInput">
@@ -932,13 +946,12 @@ $profilePhoto .= '?v=' . microtime(true);
                         <!-- Compact Actions -->
                         <div class="d-flex gap-2 mb-3">
                             <?php if ($isAdmin && !$is_ionos_server): ?>
-                                <button class="btn-modern btn-solid-success btn-sm flex-grow-1"
-                                    data-bs-toggle="modal" data-bs-target="#attendanceModal">
+                                <button class="btn-modern btn-solid-success btn-sm flex-grow-1" data-bs-toggle="modal"
+                                    data-bs-target="#attendanceModal">
                                     <i class="bi bi-plus-lg"></i> Add
                                 </button>
                             <?php endif; ?>
-                            <button class="btn-modern btn-solid-primary btn-sm flex-grow-1"
-                                id="exportDtrBtn">
+                            <button class="btn-modern btn-solid-primary btn-sm flex-grow-1" id="exportDtrBtn">
                                 <i class="bi bi-box-arrow-up-right"></i> Details / Export
                             </button>
                         </div>
@@ -954,8 +967,8 @@ $profilePhoto .= '?v=' . microtime(true);
                         <div class="profile-card leave-section-card">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="card-title mb-0">Scheduled Leave</h4>
-                                <button class="btn-modern btn-solid-success btn-sm btn-icon-sq"
-                                    data-bs-toggle="modal" data-bs-target="#addLeaveModal" title="Add Request">
+                                <button class="btn-modern btn-solid-success btn-sm btn-icon-sq" data-bs-toggle="modal"
+                                    data-bs-target="#addLeaveModal" title="Add Request">
                                     <i class="bi bi-plus-lg"></i>
                                 </button>
                             </div>
@@ -973,7 +986,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         <div class="d-flex gap-2">
                             <button class="btn-modern btn-solid-warning btn-sm btn-gray-hover" data-bs-toggle="modal"
                                 data-bs-target="#requestOffsetModal">
-                                <i class="bi bi-clock-history"></i> Request Offset
+                                <i class="bi bi-clock-history"></i> Request / Use Offset
                             </button>
                             <?php if ($isAdmin && isset($pendingRequestId) && $pendingRequestId): ?>
                                 <button class="btn-modern btn-solid-success btn-sm btn-gray-hover" data-bs-toggle="modal"
@@ -1009,7 +1022,8 @@ $profilePhoto .= '?v=' . microtime(true);
     <!-- ========================= MODALS ========================= -->
 
     <!-- Edit Info Modal (Ported) -->
-    <div class="modal fade" id="editInfoModal" tabindex="-1" aria-labelledby="editInfoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="editInfoModal" tabindex="-1" aria-labelledby="editInfoModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content p-4">
                 <div class="modal-header border-0">
@@ -1042,23 +1056,24 @@ $profilePhoto .= '?v=' . microtime(true);
                                         class="form-control text-start">
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4 col-sm-12 mb-3"><label>First Name</label><input type="text" name="first_name" id="edit_first_name"
-                                            class="form-control" autocapitalize="words"
-                                            style="text-transform:capitalize"
+                                    <div class="col-md-4 col-sm-12 mb-3"><label>First Name</label><input type="text"
+                                            name="first_name" id="edit_first_name" class="form-control"
+                                            autocapitalize="words" style="text-transform:capitalize"
                                             oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['first_name']); ?>" required></div>
                                     <div class="col-md-3 col-sm-12 mb-3"><label>Middle Name</label><input type="text"
-                                            name="middle_name" id="edit_middle_name" class="form-control" autocapitalize="words"
-                                            style="text-transform:capitalize"
+                                            name="middle_name" id="edit_middle_name" class="form-control"
+                                            autocapitalize="words" style="text-transform:capitalize"
                                             oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['middle_name']); ?>"></div>
-                                    <div class="col-md-3 col-sm-12 mb-3"><label>Last Name</label><input type="text" name="last_name" id="edit_last_name"
-                                            class="form-control" autocapitalize="words"
+                                    <div class="col-md-3 col-sm-12 mb-3"><label>Last Name</label><input type="text"
+                                            name="last_name" id="edit_last_name" class="form-control" autocapitalize="words"
                                             style="text-transform:capitalize"
                                             oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['last_name']); ?>" required></div>
-                                    <div class="col-md-2 col-sm-12 mb-3"><label>Suffix <span class="text-muted d-none d-lg-inline">(Opt)</span></label><input type="text" name="suffix" id="edit_suffix"
-                                            class="form-control" autocapitalize="words"
+                                    <div class="col-md-2 col-sm-12 mb-3"><label>Suffix <span
+                                                class="text-muted d-none d-lg-inline">(Opt)</span></label><input type="text"
+                                            name="suffix" id="edit_suffix" class="form-control" autocapitalize="words"
                                             style="text-transform:capitalize"
                                             oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                             value="<?php echo htmlspecialchars($employee['suffix'] ?? ''); ?>"></div>
@@ -1067,8 +1082,8 @@ $profilePhoto .= '?v=' . microtime(true);
                                         value="<?php echo htmlspecialchars($employee['email']); ?>" required></div>
                                 <div class="mb-3">
                                     <label>Phone</label>
-                                    <input type="tel" name="phone" id="edit_phone" class="form-control"
-                                        pattern="[0-9]{11}" maxlength="11"
+                                    <input type="tel" name="phone" id="edit_phone" class="form-control" pattern="[0-9]{11}"
+                                        maxlength="11"
                                         oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); document.getElementById('edit-phone-error').style.display = (this.value.length === 11 || this.value.length === 0) ? 'none' : 'block';"
                                         title="Phone number must be exactly 11 digits"
                                         value="<?php echo htmlspecialchars($employee['phone']); ?>">
@@ -1081,13 +1096,13 @@ $profilePhoto .= '?v=' . microtime(true);
                                         <div class="col-md-4 mb-3"><label>Role</label><input type="text" name="roles" id="roles"
                                                 class="form-control"
                                                 value="<?php echo htmlspecialchars($employee['roles']); ?>"></div>
-                                        <div class="col-md-4 mb-3"><label>Department</label><input type="text" name="department" id="edit_department"
-                                                class="form-control" autocapitalize="words"
+                                        <div class="col-md-4 mb-3"><label>Department</label><input type="text" name="department"
+                                                id="edit_department" class="form-control" autocapitalize="words"
                                                 style="text-transform:capitalize"
                                                 oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                                 value="<?php echo htmlspecialchars($employee['department']); ?>"></div>
-                                        <div class="col-md-4 mb-3"><label>Position</label><input type="text" name="position" id="edit_position"
-                                                class="form-control" autocapitalize="words"
+                                        <div class="col-md-4 mb-3"><label>Position</label><input type="text" name="position"
+                                                id="edit_position" class="form-control" autocapitalize="words"
                                                 style="text-transform:capitalize"
                                                 oninput="var p=this.selectionStart;this.value=this.value.replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});this.setSelectionRange(p,p);"
                                                 value="<?php echo htmlspecialchars($employee['position']); ?>"></div>
@@ -1119,7 +1134,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     <h5 class="fw-bold mb-2 text-success">Save Successful</h5>
                     <p class="text-muted">Your changes have been saved successfully.</p>
                     <div class="mt-4">
-                        <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                        <button type="button" class="btn-modern btn-outline text-success border-success fw-bold px-5"
+                            data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
             </div>
@@ -1127,7 +1143,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Remove Employee Modal -->
-    <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="removeEmployeeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4">
                 <h5 class="fw-bold mb-3 text-danger text-center">Confirm Employee Removal</h5>
@@ -1146,7 +1163,8 @@ $profilePhoto .= '?v=' . microtime(true);
                             <span id="removeBtnSpinner" class="spinner-border spinner-border-sm ms-2"
                                 style="display: none;"></span>
                         </button>
-                        <button type="button" class="btn-modern btn-solid-danger btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn-modern btn-solid-danger btn-sm px-4"
+                            data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -1175,7 +1193,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     </div>
                     <h5 class="fw-bold text-danger mb-2">Operation Failed</h5>
                     <p id="errorRemoveMessage" class="text-muted mb-4"></p>
-                    <button class="btn-modern btn-outline text-secondary border-secondary px-5 fw-bold" data-bs-dismiss="modal">Close</button>
+                    <button class="btn-modern btn-outline text-secondary border-secondary px-5 fw-bold"
+                        data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -1184,7 +1203,8 @@ $profilePhoto .= '?v=' . microtime(true);
     <!-- LEAVE REQUEST MODALS -->
 
     <!-- Add Leave Modal -->
-    <div class="modal fade" id="addLeaveModal" tabindex="-1" aria-labelledby="addLeaveLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="addLeaveModal" tabindex="-1" aria-labelledby="addLeaveLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header justify-content-center">
@@ -1226,9 +1246,10 @@ $profilePhoto .= '?v=' . microtime(true);
                     </div>
                 </div>
                 <div class="modal-footer justify-content-end gap-2">
-                    <button class="btn-modern btn-solid-success fw-bold px-4" onclick="confirmLeave ? confirmLeave() : null"
-                        id="btnSubmitLeave">Submit Request</button>
-                    <button class="btn-modern btn-solid-danger fw-bold px-4" onclick="cancelLeaveRequest ? cancelLeaveRequest() : null"
+                    <button class="btn-modern btn-solid-success fw-bold px-4"
+                        onclick="confirmLeave ? confirmLeave() : null" id="btnSubmitLeave">Submit Request</button>
+                    <button class="btn-modern btn-solid-danger fw-bold px-4"
+                        onclick="cancelLeaveRequest ? cancelLeaveRequest() : null"
                         data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -1320,8 +1341,9 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 class="text-danger fw-bold">Confirm Delete</h5>
                 <p id="leaveDeleteConfirmMsg"></p>
-                <div class="mt-3"><button class="btn-modern btn-solid-light-gray fw-bold me-2 px-4" data-bs-dismiss="modal">No</button><button
-                        class="btn-modern btn-solid-danger fw-bold px-4" id="leaveDeleteConfirmBtn">Yes, Delete</button></div>
+                <div class="mt-3"><button class="btn-modern btn-solid-light-gray fw-bold me-2 px-4"
+                        data-bs-dismiss="modal">No</button><button class="btn-modern btn-solid-danger fw-bold px-4"
+                        id="leaveDeleteConfirmBtn">Yes, Delete</button></div>
             </div>
         </div>
     </div>
@@ -1331,8 +1353,10 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 class="text-success fw-bold">Approve Request</h5>
                 <p id="leaveApproveConfirmMsg"></p>
-                <div class="mt-3 d-flex justify-content-center gap-2"><button class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">Cancel</button><button
-                        class="btn-modern btn-solid-success fw-bold px-4" id="leaveApproveConfirmBtn">Yes, Approve</button></div>
+                <div class="mt-3 d-flex justify-content-center gap-2"><button
+                        class="btn-modern btn-solid-light-gray fw-bold px-4"
+                        data-bs-dismiss="modal">Cancel</button><button class="btn-modern btn-solid-success fw-bold px-4"
+                        id="leaveApproveConfirmBtn">Yes, Approve</button></div>
             </div>
         </div>
     </div>
@@ -1343,7 +1367,8 @@ $profilePhoto .= '?v=' . microtime(true);
             <div class="modal-content p-4 text-center">
                 <h5 id="leaveConfirmTitle" class="fw-bold">Confirm</h5>
                 <p id="leaveConfirmMsg"></p>
-                <div class="mt-3 d-flex justify-content-center gap-2"><button class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">No</button><button
+                <div class="mt-3 d-flex justify-content-center gap-2"><button
+                        class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">No</button><button
                         class="btn-modern btn-solid-success fw-bold px-4" id="btnConfirmAction">Yes</button></div>
             </div>
         </div>
@@ -1365,8 +1390,10 @@ $profilePhoto .= '?v=' . microtime(true);
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="confirmRejectBtn">Yes, Reject</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" id="confirmRejectBtn">Yes,
+                        Reject</button>
                 </div>
             </div>
         </div>
@@ -1379,8 +1406,10 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 text-success">Confirm Approval</h5>
                 <p>Are you sure you want to approve this leave request?</p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="confirmApproveBtn">Yes, Approve</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="confirmApproveBtn">Yes,
+                        Approve</button>
                 </div>
             </div>
         </div>
@@ -1401,7 +1430,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Attendance Manual Modal -->
-    <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content p-3">
                 <div class="modal-header justify-content-center">
@@ -1420,7 +1450,8 @@ $profilePhoto .= '?v=' . microtime(true);
                             </div>
                             <?php if ($isNTP): ?>
                                 <div class="col-md-2"><label>Time In:</label><input type="time" class="form-control"></div>
-                                <div class="col-md-2"><label>Break Out:</label><input type="time" class="form-control"></div>
+                                <div class="col-md-2"><label>Break Out:</label><input type="time" class="form-control">
+                                </div>
                                 <div class="col-md-2"><label>Break In:</label><input type="time" class="form-control"></div>
                                 <div class="col-md-2"><label>Time Out:</label><input type="time" class="form-control"></div>
                             <?php else: ?>
@@ -1429,10 +1460,13 @@ $profilePhoto .= '?v=' . microtime(true);
                             <?php endif; ?>
                             <div class="col-md-3">
                                 <div class="pb-1 d-flex align-items-center">
-                                    <button type="button" class="btn-modern btn-solid-warning btn-sm me-1 clearRow" title="Clear Times" style="width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; display: inline-flex; justify-content: center; align-items: center;"><i
+                                    <button type="button" class="btn-modern btn-solid-warning btn-sm me-1 clearRow"
+                                        title="Clear Times"
+                                        style="width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; display: inline-flex; justify-content: center; align-items: center;"><i
                                             class="bi bi-eraser"></i></button>
-                                    <button type="button" class="btn-modern btn-solid-danger btn-sm removeRow" style="display:none; width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; justify-content: center; align-items: center;" title="Remove Row"><i
-                                            class="bi bi-x-lg"></i></button>
+                                    <button type="button" class="btn-modern btn-solid-danger btn-sm removeRow"
+                                        style="display:none; width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; justify-content: center; align-items: center;"
+                                        title="Remove Row"><i class="bi bi-x-lg"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -1450,7 +1484,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Edit Attendance Modal -->
-    <div class="modal fade" id="editAttendanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="editAttendanceModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-3">
                 <div class="modal-header justify-content-center position-relative">
@@ -1469,14 +1504,14 @@ $profilePhoto .= '?v=' . microtime(true);
                                 <input type="time" class="form-control" id="editAttTimeIn">
                             </div>
                             <?php if ($isNTP): ?>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Break Out</label>
-                                <input type="time" class="form-control" id="editAttBreakOut">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Break In</label>
-                                <input type="time" class="form-control" id="editAttBreakIn">
-                            </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Break Out</label>
+                                    <input type="time" class="form-control" id="editAttBreakOut">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Break In</label>
+                                    <input type="time" class="form-control" id="editAttBreakIn">
+                                </div>
                             <?php endif; ?>
                             <div class="<?php echo $isNTP ? 'col-md-3' : 'col-md-6'; ?> mb-3">
                                 <label class="form-label">Time Out</label>
@@ -1487,14 +1522,17 @@ $profilePhoto .= '?v=' . microtime(true);
                     </form>
                 </div>
                 <div class="modal-footer justify-content-end gap-3 mt-3">
-                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="btnSaveEditAttendance">Save Changes</button>
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
+                        id="btnSaveEditAttendance">Save Changes</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="attendanceSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="text-success">Attendance Saved</h5>
@@ -1505,13 +1543,15 @@ $profilePhoto .= '?v=' . microtime(true);
             </div>
         </div>
     </div>
-    <div class="modal fade" id="attendanceErrorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="attendanceErrorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="text-danger">Save Failed</h5>
                 <p id="attendanceErrorMessage"></p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-solid-danger fw-bold px-4"
+                        data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -1662,8 +1702,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         </div>
 
                         <div class="form-actions d-flex justify-content-end gap-3 mt-4">
-                            <button type="submit"
-                                class="btn-modern btn-solid-success btn-save btn-gray-hover px-4"
+                            <button type="submit" class="btn-modern btn-solid-success btn-save btn-gray-hover px-4"
                                 style="min-width: 150px;">
                                 <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'Save Schedule' : 'Submit Request'; ?>
                             </button>
@@ -1742,7 +1781,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     <h5 class="fw-bold mb-1 text-success">Schedule Added Successfully</h5>
                     <div id="scheduleAddedSuccessMsg"></div>
                     <div class="mt-4">
-                        <button type="button" class="btn-modern btn-solid-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                        <button type="button" class="btn-modern btn-solid-success fw-bold px-5"
+                            data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
             </div>
@@ -1750,23 +1790,23 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Pending Request Conflict Modal -->
-    <div class="modal fade" id="schedulePendingConflictModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"
-       >
+    <div class="modal fade" id="schedulePendingConflictModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
                 <p id="schedulePendingConflictMsg">You already have a pending schedule request. Please wait for it to be
                     approved or rejected, or cancel it before submitting a new one.</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" data-bs-dismiss="modal">Understood</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
+                        data-bs-dismiss="modal">Understood</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Admin Warning: Pending Request Exists -->
-    <div class="modal fade" id="adminPendingRequestWarningModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"
-       >
+    <div class="modal fade" id="adminPendingRequestWarningModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 1060;">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 text-center">
                 <h5 class="fw-bold mb-3 text-danger">Pending Request Exists</h5>
@@ -1783,10 +1823,12 @@ $profilePhoto .= '?v=' . microtime(true);
                     }
                 </style>
                 <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4 py-2 m-0" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4 py-2 m-0"
+                        data-bs-dismiss="modal">Cancel</button>
                     <?php if (isset($pendingRequestId) && $pendingRequestId): ?>
                         <a href="review_schedule_request.php?id=<?php echo urlencode($pendingRequestId); ?>&referrer=staff_profile&emp_id=<?php echo urlencode($employee['employee_id']); ?>"
-                            class="btn-modern btn-solid-danger fw-bold px-4 py-2 m-0 text-decoration-none d-inline-flex align-items-center justify-content-center">View Request</a>
+                            class="btn-modern btn-solid-danger fw-bold px-4 py-2 m-0 text-decoration-none d-inline-flex align-items-center justify-content-center">View
+                            Request</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1803,7 +1845,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     <h5 class="fw-bold mb-1 text-success">Schedule Updated Successfully</h5>
                     <div id="scheduleUpdatedSuccessMsg"></div>
                     <div class="mt-4">
-                        <button type="button" class="btn-modern btn-solid-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                        <button type="button" class="btn-modern btn-solid-success fw-bold px-5"
+                            data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
             </div>
@@ -1820,8 +1863,10 @@ $profilePhoto .= '?v=' . microtime(true);
                     <h5 class="fw-bold mb-2 text-danger">Confirm Clear All</h5>
                     <p id="scheduleClearConfirmMsg" class="text-muted">Are you sure you want to clear all schedules?</p>
                     <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
-                        <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">No, Keep Them</button>
-                        <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold" id="scheduleClearConfirmBtn">Yes, Clear All</button>
+                        <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold"
+                            data-bs-dismiss="modal">No, Keep Them</button>
+                        <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold"
+                            id="scheduleClearConfirmBtn">Yes, Clear All</button>
                     </div>
                 </div>
             </div>
@@ -1836,10 +1881,13 @@ $profilePhoto .= '?v=' . microtime(true);
                         <i class="bi bi-trash3-fill"></i>
                     </div>
                     <h5 class="fw-bold mb-2 text-danger">Confirm Delete</h5>
-                    <p id="scheduleDeleteConfirmMsg" class="text-muted">Are you sure you want to delete this schedule block?</p>
+                    <p id="scheduleDeleteConfirmMsg" class="text-muted">Are you sure you want to delete this schedule
+                        block?</p>
                     <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
-                        <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold" id="scheduleDeleteConfirmBtn">Yes, Delete</button>
+                        <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold"
+                            id="scheduleDeleteConfirmBtn">Yes, Delete</button>
                     </div>
                 </div>
             </div>
@@ -1854,9 +1902,11 @@ $profilePhoto .= '?v=' . microtime(true);
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
                     <h5 class="fw-bold mb-2 text-success">Schedules Cleared</h5>
-                    <p id="scheduleClearedSuccessMsg" class="text-muted">All schedules have been cleared successfully!</p>
+                    <p id="scheduleClearedSuccessMsg" class="text-muted">All schedules have been cleared successfully!
+                    </p>
                     <div class="mt-4">
-                        <button type="button" class="btn-modern btn-solid-success fw-bold px-5" data-bs-dismiss="modal">OK</button>
+                        <button type="button" class="btn-modern btn-solid-success fw-bold px-5"
+                            data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
             </div>
@@ -1873,7 +1923,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     <?php echo (isset($currentUser['role']) && strtolower($currentUser['role']) === 'admin') ? 'The schedule has been updated directly.' : 'Your request has been submitted.'; ?>
                 </p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4"
+                        data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -1885,28 +1936,33 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 text-info">No Schedules</h5>
                 <p id="scheduleNoDataMsg">No schedules to clear!</p>
                 <div class="mt-3">
-                    <button type="button" class="btn-modern btn-solid-primary fw-bold px-4" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn-modern btn-solid-primary fw-bold px-4"
+                        data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- View Pending Request Modal -->
-    <div class="modal fade" id="viewPendingRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="viewPendingRequestModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content shadow-lg border-0 rounded-4">
                 <div class="modal-header bg-warning bg-opacity-10 border-bottom-0 pb-0 justify-content-center">
-                    <h5 class="fw-bold mb-0 text-center" style="color: #664d03;"><i class="bi bi-hourglass-split me-2"></i>Pending Schedule Request</h5>
+                    <h5 class="fw-bold mb-0 text-center" style="color: #664d03;"><i
+                            class="bi bi-hourglass-split me-2"></i>Pending Schedule Request</h5>
                 </div>
                 <div class="modal-body p-4 pt-3 text-center">
-                    <p class="text-muted small mb-3">This is the schedule you requested. It is currently waiting for admin approval.</p>
+                    <p class="text-muted small mb-3">This is the schedule you requested. It is currently waiting for
+                        admin approval.</p>
                     <div class="table-responsive" style="overflow-x: auto; padding-bottom: 15px;">
                         <div id="pending-request-calendar-view" class="schedule-calendar-preview"
                             style="min-height: 200px;"></div>
                     </div>
                 </div>
                 <div class="modal-footer border-top-0 pt-0 justify-content-end gap-2">
-                    <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold"
+                        data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold"
                         onclick="cancelPendingRequest(<?php echo $pendingRequestId; ?>)">
                         <i class="bi bi-x-circle"></i> Cancel Request
@@ -1992,8 +2048,10 @@ $profilePhoto .= '?v=' . microtime(true);
                 <h5 class="fw-bold mb-3 modal-title" id="leaveConfirmTitle2">Confirm Action</h5>
                 <p class="mb-4 modal-body-text" id="leaveConfirmMsg2">Are you sure you want to proceed?</p>
                 <div class="d-flex justify-content-center gap-3">
-                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4" data-bs-dismiss="modal">No, Cancel</button>
-                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="btnConfirmAction2">Yes, Confirm</button>
+                    <button type="button" class="btn-modern btn-solid-light-gray fw-bold px-4"
+                        data-bs-dismiss="modal">No, Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-success fw-bold px-4" id="btnConfirmAction2">Yes,
+                        Confirm</button>
                 </div>
             </div>
         </div>
@@ -2008,8 +2066,10 @@ $profilePhoto .= '?v=' . microtime(true);
                 <p id="cancelPendingRequestConfirmMsg">Are you sure you want to cancel this pending schedule request?
                 </p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-                    <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold" data-bs-dismiss="modal">No, Keep It</button>
-                    <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold" id="cancelPendingRequestConfirmBtn">Yes, Cancel
+                    <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold"
+                        data-bs-dismiss="modal">No, Keep It</button>
+                    <button type="button" class="btn-modern btn-solid-danger px-4 fw-bold"
+                        id="cancelPendingRequestConfirmBtn">Yes, Cancel
                         Request</button>
                 </div>
             </div>
@@ -2161,7 +2221,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         window.editAddedSchedules = window._editScheduleSnapshot;
                         // Sync the module-level variable via the global reference
                         if (typeof editAddedSchedules !== 'undefined') {
-                            try { editAddedSchedules = window.editAddedSchedules; } catch(e) {}
+                            try { editAddedSchedules = window.editAddedSchedules; } catch (e) { }
                         }
                         window._editScheduleSnapshot = undefined;
                         console.log('Schedule changes discarded (cancel). Restored to:', window.editAddedSchedules.length, 'schedule(s).');
@@ -2177,7 +2237,8 @@ $profilePhoto .= '?v=' . microtime(true);
         });
     </script>
     <!-- Logout Modal -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow border-0 overflow-hidden">
                 <div class="modal-body text-center py-4">
@@ -2365,7 +2426,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </style>
 
     <!-- Combined Offset/CTO Modal -->
-    <div class="modal fade" id="requestOffsetModal" tabindex="-1" aria-labelledby="requestOffsetModalLabel" aria-hidden="true">
+    <div class="modal fade" id="requestOffsetModal" tabindex="-1" aria-labelledby="requestOffsetModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
@@ -2375,16 +2437,21 @@ $profilePhoto .= '?v=' . microtime(true);
                 <div class="modal-body pt-2">
                     <ul class="nav nav-tabs mb-3" id="offsetTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active fw-bold text-dark" id="offset-request-tab" data-bs-toggle="tab" data-bs-target="#offset-request" type="button" role="tab">Request Offset</button>
+                            <button class="nav-link active fw-bold text-dark" id="offset-request-tab"
+                                data-bs-toggle="tab" data-bs-target="#offset-request" type="button" role="tab">Request
+                                Offset</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link fw-bold text-dark" id="offset-history-tab" data-bs-toggle="tab" data-bs-target="#offset-history" type="button" role="tab">Offset History</button>
+                            <button class="nav-link fw-bold text-dark" id="offset-history-tab" data-bs-toggle="tab"
+                                data-bs-target="#offset-history" type="button" role="tab">Offset History</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link fw-bold text-dark" id="cto-request-tab" data-bs-toggle="tab" data-bs-target="#cto-request" type="button" role="tab">Use Time Bank</button>
+                            <button class="nav-link fw-bold text-dark" id="cto-request-tab" data-bs-toggle="tab"
+                                data-bs-target="#cto-request" type="button" role="tab">Use Time Bank</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link fw-bold text-dark" id="cto-history-tab" data-bs-toggle="tab" data-bs-target="#cto-history" type="button" role="tab">Time Bank History</button>
+                            <button class="nav-link fw-bold text-dark" id="cto-history-tab" data-bs-toggle="tab"
+                                data-bs-target="#cto-history" type="button" role="tab">Time Bank History</button>
                         </li>
                     </ul>
                     <div class="tab-content" id="offsetTabsContent">
@@ -2417,7 +2484,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                             $start = date("g:i A", strtotime($s['min_start']));
                                             $end = date("g:i A", strtotime($s['max_end']));
                                             $hours = round($s['total_mins'] / 60, 2);
-                                            
+
                                             $val = $s['id'] . '-' . $s['day_of_week'];
                                             echo "<option value='{$val}'>Mirror my {$dayName} Schedule ({$start} - {$end}, {$hours} hrs)</option>";
                                         }
@@ -2427,14 +2494,17 @@ $profilePhoto .= '?v=' . microtime(true);
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Date of Work (Off-day)</label>
                                     <input type="date" class="form-control" id="offsetRequestedDate" required>
-                                    <small class="text-muted">Pick the future day you intend to work on this mirrored schedule.</small>
+                                    <small class="text-muted">Pick the future day you intend to work on this mirrored
+                                        schedule.</small>
                                 </div>
-                                <button type="button" class="btn btn-primary w-100 fw-bold mt-2" onclick="submitOffsetRequest()">Submit Request</button>
+                                <button type="button" class="btn btn-primary w-100 fw-bold mt-2"
+                                    onclick="submitOffsetRequest()">Submit Request</button>
                             </form>
                         </div>
-                        
+
                         <!-- History and Status Tab -->
-                        <div class="tab-pane fade p-2" id="offset-history" role="tabpanel" aria-labelledby="offset-history-tab">
+                        <div class="tab-pane fade p-2" id="offset-history" role="tabpanel"
+                            aria-labelledby="offset-history-tab">
                             <?php if (!$hasOffsetRequests): ?>
                                 <div class="text-center text-muted p-4">
                                     <i class="bi bi-inbox fs-1"></i>
@@ -2442,82 +2512,91 @@ $profilePhoto .= '?v=' . microtime(true);
                                 </div>
                             <?php else: ?>
                                 <div class="d-flex flex-column gap-3">
-                                <?php foreach ($offsetRequestsList as $offset): ?>
-                                    <div class="card border-0 shadow-sm">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <?php 
-                                                $reqDayName = $daysArray[$offset['original_day_of_week']] ?? 'Unknown';
-                                                $statusColor = $offset['status'] === 'approved' ? 'success' : 'warning';
-                                                
-                                                // Format times and calculate hours if available
-                                                $timeString = "";
-                                                if (!empty($offset['min_start']) && !empty($offset['max_end'])) {
-                                                    $startOut = date("g:i A", strtotime($offset['min_start']));
-                                                    $endOut = date("g:i A", strtotime($offset['max_end']));
-                                                    $hrsOut = round(($offset['total_mins'] ?? 0) / 60, 2);
-                                                    $timeString = "{$startOut} - {$endOut} ({$hrsOut} hrs)";
-                                                } else {
-                                                    $timeString = "Time unspecified";
-                                                }
-                                                ?>
-                                                <h6 class="mb-0 fw-bold">Date: <?php echo date('F d, Y l', strtotime($offset['requested_date'])); ?></h6>
-                                                <span class="badge bg-<?php echo $statusColor; ?> text-<?php echo $offset['status'] === 'approved' ? 'white' : 'dark'; ?> text-uppercase"><?php echo htmlspecialchars($offset['status']); ?></span>
-                                            </div>
-                                            <p class="mb-3 small text-secondary">
-                                                <strong>Mirrored Schedule:</strong> <?php echo $reqDayName; ?> Schedule <span>&bull;</span> <?php echo $timeString; ?>
-                                            </p>
-                                            <div class="d-flex gap-2">
-                                                <?php if ($isAdmin): ?>
-                                                    <?php if ($offset['status'] === 'pending'): ?>
-                                                        <button class="btn btn-success btn-sm fw-semibold px-3 flex-grow-1" onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'approved')">Approve</button>
-                                                        <button class="btn btn-danger btn-sm fw-semibold px-3 flex-grow-1" onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'rejected')">Reject</button>
+                                    <?php foreach ($offsetRequestsList as $offset): ?>
+                                        <div class="card border-0 shadow-sm">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <?php
+                                                    $reqDayName = $daysArray[$offset['original_day_of_week']] ?? 'Unknown';
+                                                    $statusColor = $offset['status'] === 'approved' ? 'success' : 'warning';
+
+                                                    // Format times and calculate hours if available
+                                                    $timeString = "";
+                                                    if (!empty($offset['min_start']) && !empty($offset['max_end'])) {
+                                                        $startOut = date("g:i A", strtotime($offset['min_start']));
+                                                        $endOut = date("g:i A", strtotime($offset['max_end']));
+                                                        $hrsOut = round(($offset['total_mins'] ?? 0) / 60, 2);
+                                                        $timeString = "{$startOut} - {$endOut} ({$hrsOut} hrs)";
+                                                    } else {
+                                                        $timeString = "Time unspecified";
+                                                    }
+                                                    ?>
+                                                    <h6 class="mb-0 fw-bold">Date:
+                                                        <?php echo date('F d, Y l', strtotime($offset['requested_date'])); ?>
+                                                    </h6>
+                                                    <span
+                                                        class="badge bg-<?php echo $statusColor; ?> text-<?php echo $offset['status'] === 'approved' ? 'white' : 'dark'; ?> text-uppercase"><?php echo htmlspecialchars($offset['status']); ?></span>
+                                                </div>
+                                                <p class="mb-3 small text-secondary">
+                                                    <strong>Mirrored Schedule:</strong> <?php echo $reqDayName; ?> Schedule
+                                                    <span>&bull;</span> <?php echo $timeString; ?>
+                                                </p>
+                                                <div class="d-flex gap-2">
+                                                    <?php if ($isAdmin): ?>
+                                                        <?php if ($offset['status'] === 'pending'): ?>
+                                                            <button class="btn btn-success btn-sm fw-semibold px-3 flex-grow-1"
+                                                                onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'approved')">Approve</button>
+                                                            <button class="btn btn-danger btn-sm fw-semibold px-3 flex-grow-1"
+                                                                onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'rejected')">Reject</button>
+                                                        <?php endif; ?>
                                                     <?php endif; ?>
-                                                <?php endif; ?>
-                                                <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id'] && $offset['status'] === 'pending'): ?>
-                                                    <button class="btn btn-outline-danger btn-sm fw-semibold flex-grow-1" onclick="cancelOffsetRequest(<?php echo $offset['id']; ?>)">Cancel Request</button>
-                                                <?php endif; ?>
+                                                    <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id'] && $offset['status'] === 'pending'): ?>
+                                                        <button class="btn btn-outline-danger btn-sm fw-semibold flex-grow-1"
+                                                            onclick="cancelOffsetRequest(<?php echo $offset['id']; ?>)">Cancel
+                                                            Request</button>
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                <?php endforeach; ?>
+                                    <?php endforeach; ?>
                                 </div>
                             <?php endif; ?>
                         </div>
-                        </div>
 
-                        <!-- CTO Request Tab -->
-                        <div class="tab-pane fade p-2" id="cto-request" role="tabpanel">
-                            <form id="requestCtoForm">
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Date to Apply CTO</label>
-                                    <input type="date" class="form-control" id="ctoRequestedDate" required>
-                                    <small class="text-muted">Pick the scheduled work day you wish to offset.</small>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Hours to Use</label>
-                                    <input type="number" step="0.5" min="0.5" class="form-control" id="ctoHoursUsed" required>
-                                    <small class="text-muted">Minimum 0.5 hours. Example: 1.0, 1.5, 2.0</small>
-                                </div>
-                                <button type="button" class="btn btn-success w-100 fw-bold mt-2" onclick="submitCtoRequest()">Submit CTO</button>
-                            </form>
-                        </div>
-                        
-                        <!-- CTO History and Status Tab -->
-                        <div class="tab-pane fade p-2" id="cto-history" role="tabpanel">
-                            <!-- Populated dynamically or via PHP. For simplicity we will fetch via JS -->
-                            <div id="ctoHistoryContainer" class="d-flex flex-column gap-3">
-                                <div class="text-center text-muted p-4">
-                                    <i class="bi bi-hourglass fs-1"></i>
-                                    <p class="mt-2">Loading CTO History...</p>
-                                </div>
+                    <!-- CTO Request Tab -->
+                    <div class="tab-pane fade p-2" id="cto-request" role="tabpanel">
+                        <form id="requestCtoForm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Date to Apply CTO</label>
+                                <input type="date" class="form-control" id="ctoRequestedDate" required>
+                                <small class="text-muted">Pick the scheduled work day you wish to offset.</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Hours to Use</label>
+                                <input type="number" step="0.5" min="0.5" class="form-control" id="ctoHoursUsed"
+                                    required>
+                                <small class="text-muted">Minimum 0.5 hours. Example: 1.0, 1.5, 2.0</small>
+                            </div>
+                            <button type="button" class="btn btn-success w-100 fw-bold mt-2"
+                                onclick="submitCtoRequest()">Submit CTO</button>
+                        </form>
+                    </div>
+
+                    <!-- CTO History and Status Tab -->
+                    <div class="tab-pane fade p-2" id="cto-history" role="tabpanel">
+                        <!-- Populated dynamically or via PHP. For simplicity we will fetch via JS -->
+                        <div id="ctoHistoryContainer" class="d-flex flex-column gap-3">
+                            <div class="text-center text-muted p-4">
+                                <i class="bi bi-hourglass fs-1"></i>
+                                <p class="mt-2">Loading CTO History...</p>
                             </div>
                         </div>
-
                     </div>
+
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </body>
 
@@ -2548,149 +2627,167 @@ $profilePhoto .= '?v=' . microtime(true);
 </script>
 
 <script>
-function submitOffsetRequest() {
-    const selectStr = document.getElementById('offsetScheduleId').value;
-    const requestedDate = document.getElementById('offsetRequestedDate').value;
-    
-    if (!selectStr || !requestedDate) {
-        alert("Please fill out all required fields.");
-        return;
+    function submitOffsetRequest() {
+        const selectStr = document.getElementById('offsetScheduleId').value;
+        const requestedDate = document.getElementById('offsetRequestedDate').value;
+
+        if (!selectStr || !requestedDate) {
+            alert("Please fill out all required fields.");
+            return;
+        }
+
+        const parts = selectStr.split('-');
+        if (parts.length !== 2) {
+            alert("Invalid schedule selection.");
+            return;
+        }
+        const scheduleId = parts[0];
+        const dayOfWeek = parts[1];
+
+        const formData = new FormData();
+        formData.append('action', 'submit_request');
+
+        // Fallback if employeeInternalId is not exposed globally, we echo the ID
+        const empId = typeof window.employeeInternalId !== 'undefined' ? window.employeeInternalId : <?php echo json_encode($employee['id']); ?>;
+
+        formData.append('employee_id', empId);
+        formData.append('original_schedule_id', scheduleId);
+        formData.append('original_day_of_week', dayOfWeek);
+        formData.append('requested_date', requestedDate);
+
+        fetch('api/offset_schedule_api.php', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    const modalEl = document.getElementById('requestOffsetModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                    alert('Offset schedule requested successfully.');
+                    setTimeout(() => window.location.reload(), 500);
+                } else {
+                    alert("Error: " + result.error);
+                }
+            })
+            .catch(e => {
+                alert("Network Error: " + e.message);
+            });
+    }
+    function updateOffsetStatus(reqId, status) {
+        if (!confirm(`Are you sure you want to ${status} this offset request?`)) return;
+        const fd = new FormData();
+        fd.append('action', 'admin_update_status');
+        fd.append('request_id', reqId);
+        fd.append('status', status);
+        fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) window.location.reload();
+                else alert('Error: ' + d.error);
+            }).catch(e => alert('Network error'));
+    }
+    function cancelOffsetRequest(reqId) {
+        if (!confirm("Are you sure you want to cancel this offset request?")) return;
+        const fd = new FormData();
+        fd.append('action', 'cancel_request');
+        fd.append('request_id', reqId);
+        fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) window.location.reload();
+                else alert('Error: ' + d.error);
+            }).catch(e => alert('Network error'));
     }
 
-    const parts = selectStr.split('-');
-    if (parts.length !== 2) {
-        alert("Invalid schedule selection.");
-        return;
-    }
-    const scheduleId = parts[0];
-    const dayOfWeek = parts[1];
+    // CTO JS Functions
+    function submitCtoRequest() {
+        const requestedDate = document.getElementById('ctoRequestedDate').value;
+        const hoursUsed = document.getElementById('ctoHoursUsed').value;
 
-    const formData = new FormData();
-    formData.append('action', 'submit_request');
-    
-    // Fallback if employeeInternalId is not exposed globally, we echo the ID
-    const empId = typeof window.employeeInternalId !== 'undefined' ? window.employeeInternalId : <?php echo json_encode($employee['id']); ?>;
-    
-    formData.append('employee_id', empId);
-    formData.append('original_schedule_id', scheduleId);
-    formData.append('original_day_of_week', dayOfWeek);
-    formData.append('requested_date', requestedDate);
+        if (!requestedDate || !hoursUsed) {
+            alert("Please fill out all required fields.");
+            return;
+        }
 
-    fetch('api/offset_schedule_api.php', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(result => {
-            if (result.success) {
-                const modalEl = document.getElementById('requestOffsetModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-                alert('Offset schedule requested successfully.');
-                setTimeout(() => window.location.reload(), 500);
-            } else {
-                alert("Error: " + result.error);
-            }
-        })
-        .catch(e => {
-            alert("Network Error: " + e.message);
-        });
-}
-function updateOffsetStatus(reqId, status) {
-    if (!confirm(`Are you sure you want to ${status} this offset request?`)) return;
-    const fd = new FormData();
-    fd.append('action', 'admin_update_status');
-    fd.append('request_id', reqId);
-    fd.append('status', status);
-    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(d => {
-        if(d.success) window.location.reload();
-        else alert('Error: ' + d.error);
-    }).catch(e => alert('Network error'));
-}
-function cancelOffsetRequest(reqId) {
-    if (!confirm("Are you sure you want to cancel this offset request?")) return;
-    const fd = new FormData();
-    fd.append('action', 'cancel_request');
-    fd.append('request_id', reqId);
-    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(d => {
-        if(d.success) window.location.reload();
-        else alert('Error: ' + d.error);
-    }).catch(e => alert('Network error'));
-}
+        const fd = new FormData();
+        fd.append('action', 'submit_cto');
+        fd.append('employee_id', window.employeeInternalId);
+        fd.append('requested_date', requestedDate);
+        fd.append('hours_used', hoursUsed);
 
-// CTO JS Functions
-function submitCtoRequest() {
-    const requestedDate = document.getElementById('ctoRequestedDate').value;
-    const hoursUsed = document.getElementById('ctoHoursUsed').value;
-    
-    if (!requestedDate || !hoursUsed) {
-        alert("Please fill out all required fields.");
-        return;
+        fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    alert('CTO schedule requested successfully.');
+                    window.location.reload();
+                } else {
+                    alert("Error: " + result.error);
+                }
+            })
+            .catch(e => alert("Network Error: " + e.message));
     }
 
-    const fd = new FormData();
-    fd.append('action', 'submit_cto');
-    fd.append('employee_id', window.employeeInternalId);
-    fd.append('requested_date', requestedDate);
-    fd.append('hours_used', hoursUsed);
+    function loadCtoHistory() {
+        const container = document.getElementById('ctoHistoryContainer');
+        if (!container) return;
 
-    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
-        .then(res => res.json())
-        .then(result => {
-            if (result.success) {
-                alert('CTO schedule requested successfully.');
-                window.location.reload();
-            } else {
-                alert("Error: " + result.error);
-            }
-        })
-        .catch(e => alert("Network Error: " + e.message));
-}
+        const action = window.isAdmin ? 'admin_get_cto_requests' : 'get_employee_cto_requests';
+        const params = window.isAdmin ? '' : `&employee_id=${window.employeeInternalId}`;
 
-function loadCtoHistory() {
-    const container = document.getElementById('ctoHistoryContainer');
-    if (!container) return;
-    
-    const action = window.isAdmin ? 'admin_get_cto_requests' : 'get_employee_cto_requests';
-    const params = window.isAdmin ? '' : `&employee_id=${window.employeeInternalId}`;
-    
-    fetch(`api/offset_schedule_api.php?action=${action}${params}`)
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success || !data.data || data.data.length === 0) {
-                container.innerHTML = `<div class="text-center text-muted p-4"><i class="bi bi-inbox fs-1"></i><p class="mt-2">No pending or approved CTO requests found.</p></div>`;
-                return;
-            }
-            
-            let html = '';
-            data.data.forEach(req => {
-                const badgeColor = req.status === 'approved' ? 'success' : (req.status === 'pending' ? 'warning' : 'secondary');
-                const adminNameStr = window.isAdmin ? `<h6 class="mb-1">${req.first_name} ${req.last_name} (${req.emp_code})</h6>` : '';
-                
-                let adminActions = '';
-                if (window.isAdmin && req.status === 'pending') {
-                    adminActions = `
+        fetch(`api/offset_schedule_api.php?action=${action}${params}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.data || data.data.length === 0) {
+                    container.innerHTML = `<div class="text-center text-muted p-4"><i class="bi bi-inbox fs-1"></i><p class="mt-2">No pending or approved CTO requests found.</p></div>`;
+                    return;
+                }
+
+                let html = '';
+                data.data.forEach(req => {
+                    const badgeColor = req.status === 'approved' ? 'success' : (req.status === 'pending' ? 'warning' : 'secondary');
+                    let adminNameStr = '';
+                    if (window.isAdmin) {
+                        adminNameStr = `<h6 class="fw-bold mb-1 text-dark">${req.first_name} ${req.last_name} (${req.emp_code})</h6>`;
+                    }
+                    
+                    const textColor = req.status === 'approved' ? 'text-white' : 'text-dark';
+
+                    // Parse YYYY-MM-DD reliably without timezone shift
+                    let requestedDateStr = req.requested_date;
+                    if (requestedDateStr) {
+                        const parts = requestedDateStr.split('-');
+                        if (parts.length === 3) {
+                            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+                            if (!isNaN(d.getTime())) {
+                                const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', weekday: 'long' });
+                                requestedDateStr = formatter.format(d);
+                            }
+                        }
+                    }
+
+                    let adminActions = '';
+                    if (window.isAdmin && req.status === 'pending') {
+                        adminActions = `
                         <button class="btn btn-success btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'approved')">Approve</button>
                         <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'rejected')">Reject</button>
                     `;
-                }
-                
-                let userActions = '';
-                if (!window.isAdmin && req.status === 'pending') {
-                    userActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="cancelCtoRequest(${req.id})">Cancel</button>`;
-                }
+                    }
 
-                html += `
+                    let userActions = '';
+                    if (!window.isAdmin && req.status === 'pending') {
+                        userActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="cancelCtoRequest(${req.id})">Cancel</button>`;
+                    }
+
+                    html += `
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
                         ${adminNameStr}
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="mb-0 fw-bold">Date: ${req.requested_date}</h6>
-                            <span class="badge bg-${badgeColor} text-uppercase">${req.status}</span>
+                            <h6 class="mb-0 fw-bold">Date: ${requestedDateStr}</h6>
+                            <span class="badge bg-${badgeColor} ${textColor} text-uppercase">${req.status}</span>
                         </div>
                         <p class="mb-3 small text-secondary">
-                            <strong>Hours to specificially use:</strong> ${parseFloat(req.hours_used).toFixed(2)} hrs
+                            <strong>Requested Hours:</strong> ${parseFloat(req.hours_used).toFixed(2)} hrs
                         </p>
                         <div class="d-flex gap-2">
                             ${adminActions}
@@ -2698,52 +2795,52 @@ function loadCtoHistory() {
                         </div>
                     </div>
                 </div>`;
+                });
+                container.innerHTML = html;
+            })
+            .catch(err => {
+                container.innerHTML = '<div class="text-danger p-3">Failed to load history</div>';
             });
-            container.innerHTML = html;
-        })
-        .catch(err => {
-            container.innerHTML = '<div class="text-danger p-3">Failed to load history</div>';
-        });
-}
-
-function updateCtoStatus(reqId, status) {
-    if (!confirm(`Are you sure you want to ${status} this CTO request?`)) return;
-    const fd = new FormData();
-    fd.append('action', 'admin_update_cto_status');
-    fd.append('request_id', reqId);
-    fd.append('status', status);
-    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(d => {
-        if(d.success) loadCtoHistory();
-        else alert('Error: ' + d.error);
-    });
-}
-
-function cancelCtoRequest(reqId) {
-    if (!confirm("Are you sure you want to cancel this CTO request?")) return;
-    const fd = new FormData();
-    fd.append('action', 'cancel_cto_request');
-    fd.append('request_id', reqId);
-    fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(d => {
-        if(d.success) loadCtoHistory();
-        else alert('Error: ' + d.error);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Load CTO history when modal is opened or tab is clicked
-    const requestOffsetModal = document.getElementById('requestOffsetModal');
-    if(requestOffsetModal) {
-        requestOffsetModal.addEventListener('show.bs.modal', loadCtoHistory);
     }
-    const ctoHistoryTab = document.getElementById('cto-history-tab');
-    if(ctoHistoryTab) {
-        ctoHistoryTab.addEventListener('click', loadCtoHistory);
+
+    function updateCtoStatus(reqId, status) {
+        if (!confirm(`Are you sure you want to ${status} this CTO request?`)) return;
+        const fd = new FormData();
+        fd.append('action', 'admin_update_cto_status');
+        fd.append('request_id', reqId);
+        fd.append('status', status);
+        fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) loadCtoHistory();
+                else alert('Error: ' + d.error);
+            });
     }
-});
+
+    function cancelCtoRequest(reqId) {
+        if (!confirm("Are you sure you want to cancel this CTO request?")) return;
+        const fd = new FormData();
+        fd.append('action', 'cancel_cto_request');
+        fd.append('request_id', reqId);
+        fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) loadCtoHistory();
+                else alert('Error: ' + d.error);
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load CTO history when modal is opened or tab is clicked
+        const requestOffsetModal = document.getElementById('requestOffsetModal');
+        if (requestOffsetModal) {
+            requestOffsetModal.addEventListener('show.bs.modal', loadCtoHistory);
+        }
+        const ctoHistoryTab = document.getElementById('cto-history-tab');
+        if (ctoHistoryTab) {
+            ctoHistoryTab.addEventListener('click', loadCtoHistory);
+        }
+    });
 </script>
 
 </html>
