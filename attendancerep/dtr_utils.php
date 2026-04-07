@@ -245,6 +245,20 @@ function renderDTRForm($employee, $data, $isExcel = false)
 
                 $hrs = $h > 0 ? $h : '';
                 $mins = $m > 0 ? $m : '';
+                
+                // Add Hybrid CTO string
+                global $conn;
+                $dbConn = isset($conn) ? $conn : null;
+                if (isset($employee['internal_id'])) {
+                    $appliedCto = getAppliedCtoHours($dbConn, $employee['internal_id'], $currentDate);
+                    if ($appliedCto > 0) {
+                        if (empty($amIn) && empty($pmIn) && empty($amOut) && empty($pmOut)) {
+                            $hrs = $hrs . ($isExcel ? " (CTO)" : "<div style='font-size: 8px; color: #555; white-space: nowrap;'>(CTO)</div>");
+                        } else {
+                            $hrs = $hrs . ($isExcel ? " (+{$appliedCto}h Bank)" : "<div style='font-size: 8px; color: #555; white-space: nowrap;'>(+{$appliedCto}h Bank)</div>");
+                        }
+                    }
+                }
 
                 $totalHours += $h;
                 $totalMinutes += $m;
@@ -384,6 +398,16 @@ function renderExcelHistoryTable($employee, $attendanceRecords)
             if (!empty($data['notes'])) {
                 $notes .= ' - ' . $data['notes'];
             }
+            
+            // Append hybrid CTO
+            global $conn;
+            $dbConn = isset($conn) ? $conn : null;
+            if ($dbConn && isset($employee['internal_id'])) {
+                $appliedCto = getAppliedCtoHours($dbConn, $employee['internal_id'], $dateStr);
+                if ($appliedCto > 0 && $data['status'] !== 'cto') {
+                    $notes = $notes . " (+{$appliedCto}h Time Bank added)";
+                }
+            }
 
             echo '<tr>
                     <td style="text-align: center;">' . date('F j, Y', strtotime($dateStr)) . '</td>
@@ -468,11 +492,23 @@ function renderXMLSpreadsheetHistoryWorksheet($employee, $attendanceRecords)
                 $notes = 'Manual Entry';
             } elseif ($data['status'] === 'visit') {
                 $notes = 'Visit';
+            } elseif ($data['status'] === 'cto') {
+                $notes = 'Time Bank CTO';
             } else {
                 $notes = 'Biometric Scan'; // Default assumption
             }
             if (!empty($data['notes'])) {
                 $notes .= ' - ' . $data['notes'];
+            }
+            
+            // Append hybrid CTO
+            global $conn;
+            $dbConn = isset($conn) ? $conn : null;
+            if ($dbConn && isset($employee['internal_id'])) {
+                $appliedCto = getAppliedCtoHours($dbConn, $employee['internal_id'], $dateStr);
+                if ($appliedCto > 0 && $data['status'] !== 'cto') {
+                    $notes = $notes . " (+{$appliedCto}h Time Bank added)";
+                }
             }
 
             echo '<Row>';
@@ -526,6 +562,20 @@ function getEmployeeSchedule($conn, $employeeInternalId)
     return $schedule;
 }
 
+function getAppliedCtoHours($conn, $employeeId, $dateStr)
+{
+    if (!$employeeId || !$conn) return 0;
+    $dateOnly = date('Y-m-d', strtotime($dateStr));
+    $stmt = $conn->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'");
+    if (!$stmt) return 0;
+    $stmt->bind_param("is", $employeeId, $dateOnly);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_assoc();
+    if ($res && floatval($res['hours_used']) > 0) {
+        return floatval($res['hours_used']);
+    }
+    return 0;
+}
 
 function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '', $breakOutStr = null, $breakInStr = null, $employeeId = null)
 {

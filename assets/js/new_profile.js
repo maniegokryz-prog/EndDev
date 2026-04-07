@@ -516,7 +516,7 @@ function renderDTRList(records) {
                 </div>
                 ${window.isAdmin ? `
                 <div class="mt-2 d-flex gap-2 align-items-center">
-                    <button class="btn-modern btn-solid-light-gray btn-sm fw-bold px-3 py-1 btn-gray-hover" onclick='openEditAttendanceModal(${JSON.stringify(record)})'>
+                    <button class="btn-modern btn-solid-light-gray btn-sm fw-bold px-3 py-1 btn-gray-hover" onclick='openEditAttendanceModal(${JSON.stringify(record).replace(/'/g, "&#39;")})'>
                         <i class="bi bi-pencil-square"></i> Edit
                     </button>
                     ${(record.status && record.status.toLowerCase() === 'visit') ? `
@@ -556,7 +556,7 @@ async function initScheduleDisplay() {
     // Fetch offset schedules
     if (window.employeeInternalId) {
         try {
-            const res = await fetch(`api/offset_schedule_api.php?action=get_requests&employee_id=${window.employeeInternalId}`);
+            const res = await fetch(`api/offset_schedule_api.php?action=get_employee_requests&employee_id=${window.employeeInternalId}`);
             const data = await res.json();
             if (data.success && data.data) {
                 // Determine the current date range displayed in the calendar (for simplicity, we'll just merge pending/approved ones into the weekly view, or maybe just approved? We should show both as per plan)

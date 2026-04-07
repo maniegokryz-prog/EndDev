@@ -192,6 +192,17 @@ try {
             $hours = floor($total_minutes / 60);
             $minutes = round($total_minutes % 60);
             $hours_worked = "{$hours}h {$minutes}m";
+
+            // Hybrid CTO logic for UI
+            $applied_cto = getAppliedCtoHours($conn, $employee_id, $row['attendance_date']);
+            if ($applied_cto > 0) {
+                // Determine if pure or hybrid
+                if (empty($row['time_in']) && empty($row['time_out'])) {
+                    $hours_worked = "{$hours_worked} (CTO Only)";
+                } else {
+                    $hours_worked = "{$hours_worked} (+{$applied_cto}h Bank)";
+                }
+            }
         }
 
         // Calculate exact raw duration in the establishment based purely on time in / time out
@@ -302,6 +313,11 @@ try {
         }
         if ($is_undertime) {
             $badge_html_parts[] = 'Undertime';
+        }
+
+        // Add hybrid CTO indicator directly to the status badge list!
+        if (isset($applied_cto) && $applied_cto > 0 && (!empty($row['time_in']) || !empty($row['time_out']))) {
+            $badge_html_parts[] = '+ ' . $applied_cto . 'h Time Bank';
         }
 
         // Generate the text. If multiple parts, we use the span hack to create multiple distinct badges.
