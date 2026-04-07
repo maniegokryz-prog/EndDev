@@ -8,6 +8,7 @@ $employeeIdsJson = $_POST['employee_ids'] ?? '[]';
 $employeeIds = json_decode($employeeIdsJson, true);
 $startDateParam = $_POST['start_date'] ?? null;
 $endDateParam = $_POST['end_date'] ?? null;
+$rawTime = isset($_POST['raw_time']) && $_POST['raw_time'] === 'true';
 
 if (empty($employeeIds) || !is_array($employeeIds)) {
     die("No employees selected or invalid data.");
@@ -117,8 +118,10 @@ foreach ($employeeIds as $empId) {
 
         $attendanceMap = [];
         while ($r = $res->fetch_assoc()) {
-            if (!isset($r['actual_hours']) || $r['actual_hours'] === null) {
+            if (!$rawTime && (!isset($r['actual_hours']) || $r['actual_hours'] === null)) {
                 $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role'], $r['break_out'], $r['break_in'], $employee['internal_id']);
+            } elseif ($rawTime) {
+                $r['actual_hours'] = 0;
             }
             $d = (int) date('j', strtotime($r['attendance_date']));
             $attendanceMap[$d] = $r;

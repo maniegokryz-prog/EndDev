@@ -249,7 +249,11 @@ else {
       </div>
 
       <!-- Export Buttons -->
-      <div class="d-flex justify-content-end gap-2 mt-3">
+      <div class="d-flex justify-content-end align-items-center gap-3 mt-3">
+        <div class="form-check form-switch d-flex align-items-center mb-0">
+          <input class="form-check-input fs-5 me-2 mt-0" type="checkbox" id="rawTimeModeBatch" style="cursor: pointer;">
+          <label class="form-check-label text-muted fw-bold" for="rawTimeModeBatch" style="cursor: pointer; user-select: none;">Raw Logs Only</label>
+        </div>
         <button class="btn btn-outline-warning export-btn fw-bold" onclick="openConfirmModal('PDF')">Export as PDF</button>
         <button class="btn btn-solid-success export-btn fw-bold" onclick="openConfirmModal('Excel')">Export as Excel</button>
       </div>
@@ -531,6 +535,15 @@ else {
         endInput.name = 'end_date';
         endInput.value = dateTo;
         form.appendChild(endInput);
+      }
+
+      const isRawTime = document.getElementById('rawTimeModeBatch').checked;
+      if (isRawTime) {
+        const rawInput = document.createElement('input');
+        rawInput.type = 'hidden';
+        rawInput.name = 'raw_time';
+        rawInput.value = 'true';
+        form.appendChild(rawInput);
       }
 
       document.body.appendChild(form);

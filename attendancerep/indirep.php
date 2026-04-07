@@ -383,7 +383,11 @@ if ($id) {
 
         <!-- Export - Admin Only -->
         <?php if (isAdmin()): ?>
-          <div class="dropdown ms-auto">
+          <div class="form-check form-switch ms-auto me-3 d-flex align-items-center">
+            <input class="form-check-input fs-5 me-2 mt-0" type="checkbox" id="rawTimeMode" style="cursor: pointer;">
+            <label class="form-check-label text-muted fw-bold" for="rawTimeMode" style="cursor: pointer; user-select: none;">Raw Logs Only</label>
+          </div>
+          <div class="dropdown">
             <button class="btn btn-modern btn-solid-success dropdown-toggle btn-gray-hover" type="button" id="exportDropdown"
               data-bs-toggle="dropdown" aria-expanded="false">
               <i class="bi bi-download me-1"></i> Export
@@ -670,6 +674,11 @@ if ($id) {
         if (selectedDateRange) {
           params.append('start_date', selectedDateRange.start);
           params.append('end_date', selectedDateRange.end);
+        }
+
+        const isRawTime = $('#rawTimeMode').is(':checked');
+        if (isRawTime) {
+          params.append('raw_time', 'true');
         }
 
         // Redirect to export handler

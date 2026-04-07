@@ -9,6 +9,7 @@ $monthParam = $_GET['month'] ?? null;
 $yearParam = $_GET['year'] ?? null;
 $startDateParam = $_GET['start_date'] ?? null;
 $endDateParam = $_GET['end_date'] ?? null;
+$rawTime = isset($_GET['raw_time']) && $_GET['raw_time'] === 'true';
 
 if (!$employeeId) {
     die("Employee ID is required");
@@ -97,8 +98,10 @@ foreach ($periods as $key => $period) {
     while ($r = $res->fetch_assoc()) {
         // RECALCULATE ACTUAL HOURS DYNAMICALLY
         // This ensures the "Last Hour" / Clamping rules apply even to historic data
-        if (!isset($r['actual_hours']) || $r['actual_hours'] === null) {
+        if (!$rawTime && (!isset($r['actual_hours']) || $r['actual_hours'] === null)) {
             $r['actual_hours'] = calculateActualHoursWithClamping($r['time_in'], $r['time_out'], $schedule, $r['attendance_date'], $employee['role'], $r['break_out'], $r['break_in'], $employee['internal_id']);
+        } elseif ($rawTime) {
+            $r['actual_hours'] = 0;
         }
 
         $d = (int) date('j', strtotime($r['attendance_date']));
