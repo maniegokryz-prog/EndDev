@@ -2479,7 +2479,9 @@ $profilePhoto .= '?v=' . microtime(true);
                                         $stmt->execute();
                                         $res_s = $stmt->get_result();
                                         $daysArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                                        $scheduledDaysIntArray = [];
                                         while ($s = $res_s->fetch_assoc()) {
+                                            $scheduledDaysIntArray[] = (int)$s['day_of_week'];
                                             $dayName = $daysArray[$s['day_of_week']] ?? 'Unknown';
                                             $start = date("g:i A", strtotime($s['min_start']));
                                             $end = date("g:i A", strtotime($s['max_end']));
@@ -2488,12 +2490,13 @@ $profilePhoto .= '?v=' . microtime(true);
                                             $val = $s['id'] . '-' . $s['day_of_week'];
                                             echo "<option value='{$val}'>Mirror my {$dayName} Schedule ({$start} - {$end}, {$hours} hrs)</option>";
                                         }
+                                        $scheduledDaysIntArray = array_unique($scheduledDaysIntArray);
                                         ?>
                                     </select>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Date of Work (Off-day)</label>
-                                    <input type="date" class="form-control" id="offsetRequestedDate" required>
+                                    <input type="date" class="form-control" id="offsetRequestedDate" min="<?php echo date('Y-m-d'); ?>" required>
                                     <small class="text-muted">Pick the future day you intend to work on this mirrored
                                         schedule.</small>
                                 </div>
@@ -2568,7 +2571,7 @@ $profilePhoto .= '?v=' . microtime(true);
                         <form id="requestCtoForm">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Date to Apply CTO</label>
-                                <input type="date" class="form-control" id="ctoRequestedDate" required>
+                                <input type="date" class="form-control" id="ctoRequestedDate" min="<?php echo date('Y-m-d'); ?>" required>
                                 <small class="text-muted">Pick the scheduled work day you wish to offset.</small>
                             </div>
                             <div class="mb-3">
@@ -2627,12 +2630,24 @@ $profilePhoto .= '?v=' . microtime(true);
 </script>
 
 <script>
+    const employeeScheduledDbDays = <?php echo json_encode(array_values($scheduledDaysIntArray)); ?>;
+    // Map DB days (0=Mon, 6=Sun) to JS days (0=Sun, 1=Mon)
+    const employeeScheduledJsDays = employeeScheduledDbDays.map(dbDay => (dbDay === 6) ? 0 : dbDay + 1);
+</script>
+
+<script>
     function submitOffsetRequest() {
         const selectStr = document.getElementById('offsetScheduleId').value;
         const requestedDate = document.getElementById('offsetRequestedDate').value;
 
         if (!selectStr || !requestedDate) {
             alert("Please fill out all required fields.");
+            return;
+        }
+
+        const reqDateObj = new Date(requestedDate + 'T00:00:00');
+        if (employeeScheduledJsDays.includes(reqDateObj.getDay())) {
+            alert("You have a schedule for this day. Please pick a day without a schedule.");
             return;
         }
 
@@ -2705,6 +2720,12 @@ $profilePhoto .= '?v=' . microtime(true);
 
         if (!requestedDate || !hoursUsed) {
             alert("Please fill out all required fields.");
+            return;
+        }
+
+        const reqDateObj = new Date(requestedDate + 'T00:00:00');
+        if (!employeeScheduledJsDays.includes(reqDateObj.getDay())) {
+            alert("You don't have a schedule for this day. Please pick a day with a schedule.");
             return;
         }
 
