@@ -199,6 +199,8 @@ class FaceRegistrationApp {
     }
 
     async capturePhoto() {
+        if (this.isCapturing) return;
+
         // Check if face detection conditions are good
         if (!this.currentFaceData) {
             this.showInfoModal('No face detected. Please position your face in the camera view.', 'Face Detection');
@@ -206,11 +208,27 @@ class FaceRegistrationApp {
         }
 
         try {
+            this.isCapturing = true;
+            this.elements.captureBtn.disabled = true;
+            this.elements.captureBtn.textContent = 'Capturing...';
+
             const dataURL = await this.camera.capturePhoto();
             this.processSuccessfulCapture(dataURL);
+            
+            // Re-disable immediately for the cooldown duration to avoid duplicate spam clicks
+            this.elements.captureBtn.disabled = true;
+            this.elements.captureBtn.textContent = 'Cooldown (1s)...';
+
+            setTimeout(() => {
+                this.isCapturing = false;
+                this.updateAngleGuide();
+            }, 1000);
+            
         } catch (error) {
             console.error('Photo capture failed:', error);
             this.showInfoModal('Photo capture failed: ' + error.message, 'Capture Error');
+            this.isCapturing = false;
+            this.updateAngleGuide();
         }
     }
 
