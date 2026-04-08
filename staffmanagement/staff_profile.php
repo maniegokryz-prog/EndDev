@@ -1025,9 +1025,8 @@ $profilePhoto .= '?v=' . microtime(true);
                                 <i class="bi bi-clock-history"></i> Request / Use Offset
                             </button>
                             <?php if (isset($employee['roles']) && stripos($employee['roles'], 'faculty') !== false): ?>
-                                <button class="btn-modern btn-solid-warning btn-sm btn-gray-hover" data-bs-toggle="modal"
-                                    data-bs-target="#requestMakeupClassModal"
-                                    style="background-color: #17a2b8 !important; border-color: #17a2b8 !important; color: white !important;">
+                                <button class="btn-modern btn-makeup-teal btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#requestMakeupClassModal">
                                     <i class="bi bi-calendar-plus"></i> Request Makeup Class
                                 </button>
                             <?php endif; ?>
@@ -2490,9 +2489,11 @@ $profilePhoto .= '?v=' . microtime(true);
             max-width: 100% !important;
         }
 
-        /* Offset & Time Bank Modal Styles */
+        /* Offset & Makeup Modal Tab Styles */
         #offsetTabs .nav-link:hover,
-        #offsetTabs .nav-link.active {
+        #offsetTabs .nav-link.active,
+        #makeupTabs .nav-link:hover,
+        #makeupTabs .nav-link.active {
             background-color: #6c757d !important;
             color: #fff !important;
             border-radius: 4px;
@@ -2518,6 +2519,19 @@ $profilePhoto .= '?v=' . microtime(true);
             transition: all 0.3s ease;
         }
         .btn-red-to-gray:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+        }
+
+        /* Makeup Class Teal Button with Gray Hover */
+        .btn-makeup-teal {
+            background-color: #17a2b8 !important;
+            border-color: #17a2b8 !important;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+
+        .btn-makeup-teal:hover {
             background-color: #6c757d !important;
             border-color: #6c757d !important;
         }
