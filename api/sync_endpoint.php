@@ -143,7 +143,10 @@ function syncPullUpdates($conn)
         'employee_assignments',
         'notifications',
         'system_settings',
-        'makeup_class_requests'
+        'makeup_class_requests',
+        'offset_schedule_requests',
+        'cto_requests',
+        'time_bank_ledger'
     ];
 
     $changes = [];

@@ -41,7 +41,10 @@ $tables_to_sync = [
     'attendance_logs',
     'daily_attendance',
     'notifications',
-    'makeup_class_requests'
+    'makeup_class_requests',
+    'offset_schedule_requests',
+    'cto_requests',
+    'time_bank_ledger'
 ];
 
 $results = [

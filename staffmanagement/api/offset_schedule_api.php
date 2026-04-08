@@ -16,6 +16,7 @@ if (session_status() === PHP_SESSION_NONE) {
 date_default_timezone_set('Asia/Manila');
 
 require_once '../../db_connection.php';
+require_once '../../db_cloud_sync.php';
 
 ob_end_clean();
 ob_start();
@@ -62,7 +63,8 @@ try {
             throw new Exception('Invalid action');
     }
 } catch (Exception $e) {
-    if (ob_get_length()) ob_end_clean();
+    if (ob_get_length())
+        ob_end_clean();
     http_response_code(400);
     echo json_encode([
         'success' => false,
@@ -73,7 +75,8 @@ try {
 
 $conn->close();
 
-function submitRequest($conn) {
+function submitRequest($conn)
+{
     $employee_id = $_POST['employee_id'] ?? 0;
     $schedule_id = $_POST['original_schedule_id'] ?? 0;
     $day_of_week = $_POST['original_day_of_week'] ?? null;
@@ -112,9 +115,11 @@ function submitRequest($conn) {
     echo json_encode(['success' => true, 'message' => 'Offset schedule requested successfully', 'request_id' => $req_id]);
 }
 
-function getEmployeeRequests($conn) {
+function getEmployeeRequests($conn)
+{
     $employee_id = $_GET['employee_id'] ?? 0;
-    if (!$employee_id) throw new Exception('Employee ID required');
+    if (!$employee_id)
+        throw new Exception('Employee ID required');
 
     $sql = "SELECT r.*, s.schedule_name 
             FROM offset_schedule_requests r
@@ -133,9 +138,11 @@ function getEmployeeRequests($conn) {
     echo json_encode(['success' => true, 'data' => $data]);
 }
 
-function getTimeBankBalance($conn) {
+function getTimeBankBalance($conn)
+{
     $employee_id = $_GET['employee_id'] ?? 0;
-    if (!$employee_id) throw new Exception('Employee ID required');
+    if (!$employee_id)
+        throw new Exception('Employee ID required');
 
     $sql = "SELECT SUM(CASE WHEN transaction_type = 'earned' THEN hours ELSE -hours END) as balance 
             FROM time_bank_ledger WHERE employee_id = ?";
@@ -143,13 +150,14 @@ function getTimeBankBalance($conn) {
     $stmt->bind_param("i", $employee_id);
     $stmt->execute();
     $res = $stmt->get_result()->fetch_assoc();
-    
+
     $balance = $res['balance'] ?? 0;
-    
+
     echo json_encode(['success' => true, 'balance' => round($balance, 2)]);
 }
 
-function adminGetRequests($conn) {
+function adminGetRequests($conn)
+{
     $sql = "SELECT r.*, e.first_name, e.last_name, e.employee_id as emp_code, s.schedule_name
             FROM offset_schedule_requests r
             JOIN employees e ON r.employee_id = e.id
@@ -157,7 +165,7 @@ function adminGetRequests($conn) {
             WHERE r.status = 'pending'
             ORDER BY r.created_at DESC";
     $res = $conn->query($sql);
-    
+
     $data = [];
     $daysArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     while ($row = $res->fetch_assoc()) {
@@ -168,7 +176,8 @@ function adminGetRequests($conn) {
     echo json_encode(['success' => true, 'data' => $data]);
 }
 
-function adminUpdateStatus($conn) {
+function adminUpdateStatus($conn)
+{
     $request_id = $_POST['request_id'] ?? 0;
     $status = $_POST['status'] ?? '';
 
@@ -197,12 +206,18 @@ function adminUpdateStatus($conn) {
         $notif_stmt->execute();
     }
 
+    if (function_exists('syncToCloud')) {
+        syncToCloud('offset_schedule_requests', [], 'update', "id = $request_id");
+    }
+
     echo json_encode(['success' => true, 'message' => "Request $status successfully"]);
 }
 
-function cancelRequest($conn) {
+function cancelRequest($conn)
+{
     $request_id = $_POST['request_id'] ?? 0;
-    if (!$request_id) throw new Exception('Request ID required');
+    if (!$request_id)
+        throw new Exception('Request ID required');
 
     $stmt = $conn->prepare("UPDATE offset_schedule_requests SET status = 'cancelled' WHERE id = ? AND status = 'pending'");
     $stmt->bind_param("i", $request_id);
@@ -210,9 +225,14 @@ function cancelRequest($conn) {
         throw new Exception('Failed to cancel request');
     }
 
+    if (function_exists('syncToCloud')) {
+        syncToCloud('offset_schedule_requests', [], 'update', "id = $request_id");
+    }
+
     echo json_encode(['success' => true, 'message' => 'Request cancelled successfully']);
 }
-function submitCtoRequest($conn) {
+function submitCtoRequest($conn)
+{
     $employee_id = $_POST['employee_id'] ?? 0;
     $requested_date = $_POST['requested_date'] ?? '';
     $hours_used = floatval($_POST['hours_used'] ?? 0);
@@ -249,11 +269,11 @@ function submitCtoRequest($conn) {
     $sql = "INSERT INTO cto_requests (employee_id, requested_date, hours_used, status) VALUES (?, ?, ?, 'pending')";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("isd", $employee_id, $requested_date, $hours_used);
-    
+
     if (!$stmt->execute()) {
         throw new Exception('Failed to submit CTO request: ' . $stmt->error);
     }
-    
+
     // Notify admin
     $msg = "Employee requested {$hours_used} hr(s) of CTO on " . date('M d, Y', strtotime($requested_date));
     $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($_POST['employee_id'] ?? '');
@@ -265,16 +285,18 @@ function submitCtoRequest($conn) {
     echo json_encode(['success' => true, 'message' => 'CTO requested successfully']);
 }
 
-function getEmployeeCtoRequests($conn) {
+function getEmployeeCtoRequests($conn)
+{
     $employee_id = $_GET['employee_id'] ?? 0;
-    if (!$employee_id) throw new Exception('Employee ID required');
+    if (!$employee_id)
+        throw new Exception('Employee ID required');
 
     $sql = "SELECT * FROM cto_requests WHERE employee_id = ? ORDER BY requested_date DESC";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $employee_id);
     $stmt->execute();
     $res = $stmt->get_result();
-    
+
     $data = [];
     while ($row = $res->fetch_assoc()) {
         $data[] = $row;
@@ -282,12 +304,13 @@ function getEmployeeCtoRequests($conn) {
     echo json_encode(['success' => true, 'data' => $data]);
 }
 
-function adminGetCtoRequests($conn) {
+function adminGetCtoRequests($conn)
+{
     $sql = "SELECT c.*, e.first_name, e.last_name, e.employee_id as emp_code
             FROM cto_requests c
             JOIN employees e ON c.employee_id = e.id
             ORDER BY c.status = 'pending' DESC, c.requested_date DESC";
-    
+
     $res = $conn->query($sql);
     $data = [];
     while ($row = $res->fetch_assoc()) {
@@ -296,10 +319,11 @@ function adminGetCtoRequests($conn) {
     echo json_encode(['success' => true, 'data' => $data]);
 }
 
-function adminUpdateCtoStatus($conn) {
+function adminUpdateCtoStatus($conn)
+{
     $request_id = $_POST['request_id'] ?? 0;
     $status = $_POST['status'] ?? '';
-    
+
     if (!$request_id || !in_array($status, ['approved', 'rejected'])) {
         throw new Exception('Invalid parameters');
     }
@@ -309,11 +333,13 @@ function adminUpdateCtoStatus($conn) {
     $stmt_req->bind_param("i", $request_id);
     $stmt_req->execute();
     $req = $stmt_req->get_result()->fetch_assoc();
-    
-    if (!$req) throw new Exception('Request not found');
+
+    if (!$req)
+        throw new Exception('Request not found');
     $current_status = $req['status'];
-    
-    if ($current_status === $status) throw new Exception('Status is already '.$status);
+
+    if ($current_status === $status)
+        throw new Exception('Status is already ' . $status);
 
     $conn->begin_transaction();
     try {
@@ -328,14 +354,15 @@ function adminUpdateCtoStatus($conn) {
             // Deduct from ledger
             $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description, reference_date) VALUES (?, 'used', ?, ?, 'Approved CTO Request', ?)");
             $ledgerStmt->bind_param("idis", $req['employee_id'], $req['hours_used'], $request_id, $req['requested_date']);
-            if(!$ledgerStmt->execute()) throw new Exception('Failed to update time bank ledger');
-            
+            if (!$ledgerStmt->execute())
+                throw new Exception('Failed to update time bank ledger');
+
             // Insert or Update daily_attendance so DTR engine calculates the CTO
             $daStmt = $conn->prepare("SELECT id FROM daily_attendance WHERE employee_id = ? AND attendance_date = ?");
             $daStmt->bind_param("is", $req['employee_id'], $req['requested_date']);
             $daStmt->execute();
             $daRes = $daStmt->get_result()->fetch_assoc();
-            
+
             $note = "CTO Applied: " . floatval($req['hours_used']) . " hrs";
             if ($daRes) {
                 $uStmt = $conn->prepare("UPDATE daily_attendance SET notes = CONCAT(IFNULL(notes,''), ' (', ?, ')') WHERE id = ?");
@@ -351,7 +378,8 @@ function adminUpdateCtoStatus($conn) {
             // Revert deduction
             $ledgerStmt = $conn->prepare("DELETE FROM time_bank_ledger WHERE source_id = ? AND transaction_type = 'used' AND description = 'Approved CTO Request'");
             $ledgerStmt->bind_param("i", $request_id);
-            if(!$ledgerStmt->execute()) throw new Exception('Failed to revert time bank ledger');
+            if (!$ledgerStmt->execute())
+                throw new Exception('Failed to revert time bank ledger');
         }
 
         $conn->commit();
@@ -361,24 +389,45 @@ function adminUpdateCtoStatus($conn) {
     }
 
     // Notify employee
-    $msg = "Your CTO request for " . date('M d, Y', strtotime($req['requested_date'])) . " has been " . $status;
-    $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['employee_id']); // Ideally uses public 'employee_id'
-    $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'offset_status', ?, ?, 'employee', 0)";
-    $notif_stmt = $conn->prepare($notif_sql);
-    $notif_stmt->bind_param("iss", $req['employee_id'], $msg, $link);
-    $notif_stmt->execute();
+    if ($req) {
+        $msg = "Your CTO request for " . date('M d, Y', strtotime($req['requested_date'])) . " has been " . $status;
+        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['employee_id']);
+        $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'offset_status', ?, ?, 'employee', 0)";
+        $notif_stmt = $conn->prepare($notif_sql);
+        $notif_stmt->bind_param("iss", $req['employee_id'], $msg, $link);
+        $notif_stmt->execute();
+    }
+
+    if (function_exists('syncToCloud')) {
+        syncToCloud('cto_requests', [], 'update', "id = $request_id");
+    }
 
     echo json_encode(['success' => true, 'message' => "CTO Request $status successfully"]);
 }
 
-function cancelCtoRequest($conn) {
+function cancelCtoRequest($conn)
+{
     $request_id = $_POST['request_id'] ?? 0;
-    if (!$request_id) throw new Exception('Request ID required');
+    if (!$request_id)
+        throw new Exception('Request ID required');
 
     $stmt = $conn->prepare("UPDATE cto_requests SET status = 'cancelled' WHERE id = ? AND status = 'pending'");
     $stmt->bind_param("i", $request_id);
     if (!$stmt->execute()) {
         throw new Exception('Failed to cancel CTO request');
+    }
+
+    echo json_encode(['success' => true, 'message' => 'CTO Request cancelled successfully']);
+}
+?>
+    $stmt = $conn->prepare("UPDATE cto_requests SET status = 'cancelled' WHERE id = ? AND status = 'pending'");
+    $stmt->bind_param("i", $request_id);
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to cancel CTO request');
+    }
+
+    if (function_exists('syncToCloud')) {
+        syncToCloud('cto_requests', [], 'update', "id = $request_id");
     }
 
     echo json_encode(['success' => true, 'message' => 'CTO Request cancelled successfully']);

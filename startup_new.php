@@ -464,7 +464,8 @@ $tables_to_sync = [
     'notifications',
     'offset_schedule_requests',
     'time_bank_ledger',
-    'makeup_class_requests'
+    'makeup_class_requests',
+    'cto_requests'
 ];
 
 foreach ($tables_to_sync as $table) {
