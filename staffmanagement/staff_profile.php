@@ -284,7 +284,7 @@ try {
         while ($mcRow = $mcRes->fetch_assoc()) {
             $dayIdx = date('N', strtotime($mcRow['requested_date'])) - 1; // 0=Mon
             $dayNames_mc = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            
+
             $processedSchedules[] = [
                 'startTime' => substr($mcRow['start_time'], 0, 5),
                 'endTime' => substr($mcRow['end_time'], 0, 5),
@@ -298,7 +298,8 @@ try {
         }
         $mcStmt->close();
     }
-} catch (Exception $e) {}
+} catch (Exception $e) {
+}
 
 // Profile Photo Logic (Robust)
 $profilePhoto = '../assets/profile_pic/user.png';
@@ -1025,7 +1026,8 @@ $profilePhoto .= '?v=' . microtime(true);
                             </button>
                             <?php if (isset($employee['roles']) && stripos($employee['roles'], 'faculty') !== false): ?>
                                 <button class="btn-modern btn-solid-warning btn-sm btn-gray-hover" data-bs-toggle="modal"
-                                    data-bs-target="#requestMakeupClassModal" style="background-color: #17a2b8 !important; border-color: #17a2b8 !important; color: white !important;">
+                                    data-bs-target="#requestMakeupClassModal"
+                                    style="background-color: #17a2b8 !important; border-color: #17a2b8 !important; color: white !important;">
                                     <i class="bi bi-calendar-plus"></i> Request Makeup Class
                                 </button>
                             <?php endif; ?>
@@ -2098,6 +2100,64 @@ $profilePhoto .= '?v=' . microtime(true);
         </div>
     </div>
 
+    <!-- Global Success Modal -->
+    <div class="modal fade" id="globalSuccessModal" tabindex="-1" aria-hidden="true" style="z-index: 3000 !important;"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center rounded-4 shadow border-0">
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Success!</h5>
+                <p id="globalSuccessMessage" class="text-secondary">Action completed successfully.</p>
+                <div class="d-flex justify-content-center mt-3">
+                    <button type="button" class="btn-modern btn-solid-success px-5 fw-bold btn-gray-hover"
+                        id="globalSuccessOkBtn" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Alert Modal -->
+    <div class="modal fade" id="globalAlertModal" tabindex="-1" aria-hidden="true" style="z-index: 3100 !important;"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center rounded-4 shadow border-0">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-circle-fill text-danger" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-2 text-danger">Attention</h5>
+                <p id="globalAlertMessage" class="text-secondary">Please check your inputs.</p>
+                <div class="d-flex justify-content-center mt-3">
+                    <button type="button" class="btn-modern btn-solid-danger px-5 fw-bold btn-gray-hover"
+                        data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Action Confirm Modal -->
+    <div class="modal fade" id="globalActionConfirmModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 3200 !important;" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center rounded-4 shadow border-0">
+                <div class="mb-3">
+                    <i id="globalActionConfirmIcon" class="bi bi-question-circle text-primary"
+                        style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Confirm Action</h5>
+                <p id="globalActionConfirmMessage" class="text-secondary">Are you sure you want to perform this action?
+                </p>
+                <div class="d-flex justify-content-center gap-3 mt-3">
+                    <button type="button" class="btn-modern btn-solid-light-gray px-4 fw-bold"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modern btn-solid-primary px-4 fw-bold btn-gray-hover"
+                        id="globalActionConfirmBtn">Yes, Proceed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Cancel Pending Request Confirm Modal -->
     <div class="modal fade" id="cancelPendingRequestConfirmModal" tabindex="-1" aria-hidden="true"
         style="z-index: 1060;" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -2430,6 +2490,26 @@ $profilePhoto .= '?v=' . microtime(true);
             max-width: 100% !important;
         }
 
+        /* Offset & Time Bank Modal Styles */
+        #offsetTabs .nav-link:hover,
+        #offsetTabs .nav-link.active {
+            background-color: #6c757d !important;
+            color: #fff !important;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        /* Indicator for Offset History active state */
+        #offset-history-tab.active::after {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
         /* Sidebar Toggle Styles (Using IDs for Specificity) */
         @media (min-width: 992px) {
             #sidebar {
@@ -2522,7 +2602,7 @@ $profilePhoto .= '?v=' . microtime(true);
                                         $daysArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                                         $scheduledDaysIntArray = [];
                                         while ($s = $res_s->fetch_assoc()) {
-                                            $scheduledDaysIntArray[] = (int)$s['day_of_week'];
+                                            $scheduledDaysIntArray[] = (int) $s['day_of_week'];
                                             $dayName = $daysArray[$s['day_of_week']] ?? 'Unknown';
                                             $start = date("g:i A", strtotime($s['min_start']));
                                             $end = date("g:i A", strtotime($s['max_end']));
@@ -2537,12 +2617,15 @@ $profilePhoto .= '?v=' . microtime(true);
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Date of Work (Off-day)</label>
-                                    <input type="date" class="form-control" id="offsetRequestedDate" min="<?php echo date('Y-m-d'); ?>" required>
+                                    <input type="date" class="form-control" id="offsetRequestedDate"
+                                        min="<?php echo date('Y-m-d'); ?>" required>
                                     <small class="text-muted">Pick the future day you intend to work on this mirrored
                                         schedule.</small>
                                 </div>
-                                <button type="button" class="btn btn-primary w-100 fw-bold mt-2"
-                                    onclick="submitOffsetRequest()">Submit Request</button>
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-solid-success btn-gray-hover px-5 fw-bold mt-2"
+                                        onclick="submitOffsetRequest()">Submit Request</button>
+                                </div>
                             </form>
                         </div>
 
@@ -2555,7 +2638,8 @@ $profilePhoto .= '?v=' . microtime(true);
                                     <p class="mt-2">No pending or approved offset requests found.</p>
                                 </div>
                             <?php else: ?>
-                                <div class="d-flex flex-column gap-3">
+                                <div class="d-flex flex-column gap-3"
+                                    style="max-height: 480px; overflow-y: auto; overflow-x: hidden; padding-right: 5px;">
                                     <?php foreach ($offsetRequestsList as $offset): ?>
                                         <div class="card border-0 shadow-sm">
                                             <div class="card-body">
@@ -2588,9 +2672,11 @@ $profilePhoto .= '?v=' . microtime(true);
                                                 <div class="d-flex gap-2">
                                                     <?php if ($isAdmin): ?>
                                                         <?php if ($offset['status'] === 'pending'): ?>
-                                                            <button class="btn btn-success btn-sm fw-semibold px-3 flex-grow-1"
+                                                            <button
+                                                                class="btn btn-success btn-sm fw-semibold px-3 flex-grow-1 btn-gray-hover"
                                                                 onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'approved')">Approve</button>
-                                                            <button class="btn btn-danger btn-sm fw-semibold px-3 flex-grow-1"
+                                                            <button
+                                                                class="btn btn-danger btn-sm fw-semibold px-3 flex-grow-1 btn-gray-hover"
                                                                 onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'rejected')">Reject</button>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
@@ -2607,35 +2693,39 @@ $profilePhoto .= '?v=' . microtime(true);
                             <?php endif; ?>
                         </div>
 
-                    <!-- CTO Request Tab -->
-                    <div class="tab-pane fade p-2" id="cto-request" role="tabpanel">
-                        <form id="requestCtoForm">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Date to Apply CTO</label>
-                                <input type="date" class="form-control" id="ctoRequestedDate" min="<?php echo date('Y-m-d'); ?>" required>
-                                <small class="text-muted">Pick the scheduled work day you wish to offset.</small>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Hours to Use</label>
-                                <input type="number" step="0.5" min="0.5" class="form-control" id="ctoHoursUsed"
-                                    required>
-                                <small class="text-muted">Minimum 0.5 hours. Example: 1.0, 1.5, 2.0</small>
-                            </div>
-                            <button type="button" class="btn btn-success w-100 fw-bold mt-2"
-                                onclick="submitCtoRequest()">Submit CTO</button>
-                        </form>
-                    </div>
+                        <!-- CTO Request Tab -->
+                        <div class="tab-pane fade p-2" id="cto-request" role="tabpanel">
+                            <form id="requestCtoForm">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Date to Apply CTO</label>
+                                    <input type="date" class="form-control" id="ctoRequestedDate"
+                                        min="<?php echo date('Y-m-d'); ?>" required>
+                                    <small class="text-muted">Pick the scheduled work day you wish to offset.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Hours to Use</label>
+                                    <input type="number" step="0.5" min="0.5" class="form-control" id="ctoHoursUsed"
+                                        required>
+                                    <small class="text-muted">Minimum 0.5 hours. Example: 1.0, 1.5, 2.0</small>
+                                </div>
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-solid-success btn-gray-hover px-5 fw-bold mt-2"
+                                        onclick="submitCtoRequest()">Submit CTO</button>
+                                </div>
+                            </form>
+                        </div>
 
-                    <!-- CTO History and Status Tab -->
-                    <div class="tab-pane fade p-2" id="cto-history" role="tabpanel">
-                        <!-- Populated dynamically or via PHP. For simplicity we will fetch via JS -->
-                        <div id="ctoHistoryContainer" class="d-flex flex-column gap-3">
-                            <div class="text-center text-muted p-4">
-                                <i class="bi bi-hourglass fs-1"></i>
-                                <p class="mt-2">Loading CTO History...</p>
+                        <!-- CTO History and Status Tab -->
+                        <div class="tab-pane fade p-2" id="cto-history" role="tabpanel">
+                            <!-- Populated dynamically or via PHP. For simplicity we will fetch via JS -->
+                            <div id="ctoHistoryContainer" class="d-flex flex-column gap-3"
+                                style="max-height: 480px; overflow-y: auto; overflow-x: hidden; padding-right: 5px;">
+                                <div class="text-center text-muted p-4">
+                                    <i class="bi bi-hourglass fs-1"></i>
+                                    <p class="mt-2">Loading CTO History...</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
                     </div>
                 </div>
@@ -2675,13 +2765,16 @@ $profilePhoto .= '?v=' . microtime(true);
                                         <form id="requestMakeupClassForm">
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">Date of Makeup Class</label>
-                                                <input type="date" class="form-control" id="makeupDate" min="<?php echo date('Y-m-d'); ?>" required>
-                                                <small class="text-muted">Pick a date without any existing schedule.</small>
+                                                <input type="date" class="form-control" id="makeupDate"
+                                                    min="<?php echo date('Y-m-d'); ?>" required>
+                                                <small class="text-muted">Pick a date without any existing
+                                                    schedule.</small>
                                             </div>
                                             <div class="row">
                                                 <div class="col-6 mb-3">
                                                     <label class="form-label fw-bold">Start Time</label>
-                                                    <input type="time" class="form-control" id="makeupStartTime" required>
+                                                    <input type="time" class="form-control" id="makeupStartTime"
+                                                        required>
                                                 </div>
                                                 <div class="col-6 mb-3">
                                                     <label class="form-label fw-bold">End Time</label>
@@ -2707,7 +2800,9 @@ $profilePhoto .= '?v=' . microtime(true);
                                                 <select class="form-select text-uppercase" id="makeupClass">
                                                     <option value="">-- Select Class --</option>
                                                     <?php foreach ($accClasses as $c): ?>
-                                                        <option value="<?php echo htmlspecialchars($c); ?>"><?php echo htmlspecialchars($c); ?></option>
+                                                        <option value="<?php echo htmlspecialchars($c); ?>">
+                                                            <?php echo htmlspecialchars($c); ?>
+                                                        </option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             </div>
@@ -2716,27 +2811,38 @@ $profilePhoto .= '?v=' . microtime(true);
                                                 <select class="form-select text-uppercase" id="makeupSubject">
                                                     <option value="">-- Select Subject --</option>
                                                     <?php foreach ($accSubjects as $sub): ?>
-                                                        <option value="<?php echo htmlspecialchars($sub); ?>"><?php echo htmlspecialchars($sub); ?></option>
+                                                        <option value="<?php echo htmlspecialchars($sub); ?>">
+                                                            <?php echo htmlspecialchars($sub); ?>
+                                                        </option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">Room</label>
-                                                <input type="text" class="form-control text-uppercase" id="makeupRoom" placeholder="e.g. ROOM 101">
+                                                <input type="text" class="form-control text-uppercase" id="makeupRoom"
+                                                    placeholder="e.g. ROOM 101">
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">Reason</label>
-                                                <textarea class="form-control" id="makeupReason" rows="2" placeholder="e.g. To compensate for missed classes last week." required></textarea>
+                                                <textarea class="form-control" id="makeupReason" rows="2"
+                                                    placeholder="e.g. To compensate for missed classes last week."
+                                                    required></textarea>
                                             </div>
-                                            <button type="button" class="btn btn-info text-white w-100 fw-bold mt-1"
-                                                onclick="submitMakeupClassRequest()">Submit Request</button>
+                                            <div class="text-center">
+                                                <button type="button"
+                                                    class="btn btn-solid-success btn-gray-hover px-5 fw-bold mt-1"
+                                                    onclick="submitMakeupClassRequest()">Submit Request</button>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
                                 <!-- Right: Mini Schedule Calendar -->
                                 <div class="col-lg-7 d-flex flex-column">
-                                    <div class="p-2 border rounded d-flex flex-column" style="background:#f9fafb; height:100%;">
-                                        <p class="fw-bold mb-2 text-secondary small flex-shrink-0"><i class="bi bi-calendar3 me-1"></i>Your Weekly Schedule <span class="text-muted fw-normal">(pick a vacant time slot)</span></p>
+                                    <div class="p-2 border rounded d-flex flex-column"
+                                        style="background:#f9fafb; height:100%;">
+                                        <p class="fw-bold mb-2 text-secondary small flex-shrink-0"><i
+                                                class="bi bi-calendar3 me-1"></i>Your Weekly Schedule <span
+                                                class="text-muted fw-normal">(pick a vacant time slot)</span></p>
                                         <div style="overflow-x:auto; overflow-y:auto; flex:1 1 0; min-height:0;">
                                             <div id="makeupModalScheduleCalendar" style="font-size:0.78em;"></div>
                                         </div>
@@ -2746,7 +2852,8 @@ $profilePhoto .= '?v=' . microtime(true);
                         </div>
                         <!-- History and Status Tab -->
                         <div class="tab-pane fade p-2" id="makeup-history" role="tabpanel">
-                            <div id="makeupHistoryContainer" class="d-flex flex-column gap-3">
+                            <div id="makeupHistoryContainer" class="d-flex flex-column gap-3"
+                                style="max-height: 480px; overflow-y: auto; overflow-x: hidden; padding-right: 5px;">
                                 <div class="text-center text-muted p-4">
                                     <i class="bi bi-hourglass fs-1"></i>
                                     <p class="mt-2">Loading Makeup Class History...</p>
@@ -2788,23 +2895,79 @@ $profilePhoto .= '?v=' . microtime(true);
 
 <script>
     const employeeScheduledDbDays = <?php echo json_encode(array_values($scheduledDaysIntArray)); ?>;
+
+    /**
+     * Helper to show action confirmation then success notification
+     */
+    function processActionWithConfirmation(confirmMsg, successMsg, apiPath, formData, onFinish) {
+        document.getElementById('globalActionConfirmMessage').innerText = confirmMsg;
+        const confirmBtn = document.getElementById('globalActionConfirmBtn');
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        const currentConfirmModal = new bootstrap.Modal(document.getElementById('globalActionConfirmModal'));
+
+        newConfirmBtn.addEventListener('click', () => {
+            fetch(apiPath, { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(d => {
+                    currentConfirmModal.hide();
+                    if (d.success) {
+                        document.getElementById('globalSuccessMessage').innerText = successMsg;
+                        const successModal = new bootstrap.Modal(document.getElementById('globalSuccessModal'));
+                        successModal.show();
+                        // reload happens via globalSuccessOkBtn listener already added at the end of file
+                    } else {
+                        document.getElementById('globalAlertMessage').innerText = 'Error: ' + d.error;
+                        const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+                        alertModal.show();
+                    }
+                }).catch(e => {
+                    currentConfirmModal.hide();
+                    document.getElementById('globalAlertMessage').innerText = 'Network Error';
+                    const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+                    alertModal.show();
+                });
+        });
+
+        currentConfirmModal.show();
+    }
     // Map DB days (0=Mon, 6=Sun) to JS days (0=Sun, 1=Mon)
     const employeeScheduledJsDays = employeeScheduledDbDays.map(dbDay => (dbDay === 6) ? 0 : dbDay + 1);
 </script>
 
 <script>
+    // Ensure Global Modals are always on top of other modals
+    document.addEventListener('show.bs.modal', function (event) {
+        const globalModals = ['globalSuccessModal', 'globalAlertModal'];
+        if (globalModals.includes(event.target.id)) {
+            // Slight delay to ensure Backdrop is created by Bootstrap
+            setTimeout(() => {
+                const backdrops = document.querySelectorAll('.modal-backdrop.show');
+                if (backdrops.length > 1) {
+                    // Set the latest backdrop just below the modal's z-index (which is 3000+)
+                    backdrops[backdrops.length - 1].style.zIndex = '2950';
+                }
+            }, 10);
+        }
+    });
+
     function submitOffsetRequest() {
         const selectStr = document.getElementById('offsetScheduleId').value;
         const requestedDate = document.getElementById('offsetRequestedDate').value;
 
         if (!selectStr || !requestedDate) {
-            alert("Please fill out all required fields.");
+            document.getElementById('globalAlertMessage').innerText = "Please fill out all required fields.";
+            const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+            alertModal.show();
             return;
         }
 
         const reqDateObj = new Date(requestedDate + 'T00:00:00');
         if (employeeScheduledJsDays.includes(reqDateObj.getDay())) {
-            alert("You have a schedule for this day. Please pick a day without a schedule.");
+            document.getElementById('globalAlertMessage').innerText = "You have a schedule for this day. Please pick a day without a schedule.";
+            const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+            alertModal.show();
             return;
         }
 
@@ -2834,40 +2997,46 @@ $profilePhoto .= '?v=' . microtime(true);
                     const modalEl = document.getElementById('requestOffsetModal');
                     const modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) modal.hide();
-                    alert('Offset schedule requested successfully.');
-                    setTimeout(() => window.location.reload(), 500);
+
+                    // Use custom success modal
+                    document.getElementById('globalSuccessMessage').innerText = 'Offset schedule requested successfully.';
+                    const successModal = new bootstrap.Modal(document.getElementById('globalSuccessModal'));
+                    successModal.show();
+
                 } else {
-                    alert("Error: " + result.error);
+                    document.getElementById('globalAlertMessage').innerText = "Error: " + result.error;
+                    const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+                    alertModal.show();
                 }
             })
             .catch(e => {
-                alert("Network Error: " + e.message);
+                document.getElementById('globalAlertMessage').innerText = "Network Error: " + e.message;
+                const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+                alertModal.show();
             });
     }
     function updateOffsetStatus(reqId, status) {
-        if (!confirm(`Are you sure you want to ${status} this offset request?`)) return;
         const fd = new FormData();
         fd.append('action', 'admin_update_status');
         fd.append('request_id', reqId);
         fd.append('status', status);
-        fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(d => {
-                if (d.success) window.location.reload();
-                else alert('Error: ' + d.error);
-            }).catch(e => alert('Network error'));
+        processActionWithConfirmation(
+            `Are you sure you want to ${status} this offset request?`,
+            `Offset request ${status} successfully.`,
+            'api/offset_schedule_api.php',
+            fd
+        );
     }
     function cancelOffsetRequest(reqId) {
-        if (!confirm("Are you sure you want to cancel this offset request?")) return;
         const fd = new FormData();
         fd.append('action', 'cancel_request');
         fd.append('request_id', reqId);
-        fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(d => {
-                if (d.success) window.location.reload();
-                else alert('Error: ' + d.error);
-            }).catch(e => alert('Network error'));
+        processActionWithConfirmation(
+            "Are you sure you want to cancel this offset request?",
+            "Offset request cancelled successfully.",
+            'api/offset_schedule_api.php',
+            fd
+        );
     }
 
     // CTO JS Functions
@@ -2876,13 +3045,17 @@ $profilePhoto .= '?v=' . microtime(true);
         const hoursUsed = document.getElementById('ctoHoursUsed').value;
 
         if (!requestedDate || !hoursUsed) {
-            alert("Please fill out all required fields.");
+            document.getElementById('globalAlertMessage').innerText = "Please fill out all required fields.";
+            const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+            alertModal.show();
             return;
         }
 
         const reqDateObj = new Date(requestedDate + 'T00:00:00');
         if (!employeeScheduledJsDays.includes(reqDateObj.getDay())) {
-            alert("You don't have a schedule for this day. Please pick a day with a schedule.");
+            document.getElementById('globalAlertMessage').innerText = "You don't have a schedule for this day. Please pick a day with a schedule.";
+            const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+            alertModal.show();
             return;
         }
 
@@ -2896,13 +3069,22 @@ $profilePhoto .= '?v=' . microtime(true);
             .then(res => res.json())
             .then(result => {
                 if (result.success) {
-                    alert('CTO schedule requested successfully.');
-                    window.location.reload();
+                    // Use custom success modal
+                    document.getElementById('globalSuccessMessage').innerText = 'CTO schedule requested successfully.';
+                    const successModal = new bootstrap.Modal(document.getElementById('globalSuccessModal'));
+                    successModal.show();
+
                 } else {
-                    alert("Error: " + result.error);
+                    document.getElementById('globalAlertMessage').innerText = "Error: " + result.error;
+                    const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+                    alertModal.show();
                 }
             })
-            .catch(e => alert("Network Error: " + e.message));
+            .catch(e => {
+                document.getElementById('globalAlertMessage').innerText = "Network Error: " + e.message;
+                const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+                alertModal.show();
+            });
     }
 
     function loadCtoHistory() {
@@ -2933,7 +3115,7 @@ $profilePhoto .= '?v=' . microtime(true);
                     if (window.isAdmin) {
                         adminNameStr = `<h6 class="fw-bold mb-1 text-dark">${req.first_name} ${req.last_name} (${req.emp_code})</h6>`;
                     }
-                    
+
                     const textColor = req.status === 'approved' ? 'text-white' : 'text-dark';
 
                     // Parse YYYY-MM-DD reliably without timezone shift
@@ -2952,8 +3134,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     let adminActions = '';
                     if (window.isAdmin && req.status === 'pending') {
                         adminActions = `
-                        <button class="btn btn-success btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'approved')">Approve</button>
-                        <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'rejected')">Reject</button>
+                        <button class="btn btn-success btn-sm flex-grow-1 btn-gray-hover" onclick="updateCtoStatus(${req.id}, 'approved')">Approve</button>
+                        <button class="btn btn-danger btn-sm flex-grow-1 btn-gray-hover" onclick="updateCtoStatus(${req.id}, 'rejected')">Reject</button>
                     `;
                     }
 
@@ -2988,30 +3170,28 @@ $profilePhoto .= '?v=' . microtime(true);
     }
 
     function updateCtoStatus(reqId, status) {
-        if (!confirm(`Are you sure you want to ${status} this CTO request?`)) return;
         const fd = new FormData();
         fd.append('action', 'admin_update_cto_status');
         fd.append('request_id', reqId);
         fd.append('status', status);
-        fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(d => {
-                if (d.success) loadCtoHistory();
-                else alert('Error: ' + d.error);
-            });
+        processActionWithConfirmation(
+            `Are you sure you want to ${status} this CTO request?`,
+            `CTO request ${status} successfully.`,
+            'api/offset_schedule_api.php',
+            fd
+        );
     }
 
     function cancelCtoRequest(reqId) {
-        if (!confirm("Are you sure you want to cancel this CTO request?")) return;
         const fd = new FormData();
         fd.append('action', 'cancel_cto_request');
         fd.append('request_id', reqId);
-        fetch('api/offset_schedule_api.php', { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(d => {
-                if (d.success) loadCtoHistory();
-                else alert('Error: ' + d.error);
-            });
+        processActionWithConfirmation(
+            "Are you sure you want to cancel this CTO request?",
+            "CTO request cancelled successfully.",
+            'api/offset_schedule_api.php',
+            fd
+        );
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -3037,7 +3217,9 @@ $profilePhoto .= '?v=' . microtime(true);
         const makeupReason = document.getElementById('makeupReason').value;
 
         if (!makeupDate || !makeupStartTime || !makeupEndTime || !makeupReason) {
-            alert("Please fill out all required fields, including Reason.");
+            document.getElementById('globalAlertMessage').innerText = "Please fill out all required fields, including Reason.";
+            const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+            alertModal.show();
             return;
         }
 
@@ -3056,13 +3238,22 @@ $profilePhoto .= '?v=' . microtime(true);
             .then(res => res.json())
             .then(result => {
                 if (result.success) {
-                    alert('Makeup Class requested successfully.');
-                    window.location.reload();
+                    // Use custom success modal
+                    document.getElementById('globalSuccessMessage').innerText = 'Makeup Class requested successfully.';
+                    const successModal = new bootstrap.Modal(document.getElementById('globalSuccessModal'));
+                    successModal.show();
+
                 } else {
-                    alert("Error: " + result.error);
+                    document.getElementById('globalAlertMessage').innerText = "Error: " + result.error;
+                    const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+                    alertModal.show();
                 }
             })
-            .catch(e => alert("Network Error: " + e.message));
+            .catch(e => {
+                document.getElementById('globalAlertMessage').innerText = "Network Error: " + e.message;
+                const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+                alertModal.show();
+            });
     }
 
     function loadMakeupHistory() {
@@ -3096,8 +3287,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     let adminActions = '';
                     if (window.isAdmin && req.status === 'pending') {
                         adminActions = `
-                        <button class="btn btn-success btn-sm flex-grow-1" onclick="updateMakeupStatus(${req.id}, 'approved')">Approve</button>
-                        <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateMakeupStatus(${req.id}, 'rejected')">Reject</button>
+                        <button class="btn btn-success btn-sm flex-grow-1 btn-gray-hover" onclick="updateMakeupStatus(${req.id}, 'approved')">Approve</button>
+                        <button class="btn btn-danger btn-sm flex-grow-1 btn-gray-hover" onclick="updateMakeupStatus(${req.id}, 'rejected')">Reject</button>
                         `;
                     }
 
@@ -3138,30 +3329,28 @@ $profilePhoto .= '?v=' . microtime(true);
     }
 
     function updateMakeupStatus(reqId, status) {
-        if (!confirm(`Are you sure you want to ${status} this Makeup Class request?`)) return;
         const fd = new FormData();
         fd.append('action', 'admin_update_status');
         fd.append('request_id', reqId);
         fd.append('status', status);
-        fetch('api/makeup_class_api.php', { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(d => {
-                if (d.success) loadMakeupHistory();
-                else alert('Error: ' + d.error);
-            });
+        processActionWithConfirmation(
+            `Are you sure you want to ${status} this Makeup Class request?`,
+            `Makeup Class request ${status} successfully.`,
+            'api/makeup_class_api.php',
+            fd
+        );
     }
 
     function cancelMakeupRequest(reqId) {
-        if (!confirm("Are you sure you want to cancel this Makeup Class request?")) return;
         const fd = new FormData();
         fd.append('action', 'cancel_request');
         fd.append('request_id', reqId);
-        fetch('api/makeup_class_api.php', { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(d => {
-                if (d.success) loadMakeupHistory();
-                else alert('Error: ' + d.error);
-            });
+        processActionWithConfirmation(
+            "Are you sure you want to cancel this Makeup Class request?",
+            "Makeup Class request cancelled successfully.",
+            'api/makeup_class_api.php',
+            fd
+        );
     }
 
     function renderMakeupModalCalendar() {
@@ -3210,7 +3399,7 @@ $profilePhoto .= '?v=' . microtime(true);
             const tTab = new bootstrap.Tab(makeupHistoryTab);
             tTab.show();
             loadMakeupHistory();
-            
+
             // Optionally, remove the query parameter so refreshing doesn't keep opening it
             const newUrl = new URL(window.location);
             newUrl.searchParams.delete('tab');
@@ -3227,7 +3416,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 const tTab = new bootstrap.Tab(offsetHistoryTab);
                 tTab.show();
                 if (typeof loadOffsetHistory === 'function') loadOffsetHistory();
-                
+
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.delete('action');
                 window.history.replaceState({}, '', newUrl);
@@ -3244,7 +3433,7 @@ $profilePhoto .= '?v=' . microtime(true);
                 const tTab = new bootstrap.Tab(ctoHistoryTab);
                 tTab.show();
                 if (typeof loadCtoHistory === 'function') loadCtoHistory();
-                
+
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.delete('action');
                 window.history.replaceState({}, '', newUrl);
@@ -3255,3 +3444,4 @@ $profilePhoto .= '?v=' . microtime(true);
 </script>
 
 </html>
+<script>document.getElementById('globalSuccessOkBtn')?.addEventListener('click', () => { window.location.reload(); });</script>
