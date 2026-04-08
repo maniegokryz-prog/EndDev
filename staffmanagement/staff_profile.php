@@ -2510,7 +2510,21 @@ $profilePhoto .= '?v=' . microtime(true);
             vertical-align: middle;
         }
 
-        /* Sidebar Toggle Styles (Using IDs for Specificity) */
+        /* Custom Red to Gray Close Button */
+        .btn-red-to-gray {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+        .btn-red-to-gray:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+        }
+
+
+
+
         @media (min-width: 992px) {
             #sidebar {
                 left: 0;
@@ -2548,12 +2562,11 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <!-- Combined Offset/CTO Modal -->
     <div class="modal fade" id="requestOffsetModal" tabindex="-1" aria-labelledby="requestOffsetModalLabel"
-        aria-hidden="true">
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header border-0 pb-0">
+                <div class="modal-header border-0 pb-0 justify-content-center">
                     <h5 class="modal-title fw-bold">Offset & Time Bank Management</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pt-2">
                     <ul class="nav nav-tabs mb-3" id="offsetTabs" role="tablist">
@@ -2622,7 +2635,9 @@ $profilePhoto .= '?v=' . microtime(true);
                                     <small class="text-muted">Pick the future day you intend to work on this mirrored
                                         schedule.</small>
                                 </div>
-                                <div class="text-center">
+                                <div class="text-center d-flex justify-content-center gap-3">
+                                    <button type="button" class="btn btn-secondary px-5 fw-bold mt-2 btn-red-to-gray"
+                                        data-bs-dismiss="modal">Close</button>
                                     <button type="button" class="btn btn-solid-success btn-gray-hover px-5 fw-bold mt-2"
                                         onclick="submitOffsetRequest()">Submit Request</button>
                                 </div>
@@ -2638,45 +2653,43 @@ $profilePhoto .= '?v=' . microtime(true);
                                     <p class="mt-2">No pending or approved offset requests found.</p>
                                 </div>
                             <?php else: ?>
-                                <div class="d-flex flex-column gap-3"
-                                    style="max-height: 480px; overflow-y: auto; overflow-x: hidden; padding-right: 5px;">
+                                <div class="d-flex flex-column gap-3 pt-4"
+                                    style="max-height: 250px; overflow-y: auto; overflow-x: hidden; padding-right: 40px;">
                                     <?php foreach ($offsetRequestsList as $offset): ?>
                                         <div class="card border-0 shadow-sm">
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <?php
-                                                    $reqDayName = $daysArray[$offset['original_day_of_week']] ?? 'Unknown';
-                                                    $statusColor = $offset['status'] === 'approved' ? 'success' : 'warning';
+                                            <?php
+                                            $reqDayName = $daysArray[$offset['original_day_of_week']] ?? 'Unknown';
+                                            $statusColor = $offset['status'] === 'approved' ? 'success' : 'warning';
 
-                                                    // Format times and calculate hours if available
-                                                    $timeString = "";
-                                                    if (!empty($offset['min_start']) && !empty($offset['max_end'])) {
-                                                        $startOut = date("g:i A", strtotime($offset['min_start']));
-                                                        $endOut = date("g:i A", strtotime($offset['max_end']));
-                                                        $hrsOut = round(($offset['total_mins'] ?? 0) / 60, 2);
-                                                        $timeString = "{$startOut} - {$endOut} ({$hrsOut} hrs)";
-                                                    } else {
-                                                        $timeString = "Time unspecified";
-                                                    }
-                                                    ?>
-                                                    <h6 class="mb-0 fw-bold">Date:
-                                                        <?php echo date('F d, Y l', strtotime($offset['requested_date'])); ?>
-                                                    </h6>
+                                            // Format times and calculate hours if available
+                                            $timeString = "";
+                                            if (!empty($offset['min_start']) && !empty($offset['max_end'])) {
+                                                $startOut = date("g:i A", strtotime($offset['min_start']));
+                                                $endOut = date("g:i A", strtotime($offset['max_end']));
+                                                $hrsOut = round(($offset['total_mins'] ?? 0) / 60, 2);
+                                                $timeString = "{$startOut} - {$endOut} ({$hrsOut} hrs)";
+                                            } else {
+                                                $timeString = "Time unspecified";
+                                            }
+                                            ?>
+                                            <div class="card-body pe-5">
+                                                <h6 class="mb-2 fw-bold">Date:
+                                                    <?php echo date('F d, Y l', strtotime($offset['requested_date'])); ?>
+                                                </h6>
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <p class="mb-0 small text-secondary">
+                                                        <strong>Mirrored Schedule:</strong> <?php echo $reqDayName; ?> Schedule
+                                                        <span>&bull;</span> <?php echo $timeString; ?>
+                                                    </p>
                                                     <span
                                                         class="badge bg-<?php echo $statusColor; ?> text-<?php echo $offset['status'] === 'approved' ? 'white' : 'dark'; ?> text-uppercase"><?php echo htmlspecialchars($offset['status']); ?></span>
                                                 </div>
-                                                <p class="mb-3 small text-secondary">
-                                                    <strong>Mirrored Schedule:</strong> <?php echo $reqDayName; ?> Schedule
-                                                    <span>&bull;</span> <?php echo $timeString; ?>
-                                                </p>
                                                 <div class="d-flex gap-2">
                                                     <?php if ($isAdmin): ?>
                                                         <?php if ($offset['status'] === 'pending'): ?>
-                                                            <button
-                                                                class="btn btn-success btn-sm fw-semibold px-3 flex-grow-1 btn-gray-hover"
+                                                            <button class="btn btn-success btn-sm fw-semibold px-3 flex-grow-1"
                                                                 onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'approved')">Approve</button>
-                                                            <button
-                                                                class="btn btn-danger btn-sm fw-semibold px-3 flex-grow-1 btn-gray-hover"
+                                                            <button class="btn btn-danger btn-sm fw-semibold px-3 flex-grow-1"
                                                                 onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'rejected')">Reject</button>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
@@ -2708,7 +2721,9 @@ $profilePhoto .= '?v=' . microtime(true);
                                         required>
                                     <small class="text-muted">Minimum 0.5 hours. Example: 1.0, 1.5, 2.0</small>
                                 </div>
-                                <div class="text-center">
+                                <div class="text-center d-flex justify-content-center gap-3">
+                                    <button type="button" class="btn btn-secondary px-5 fw-bold mt-2 btn-red-to-gray"
+                                        data-bs-dismiss="modal">Close</button>
                                     <button type="button" class="btn btn-solid-success btn-gray-hover px-5 fw-bold mt-2"
                                         onclick="submitCtoRequest()">Submit CTO</button>
                                 </div>
@@ -2718,8 +2733,8 @@ $profilePhoto .= '?v=' . microtime(true);
                         <!-- CTO History and Status Tab -->
                         <div class="tab-pane fade p-2" id="cto-history" role="tabpanel">
                             <!-- Populated dynamically or via PHP. For simplicity we will fetch via JS -->
-                            <div id="ctoHistoryContainer" class="d-flex flex-column gap-3"
-                                style="max-height: 480px; overflow-y: auto; overflow-x: hidden; padding-right: 5px;">
+                            <div id="ctoHistoryContainer" class="d-flex flex-column gap-3 pt-4"
+                                style="max-height: 510px; overflow-y: auto; overflow-x: hidden; padding-right: 25px;">
                                 <div class="text-center text-muted p-4">
                                     <i class="bi bi-hourglass fs-1"></i>
                                     <p class="mt-2">Loading CTO History...</p>
@@ -2736,12 +2751,11 @@ $profilePhoto .= '?v=' . microtime(true);
 
     <!-- Makeup Class Request Modal -->
     <div class="modal fade" id="requestMakeupClassModal" tabindex="-1" aria-labelledby="requestMakeupClassModalLabel"
-        aria-hidden="true">
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header border-0 pb-0">
+                <div class="modal-header border-0 pb-0 justify-content-center">
                     <h5 class="modal-title fw-bold">Makeup Class Management</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pt-2">
                     <ul class="nav nav-tabs mb-3" id="makeupTabs" role="tablist">
@@ -2828,7 +2842,9 @@ $profilePhoto .= '?v=' . microtime(true);
                                                     placeholder="e.g. To compensate for missed classes last week."
                                                     required></textarea>
                                             </div>
-                                            <div class="text-center">
+                                            <div class="text-center d-flex justify-content-center gap-3">
+                                                <button type="button" class="btn btn-secondary px-5 fw-bold mt-1 btn-red-to-gray"
+                                                    data-bs-dismiss="modal">Close</button>
                                                 <button type="button"
                                                     class="btn btn-solid-success btn-gray-hover px-5 fw-bold mt-1"
                                                     onclick="submitMakeupClassRequest()">Submit Request</button>
@@ -2852,8 +2868,8 @@ $profilePhoto .= '?v=' . microtime(true);
                         </div>
                         <!-- History and Status Tab -->
                         <div class="tab-pane fade p-2" id="makeup-history" role="tabpanel">
-                            <div id="makeupHistoryContainer" class="d-flex flex-column gap-3"
-                                style="max-height: 480px; overflow-y: auto; overflow-x: hidden; padding-right: 5px;">
+                            <div id="makeupHistoryContainer" class="d-flex flex-column gap-3 pt-4"
+                                style="max-height: 510px; overflow-y: auto; overflow-x: hidden; padding-right: 25px;">
                                 <div class="text-center text-muted p-4">
                                     <i class="bi bi-hourglass fs-1"></i>
                                     <p class="mt-2">Loading Makeup Class History...</p>
@@ -3134,8 +3150,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     let adminActions = '';
                     if (window.isAdmin && req.status === 'pending') {
                         adminActions = `
-                        <button class="btn btn-success btn-sm flex-grow-1 btn-gray-hover" onclick="updateCtoStatus(${req.id}, 'approved')">Approve</button>
-                        <button class="btn btn-danger btn-sm flex-grow-1 btn-gray-hover" onclick="updateCtoStatus(${req.id}, 'rejected')">Reject</button>
+                        <button class="btn btn-success btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'approved')">Approve</button>
+                        <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'rejected')">Reject</button>
                     `;
                     }
 
@@ -3146,15 +3162,15 @@ $profilePhoto .= '?v=' . microtime(true);
 
                     html += `
                 <div class="card border-0 shadow-sm">
-                    <div class="card-body">
+                    <div class="card-body pe-5">
                         ${adminNameStr}
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="mb-0 fw-bold">Date: ${requestedDateStr}</h6>
+                        <h6 class="mb-2 fw-bold">Date: ${requestedDateStr}</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <p class="mb-0 small text-secondary">
+                                <strong>Requested Hours:</strong> ${parseFloat(req.hours_used).toFixed(2)} hrs
+                            </p>
                             <span class="badge bg-${badgeColor} ${textColor} text-uppercase">${req.status}</span>
                         </div>
-                        <p class="mb-3 small text-secondary">
-                            <strong>Requested Hours:</strong> ${parseFloat(req.hours_used).toFixed(2)} hrs
-                        </p>
                         <div class="d-flex gap-2">
                             ${adminActions}
                             ${userActions}
@@ -3287,8 +3303,8 @@ $profilePhoto .= '?v=' . microtime(true);
                     let adminActions = '';
                     if (window.isAdmin && req.status === 'pending') {
                         adminActions = `
-                        <button class="btn btn-success btn-sm flex-grow-1 btn-gray-hover" onclick="updateMakeupStatus(${req.id}, 'approved')">Approve</button>
-                        <button class="btn btn-danger btn-sm flex-grow-1 btn-gray-hover" onclick="updateMakeupStatus(${req.id}, 'rejected')">Reject</button>
+                        <button class="btn btn-success btn-sm flex-grow-1" onclick="updateMakeupStatus(${req.id}, 'approved')">Approve</button>
+                        <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateMakeupStatus(${req.id}, 'rejected')">Reject</button>
                         `;
                     }
 
@@ -3299,15 +3315,17 @@ $profilePhoto .= '?v=' . microtime(true);
 
                     html += `
                 <div class="card border-0 shadow-sm">
-                    <div class="card-body">
+                    <div class="card-body pe-5">
                         ${adminNameStr}
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="mb-0 fw-bold">Date: ${displayDate}</h6>
+                        <h6 class="mb-2 fw-bold">Date: ${displayDate}</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="flex-grow-1">
+                                <p class="mb-0 small text-secondary">
+                                    <strong>Time:</strong> ${req.start_time} - ${req.end_time}
+                                </p>
+                            </div>
                             <span class="badge bg-${badgeColor} ${textColor} text-uppercase">${req.status}</span>
                         </div>
-                        <p class="mb-1 small text-secondary">
-                            <strong>Time:</strong> ${req.start_time} - ${req.end_time}
-                        </p>
                         <p class="mb-1 small text-secondary">
                             <strong>Details:</strong> Class: ${req.designate_class || 'N/A'}, Subject: ${req.subject_code || 'N/A'}, Room: ${req.room_num || 'N/A'}
                         </p>
