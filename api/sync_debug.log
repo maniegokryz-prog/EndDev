@@ -44207,3 +44207,126 @@
 2026-04-13 11:33:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
 2026-04-13 11:33:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
 2026-04-13 11:33:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:34:23 - --- Sync Cycle Started ---
+2026-04-13 11:34:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:34:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:34:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:34:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:34:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:35:13 - --- Sync Cycle Started ---
+2026-04-13 11:35:13 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:35:13 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:35:13 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:35:13 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:35:14 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:35:32 - --- Sync Cycle Started ---
+2026-04-13 11:35:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:35:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:35:33 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:35:33 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:35:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:36:00 - --- Sync Cycle Started ---
+2026-04-13 11:36:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:36:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:36:00 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:36:00 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:36:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:37:23 - --- Sync Cycle Started ---
+2026-04-13 11:37:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:37:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:37:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:37:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:37:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:37:40 - --- Sync Cycle Started ---
+2026-04-13 11:37:40 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:37:40 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:37:40 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:37:41 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:37:41 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:37:44 - --- Sync Cycle Started ---
+2026-04-13 11:37:44 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:37:44 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:37:44 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:37:44 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:37:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:40:47 - --- Sync Cycle Started ---
+2026-04-13 11:40:47 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:40:59 - --- Sync Cycle Started ---
+2026-04-13 11:40:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:41:06 - --- Sync Cycle Started ---
+2026-04-13 11:41:06 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:41:36 - --- Sync Cycle Started ---
+2026-04-13 11:41:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:42:09 - --- Sync Cycle Started ---
+2026-04-13 11:42:09 - Failed to upload profile_photo: Failed to save uploaded file
+2026-04-13 11:42:09 - Successfully pushed to VPS for employees ID 1
+2026-04-13 11:42:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:42:36 - --- Sync Cycle Started ---
+2026-04-13 11:42:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:42:56 - --- Sync Cycle Started ---
+2026-04-13 11:42:57 - Successfully pushed to VPS for schedules ID 1
+2026-04-13 11:42:57 - Successfully pushed to VPS for schedule_periods ID 1
+2026-04-13 11:42:57 - Successfully pushed to VPS for schedule_periods ID 2
+2026-04-13 11:42:58 - Successfully pushed to VPS for schedule_periods ID 3
+2026-04-13 11:42:58 - Successfully pushed to VPS for employee_schedules ID 1
+2026-04-13 11:42:58 - Successfully pushed to VPS for employee_assignments ID 1
+2026-04-13 11:42:58 - Successfully pushed to VPS for employee_assignments ID 2
+2026-04-13 11:42:59 - Successfully pushed to VPS for employee_assignments ID 3
+2026-04-13 11:42:59 - Successfully pushed to VPS for notifications ID 1
+2026-04-13 11:42:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:43:21 - --- Sync Cycle Started ---
+2026-04-13 11:43:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:43:51 - --- Sync Cycle Started ---
+2026-04-13 11:43:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:44:21 - --- Sync Cycle Started ---
+2026-04-13 11:44:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:44:33 - --- Sync Cycle Started ---
+2026-04-13 11:44:33 - Pulled tables from VPS: notifications, offset_schedule_requests
+2026-04-13 11:44:34 - Successfully pulled and updated local record on notifications with VPS id 2
+2026-04-13 11:44:34 - Successfully pulled and updated local record on offset_schedule_requests with VPS id 1
+2026-04-13 11:44:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:45:03 - --- Sync Cycle Started ---
+2026-04-13 11:45:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:45:33 - --- Sync Cycle Started ---
+2026-04-13 11:45:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:46:14 - --- Sync Cycle Started ---
+2026-04-10 11:46:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:46:45 - --- Sync Cycle Started ---
+2026-04-10 11:46:46 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:47:14 - --- Sync Cycle Started ---
+2026-04-10 11:47:15 - Pulled tables from VPS: notifications, makeup_class_requests
+2026-04-10 11:47:15 - Successfully pulled and updated local record on notifications with VPS id 3
+2026-04-10 11:47:16 - Successfully pulled and updated local record on makeup_class_requests with VPS id 1
+2026-04-10 11:47:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:47:38 - --- Sync Cycle Started ---
+2026-04-10 11:47:39 - Successfully pushed to VPS for notifications ID 4
+2026-04-10 11:47:39 - Successfully pushed to VPS for offset_schedule_requests ID 1
+2026-04-10 11:47:40 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:48:09 - --- Sync Cycle Started ---
+2026-04-10 11:48:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:48:39 - --- Sync Cycle Started ---
+2026-04-10 11:48:40 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:49:09 - --- Sync Cycle Started ---
+2026-04-10 11:49:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:49:39 - --- Sync Cycle Started ---
+2026-04-10 11:49:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:50:09 - --- Sync Cycle Started ---
+2026-04-10 11:50:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:50:39 - --- Sync Cycle Started ---
+2026-04-10 11:50:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:51:35 - --- Sync Cycle Started ---
+2026-04-10 11:51:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:52:37 - --- Sync Cycle Started ---
+2026-04-10 11:52:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:53:35 - --- Sync Cycle Started ---
+2026-04-10 11:53:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:54:35 - --- Sync Cycle Started ---
+2026-04-10 11:54:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:55:35 - --- Sync Cycle Started ---
+2026-04-10 11:55:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:56:35 - --- Sync Cycle Started ---
+2026-04-10 11:56:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:57:35 - --- Sync Cycle Started ---
+2026-04-10 11:57:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 11:58:35 - --- Sync Cycle Started ---
+2026-04-10 11:58:36 - Successfully pulled 4 system_settings from VPS.

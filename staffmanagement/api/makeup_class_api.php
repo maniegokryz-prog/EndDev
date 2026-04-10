@@ -292,7 +292,7 @@ function adminUpdateStatus($conn)
 
     if ($req) {
         $msg = "Your makeup class request for " . date('M d, Y', strtotime($req['requested_date'])) . " has been " . $status;
-        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['pub_id']);
+        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['pub_id']) . "&tab=makeup";
         $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'makeup_status', ?, ?, 'employee', 0)";
         $notif_stmt = $conn->prepare($notif_sql);
         $notif_stmt->bind_param("iss", $req['employee_id'], $msg, $link);

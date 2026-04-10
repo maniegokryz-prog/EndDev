@@ -220,14 +220,14 @@ function adminUpdateStatus($conn)
     }
 
     // Get employee_id and date for notification
-    $stmt2 = $conn->prepare("SELECT employee_id, requested_date FROM offset_schedule_requests WHERE id = ?");
+    $stmt2 = $conn->prepare("SELECT r.employee_id, r.requested_date, e.employee_id as pub_id FROM offset_schedule_requests r JOIN employees e ON r.employee_id = e.id WHERE r.id = ?");
     $stmt2->bind_param("i", $request_id);
     $stmt2->execute();
     $req = $stmt2->get_result()->fetch_assoc();
 
     if ($req) {
         $msg = "Your offset schedule request for " . date('M d, Y', strtotime($req['requested_date'])) . " has been " . $status;
-        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['employee_id']);
+        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['pub_id']) . "&tab=offset";
         $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'offset_status', ?, ?, 'employee', 0)";
         $notif_stmt = $conn->prepare($notif_sql);
         $notif_stmt->bind_param("iss", $req['employee_id'], $msg, $link);
@@ -451,8 +451,14 @@ function adminUpdateCtoStatus($conn)
 
     // Notify employee
     if ($req) {
+        $pubStmt = $conn->prepare("SELECT employee_id as pub_id FROM employees WHERE id = ?");
+        $pubStmt->bind_param("i", $req['employee_id']);
+        $pubStmt->execute();
+        $pubEmp = $pubStmt->get_result()->fetch_assoc();
+        $pub_id = $pubEmp['pub_id'] ?? $req['employee_id'];
+
         $msg = "Your CTO request for " . date('M d, Y', strtotime($req['requested_date'])) . " has been " . $status;
-        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['employee_id']);
+        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($pub_id) . "&tab=cto";
         $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'offset_status', ?, ?, 'employee', 0)";
         $notif_stmt = $conn->prepare($notif_sql);
         $notif_stmt->bind_param("iss", $req['employee_id'], $msg, $link);
