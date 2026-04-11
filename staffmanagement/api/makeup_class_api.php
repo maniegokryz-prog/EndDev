@@ -172,7 +172,12 @@ function submitRequest($conn)
             throw new Exception('Attachment must be 5MB or smaller.');
         }
 
-        $upload_dir = dirname(__DIR__, 2) . '/uploads/makeup_attachments/';
+        // Use dirname(__FILE__) chain so the path is always correct
+        // regardless of the server's document root (localhost vs Hostinger).
+        // __FILE__ = .../EndDev/staffmanagement/api/makeup_class_api.php
+        // dirname x3 = .../EndDev/
+        $enddev_root = dirname(dirname(dirname(__FILE__)));
+        $upload_dir = $enddev_root . '/uploads/makeup_attachments/';
         if (!is_dir($upload_dir)) {
             if (!@mkdir($upload_dir, 0755, true)) {
                 throw new Exception('Server configuration error: Cannot create upload directory. Please contact the administrator.');
@@ -186,7 +191,10 @@ function submitRequest($conn)
         if (!move_uploaded_file($file['tmp_name'], $dest)) {
             throw new Exception('Failed to save attachment. Please try again.');
         }
-        $attachment_path = 'EndDev/uploads/makeup_attachments/' . $filename;
+        // Store a serve_file.php URL so the link works on both localhost and
+        // Hostinger regardless of how the document root is configured.
+        // serve_file.php resolves the file via __DIR__ (always correct).
+        $attachment_path = 'EndDev/serve_file.php?file=uploads/makeup_attachments/' . $filename;
     }
 
     // Auto-approve if requested by an admin

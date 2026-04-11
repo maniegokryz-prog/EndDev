@@ -3493,8 +3493,19 @@ $profilePhoto .= '?v=' . microtime(true);
 
                     let attachmentStr = '';
                     if (req.attachment_path) {
-                        const fileName = req.attachment_path.split('/').pop();
-                        attachmentStr = `<p class="mb-1 small"><i class="bi bi-paperclip me-1 text-primary"></i><strong>Attachment:</strong> <a href="/${req.attachment_path}" target="_blank" class="text-primary">${fileName}</a></p>`;
+                        const fileName = req.attachment_path.split('/').pop().split('?')[0];
+                        // New records store a serve_file.php?file=... URL (works on all environments).
+                        // Legacy records store a direct path like 'EndDev/uploads/...'.
+                        // For legacy paths, reroute through serve_file.php using the file portion.
+                        let attachHref;
+                        if (req.attachment_path.includes('serve_file.php')) {
+                            attachHref = '/' + req.attachment_path;
+                        } else {
+                            // Strip leading 'EndDev/' and route through serve_file.php
+                            const filePart = req.attachment_path.replace(/^EndDev[\\/]/i, '');
+                            attachHref = '/EndDev/serve_file.php?file=' + encodeURIComponent(filePart);
+                        }
+                        attachmentStr = `<p class="mb-1 small"><i class="bi bi-paperclip me-1 text-primary"></i><strong>Attachment:</strong> <a href="${attachHref}" target="_blank" class="text-primary">${fileName}</a></p>`;
                     }
 
                     html += `
