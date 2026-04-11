@@ -104,9 +104,18 @@ function submitRequest($conn)
 
     $req_id = $conn->insert_id;
 
+    // Get employee name
+    $empStmt = $conn->prepare("SELECT first_name, last_name, employee_id FROM employees WHERE id = ?");
+    $empStmt->bind_param("i", $employee_id);
+    $empStmt->execute();
+    $empData = $empStmt->get_result()->fetch_assoc();
+    $emp_name = trim(($empData['first_name'] ?? '') . ' ' . ($empData['last_name'] ?? ''));
+    if (!$emp_name) $emp_name = "An Employee";
+    $emp_pub_id = $empData['employee_id'] ?? '';
+
     // Notify admin
-    $msg = "Employee requested an offset schedule for " . date('M d, Y', strtotime($requested_date));
-    $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($_POST['employee_id'] ?? '');
+    $msg = "{$emp_name} requested an offset schedule for " . date('M d, Y', strtotime($requested_date));
+    $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($emp_pub_id) . "&action=review_offset&req_id=" . urlencode($req_id);
     $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'offset_request', ?, ?, 'admin', 0)";
     $notif_stmt = $conn->prepare($notif_sql);
     $notif_stmt->bind_param("iss", $employee_id, $msg, $link);
@@ -273,10 +282,21 @@ function submitCtoRequest($conn)
     if (!$stmt->execute()) {
         throw new Exception('Failed to submit CTO request: ' . $stmt->error);
     }
+    
+    $req_id = $conn->insert_id;
+
+    // Get employee name
+    $empStmt = $conn->prepare("SELECT first_name, last_name, employee_id FROM employees WHERE id = ?");
+    $empStmt->bind_param("i", $employee_id);
+    $empStmt->execute();
+    $empData = $empStmt->get_result()->fetch_assoc();
+    $emp_name = trim(($empData['first_name'] ?? '') . ' ' . ($empData['last_name'] ?? ''));
+    if (!$emp_name) $emp_name = "An Employee";
+    $emp_pub_id = $empData['employee_id'] ?? '';
 
     // Notify admin
-    $msg = "Employee requested {$hours_used} hr(s) of CTO on " . date('M d, Y', strtotime($requested_date));
-    $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($_POST['employee_id'] ?? '');
+    $msg = "{$emp_name} requested {$hours_used} hr(s) of CTO on " . date('M d, Y', strtotime($requested_date));
+    $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($emp_pub_id) . "&action=review_cto&req_id=" . urlencode($req_id);
     $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'offset_request', ?, ?, 'admin', 0)";
     $notif_stmt = $conn->prepare($notif_sql);
     $notif_stmt->bind_param("iss", $employee_id, $msg, $link);
@@ -411,15 +431,6 @@ function cancelCtoRequest($conn)
     if (!$request_id)
         throw new Exception('Request ID required');
 
-    $stmt = $conn->prepare("UPDATE cto_requests SET status = 'cancelled' WHERE id = ? AND status = 'pending'");
-    $stmt->bind_param("i", $request_id);
-    if (!$stmt->execute()) {
-        throw new Exception('Failed to cancel CTO request');
-    }
-
-    echo json_encode(['success' => true, 'message' => 'CTO Request cancelled successfully']);
-}
-?>
     $stmt = $conn->prepare("UPDATE cto_requests SET status = 'cancelled' WHERE id = ? AND status = 'pending'");
     $stmt->bind_param("i", $request_id);
     if (!$stmt->execute()) {

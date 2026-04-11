@@ -35049,3 +35049,278 @@
 2026-04-08 09:53:34 - Successfully pulled 4 system_settings from VPS.
 2026-04-08 09:54:34 - --- Sync Cycle Started ---
 2026-04-08 09:54:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:55:34 - --- Sync Cycle Started ---
+2026-04-08 09:55:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:56:34 - --- Sync Cycle Started ---
+2026-04-08 09:56:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:57:06 - --- Sync Cycle Started ---
+2026-04-08 09:57:06 - Pulled tables from VPS: offset_schedule_requests
+2026-04-08 09:57:06 - Successfully pulled and updated local record on offset_schedule_requests with VPS id 1
+2026-04-08 09:57:07 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:57:08 - --- Sync Cycle Started ---
+2026-04-08 09:57:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:57:11 - --- Sync Cycle Started ---
+2026-04-08 09:57:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:57:12 - --- Sync Cycle Started ---
+2026-04-08 09:57:13 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:57:34 - --- Sync Cycle Started ---
+2026-04-08 09:57:34 - Successfully pushed to VPS for notifications ID 5
+2026-04-08 09:57:34 - Successfully pushed to VPS for notifications ID 6
+2026-04-08 09:57:35 - Successfully pushed to VPS for offset_schedule_requests ID 1
+2026-04-08 09:57:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:58:04 - --- Sync Cycle Started ---
+2026-04-08 09:58:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:58:34 - --- Sync Cycle Started ---
+2026-04-08 09:58:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:59:04 - --- Sync Cycle Started ---
+2026-04-08 09:59:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 09:59:34 - --- Sync Cycle Started ---
+2026-04-08 09:59:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-08 10:00:04 - --- Sync Cycle Started ---
+2026-04-08 10:00:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:00:23 - --- Sync Cycle Started ---
+2026-04-11 10:00:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:00:25 - --- Sync Cycle Started ---
+2026-04-11 10:00:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:00:28 - --- Sync Cycle Started ---
+2026-04-11 10:00:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:00:44 - --- Sync Cycle Started ---
+2026-04-11 10:00:44 - Successfully pushed to VPS for daily_attendance ID 1
+2026-04-11 10:00:44 - Successfully pushed to VPS for time_bank_ledger ID 1
+2026-04-11 10:00:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:01:09 - --- Sync Cycle Started ---
+2026-04-11 10:01:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:01:21 - --- Sync Cycle Started ---
+2026-04-11 10:01:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:01:31 - --- Sync Cycle Started ---
+2026-04-11 10:01:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:02:01 - --- Sync Cycle Started ---
+2026-04-11 10:02:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:02:11 - --- Sync Cycle Started ---
+2026-04-11 10:02:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:02:26 - --- Sync Cycle Started ---
+2026-04-11 10:02:27 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:02:56 - --- Sync Cycle Started ---
+2026-04-11 10:02:57 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:03:24 - --- Sync Cycle Started ---
+2026-04-11 10:03:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:03:55 - --- Sync Cycle Started ---
+2026-04-11 10:03:56 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:04:25 - --- Sync Cycle Started ---
+2026-04-11 10:04:26 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:04:54 - --- Sync Cycle Started ---
+2026-04-11 10:04:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-10 10:05:21 - --- Sync Cycle Started ---
+2026-04-10 10:05:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:05:46 - --- Sync Cycle Started ---
+2026-04-09 10:05:47 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:06:16 - --- Sync Cycle Started ---
+2026-04-09 10:06:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:06:44 - --- Sync Cycle Started ---
+2026-04-09 10:06:44 - Successfully pushed to VPS for daily_attendance ID 2
+2026-04-09 10:06:44 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:07:14 - --- Sync Cycle Started ---
+2026-04-09 10:07:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:07:44 - --- Sync Cycle Started ---
+2026-04-09 10:07:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:08:14 - --- Sync Cycle Started ---
+2026-04-09 10:08:15 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:08:44 - --- Sync Cycle Started ---
+2026-04-09 10:08:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:09:14 - --- Sync Cycle Started ---
+2026-04-09 10:09:15 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:09:45 - --- Sync Cycle Started ---
+2026-04-09 10:09:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:10:21 - --- Sync Cycle Started ---
+2026-04-09 10:10:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:11:21 - --- Sync Cycle Started ---
+2026-04-09 10:11:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:12:21 - --- Sync Cycle Started ---
+2026-04-09 10:12:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:13:21 - --- Sync Cycle Started ---
+2026-04-09 10:13:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:13:44 - --- Sync Cycle Started ---
+2026-04-09 10:13:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-09 10:14:02 - --- Sync Cycle Started ---
+2026-04-09 10:14:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:17:34 - --- Sync Cycle Started ---
+2026-04-11 10:17:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:17:36 - --- Sync Cycle Started ---
+2026-04-11 10:17:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:17:38 - --- Sync Cycle Started ---
+2026-04-11 10:17:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:17:51 - --- Sync Cycle Started ---
+2026-04-11 10:17:51 - Successfully pushed to VPS for daily_attendance ID 1
+2026-04-11 10:17:51 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:17:54 - --- Sync Cycle Started ---
+2026-04-11 10:17:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:18:24 - --- Sync Cycle Started ---
+2026-04-11 10:18:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:18:55 - --- Sync Cycle Started ---
+2026-04-11 10:18:55 - Successfully pushed to VPS for notifications ID 7
+2026-04-11 10:18:55 - Successfully pushed to VPS for offset_schedule_requests ID 2
+2026-04-11 10:18:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:19:13 - --- Sync Cycle Started ---
+2026-04-11 10:19:14 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:19:27 - --- Sync Cycle Started ---
+2026-04-11 10:19:27 - Successfully pushed to VPS for notifications ID 8
+2026-04-11 10:19:27 - Successfully pushed to VPS for offset_schedule_requests ID 2
+2026-04-11 10:19:27 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:19:55 - --- Sync Cycle Started ---
+2026-04-11 10:19:55 - Successfully pushed to VPS for notifications ID 9
+2026-04-11 10:19:55 - Successfully pushed to VPS for offset_schedule_requests ID 3
+2026-04-11 10:19:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:20:22 - --- Sync Cycle Started ---
+2026-04-11 10:20:23 - Successfully pushed to VPS for notifications ID 10
+2026-04-11 10:20:23 - Successfully pushed to VPS for notifications ID 11
+2026-04-11 10:20:23 - Successfully pushed to VPS for offset_schedule_requests ID 3
+2026-04-11 10:20:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:21:10 - --- Sync Cycle Started ---
+2026-04-11 10:21:11 - Successfully pushed to VPS for notifications ID 12
+2026-04-11 10:21:11 - Successfully pushed to VPS for offset_schedule_requests ID 4
+2026-04-11 10:21:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:21:12 - --- Sync Cycle Started ---
+2026-04-11 10:21:12 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:28:07 - --- Sync Cycle Started ---
+2026-04-11 10:28:07 - Successfully pushed to VPS for notifications ID 13
+2026-04-11 10:28:07 - Successfully pushed to VPS for offset_schedule_requests ID 4
+2026-04-11 10:28:07 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:28:08 - --- Sync Cycle Started ---
+2026-04-11 10:28:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:28:38 - --- Sync Cycle Started ---
+2026-04-11 10:28:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:28:41 - --- Sync Cycle Started ---
+2026-04-11 10:28:41 - Successfully pushed to VPS for notifications ID 14
+2026-04-11 10:28:41 - Successfully pushed to VPS for offset_schedule_requests ID 5
+2026-04-11 10:28:42 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:29:12 - --- Sync Cycle Started ---
+2026-04-11 10:29:12 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:29:42 - --- Sync Cycle Started ---
+2026-04-11 10:29:42 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:30:12 - --- Sync Cycle Started ---
+2026-04-11 10:30:12 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:30:42 - --- Sync Cycle Started ---
+2026-04-11 10:30:42 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:31:12 - --- Sync Cycle Started ---
+2026-04-11 10:31:12 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:31:42 - --- Sync Cycle Started ---
+2026-04-11 10:31:42 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:32:18 - --- Sync Cycle Started ---
+2026-04-11 10:32:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:33:18 - --- Sync Cycle Started ---
+2026-04-11 10:33:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:33:52 - --- Sync Cycle Started ---
+2026-04-11 10:33:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:33:55 - --- Sync Cycle Started ---
+2026-04-11 10:33:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:34:25 - --- Sync Cycle Started ---
+2026-04-11 10:34:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:34:35 - --- Sync Cycle Started ---
+2026-04-11 10:34:35 - Successfully pushed to VPS for notifications ID 15
+2026-04-11 10:34:35 - Successfully pushed to VPS for offset_schedule_requests ID 6
+2026-04-11 10:34:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:34:47 - --- Sync Cycle Started ---
+2026-04-11 10:34:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:35:18 - --- Sync Cycle Started ---
+2026-04-11 10:35:20 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:35:22 - --- Sync Cycle Started ---
+2026-04-11 10:35:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:35:35 - --- Sync Cycle Started ---
+2026-04-11 10:35:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:35:37 - --- Sync Cycle Started ---
+2026-04-11 10:35:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:35:39 - --- Sync Cycle Started ---
+2026-04-11 10:35:40 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:35:41 - --- Sync Cycle Started ---
+2026-04-11 10:35:41 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:36:12 - --- Sync Cycle Started ---
+2026-04-11 10:36:12 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:36:42 - --- Sync Cycle Started ---
+2026-04-11 10:36:42 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:37:05 - --- Sync Cycle Started ---
+2026-04-11 10:37:06 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:37:35 - --- Sync Cycle Started ---
+2026-04-11 10:37:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:37:55 - --- Sync Cycle Started ---
+2026-04-11 10:37:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:38:25 - --- Sync Cycle Started ---
+2026-04-11 10:38:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:38:55 - --- Sync Cycle Started ---
+2026-04-11 10:38:55 - Failed to upload profile_photo: Failed to save uploaded file
+2026-04-11 10:38:55 - Successfully pushed to VPS for employees ID 2
+2026-04-11 10:38:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:39:08 - --- Sync Cycle Started ---
+2026-04-11 10:39:08 - Successfully pushed to VPS for schedules ID 2
+2026-04-11 10:39:08 - Successfully pushed to VPS for schedule_periods ID 4
+2026-04-11 10:39:08 - Successfully pushed to VPS for schedule_periods ID 5
+2026-04-11 10:39:09 - Successfully pushed to VPS for schedule_periods ID 6
+2026-04-11 10:39:09 - Successfully pushed to VPS for employee_schedules ID 2
+2026-04-11 10:39:09 - Successfully pushed to VPS for employee_assignments ID 4
+2026-04-11 10:39:09 - Successfully pushed to VPS for employee_assignments ID 5
+2026-04-11 10:39:10 - Successfully pushed to VPS for employee_assignments ID 6
+2026-04-11 10:39:10 - Successfully pushed to VPS for notifications ID 16
+2026-04-11 10:39:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:39:36 - --- Sync Cycle Started ---
+2026-04-11 10:39:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:39:57 - --- Sync Cycle Started ---
+2026-04-11 10:39:57 - Successfully pushed to VPS for notifications ID 17
+2026-04-11 10:39:58 - Successfully pushed to VPS for offset_schedule_requests ID 7
+2026-04-11 10:39:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:40:19 - --- Sync Cycle Started ---
+2026-04-11 10:40:20 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:40:20 - --- Sync Cycle Started ---
+2026-04-11 10:40:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:40:23 - --- Sync Cycle Started ---
+2026-04-11 10:40:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:40:54 - --- Sync Cycle Started ---
+2026-04-11 10:40:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:41:23 - --- Sync Cycle Started ---
+2026-04-11 10:41:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:41:54 - --- Sync Cycle Started ---
+2026-04-11 10:41:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:42:24 - --- Sync Cycle Started ---
+2026-04-11 10:42:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:42:54 - --- Sync Cycle Started ---
+2026-04-11 10:42:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:43:24 - --- Sync Cycle Started ---
+2026-04-11 10:43:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:44:18 - --- Sync Cycle Started ---
+2026-04-11 10:44:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:45:18 - --- Sync Cycle Started ---
+2026-04-11 10:45:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:46:18 - --- Sync Cycle Started ---
+2026-04-11 10:46:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:47:18 - --- Sync Cycle Started ---
+2026-04-11 10:47:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:48:18 - --- Sync Cycle Started ---
+2026-04-11 10:48:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:49:18 - --- Sync Cycle Started ---
+2026-04-11 10:49:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:50:18 - --- Sync Cycle Started ---
+2026-04-11 10:50:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:51:18 - --- Sync Cycle Started ---
+2026-04-11 10:51:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:52:18 - --- Sync Cycle Started ---
+2026-04-11 10:52:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:53:18 - --- Sync Cycle Started ---
+2026-04-11 10:53:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:54:18 - --- Sync Cycle Started ---
+2026-04-11 10:54:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:55:18 - --- Sync Cycle Started ---
+2026-04-11 10:55:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:56:18 - --- Sync Cycle Started ---
+2026-04-11 10:56:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:56:51 - --- Sync Cycle Started ---
+2026-04-11 10:56:51 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:56:54 - --- Sync Cycle Started ---
+2026-04-11 10:56:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:56:55 - --- Sync Cycle Started ---
+2026-04-11 10:56:56 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:56:58 - --- Sync Cycle Started ---
+2026-04-11 10:56:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:57:00 - --- Sync Cycle Started ---
+2026-04-11 10:57:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:57:31 - --- Sync Cycle Started ---
+2026-04-11 10:57:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 10:58:00 - --- Sync Cycle Started ---
+2026-04-11 10:58:01 - Successfully pulled 4 system_settings from VPS.

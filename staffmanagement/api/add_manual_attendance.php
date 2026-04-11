@@ -423,8 +423,8 @@ function addManualAttendance($conn)
                     if ($checkLedger->get_result()->num_rows == 0) {
                         $worked_hours = round($actual_hours / 60, 2);
 
-                        $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule')");
-                        $ledgerStmt->bind_param("idi", $employee_id, $worked_hours, $offset_req_id);
+                        $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description, reference_date) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule', ?)");
+                        $ledgerStmt->bind_param("idis", $employee_id, $worked_hours, $offset_req_id, $date);
                         $ledgerStmt->execute();
 
                         $updateReq = $conn->prepare("UPDATE offset_schedule_requests SET status = 'completed' WHERE id = ?");
@@ -719,8 +719,8 @@ function updateTimeOut($conn)
             $checkLedger->execute();
             if ($checkLedger->get_result()->num_rows == 0) {
                 $worked_hours = round($actual_minutes / 60, 2);
-                $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule')");
-                $ledgerStmt->bind_param("idi", $employee_id, $worked_hours, $offset_req_id);
+                $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description, reference_date) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule', ?)");
+                $ledgerStmt->bind_param("idis", $employee_id, $worked_hours, $offset_req_id, $date);
                 $ledgerStmt->execute();
 
                 $updateReq = $conn->prepare("UPDATE offset_schedule_requests SET status = 'completed' WHERE id = ?");

@@ -650,6 +650,10 @@ $profilePhoto .= '?v=' . microtime(true);
             // Check for pending/approved OFFSET schedule requests
             $hasOffsetRequests = false;
             $offsetRequestsList = [];
+            $offsetFilterQuery = "";
+            if (isset($_GET['req_id']) && isset($_GET['action']) && $_GET['action'] == 'review_offset') {
+                $offsetFilterQuery = " AND r.id = " . intval($_GET['req_id']);
+            }
             try {
                 $stmt = $conn->prepare("
                     SELECT r.*, s.schedule_name,
@@ -659,7 +663,7 @@ $profilePhoto .= '?v=' . microtime(true);
                     FROM offset_schedule_requests r 
                     JOIN schedules s ON r.original_schedule_id = s.id 
                     LEFT JOIN schedule_periods sp ON (s.id = sp.schedule_id AND r.original_day_of_week = sp.day_of_week AND sp.is_active = 1)
-                    WHERE r.employee_id = ? AND r.status IN ('pending', 'approved') 
+                    WHERE r.employee_id = ? AND r.status IN ('pending', 'approved') {$offsetFilterQuery}
                     GROUP BY r.id
                     ORDER BY r.created_at DESC
                 ");
@@ -2911,6 +2915,12 @@ $profilePhoto .= '?v=' . microtime(true);
         fetch(`api/offset_schedule_api.php?action=${action}${params}`)
             .then(res => res.json())
             .then(data => {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (data.success && data.data && urlParams.get('action') === 'review_cto' && urlParams.get('req_id')) {
+                    const targetId = parseInt(urlParams.get('req_id'), 10);
+                    data.data = data.data.filter(req => parseInt(req.id, 10) === targetId);
+                }
+
                 if (!data.success || !data.data || data.data.length === 0) {
                     container.innerHTML = `<div class="text-center text-muted p-4"><i class="bi bi-inbox fs-1"></i><p class="mt-2">No pending or approved CTO requests found.</p></div>`;
                     return;
@@ -3205,6 +3215,40 @@ $profilePhoto .= '?v=' . microtime(true);
             const newUrl = new URL(window.location);
             newUrl.searchParams.delete('tab');
             window.history.replaceState({}, '', newUrl);
+        }
+
+        // Check if we arrived from an Offset notification
+        if (urlParams.get('action') === 'review_offset') {
+            const offsetModal = document.getElementById('requestOffsetModal');
+            const offsetHistoryTab = document.getElementById('offset-history-tab');
+            if (offsetModal && offsetHistoryTab) {
+                const oModal = new bootstrap.Modal(offsetModal);
+                oModal.show();
+                const tTab = new bootstrap.Tab(offsetHistoryTab);
+                tTab.show();
+                if (typeof loadOffsetHistory === 'function') loadOffsetHistory();
+                
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.delete('action');
+                window.history.replaceState({}, '', newUrl);
+            }
+        }
+
+        // Check if we arrived from a CTO notification
+        if (urlParams.get('action') === 'review_cto') {
+            const offsetModal = document.getElementById('requestOffsetModal');
+            const ctoHistoryTab = document.getElementById('cto-history-tab');
+            if (offsetModal && ctoHistoryTab) {
+                const oModal = new bootstrap.Modal(offsetModal);
+                oModal.show();
+                const tTab = new bootstrap.Tab(ctoHistoryTab);
+                tTab.show();
+                if (typeof loadCtoHistory === 'function') loadCtoHistory();
+                
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.delete('action');
+                window.history.replaceState({}, '', newUrl);
+            }
         }
     });
 
