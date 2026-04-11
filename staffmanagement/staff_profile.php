@@ -3493,18 +3493,23 @@ $profilePhoto .= '?v=' . microtime(true);
 
                     let attachmentStr = '';
                     if (req.attachment_path) {
-                        const fileName = req.attachment_path.split('/').pop().split('?')[0];
-                        // New records store a serve_file.php?file=... URL (works on all environments).
-                        // Legacy records store a direct path like 'EndDev/uploads/...'.
-                        // For legacy paths, reroute through serve_file.php using the file portion.
-                        let attachHref;
-                        if (req.attachment_path.includes('serve_file.php')) {
-                            attachHref = '/' + req.attachment_path;
-                        } else {
-                            // Strip leading 'EndDev/' and route through serve_file.php
-                            const filePart = req.attachment_path.replace(/^EndDev[\\/]/i, '');
-                            attachHref = '/EndDev/serve_file.php?file=' + encodeURIComponent(filePart);
-                        }
+                        // Auto-detect the app base URL from the current page path.
+                        // e.g. /EndDev/staffmanagement/staff_profile.php → base = /EndDev
+                        //      /staffmanagement/staff_profile.php         → base = (empty)
+                        const _pagePath = window.location.pathname;
+                        const _smIdx = _pagePath.indexOf('/staffmanagement/');
+                        const _appBase = _smIdx > 0 ? _pagePath.substring(0, _smIdx) : '';
+
+                        // Normalise the stored path — strip any legacy URL prefixes
+                        let _filePart = req.attachment_path
+                            .replace(/^EndDev[\\/]serve_file\.php\?file=/i, '')  // new serve_file format
+                            .replace(/^EndDev[\\/]/i, '');                         // legacy direct URL
+
+                        // Extract just the filename for display
+                        const fileName = _filePart.split('/').pop().split('?')[0];
+
+                        // Build the serve_file.php URL using the detected base
+                        const attachHref = _appBase + '/serve_file.php?file=' + encodeURIComponent(_filePart);
                         attachmentStr = `<p class="mb-1 small"><i class="bi bi-paperclip me-1 text-primary"></i><strong>Attachment:</strong> <a href="${attachHref}" target="_blank" class="text-primary">${fileName}</a></p>`;
                     }
 
