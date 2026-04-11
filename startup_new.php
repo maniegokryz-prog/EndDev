@@ -356,6 +356,24 @@ $sql_time_bank = "CREATE TABLE IF NOT EXISTS time_bank_ledger (
 )";
 createTable($conn, $sql_time_bank, "time_bank_ledger");
 
+// Makeup Class Requests table
+$sql_makeup_classes = "CREATE TABLE IF NOT EXISTS makeup_class_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    requested_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    designate_class VARCHAR(255),
+    subject_code VARCHAR(100),
+    room_num VARCHAR(100),
+    reason TEXT,
+    status ENUM('pending', 'approved', 'rejected', 'completed', 'cancelled') DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+)";
+createTable($conn, $sql_makeup_classes, "makeup_class_requests");
+
 
 // Insert default settings if they don't exist
 $check_setting = $conn->query("SELECT id FROM system_settings WHERE setting_key = 'leave_notice_period_days'");
