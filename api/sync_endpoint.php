@@ -237,7 +237,11 @@ function syncUploadFile()
         return;
     }
 
-    $target_file = __DIR__ . '/../' . ltrim($path, '/');
+    // __DIR__.'/../' resolves to the EndDev/ app root on the VPS.
+    // Paths stored as 'EndDev/uploads/...' (web-root-relative) must have the
+    // leading 'EndDev/' stripped to avoid saving to EndDev/EndDev/uploads/...
+    $fs_rel = preg_replace('#^EndDev[\\/]#i', '', ltrim($path, '/'));
+    $target_file = __DIR__ . '/../' . $fs_rel;
     $target_dir = dirname($target_file);
 
     if (!is_dir($target_dir)) {

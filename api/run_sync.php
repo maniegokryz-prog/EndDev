@@ -63,10 +63,16 @@ foreach ($tables_to_sync as $table) {
         while ($record = $local_changes->fetch_assoc()) {
 
             // If the record has physical file(s), upload them to the VPS first
-            $file_columns = ['attachment', 'profile_photo'];
+            // 'attachment_path' is used by makeup_class_requests (not 'attachment')
+            $file_columns = ['attachment', 'attachment_path', 'profile_photo'];
             foreach ($file_columns as $col) {
                 if (isset($record[$col]) && !empty($record[$col]) && $record[$col] !== 'N/A') {
-                    $local_file_path = __DIR__ . '/../' . ltrim($record[$col], '/');
+                    // __DIR__.'/../' resolves to the EndDev/ app root.
+                    // Paths like 'EndDev/uploads/...' are web-root-relative and must have
+                    // the leading 'EndDev/' stripped to avoid a double-folder path.
+                    $web_rel = ltrim($record[$col], '/');
+                    $fs_rel  = preg_replace('#^EndDev[\\/]#i', '', $web_rel);
+                    $local_file_path = __DIR__ . '/../' . $fs_rel;
                     if (file_exists($local_file_path)) {
                         $filePushResponse = sendFileToVPS($record[$col], $local_file_path);
                         if ($filePushResponse && isset($filePushResponse['success']) && $filePushResponse['success']) {
@@ -74,6 +80,8 @@ foreach ($tables_to_sync as $table) {
                         } else {
                             logSync("Failed to upload $col: " . ($filePushResponse['error'] ?? 'Network error'));
                         }
+                    } else {
+                        logSync("Skipping file upload for $col (not found locally): " . $local_file_path);
                     }
                 }
             }
@@ -110,10 +118,14 @@ if ($pullResponse && isset($pullResponse['success']) && $pullResponse['success']
         foreach ($records as $record) {
 
             // If the record has physical file(s), download them from the VPS first
-            $file_columns = ['attachment', 'profile_photo'];
+            // 'attachment_path' is used by makeup_class_requests (not 'attachment')
+            $file_columns = ['attachment', 'attachment_path', 'profile_photo'];
             foreach ($file_columns as $col) {
                 if (isset($record[$col]) && !empty($record[$col]) && $record[$col] !== 'N/A') {
-                    $local_file_path = __DIR__ . '/../' . ltrim($record[$col], '/');
+                    // Strip leading 'EndDev/' for the same reason as in the PUSH block above.
+                    $web_rel = ltrim($record[$col], '/');
+                    $fs_rel  = preg_replace('#^EndDev[\\/]#i', '', $web_rel);
+                    $local_file_path = __DIR__ . '/../' . $fs_rel;
                     if (!file_exists($local_file_path)) {
                         $vps_file_url = 'http://76.13.210.68/' . ltrim($record[$col], '/');
 
