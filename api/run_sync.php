@@ -40,7 +40,8 @@ $tables_to_sync = [
     'employee_leaves',
     'attendance_logs',
     'daily_attendance',
-    'notifications'
+    'notifications',
+    'makeup_class_requests'
 ];
 
 $results = [

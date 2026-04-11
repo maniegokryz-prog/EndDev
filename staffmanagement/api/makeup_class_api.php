@@ -1,0 +1,283 @@
+<?php
+/**
+ * Makeup Class Requests API
+ */
+
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
+ob_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    @session_start();
+}
+
+date_default_timezone_set('Asia/Manila');
+
+require_once '../../db_connection.php';
+require_once '../../db_cloud_sync.php';
+
+ob_end_clean();
+ob_start();
+header('Content-Type: application/json; charset=utf-8');
+
+try {
+    $action = $_GET['action'] ?? $_POST['action'] ?? '';
+
+    switch ($action) {
+        case 'submit_request':
+            submitRequest($conn);
+            break;
+        case 'get_employee_requests':
+            getEmployeeRequests($conn);
+            break;
+        case 'admin_get_requests':
+            adminGetRequests($conn);
+            break;
+        case 'admin_update_status':
+            adminUpdateStatus($conn);
+            break;
+        case 'cancel_request':
+            cancelRequest($conn);
+            break;
+        case 'get_single_request':
+            getSingleRequest($conn);
+            break;
+        default:
+            throw new Exception('Invalid action');
+    }
+} catch (Exception $e) {
+    if (ob_get_length()) ob_end_clean();
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
+    exit;
+}
+
+$conn->close();
+
+function checkOverlap($conn, $employee_id, $requested_date, $start_time, $end_time) {
+    $day_of_week = date('N', strtotime($requested_date)) - 1; // 0=Mon, 6=Sun
+
+    // 1. Check regular schedules
+    $sql1 = "
+        SELECT sp.id 
+        FROM employee_schedules es
+        JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+        WHERE es.employee_id = ? AND es.is_active = 1 AND sp.is_active = 1
+        AND sp.day_of_week = ?
+        AND (sp.start_time < ? AND sp.end_time > ?)
+    ";
+    $stmt1 = $conn->prepare($sql1);
+    $stmt1->bind_param("iiss", $employee_id, $day_of_week, $end_time, $start_time);
+    $stmt1->execute();
+    if ($stmt1->get_result()->num_rows > 0) {
+        return "The requested time overlaps with your regular schedule.";
+    }
+
+    // 2. Check existing makeup classes
+    $sql2 = "
+        SELECT id 
+        FROM makeup_class_requests 
+        WHERE employee_id = ? AND requested_date = ? 
+        AND status IN ('pending', 'approved')
+        AND (start_time < ? AND end_time > ?)
+    ";
+    $stmt2 = $conn->prepare($sql2);
+    $stmt2->bind_param("isss", $employee_id, $requested_date, $end_time, $start_time);
+    $stmt2->execute();
+    if ($stmt2->get_result()->num_rows > 0) {
+        return "The requested time overlaps with another pending or approved makeup class.";
+    }
+
+    return null; // No overlap
+}
+
+function submitRequest($conn) {
+    $employee_id = $_POST['employee_id'] ?? 0;
+    $requested_date = $_POST['requested_date'] ?? '';
+    $start_time = $_POST['start_time'] ?? '';
+    $end_time = $_POST['end_time'] ?? '';
+    $designate_class = $_POST['designate_class'] ?? '';
+    $subject_code = $_POST['subject_code'] ?? '';
+    $room_num = $_POST['room_num'] ?? '';
+    $reason = $_POST['reason'] ?? '';
+
+    if (!$employee_id || !$requested_date || !$start_time || !$end_time || !$reason) {
+        throw new Exception('Missing required fields, including Reason.');
+    }
+
+    if (strtotime($start_time) >= strtotime($end_time)) {
+        throw new Exception('Start time must be before end time.');
+    }
+
+    // Verify it's a vacant time
+    $overlapError = checkOverlap($conn, $employee_id, $requested_date, $start_time, $end_time);
+    if ($overlapError) {
+        throw new Exception($overlapError);
+    }
+
+    // Auto-approve if requested by an admin
+    $is_admin = isset($_SESSION['user_role']) && strtolower($_SESSION['user_role']) === 'admin';
+    $status = $is_admin ? 'approved' : 'pending';
+
+    $sql = "INSERT INTO makeup_class_requests (employee_id, requested_date, start_time, end_time, designate_class, subject_code, room_num, reason, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("issssssss", $employee_id, $requested_date, $start_time, $end_time, $designate_class, $subject_code, $room_num, $reason, $status);
+    
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to submit request: ' . $stmt->error);
+    }
+
+    $req_id = $conn->insert_id;
+
+    // Get employee details
+    $empSql = "SELECT employee_id, first_name, last_name FROM employees WHERE id = ?";
+    $empStmt = $conn->prepare($empSql);
+    $empStmt->bind_param("i", $employee_id);
+    $empStmt->execute();
+    $empData = $empStmt->get_result()->fetch_assoc();
+    $emp_pub_id = $empData['employee_id'] ?? '';
+    
+    $emp_name = trim(($empData['first_name'] ?? '') . ' ' . ($empData['last_name'] ?? ''));
+    if (!$emp_name) $emp_name = "A Faculty Member";
+
+    // Notify admin only if the request is NOT from an admin
+    if (!$is_admin) {
+        $msg = "{$emp_name} requested a Makeup Class on " . date('M d, Y', strtotime($requested_date));
+        
+        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($emp_pub_id) . "&tab=makeup&req_id=" . $req_id;
+
+        $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'makeup_request', ?, ?, 'admin', 0)";
+        $notif_stmt = $conn->prepare($notif_sql);
+        $notif_stmt->bind_param("iss", $employee_id, $msg, $link);
+        $notif_stmt->execute();
+    }
+
+    $success_msg = $is_admin ? 'Makeup class added and auto-approved successfully' : 'Makeup class requested successfully';
+    echo json_encode(['success' => true, 'message' => $success_msg, 'request_id' => $req_id]);
+}
+
+function getEmployeeRequests($conn) {
+    $employee_id = $_GET['employee_id'] ?? 0;
+    if (!$employee_id) throw new Exception('Employee ID required');
+
+    $sql = "SELECT m.* 
+            FROM makeup_class_requests m
+            WHERE m.employee_id = ?
+            ORDER BY m.created_at DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $employee_id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    $data = [];
+    while ($row = $res->fetch_assoc()) {
+        $data[] = $row;
+    }
+    echo json_encode(['success' => true, 'data' => $data]);
+}
+
+function adminGetRequests($conn) {
+    $employee_id = $_GET['employee_id'] ?? 0;
+    
+    $sql = "SELECT m.*, e.first_name, e.last_name, e.employee_id as emp_code
+            FROM makeup_class_requests m
+            JOIN employees e ON m.employee_id = e.id
+            WHERE m.status = 'pending'";
+
+    if ($employee_id) {
+        $sql .= " AND m.employee_id = ?";
+        $stmt = $conn->prepare($sql . " ORDER BY m.created_at DESC");
+        $stmt->bind_param("i", $employee_id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+    } else {
+        $sql .= " ORDER BY m.created_at DESC";
+        $res = $conn->query($sql);
+    }
+    
+    $data = [];
+    while ($row = $res->fetch_assoc()) {
+        $data[] = $row;
+    }
+    echo json_encode(['success' => true, 'data' => $data]);
+}
+
+function getSingleRequest($conn) {
+    $req_id = $_GET['req_id'] ?? 0;
+    if (!$req_id) throw new Exception('Request ID required');
+
+    $sql = "SELECT m.*, e.first_name, e.last_name, e.employee_id as emp_code
+            FROM makeup_class_requests m
+            JOIN employees e ON m.employee_id = e.id
+            WHERE m.id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $req_id);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_assoc();
+    
+    if ($res) {
+        echo json_encode(['success' => true, 'data' => $res]);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Not found']);
+    }
+}
+
+function adminUpdateStatus($conn) {
+    $request_id = $_POST['request_id'] ?? 0;
+    $status = $_POST['status'] ?? '';
+
+    if (!$request_id || !in_array($status, ['approved', 'rejected'])) {
+        throw new Exception('Invalid parameters');
+    }
+
+    $stmt = $conn->prepare("UPDATE makeup_class_requests SET status = ? WHERE id = ?");
+    $stmt->bind_param("si", $status, $request_id);
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to update status');
+    }
+
+    // Get employee_id and date for notification
+    $stmt2 = $conn->prepare("SELECT m.employee_id, m.requested_date, e.employee_id as pub_id FROM makeup_class_requests m JOIN employees e ON m.employee_id=e.id WHERE m.id = ?");
+    $stmt2->bind_param("i", $request_id);
+    $stmt2->execute();
+    $req = $stmt2->get_result()->fetch_assoc();
+
+    if ($req) {
+        $msg = "Your makeup class request for " . date('M d, Y', strtotime($req['requested_date'])) . " has been " . $status;
+        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['pub_id']);
+        $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'makeup_status', ?, ?, 'employee', 0)";
+        $notif_stmt = $conn->prepare($notif_sql);
+        $notif_stmt->bind_param("iss", $req['employee_id'], $msg, $link);
+        $notif_stmt->execute();
+    }
+
+    if (function_exists('syncToCloud')) {
+        syncToCloud('makeup_class_requests', [], 'update', "id = $request_id");
+    }
+
+    echo json_encode(['success' => true, 'message' => "Request $status successfully"]);
+}
+
+function cancelRequest($conn) {
+    $request_id = $_POST['request_id'] ?? 0;
+    if (!$request_id) throw new Exception('Request ID required');
+
+    $stmt = $conn->prepare("UPDATE makeup_class_requests SET status = 'cancelled' WHERE id = ? AND status = 'pending'");
+    $stmt->bind_param("i", $request_id);
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to cancel request');
+    }
+
+    if (function_exists('syncToCloud')) {
+        syncToCloud('makeup_class_requests', [], 'update', "id = $request_id");
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Request cancelled successfully']);
+}
+?>

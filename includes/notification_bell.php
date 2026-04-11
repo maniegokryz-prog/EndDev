@@ -150,6 +150,25 @@
   </div>
 </div>
 
+<!-- Global Makeup Detail Modal -->
+<div class="modal fade" id="globalMakeupDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 10100;" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header pb-0 border-0">
+        <h5 class="modal-title fw-bold">Makeup Class Request</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <div id="globalMakeupModalLoading" class="text-center py-4">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="text-muted mt-2 small">Loading request...</p>
+        </div>
+        <div id="globalMakeupModalContent" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Notification Error/Info Modal -->
 <div class="modal fade" id="notificationErrorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
@@ -308,7 +327,7 @@
       };
 
       // Move modals to body to ensure correct stacking context (fixes backdrop issues)
-      ['allNotificationsModal', 'deleteNotificationModal', 'deleteAllNotificationsModal', 'notificationErrorModal'].forEach(id => {
+      ['allNotificationsModal', 'deleteNotificationModal', 'deleteAllNotificationsModal', 'notificationErrorModal', 'globalMakeupDetailModal'].forEach(id => {
         const el = document.getElementById(id);
         if (el && el.parentElement !== document.body) {
           document.body.appendChild(el);
@@ -459,6 +478,30 @@
 
           openRejectionDetailModal(notificationId, notifMessage);
           return;
+        }
+
+        const isMakeupRequest = (notifType === 'makeup_request');
+        if (isMakeupRequest) {
+            // Check if req_id is present
+            // Handle if there is hostinger string manipulation
+            const urlStr = link.startsWith('http') ? link : (window.location.origin + (link.startsWith('/') ? '' : '/') + link);
+            let reqId = null;
+            try {
+                const url = new URL(urlStr);
+                reqId = url.searchParams.get('req_id');
+            } catch(e) {}
+            
+            if (reqId) {
+                // Mark as read first
+                const formData = new FormData();
+                formData.append('action', 'mark_notification_read');
+                formData.append('notification_id', notificationId);
+                fetch('../staffmanagement/api/leave_request.php', { method: 'POST', body: formData });
+                
+                // Show modal without navigating away
+                openMakeupDetailModal(reqId);
+                return;
+            }
         }
 
         // Helper to resolve hardcoded /EndDev paths for Hostinger
@@ -861,4 +904,89 @@
     html+='</div>';
     container.innerHTML=html;
   }
+
+  // ---- Makeup Request Detail Modal ----
+  window.openMakeupDetailModal = async function(reqId) {
+    var modalEl = document.getElementById('globalMakeupDetailModal');
+    if (modalEl && modalEl.parentElement !== document.body) document.body.appendChild(modalEl);
+
+    document.getElementById('globalMakeupModalLoading').style.display = 'block';
+    document.getElementById('globalMakeupModalContent').style.display = 'none';
+    document.getElementById('globalMakeupModalContent').innerHTML = '';
+
+    var dropdown = document.getElementById('notificationDropdown');
+    if (dropdown) dropdown.style.display = 'none';
+
+    var bsModal = new bootstrap.Modal(modalEl);
+    bsModal.show();
+
+    fetch('../staffmanagement/api/makeup_class_api.php?action=get_single_request&req_id=' + reqId)
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        document.getElementById('globalMakeupModalLoading').style.display = 'none';
+        document.getElementById('globalMakeupModalContent').style.display = 'block';
+        if (data.success && data.data) {
+           const req = data.data;
+           const badgeColor = req.status === 'approved' ? 'success' : (req.status === 'pending' ? 'warning' : 'secondary');
+           const textColor = req.status === 'approved' ? 'text-white' : 'text-dark';
+           let reqDateObj = new Date(req.requested_date);
+           let displayDate = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', weekday: 'long' }).format(reqDateObj);
+
+           let adminActions = '';
+           if (req.status === 'pending') {
+               adminActions = `
+               <button class="btn btn-success btn-sm flex-grow-1" onclick="globalUpdateMakeupStatus(${req.id}, 'approved')">Approve</button>
+               <button class="btn btn-danger btn-sm flex-grow-1" onclick="globalUpdateMakeupStatus(${req.id}, 'rejected')">Reject</button>
+               `;
+           }
+
+           let html = `
+               <div class="card border-0 shadow-sm">
+                   <div class="card-body">
+                       <h6 class="fw-bold mb-1 text-dark">${req.first_name} ${req.last_name} (${req.emp_code})</h6>
+                       <div class="d-flex justify-content-between align-items-center mb-2">
+                           <h6 class="mb-0 fw-bold">Date: ${displayDate}</h6>
+                           <span class="badge bg-${badgeColor} ${textColor} text-uppercase">${req.status}</span>
+                       </div>
+                       <p class="mb-1 small text-secondary">
+                           <strong>Time:</strong> ${req.start_time} - ${req.end_time}
+                       </p>
+                       <p class="mb-1 small text-secondary">
+                           <strong>Details:</strong> Class: ${req.designate_class || 'N/A'}, Subject: ${req.subject_code || 'N/A'}, Room: ${req.room_num || 'N/A'}
+                       </p>
+                       <p class="mb-3 small text-secondary">
+                           <strong>Reason:</strong> ${req.reason || 'N/A'}
+                       </p>
+                       <div class="d-flex gap-2">
+                           ${adminActions}
+                       </div>
+                   </div>
+               </div>`;
+           
+           document.getElementById('globalMakeupModalContent').innerHTML = html;
+        } else {
+           document.getElementById('globalMakeupModalContent').innerHTML = '<p class="text-center text-muted p-4">Request not found or has been removed.</p>';
+        }
+      })
+      .catch(function(err){
+        document.getElementById('globalMakeupModalLoading').innerHTML = '<p style="color:red;text-align:center;">Failed to load request details.</p>';
+      });
+  };
+
+  window.globalUpdateMakeupStatus = function(reqId, status) {
+    if (!confirm(`Are you sure you want to ${status} this Makeup Class request?`)) return;
+    const fd = new FormData();
+    fd.append('action', 'admin_update_status');
+    fd.append('request_id', reqId);
+    fd.append('status', status);
+    fetch('../staffmanagement/api/makeup_class_api.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                openMakeupDetailModal(reqId);
+            } else {
+                alert('Error: ' + d.error);
+            }
+        });
+  };
 </script>

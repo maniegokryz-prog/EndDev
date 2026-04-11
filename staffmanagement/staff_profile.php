@@ -269,6 +269,37 @@ if ($schedules) {
     $processedSchedules = array_values($groups);
 }
 
+// Add Makeup Classes to Schedules if approved and >= today (Temporary schedules)
+try {
+    $mcStmt = $conn->prepare("
+        SELECT requested_date, start_time, end_time, subject_code, designate_class, room_num
+        FROM makeup_class_requests
+        WHERE employee_id = ? AND status = 'approved'
+        AND requested_date >= CURDATE()
+    ");
+    if ($mcStmt) {
+        $mcStmt->bind_param("i", $employee['id']);
+        $mcStmt->execute();
+        $mcRes = $mcStmt->get_result();
+        while ($mcRow = $mcRes->fetch_assoc()) {
+            $dayIdx = date('N', strtotime($mcRow['requested_date'])) - 1; // 0=Mon
+            $dayNames_mc = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            
+            $processedSchedules[] = [
+                'startTime' => substr($mcRow['start_time'], 0, 5),
+                'endTime' => substr($mcRow['end_time'], 0, 5),
+                'subject' => $mcRow['subject_code'] ? $mcRow['subject_code'] : '',
+                'class' => ($mcRow['designate_class'] ? $mcRow['designate_class'] : 'Makeup') . ' (Makeup Class)',
+                'room_num' => $mcRow['room_num'] ? $mcRow['room_num'] : '',
+                'days' => [$dayNames_mc[$dayIdx]],
+                'color' => '#dc3545', // Give it a red/noticeable color
+                'is_makeup' => true
+            ];
+        }
+        $mcStmt->close();
+    }
+} catch (Exception $e) {}
+
 // Profile Photo Logic (Robust)
 $profilePhoto = '../assets/profile_pic/user.png';
 // Use the stored path directly. Assuming the path in DB is relative to project root (e.g. 'uploads/file.png' or 'assets/profile_pic/file.png')
@@ -988,6 +1019,12 @@ $profilePhoto .= '?v=' . microtime(true);
                                 data-bs-target="#requestOffsetModal">
                                 <i class="bi bi-clock-history"></i> Request / Use Offset
                             </button>
+                            <?php if (isset($employee['roles']) && stripos($employee['roles'], 'faculty') !== false): ?>
+                                <button class="btn-modern btn-solid-warning btn-sm btn-gray-hover" data-bs-toggle="modal"
+                                    data-bs-target="#requestMakeupClassModal" style="background-color: #17a2b8 !important; border-color: #17a2b8 !important; color: white !important;">
+                                    <i class="bi bi-calendar-plus"></i> Request Makeup Class
+                                </button>
+                            <?php endif; ?>
                             <?php if ($isAdmin && isset($pendingRequestId) && $pendingRequestId): ?>
                                 <button class="btn-modern btn-solid-success btn-sm btn-gray-hover" data-bs-toggle="modal"
                                     data-bs-target="#adminPendingRequestWarningModal">
@@ -2596,10 +2633,126 @@ $profilePhoto .= '?v=' . microtime(true);
                         </div>
                     </div>
 
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
+
+    <!-- Makeup Class Request Modal -->
+    <div class="modal fade" id="requestMakeupClassModal" tabindex="-1" aria-labelledby="requestMakeupClassModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Makeup Class Management</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <ul class="nav nav-tabs mb-3" id="makeupTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold text-dark" id="makeup-request-tab"
+                                data-bs-toggle="tab" data-bs-target="#makeup-request" type="button" role="tab">Request
+                                Makeup Class</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-dark" id="makeup-history-tab" data-bs-toggle="tab"
+                                data-bs-target="#makeup-history" type="button" role="tab">Makeup History</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="makeupTabsContent">
+                        <!-- Request Makeup Class Tab -->
+                        <div class="tab-pane fade show active" id="makeup-request" role="tabpanel">
+                            <div class="row g-3 align-items-stretch">
+                                <!-- Left: Form -->
+                                <div class="col-lg-5 d-flex flex-column">
+                                    <div class="p-3 border rounded flex-grow-1">
+                                        <form id="requestMakeupClassForm">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Date of Makeup Class</label>
+                                                <input type="date" class="form-control" id="makeupDate" min="<?php echo date('Y-m-d'); ?>" required>
+                                                <small class="text-muted">Pick a date without any existing schedule.</small>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 mb-3">
+                                                    <label class="form-label fw-bold">Start Time</label>
+                                                    <input type="time" class="form-control" id="makeupStartTime" required>
+                                                </div>
+                                                <div class="col-6 mb-3">
+                                                    <label class="form-label fw-bold">End Time</label>
+                                                    <input type="time" class="form-control" id="makeupEndTime" required>
+                                                </div>
+                                            </div>
+                                            <?php
+                                            $accClasses = [];
+                                            $accSubjects = [];
+                                            if (isset($schedules) && is_array($schedules)) {
+                                                foreach ($schedules as $s) {
+                                                    if (!empty($s['designate_class']) && !in_array($s['designate_class'], $accClasses)) {
+                                                        $accClasses[] = $s['designate_class'];
+                                                    }
+                                                    if (!empty($s['subject_code']) && !in_array($s['subject_code'], $accSubjects)) {
+                                                        $accSubjects[] = $s['subject_code'];
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Class</label>
+                                                <select class="form-select text-uppercase" id="makeupClass">
+                                                    <option value="">-- Select Class --</option>
+                                                    <?php foreach ($accClasses as $c): ?>
+                                                        <option value="<?php echo htmlspecialchars($c); ?>"><?php echo htmlspecialchars($c); ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Subject</label>
+                                                <select class="form-select text-uppercase" id="makeupSubject">
+                                                    <option value="">-- Select Subject --</option>
+                                                    <?php foreach ($accSubjects as $sub): ?>
+                                                        <option value="<?php echo htmlspecialchars($sub); ?>"><?php echo htmlspecialchars($sub); ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Room</label>
+                                                <input type="text" class="form-control text-uppercase" id="makeupRoom" placeholder="e.g. ROOM 101">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Reason</label>
+                                                <textarea class="form-control" id="makeupReason" rows="2" placeholder="e.g. To compensate for missed classes last week." required></textarea>
+                                            </div>
+                                            <button type="button" class="btn btn-info text-white w-100 fw-bold mt-1"
+                                                onclick="submitMakeupClassRequest()">Submit Request</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- Right: Mini Schedule Calendar -->
+                                <div class="col-lg-7 d-flex flex-column">
+                                    <div class="p-2 border rounded d-flex flex-column" style="background:#f9fafb; height:100%;">
+                                        <p class="fw-bold mb-2 text-secondary small flex-shrink-0"><i class="bi bi-calendar3 me-1"></i>Your Weekly Schedule <span class="text-muted fw-normal">(pick a vacant time slot)</span></p>
+                                        <div style="overflow-x:auto; overflow-y:auto; flex:1 1 0; min-height:0;">
+                                            <div id="makeupModalScheduleCalendar" style="font-size:0.78em;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- History and Status Tab -->
+                        <div class="tab-pane fade p-2" id="makeup-history" role="tabpanel">
+                            <div id="makeupHistoryContainer" class="d-flex flex-column gap-3">
+                                <div class="text-center text-muted p-4">
+                                    <i class="bi bi-hourglass fs-1"></i>
+                                    <p class="mt-2">Loading Makeup Class History...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
@@ -2862,6 +3015,199 @@ $profilePhoto .= '?v=' . microtime(true);
             ctoHistoryTab.addEventListener('click', loadCtoHistory);
         }
     });
+
+    // Makeup Class functions
+    function submitMakeupClassRequest() {
+        const makeupDate = document.getElementById('makeupDate').value;
+        const makeupStartTime = document.getElementById('makeupStartTime').value;
+        const makeupEndTime = document.getElementById('makeupEndTime').value;
+        const makeupClass = document.getElementById('makeupClass').value;
+        const makeupSubject = document.getElementById('makeupSubject').value;
+        const makeupRoom = document.getElementById('makeupRoom').value;
+        const makeupReason = document.getElementById('makeupReason').value;
+
+        if (!makeupDate || !makeupStartTime || !makeupEndTime || !makeupReason) {
+            alert("Please fill out all required fields, including Reason.");
+            return;
+        }
+
+        const fd = new FormData();
+        fd.append('action', 'submit_request');
+        fd.append('employee_id', window.employeeInternalId);
+        fd.append('requested_date', makeupDate);
+        fd.append('start_time', makeupStartTime);
+        fd.append('end_time', makeupEndTime);
+        fd.append('designate_class', makeupClass);
+        fd.append('subject_code', makeupSubject);
+        fd.append('room_num', makeupRoom);
+        fd.append('reason', makeupReason);
+
+        fetch('api/makeup_class_api.php', { method: 'POST', body: fd })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Makeup Class requested successfully.');
+                    window.location.reload();
+                } else {
+                    alert("Error: " + result.error);
+                }
+            })
+            .catch(e => alert("Network Error: " + e.message));
+    }
+
+    function loadMakeupHistory() {
+        const container = document.getElementById('makeupHistoryContainer');
+        if (!container) return;
+
+        const action = window.isAdmin ? 'admin_get_requests' : 'get_employee_requests';
+        const params = `&employee_id=${window.employeeInternalId}`;
+
+        fetch(`api/makeup_class_api.php?action=${action}${params}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.data || data.data.length === 0) {
+                    container.innerHTML = `<div class="text-center text-muted p-4"><i class="bi bi-inbox fs-1"></i><p class="mt-2">No pending or approved Makeup Class requests found.</p></div>`;
+                    return;
+                }
+
+                let html = '';
+                data.data.forEach(req => {
+                    const badgeColor = req.status === 'approved' ? 'success' : (req.status === 'pending' ? 'warning' : 'secondary');
+                    let adminNameStr = '';
+                    if (window.isAdmin && req.emp_code) {
+                        adminNameStr = `<h6 class="fw-bold mb-1 text-dark">${req.first_name} ${req.last_name} (${req.emp_code})</h6>`;
+                    }
+
+                    const textColor = req.status === 'approved' ? 'text-white' : 'text-dark';
+
+                    let reqDateObj = new Date(req.requested_date);
+                    let displayDate = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', weekday: 'long' }).format(reqDateObj);
+
+                    let adminActions = '';
+                    if (window.isAdmin && req.status === 'pending') {
+                        adminActions = `
+                        <button class="btn btn-success btn-sm flex-grow-1" onclick="updateMakeupStatus(${req.id}, 'approved')">Approve</button>
+                        <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateMakeupStatus(${req.id}, 'rejected')">Reject</button>
+                        `;
+                    }
+
+                    let userActions = '';
+                    if (!window.isAdmin && req.status === 'pending') {
+                        userActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="cancelMakeupRequest(${req.id})">Cancel</button>`;
+                    }
+
+                    html += `
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        ${adminNameStr}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0 fw-bold">Date: ${displayDate}</h6>
+                            <span class="badge bg-${badgeColor} ${textColor} text-uppercase">${req.status}</span>
+                        </div>
+                        <p class="mb-1 small text-secondary">
+                            <strong>Time:</strong> ${req.start_time} - ${req.end_time}
+                        </p>
+                        <p class="mb-1 small text-secondary">
+                            <strong>Details:</strong> Class: ${req.designate_class || 'N/A'}, Subject: ${req.subject_code || 'N/A'}, Room: ${req.room_num || 'N/A'}
+                        </p>
+                        <p class="mb-3 small text-secondary">
+                            <strong>Reason:</strong> ${req.reason || 'N/A'}
+                        </p>
+                        <div class="d-flex gap-2">
+                            ${adminActions}
+                            ${userActions}
+                        </div>
+                    </div>
+                </div>`;
+                });
+                container.innerHTML = html;
+            })
+            .catch(err => {
+                container.innerHTML = '<div class="text-danger p-3">Failed to load history</div>';
+            });
+    }
+
+    function updateMakeupStatus(reqId, status) {
+        if (!confirm(`Are you sure you want to ${status} this Makeup Class request?`)) return;
+        const fd = new FormData();
+        fd.append('action', 'admin_update_status');
+        fd.append('request_id', reqId);
+        fd.append('status', status);
+        fetch('api/makeup_class_api.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) loadMakeupHistory();
+                else alert('Error: ' + d.error);
+            });
+    }
+
+    function cancelMakeupRequest(reqId) {
+        if (!confirm("Are you sure you want to cancel this Makeup Class request?")) return;
+        const fd = new FormData();
+        fd.append('action', 'cancel_request');
+        fd.append('request_id', reqId);
+        fetch('api/makeup_class_api.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) loadMakeupHistory();
+                else alert('Error: ' + d.error);
+            });
+    }
+
+    function renderMakeupModalCalendar() {
+        const miniCal = document.getElementById('makeupModalScheduleCalendar');
+        if (!miniCal) return;
+
+        if (!window.schedulesData || window.schedulesData.length === 0) {
+            miniCal.innerHTML = '<p class="text-center text-muted p-3 small">No schedule assigned.</p>';
+            return;
+        }
+
+        // Only show the base (non-makeup) schedule entries so the calendar reflects regular weekly schedule
+        const baseSchedules = window.schedulesData.filter(s => !s.is_makeup);
+        if (typeof renderVisualSchedule === 'function') {
+            renderVisualSchedule(miniCal, baseSchedules.length > 0 ? baseSchedules : window.schedulesData);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const makeupModal = document.getElementById('requestMakeupClassModal');
+        if (makeupModal) {
+            makeupModal.addEventListener('show.bs.modal', () => {
+                loadMakeupHistory();
+                // Render mini calendar when modal opens (slight delay for DOM readiness)
+                setTimeout(renderMakeupModalCalendar, 150);
+            });
+        }
+
+        // Also re-render when switching back to the Request tab
+        const makeupRequestTab = document.getElementById('makeup-request-tab');
+        if (makeupRequestTab) {
+            makeupRequestTab.addEventListener('shown.bs.tab', renderMakeupModalCalendar);
+        }
+
+        const makeupHistoryTab = document.getElementById('makeup-history-tab');
+        if (makeupHistoryTab) {
+            makeupHistoryTab.addEventListener('click', loadMakeupHistory);
+        }
+
+        // Check if we arrived from a notification via &tab=makeup param
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'makeup' && makeupModal && makeupHistoryTab) {
+            const mModal = new bootstrap.Modal(makeupModal);
+            mModal.show();
+            // Trigger tab switch to History where admins can approve
+            const tTab = new bootstrap.Tab(makeupHistoryTab);
+            tTab.show();
+            loadMakeupHistory();
+            
+            // Optionally, remove the query parameter so refreshing doesn't keep opening it
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.delete('tab');
+            window.history.replaceState({}, '', newUrl);
+        }
+    });
+
 </script>
 
 </html>

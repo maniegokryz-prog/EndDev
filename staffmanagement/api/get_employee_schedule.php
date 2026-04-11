@@ -53,6 +53,9 @@ try {
                 ORDER BY start_time ASC";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $offsetRow['original_schedule_id'], $offsetRow['original_day_of_week']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $schedule_periods = $result->fetch_all(MYSQLI_ASSOC);
     } else {
         // Fallback to normal employee schedule lookup
         $sql = "SELECT sp.start_time, sp.end_time
@@ -66,12 +69,25 @@ try {
                 ORDER BY sp.start_time ASC";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("iis", $employee_id, $dayOfWeekDb, $date);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $schedule_periods = $result->fetch_all(MYSQLI_ASSOC);
+        
+        // --- INJECT MAKEUP CLASSES ---
+        $sqlMakeup = "SELECT start_time, end_time FROM makeup_class_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'";
+        $stmtMakeup = $conn->prepare($sqlMakeup);
+        $stmtMakeup->bind_param("is", $employee_id, $date);
+        $stmtMakeup->execute();
+        $makeup_res = $stmtMakeup->get_result()->fetch_all(MYSQLI_ASSOC);
+        if (!empty($makeup_res)) {
+            $schedule_periods = array_merge($schedule_periods, $makeup_res);
+        }
+        
+        // Sort by start time to make calculations accurate
+        usort($schedule_periods, function($a, $b) {
+            return strtotime($a['start_time']) - strtotime($b['start_time']);
+        });
     }
-
-
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $schedule_periods = $result->fetch_all(MYSQLI_ASSOC);
 
     if (empty($schedule_periods)) {
         echo json_encode([

@@ -142,7 +142,8 @@ function syncPullUpdates($conn)
         'employee_leaves',
         'employee_assignments',
         'notifications',
-        'system_settings'
+        'system_settings',
+        'makeup_class_requests'
     ];
 
     $changes = [];

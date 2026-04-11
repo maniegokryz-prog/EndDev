@@ -33,8 +33,7 @@ try {
             throw new Exception('Invalid action');
     }
 
-}
-catch (Exception $e) {
+} catch (Exception $e) {
     http_response_code(400);
     error_log("Manual Attendance Error: " . $e->getMessage());
     error_log("Stack trace: " . $e->getTraceAsString());
@@ -163,7 +162,7 @@ function addManualAttendance($conn)
             $stmtOffset->execute();
             $offset_result = $stmtOffset->get_result();
             $offset_data = $offset_result->fetch_assoc();
-            
+
             $is_offset_day = false;
             $offset_req_id = null;
             $offset_req_status = null;
@@ -176,14 +175,14 @@ function addManualAttendance($conn)
                 $stmtOffsetPeriods->bind_param("ii", $offset_data['original_schedule_id'], $source_day_of_week);
                 $stmtOffsetPeriods->execute();
                 $res_periods = $stmtOffsetPeriods->get_result()->fetch_all(MYSQLI_ASSOC);
-                
-                if(empty($res_periods)) {
+
+                if (empty($res_periods)) {
                     $errors[] = "Record " . ($index + 1) . ": Associated mirrored schedule has no active time periods to offset.";
                     continue;
                 } else {
                     $schedule_periods = $res_periods;
                 }
-                
+
                 $is_offset_day = true;
                 $offset_req_id = $offset_data['request_id'];
                 $offset_req_status = $offset_data['req_status'];
@@ -195,13 +194,27 @@ function addManualAttendance($conn)
                           AND es.is_active = 1
                           AND sp.day_of_week = ?
                           AND sp.is_active = 1
-                          AND (es.end_date IS NULL OR es.end_date >= ?)
-                        ORDER BY sp.start_time ASC";
+                          AND (es.end_date IS NULL OR es.end_date >= ?)";
                 $schedule_stmt = $conn->prepare($sql);
                 $schedule_stmt->bind_param("iis", $employee_id, $dayOfWeekDb, $date);
                 $schedule_stmt->execute();
                 $schedule_result = $schedule_stmt->get_result();
                 $schedule_periods = $schedule_result->fetch_all(MYSQLI_ASSOC);
+
+                // --- INJECT MAKEUP CLASSES ---
+                $sqlMakeup = "SELECT start_time, end_time FROM makeup_class_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'";
+                $stmtMakeup = $conn->prepare($sqlMakeup);
+                $stmtMakeup->bind_param("is", $employee_id, $date);
+                $stmtMakeup->execute();
+                $makeup_res = $stmtMakeup->get_result()->fetch_all(MYSQLI_ASSOC);
+                if (!empty($makeup_res)) {
+                    $schedule_periods = array_merge($schedule_periods, $makeup_res);
+                }
+                
+                // Sort by start time to make calculations accurate
+                usort($schedule_periods, function($a, $b) {
+                    return strtotime($a['start_time']) - strtotime($b['start_time']);
+                });
             }
 
             if (empty($schedule_periods)) {
@@ -308,8 +321,7 @@ function addManualAttendance($conn)
                     // Left early (undertime)
                     $early_interval = $timeOutObj->diff($scheduled_end);
                     $early_departure_minutes = ($early_interval->h * 60) + $early_interval->i;
-                }
-                else if ($timeOutObj > $scheduled_end) {
+                } else if ($timeOutObj > $scheduled_end) {
                     // Overtime
                     $overtime_interval = $scheduled_end->diff($timeOutObj);
                     $overtime_minutes = ($overtime_interval->h * 60) + $overtime_interval->i;
@@ -371,8 +383,7 @@ function addManualAttendance($conn)
                     $employee_id,
                     $date
                 );
-            }
-            else {
+            } else {
                 // Insert new record
                 $sql = "INSERT INTO daily_attendance 
                         (employee_id, attendance_date, time_in, time_out, break_out, break_in, scheduled_hours, actual_hours, 
@@ -411,11 +422,11 @@ function addManualAttendance($conn)
                     $checkLedger->execute();
                     if ($checkLedger->get_result()->num_rows == 0) {
                         $worked_hours = round($actual_hours / 60, 2);
-                        
+
                         $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule')");
                         $ledgerStmt->bind_param("idi", $employee_id, $worked_hours, $offset_req_id);
                         $ledgerStmt->execute();
-                        
+
                         $updateReq = $conn->prepare("UPDATE offset_schedule_requests SET status = 'completed' WHERE id = ?");
                         $updateReq->bind_param("i", $offset_req_id);
                         $updateReq->execute();
@@ -442,8 +453,7 @@ function addManualAttendance($conn)
                     'overtime_minutes' => $overtime_minutes,
                     'status' => $status
                 ], $action, $whereClause);
-            }
-            else {
+            } else {
                 $errors[] = "Record " . ($index + 1) . ": Database error - " . $stmt->error;
                 error_log("Manual Attendance SQL Error: " . $stmt->error . " | SQL: " . $sql);
             }
@@ -464,13 +474,11 @@ function addManualAttendance($conn)
             }
 
             echo json_encode($response);
-        }
-        else {
+        } else {
             throw new Exception('No records were added. Errors: ' . implode('; ', $errors));
         }
 
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         $conn->rollback();
         throw $e;
     }
@@ -563,7 +571,7 @@ function updateTimeOut($conn)
         $is_offset_day = false;
         $offset_req_id = null;
         $offset_req_status = null;
-        
+
         if ($offset_data) {
             $source_day_of_week = $offset_data['original_day_of_week'];
             $sqlOffsetPeriods = "SELECT start_time, end_time, TIMESTAMPDIFF(MINUTE, start_time, end_time) as scheduled_minutes FROM schedule_periods WHERE schedule_id = ? AND is_active = 1 AND day_of_week = ? ORDER BY start_time ASC";
@@ -571,9 +579,9 @@ function updateTimeOut($conn)
             $stmtOffsetPeriods->bind_param("ii", $offset_data['original_schedule_id'], $source_day_of_week);
             $stmtOffsetPeriods->execute();
             $res_periods = $stmtOffsetPeriods->get_result()->fetch_all(MYSQLI_ASSOC);
-            
-            if(empty($res_periods)) {
-                 throw new Exception('Associated mirrored schedule has no active time periods to offset.');
+
+            if (empty($res_periods)) {
+                throw new Exception('Associated mirrored schedule has no active time periods to offset.');
             } else {
                 $schedule_data = $res_periods;
             }
@@ -598,6 +606,21 @@ function updateTimeOut($conn)
             $schedule_stmt->execute();
             $schedule_result = $schedule_stmt->get_result();
             $schedule_data = $schedule_result->fetch_all(MYSQLI_ASSOC);
+            
+            // --- INJECT MAKEUP CLASSES ---
+            $sqlMakeup = "SELECT start_time, end_time, TIMESTAMPDIFF(MINUTE, start_time, end_time) as scheduled_minutes 
+                          FROM makeup_class_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'";
+            $stmtMakeup = $conn->prepare($sqlMakeup);
+            $stmtMakeup->bind_param("is", $employee_id, $date);
+            $stmtMakeup->execute();
+            $makeup_res = $stmtMakeup->get_result()->fetch_all(MYSQLI_ASSOC);
+            if (!empty($makeup_res)) {
+                $schedule_data = array_merge($schedule_data, $makeup_res);
+            }
+            
+            usort($schedule_data, function($a, $b) {
+                return strtotime($a['start_time']) - strtotime($b['start_time']);
+            });
         }
 
         $scheduled_minutes = 0;
@@ -624,48 +647,19 @@ function updateTimeOut($conn)
         }
 
         // Calculate late minutes (compare time_in with first schedule start_time)
-        $late_sql = "SELECT MIN(sp.start_time) as schedule_start
-                    FROM employee_schedules es
-                    JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
-                    WHERE es.employee_id = ? 
-                    AND es.is_active = 1
-                    AND sp.day_of_week = ?
-                    AND sp.is_active = 1
-                    AND (es.end_date IS NULL OR es.end_date >= ?)";
-
-        $late_stmt = $conn->prepare($late_sql);
-        $late_stmt->bind_param('iis', $employee_id, $dayOfWeekDb, $date);
-        $late_stmt->execute();
-        $late_result = $late_stmt->get_result();
-        $late_data = $late_result->fetch_assoc();
-
         $late_minutes = 0;
-        if ($late_data['schedule_start']) {
-            $schedule_start_dt = new DateTime($date . ' ' . $late_data['schedule_start']);
+        if (!empty($schedule_data)) {
+            $schedule_start_dt = new DateTime($date . ' ' . $schedule_data[0]['start_time']);
             if ($time_in_dt > $schedule_start_dt) {
                 $late_minutes = ($time_in_dt->getTimestamp() - $schedule_start_dt->getTimestamp()) / 60;
             }
         }
 
         // Calculate early departure (compare time_out with last schedule end_time)
-        $early_sql = "SELECT MAX(sp.end_time) as schedule_end
-                     FROM employee_schedules es
-                     JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
-                     WHERE es.employee_id = ? 
-                     AND es.is_active = 1
-                     AND sp.day_of_week = ?
-                     AND sp.is_active = 1
-                     AND (es.end_date IS NULL OR es.end_date >= ?)";
-
-        $early_stmt = $conn->prepare($early_sql);
-        $early_stmt->bind_param('iis', $employee_id, $dayOfWeekDb, $date);
-        $early_stmt->execute();
-        $early_result = $early_stmt->get_result();
-        $early_data = $early_result->fetch_assoc();
-
         $early_departure_minutes = 0;
-        if ($early_data['schedule_end']) {
-            $schedule_end_dt = new DateTime($date . ' ' . $early_data['schedule_end']);
+        if (!empty($schedule_data)) {
+            $last_index = count($schedule_data) - 1;
+            $schedule_end_dt = new DateTime($date . ' ' . $schedule_data[$last_index]['end_time']);
             if ($time_out_dt < $schedule_end_dt) {
                 $early_departure_minutes = ($schedule_end_dt->getTimestamp() - $time_out_dt->getTimestamp()) / 60;
             }
@@ -728,7 +722,7 @@ function updateTimeOut($conn)
                 $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule')");
                 $ledgerStmt->bind_param("idi", $employee_id, $worked_hours, $offset_req_id);
                 $ledgerStmt->execute();
-                
+
                 $updateReq = $conn->prepare("UPDATE offset_schedule_requests SET status = 'completed' WHERE id = ?");
                 $updateReq->bind_param("i", $offset_req_id);
                 $updateReq->execute();
@@ -751,8 +745,7 @@ function updateTimeOut($conn)
             ]
         ]);
 
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         if (isset($conn)) {
             $conn->rollback();
         }
