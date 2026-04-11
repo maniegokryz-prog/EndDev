@@ -45017,3 +45017,74 @@
 2026-04-11 15:32:09 - Successfully pulled 4 system_settings from VPS.
 2026-04-11 15:33:08 - --- Sync Cycle Started ---
 2026-04-11 15:33:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:34:08 - --- Sync Cycle Started ---
+2026-04-11 15:34:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:35:08 - --- Sync Cycle Started ---
+2026-04-11 15:35:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:35:34 - --- Sync Cycle Started ---
+2026-04-11 15:35:56 - --- Sync Cycle Started ---
+2026-04-11 15:36:26 - --- Sync Cycle Started ---
+2026-04-11 15:37:46 - --- Sync Cycle Started ---
+2026-04-11 15:38:11 - --- Sync Cycle Started ---
+2026-04-11 15:38:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:38:11 - --- Sync Cycle Started ---
+2026-04-11 15:38:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:38:19 - --- Sync Cycle Started ---
+2026-04-11 15:38:20 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:38:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:38:30 - --- Sync Cycle Started ---
+2026-04-11 15:38:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:38:31 - --- Sync Cycle Started ---
+2026-04-11 15:38:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:39:01 - --- Sync Cycle Started ---
+2026-04-11 15:39:01 - Failed to upload profile_photo: Failed to save uploaded file
+2026-04-11 15:39:01 - Successfully pushed to VPS for employees ID 1
+2026-04-11 15:39:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:39:31 - --- Sync Cycle Started ---
+2026-04-11 15:39:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:39:37 - --- Sync Cycle Started ---
+2026-04-11 15:39:38 - Successfully pushed to VPS for schedules ID 1
+2026-04-11 15:39:38 - Successfully pushed to VPS for schedule_periods ID 1
+2026-04-11 15:39:38 - Successfully pushed to VPS for schedule_periods ID 2
+2026-04-11 15:39:38 - Successfully pushed to VPS for employee_schedules ID 1
+2026-04-11 15:39:38 - Successfully pushed to VPS for employee_assignments ID 1
+2026-04-11 15:39:39 - Successfully pushed to VPS for employee_assignments ID 2
+2026-04-11 15:39:39 - Successfully pushed to VPS for notifications ID 1
+2026-04-11 15:39:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:39:41 - --- Sync Cycle Started ---
+2026-04-11 15:39:41 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:40:11 - --- Sync Cycle Started ---
+2026-04-11 15:40:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:40:41 - --- Sync Cycle Started ---
+2026-04-11 15:40:42 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:41:11 - --- Sync Cycle Started ---
+2026-04-11 15:41:11 - Pulled tables from VPS: makeup_class_requests
+2026-04-11 15:41:11 - Failed to download attachment_path from VPS: EndDev/serve_file.php?file=uploads/makeup_attachments/makeup_1_1775922061.jpg (HTTP 404)
+2026-04-11 15:41:11 - Successfully pulled and updated local record on makeup_class_requests with VPS id 1
+2026-04-11 15:41:12 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:41:41 - --- Sync Cycle Started ---
+2026-04-11 15:41:41 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:41:45 - --- Sync Cycle Started ---
+2026-04-11 15:41:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:42:15 - --- Sync Cycle Started ---
+2026-04-11 15:42:15 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:42:45 - --- Sync Cycle Started ---
+2026-04-11 15:42:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:43:15 - --- Sync Cycle Started ---
+2026-04-11 15:43:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:43:45 - --- Sync Cycle Started ---
+2026-04-11 15:43:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:44:15 - --- Sync Cycle Started ---
+2026-04-11 15:44:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:44:45 - --- Sync Cycle Started ---
+2026-04-11 15:44:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:46:08 - --- Sync Cycle Started ---
+2026-04-11 15:46:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:47:08 - --- Sync Cycle Started ---
+2026-04-11 15:47:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:48:08 - --- Sync Cycle Started ---
+2026-04-11 15:48:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:49:08 - --- Sync Cycle Started ---
+2026-04-11 15:49:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-11 15:50:08 - --- Sync Cycle Started ---
+2026-04-11 15:50:08 - Successfully pulled 4 system_settings from VPS.
