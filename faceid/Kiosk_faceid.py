@@ -59,6 +59,7 @@ def check_employee_schedule(employee_db_id):
         day_of_week = datetime.now().weekday()
         today_str = datetime.now().strftime('%Y-%m-%d')
         
+        # 1. Check normal schedule
         cursor.execute("""
             SELECT 1
             FROM employee_schedules es
@@ -71,10 +72,36 @@ def check_employee_schedule(employee_db_id):
             LIMIT 1
         """, (employee_db_id, day_of_week, today_str))
         
-        result = cursor.fetchone()
-        conn.close()
+        if cursor.fetchone():
+            conn.close()
+            return True
+            
+        # 2. Check offset schedule
+        cursor.execute("""
+            SELECT 1
+            FROM offset_schedule_requests
+            WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')
+            LIMIT 1
+        """, (employee_db_id, today_str))
         
-        return result is not None
+        if cursor.fetchone():
+            conn.close()
+            return True
+            
+        # 3. Check CTO request
+        cursor.execute("""
+            SELECT 1
+            FROM cto_requests
+            WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')
+            LIMIT 1
+        """, (employee_db_id, today_str))
+        
+        if cursor.fetchone():
+            conn.close()
+            return True
+        
+        conn.close()
+        return False
     except Exception as e:
         print(f"Error checking schedule: {e}")
         return True 

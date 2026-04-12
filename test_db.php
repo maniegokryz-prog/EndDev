@@ -1,7 +1,5 @@
 <?php
 require 'db_connection.php';
-$res = $conn->query("SELECT * FROM system_settings");
-while ($r = $res->fetch_assoc()) {
-    echo $r['setting_key'] . " = " . $r['setting_value'] . "<br>\n";
-}
+$res = $conn->query("SELECT id, scheduled_hours FROM daily_attendance WHERE attendance_date='2026-04-12'");
+while($r = $res->fetch_assoc()) var_dump($r);
 ?>

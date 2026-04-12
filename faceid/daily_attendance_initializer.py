@@ -113,19 +113,16 @@ def initialize_daily_attendance_records():
         
         print(f"  📅 Date: {now.strftime('%A, %B %d, %Y')} (day_of_week={day_of_week})")
         
-        # Find all employees scheduled for today
+        # Find all employees scheduled for today, either by normal schedule or an approved offset
         cursor.execute("""
             SELECT DISTINCT e.id, e.employee_id, e.first_name, e.last_name
             FROM employees e
-            INNER JOIN employee_schedules es ON e.id = es.employee_id
-            INNER JOIN schedules s ON es.schedule_id = s.id
-            INNER JOIN schedule_periods sp ON s.id = sp.schedule_id
+            LEFT JOIN employee_schedules es ON e.id = es.employee_id AND es.is_active = 1 AND (es.end_date IS NULL OR es.end_date >= ?)
+            LEFT JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id AND sp.is_active = 1 AND sp.day_of_week = ?
+            LEFT JOIN offset_schedule_requests osr ON e.id = osr.employee_id AND osr.requested_date = ? AND osr.status IN ('approved', 'completed')
             WHERE LOWER(e.status) = 'active'
-              AND es.is_active = 1
-              AND sp.is_active = 1
-              AND sp.day_of_week = ?
-              AND (es.end_date IS NULL OR es.end_date >= ?)
-        """, (day_of_week, today))
+              AND (sp.id IS NOT NULL OR osr.id IS NOT NULL)
+        """, (today, day_of_week, today))
         
         scheduled_employees = cursor.fetchall()
         
@@ -155,35 +152,60 @@ def initialize_daily_attendance_records():
                 skipped_count += 1
                 continue
             
-            # Calculate scheduled_hours for this employee
-            # Get all schedule periods for today
+            # Get scheduled hours. First check if there's an offset.
             cursor.execute("""
-                SELECT sp.start_time, sp.end_time
-                FROM employee_schedules es
-                JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
-                WHERE es.employee_id = ?
-                  AND es.is_active = 1
-                  AND sp.day_of_week = ?
-                  AND sp.is_active = 1
-                  AND (es.end_date IS NULL OR es.end_date >= ?)
-                ORDER BY CAST(sp.start_time AS TIME) ASC
-            """, (emp_id, day_of_week, today))
+                SELECT original_schedule_id, original_day_of_week, start_time, end_time
+                FROM offset_schedule_requests
+                WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')
+                ORDER BY id DESC LIMIT 1
+            """, (emp_id, today))
             
-            schedule_periods = cursor.fetchall()
+            offset_req = cursor.fetchone()
             
-            # Calculate scheduled_hours: sum of all period durations
-            # NOTE: Result is stored in MINUTES (field name is misleading)
             scheduled_hours = 0
-            if schedule_periods:
-                for period in schedule_periods:
-                    start_time = period[0]
-                    end_time = period[1]
+            
+            if offset_req:
+                orig_sched_id = offset_req[0]
+                orig_dow = offset_req[1]
+                custom_start = offset_req[2]
+                custom_end = offset_req[3]
+                
+                if custom_start and custom_end and custom_start != 'None' and custom_end != 'None':
+                    # Custom time-based offset
+                    sh, sm, _ = map(int, str(custom_start).split(':'))
+                    eh, em, _ = map(int, str(custom_end).split(':'))
+                    scheduled_hours = (eh * 60 + em) - (sh * 60 + sm)
+                elif orig_sched_id is not None and orig_dow is not None:
+                    # Based on mirrored schedule
+                    cursor.execute("""
+                        SELECT start_time, end_time
+                        FROM schedule_periods
+                        WHERE schedule_id = ? AND day_of_week = ? AND is_active = 1
+                        ORDER BY CAST(start_time AS TIME) ASC
+                    """, (orig_sched_id, orig_dow))
                     
-                    start_hour, start_minute, _ = map(int, start_time.split(':'))
-                    end_hour, end_minute, _ = map(int, end_time.split(':'))
-                    
-                    period_minutes = (end_hour * 60 + end_minute) - (start_hour * 60 + start_minute)
-                    scheduled_hours += period_minutes
+                    for period in cursor.fetchall():
+                        sh, sm, _ = map(int, str(period[0]).split(':'))
+                        eh, em, _ = map(int, str(period[1]).split(':'))
+                        scheduled_hours += (eh * 60 + em) - (sh * 60 + sm)
+            else:
+                # Normal Schedule
+                cursor.execute("""
+                    SELECT sp.start_time, sp.end_time
+                    FROM employee_schedules es
+                    JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                    WHERE es.employee_id = ?
+                      AND es.is_active = 1
+                      AND sp.day_of_week = ?
+                      AND sp.is_active = 1
+                      AND (es.end_date IS NULL OR es.end_date >= ?)
+                    ORDER BY CAST(sp.start_time AS TIME) ASC
+                """, (emp_id, day_of_week, today))
+                
+                for period in cursor.fetchall():
+                    sh, sm, _ = map(int, str(period[0]).split(':'))
+                    eh, em, _ = map(int, str(period[1]).split(':'))
+                    scheduled_hours += (eh * 60 + em) - (sh * 60 + sm)
             
             # Create new daily_attendance record with scheduled_hours
             cursor.execute("""

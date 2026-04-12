@@ -431,20 +431,54 @@ class AttendanceLogger:
             # Get current day of week (0=Monday, 6=Sunday)
             day_of_week = log_datetime.weekday()
             
-            # Get employee's active schedule for today (all periods for calculation purposes)
+            # First, check if there's an approved offset for today
+            today_str = log_datetime.strftime('%Y-%m-%d')
             cursor.execute("""
-                SELECT sp.start_time, sp.end_time, sp.period_name
-                FROM employee_schedules es
-                JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
-                WHERE es.employee_id = ?
-                  AND es.is_active = 1
-                  AND sp.day_of_week = ?
-                  AND sp.is_active = 1
-                  AND (es.end_date IS NULL OR es.end_date >= ?)
-                ORDER BY CAST(sp.start_time AS TIME) ASC
-            """, (employee_db_id, day_of_week, log_datetime.strftime('%Y-%m-%d')))
+                SELECT original_schedule_id, original_day_of_week, start_time, end_time
+                FROM offset_schedule_requests
+                WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')
+                ORDER BY id DESC LIMIT 1
+            """, (employee_db_id, today_str))
             
-            schedule_periods = cursor.fetchall()
+            offset_req = cursor.fetchone()
+            
+            schedule_periods = []
+            
+            if offset_req:
+                orig_sched_id = offset_req[0]
+                orig_dow = offset_req[1]
+                custom_start = offset_req[2]
+                custom_end = offset_req[3]
+                
+                if custom_start and custom_end and custom_start != 'None' and custom_end != 'None':
+                    # Custom time-based offset
+                    schedule_periods = [(custom_start, custom_end, 'Offset Period')]
+                elif orig_sched_id is not None and orig_dow is not None:
+                    # Based on mirrored schedule
+                    cursor.execute("""
+                        SELECT start_time, end_time, period_name
+                        FROM schedule_periods
+                        WHERE schedule_id = ? AND day_of_week = ? AND is_active = 1
+                        ORDER BY CAST(start_time AS TIME) ASC
+                    """, (orig_sched_id, orig_dow))
+                    schedule_periods = cursor.fetchall()
+            
+            if not schedule_periods:
+                # Get employee's active schedule for today
+                cursor.execute("""
+                    SELECT sp.start_time, sp.end_time, sp.period_name
+                    FROM employee_schedules es
+                    JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                    WHERE es.employee_id = ?
+                      AND es.is_active = 1
+                      AND sp.day_of_week = ?
+                      AND sp.is_active = 1
+                      AND (es.end_date IS NULL OR es.end_date >= ?)
+                    ORDER BY CAST(sp.start_time AS TIME) ASC
+                """, (employee_db_id, day_of_week, today_str))
+                
+                schedule_periods = cursor.fetchall()
+            
             
             if close_conn:
                 conn.close()
@@ -556,19 +590,51 @@ class AttendanceLogger:
                 print(f"     ℹ️  No existing record found, will create new")
             
             # Get employee's schedule for today
-            cursor.execute("""
-                SELECT sp.start_time, sp.end_time
-                FROM employee_schedules es
-                JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
-                WHERE es.employee_id = ?
-                  AND es.is_active = 1
-                  AND sp.day_of_week = ?
-                  AND sp.is_active = 1
-                  AND (es.end_date IS NULL OR es.end_date >= ?)
-                ORDER BY CAST(sp.start_time AS TIME) ASC
-            """, (employee_db_id, day_of_week, log_date))
+            schedule_periods = []
             
-            schedule_periods = cursor.fetchall()
+            # 1. Check for offset requests
+            cursor.execute("""
+                SELECT original_schedule_id, original_day_of_week, start_time, end_time
+                FROM offset_schedule_requests
+                WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')
+                ORDER BY id DESC LIMIT 1
+            """, (employee_db_id, log_date))
+            
+            offset_req = cursor.fetchone()
+            if offset_req:
+                orig_sched_id = offset_req[0]
+                orig_dow = offset_req[1]
+                custom_start = offset_req[2]
+                custom_end = offset_req[3]
+                
+                if custom_start and custom_end and custom_start != 'None' and custom_end != 'None':
+                    # Custom time-based offset
+                    schedule_periods = [(custom_start, custom_end)]
+                elif orig_sched_id is not None and orig_dow is not None:
+                    # Based on mirrored schedule
+                    cursor.execute("""
+                        SELECT start_time, end_time
+                        FROM schedule_periods
+                        WHERE schedule_id = ? AND day_of_week = ? AND is_active = 1
+                        ORDER BY CAST(start_time AS TIME) ASC
+                    """, (orig_sched_id, orig_dow))
+                    schedule_periods = cursor.fetchall()
+            
+            # 2. Fallback to normal schedule if no offset
+            if not schedule_periods:
+                cursor.execute("""
+                    SELECT sp.start_time, sp.end_time
+                    FROM employee_schedules es
+                    JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id
+                    WHERE es.employee_id = ?
+                      AND es.is_active = 1
+                      AND sp.day_of_week = ?
+                      AND sp.is_active = 1
+                      AND (es.end_date IS NULL OR es.end_date >= ?)
+                    ORDER BY CAST(sp.start_time AS TIME) ASC
+                """, (employee_db_id, day_of_week, log_date))
+                
+                schedule_periods = cursor.fetchall()
 
             if log_type == 'visit':
                 # Handle VISIT
@@ -726,12 +792,12 @@ class AttendanceLogger:
                         # Non-Teaching Staff 2nd Punch (Lunch Out)
                         print(f"     🚪 Processing LUNCH OUT (2nd punch)...")
                         break_out_str = log_time_only
-                        # We set time_out to mirror break_out so UI is happy, but keep actual_hours at 0
+                        # Removed time_out mirroring to naturally leave record 'incomplete' without ghost server restores
                         cursor.execute("""
                             UPDATE daily_attendance
-                            SET break_out = ?, time_out = ?, status = 'incomplete'
+                            SET break_out = ?, status = 'incomplete'
                             WHERE id = ?
-                        """, (break_out_str, break_out_str, existing_record[0]))
+                        """, (break_out_str, existing_record[0]))
                         conn.commit()
                         print(f"     ✓ Updated break_out (Lunch Out)")
                         log_daily_attendance_update(employee_code, employee_name, "lunch_out", 
@@ -839,8 +905,62 @@ class AttendanceLogger:
                         if diff_seconds < 0:
                             diff_seconds = 0
                         
-                        actual_hours = round(diff_seconds / 60, 2)
-                        print(f"     ⏱️  Actual hours (Clamped/Rounded): {actual_hours} min ({actual_hours/60.0:.2f}h)")
+                        # Calculate maximum gross scheduled minutes
+                        max_sched_minutes = 0
+                        if schedule_periods:
+                            for period in schedule_periods:
+                                try:
+                                    s_sh, s_sm, _ = map(int, str(period[0]).split(':'))
+                                    s_eh, s_em, _ = map(int, str(period[1]).split(':'))
+                                    max_sched_minutes += (s_eh * 60 + s_em) - (s_sh * 60 + s_sm)
+                                except Exception: pass
+                        
+                        actual_minutes_worked = int(diff_seconds / 60)
+                        
+                        # Apply Manual Break Time Deductions
+                        break_time_minutes = 0
+                        has_manual_break = False
+                        if len(existing_record) > 6 and existing_record[5] and existing_record[6]:
+                            try:
+                                b_out_parts = list(map(int, existing_record[5].split(':')))
+                                b_in_parts = list(map(int, existing_record[6].split(':')))
+                                b_out_dt = log_datetime.replace(hour=b_out_parts[0], minute=b_out_parts[1], second=b_out_parts[2] if len(b_out_parts)>2 else 0, microsecond=0)
+                                b_in_dt = log_datetime.replace(hour=b_in_parts[0], minute=b_in_parts[1], second=b_in_parts[2] if len(b_in_parts)>2 else 0, microsecond=0)
+                                break_secs = (b_in_dt - b_out_dt).total_seconds()
+                                if break_secs > 0:
+                                    break_time_minutes = int(break_secs / 60)
+                                    has_manual_break = True
+                                    print(f"     ☕ Manual break logged: {break_time_minutes} min")
+                            except Exception: pass
+                        
+                        # Apply Automatic Break Deduction (NTP >= 5 hours via DTR Engine Rule)
+                        if is_ntp and actual_minutes_worked >= 300 and not has_manual_break:
+                            break_time_minutes = 60
+                            print(f"     ☕ Auto-deducting 60 min break for NTP (worked >= 5 hours)")
+                        
+                        actual_minutes_worked = max(0, actual_minutes_worked - break_time_minutes)
+                        
+                        # Apply CTO Ingestion
+                        cursor.execute("""
+                            SELECT hours_used FROM cto_requests
+                            WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')
+                        """, (employee_db_id, log_date))
+                        cto_req = cursor.fetchone()
+                        cto_minutes = int(float(cto_req[0]) * 60) if cto_req else 0
+                        
+                        net_scheduled_limit = max_sched_minutes
+                        if is_ntp and max_sched_minutes >= 300:
+                            net_scheduled_limit -= 60
+                            
+                        if cto_minutes > 0:
+                            print(f"     🔋 CTO applied: {cto_minutes} minutes")
+                            actual_minutes_worked += cto_minutes
+                            if actual_minutes_worked > net_scheduled_limit and net_scheduled_limit > 0:
+                                print(f"     ✂️ Capping total hours to scheduled limit ({net_scheduled_limit} min)")
+                                actual_minutes_worked = net_scheduled_limit
+                        
+                        actual_hours = round(actual_minutes_worked, 2)
+                        print(f"     ⏱️  Actual hours (Net/Clamped): {actual_hours} min ({actual_hours/60.0:.2f}h)")
 
                         # Calculate Overtime / Undertime (unclamped vs schedule)
                         if schedule_periods:
@@ -855,7 +975,6 @@ class AttendanceLogger:
                                  print(f"     ⚠️  Undertime detected: {early_departure_minutes} minutes")
                         
 
-
                     except Exception as e:
                         print(f"     ❌ Error calculating actual_hours: {e}")
                         actual_hours = 0
@@ -867,23 +986,6 @@ class AttendanceLogger:
                         status += ' late'
                     if early_departure_minutes > 0 and 'undertime' not in status:
                         status += ' undertime'
-
-                # Deduct lunch break
-                break_time_minutes = 0
-                if len(existing_record) > 6 and existing_record[5] and existing_record[6]:
-                    try:
-                        b_out_parts = list(map(int, existing_record[5].split(':')))
-                        b_in_parts = list(map(int, existing_record[6].split(':')))
-                        b_out_dt = log_datetime.replace(hour=b_out_parts[0], minute=b_out_parts[1], second=b_out_parts[2] if len(b_out_parts)>2 else 0, microsecond=0)
-                        b_in_dt = log_datetime.replace(hour=b_in_parts[0], minute=b_in_parts[1], second=b_in_parts[2] if len(b_in_parts)>2 else 0, microsecond=0)
-                        break_secs = (b_in_dt - b_out_dt).total_seconds()
-                        if break_secs > 0:
-                            break_time_minutes = int(break_secs / 60)
-                            print(f"     ☕ Deducting {break_time_minutes} min for lunch break")
-                            actual_hours = round(actual_hours - break_time_minutes, 2)
-                            if actual_hours < 0: actual_hours = 0
-                    except Exception:
-                        pass
 
                 # Update the record (scheduled_hours was already set during time_in)
                 print(f"     📝 Updating daily_attendance record with time_out...")

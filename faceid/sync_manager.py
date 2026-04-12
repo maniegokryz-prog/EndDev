@@ -930,6 +930,136 @@ class SyncManager:
             self._update_sync_status('daily_attendance', 'pull', False, str(e))
             return {'added': 0, 'updated': 0, 'message': f'Error: {str(e)}'}
     
+    def pull_offset_requests(self):
+        """
+        Pull approved and completed offset requests from MySQL to local SQLite.
+        """
+        try:
+            print("\n📥 Pulling offset schedule requests from MySQL...")
+            
+            mysql_conn = pymysql.connect(**MYSQL_CONFIG)
+            mysql_cursor = mysql_conn.cursor(pymysql.cursors.DictCursor)
+            
+            local_conn = get_db_connection()
+            local_cursor = local_conn.cursor()
+            
+            # Fetch ALL approved or completed offset requests
+            mysql_cursor.execute("""
+                SELECT id, employee_id, original_schedule_id, original_day_of_week, 
+                       start_time, end_time, requested_date, status, created_at, updated_at
+                FROM offset_schedule_requests
+                WHERE status IN ('approved', 'completed')
+            """)
+            
+            offsets = mysql_cursor.fetchall()
+            added_count = 0
+            updated_count = 0
+            
+            for offset in offsets:
+                local_cursor.execute("SELECT id FROM offset_schedule_requests WHERE id = ?", (offset['id'],))
+                exists = local_cursor.fetchone()
+                
+                # Convert timedeltas/TIME
+                s_time = str(offset['start_time']) if offset['start_time'] is not None else None
+                e_time = str(offset['end_time']) if offset['end_time'] is not None else None
+                
+                if exists:
+                    local_cursor.execute("""
+                        UPDATE offset_schedule_requests
+                        SET employee_id = ?, original_schedule_id = ?, original_day_of_week = ?,
+                            start_time = ?, end_time = ?, requested_date = ?, status = ?,
+                            updated_at = ?, last_synced = ?
+                        WHERE id = ?
+                    """, (offset['employee_id'], offset['original_schedule_id'], offset['original_day_of_week'],
+                          s_time, e_time, offset['requested_date'], offset['status'],
+                          offset['updated_at'], datetime.now().strftime('%Y-%m-%d %H:%M:%S'), offset['id']))
+                    updated_count += 1
+                else:
+                    local_cursor.execute("""
+                        INSERT INTO offset_schedule_requests
+                        (id, employee_id, original_schedule_id, original_day_of_week,
+                         start_time, end_time, requested_date, status, created_at, updated_at, last_synced)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (offset['id'], offset['employee_id'], offset['original_schedule_id'], offset['original_day_of_week'],
+                          s_time, e_time, offset['requested_date'], offset['status'], 
+                          offset['created_at'], offset['updated_at'], datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                    added_count += 1
+            
+            local_conn.commit()
+            
+            self._update_sync_status('offset_schedule_requests', 'pull', True)
+            
+            mysql_conn.close()
+            local_conn.close()
+            
+            print(f"✅ Offset requests sync complete: {added_count} added, {updated_count} updated")
+            return {'added': added_count, 'updated': updated_count}
+            
+        except Exception as e:
+            print(f"❌ Error pulling offset requests: {e}")
+            self._update_sync_status('offset_schedule_requests', 'pull', False, str(e))
+            return {'added': 0, 'updated': 0}
+
+    def pull_cto_requests(self):
+        """
+        Pull approved and completed CTO requests from MySQL to local SQLite.
+        """
+        try:
+            print("\n📥 Pulling CTO requests from MySQL...")
+            
+            mysql_conn = pymysql.connect(**MYSQL_CONFIG)
+            mysql_cursor = mysql_conn.cursor(pymysql.cursors.DictCursor)
+            
+            local_conn = get_db_connection()
+            local_cursor = local_conn.cursor()
+            
+            mysql_cursor.execute("""
+                SELECT id, employee_id, requested_date, hours_used, status, created_at
+                FROM cto_requests
+                WHERE status IN ('approved', 'completed')
+            """)
+            
+            ctos = mysql_cursor.fetchall()
+            added_count = 0
+            updated_count = 0
+            
+            for cto in ctos:
+                local_cursor.execute("SELECT id FROM cto_requests WHERE id = ?", (cto['id'],))
+                exists = local_cursor.fetchone()
+                
+                if exists:
+                    local_cursor.execute("""
+                        UPDATE cto_requests
+                        SET employee_id = ?, requested_date = ?, hours_used = ?, status = ?,
+                            last_synced = ?
+                        WHERE id = ?
+                    """, (cto['employee_id'], cto['requested_date'], float(cto['hours_used']), cto['status'],
+                          datetime.now().strftime('%Y-%m-%d %H:%M:%S'), cto['id']))
+                    updated_count += 1
+                else:
+                    local_cursor.execute("""
+                        INSERT INTO cto_requests
+                        (id, employee_id, requested_date, hours_used, status, created_at, last_synced)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (cto['id'], cto['employee_id'], cto['requested_date'], float(cto['hours_used']), 
+                          cto['status'], cto['created_at'], datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                    added_count += 1
+            
+            local_conn.commit()
+            
+            self._update_sync_status('cto_requests', 'pull', True)
+            
+            mysql_conn.close()
+            local_conn.close()
+            
+            print(f"✅ CTO requests sync complete: {added_count} added, {updated_count} updated")
+            return {'added': added_count, 'updated': updated_count}
+            
+        except Exception as e:
+            print(f"❌ Error pulling CTO requests: {e}")
+            self._update_sync_status('cto_requests', 'pull', False, str(e))
+            return {'added': 0, 'updated': 0}
+            
     def pull_all_updates(self):
         """
         Pull all updates from MySQL (employees, schedules, and daily attendance).
@@ -946,6 +1076,14 @@ class SyncManager:
         # Pull schedules
         sched_result = self.pull_schedules()
         results['schedules'] = sched_result
+        
+        # Pull offsets
+        offset_result = self.pull_offset_requests()
+        results['offsets'] = offset_result
+        
+        # Pull CTOs
+        cto_result = self.pull_cto_requests()
+        results['ctos'] = cto_result
         
         # Pull daily attendance
         daily_result = self.pull_daily_attendance()

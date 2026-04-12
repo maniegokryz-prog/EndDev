@@ -215,26 +215,39 @@ function renderDTRForm($employee, $data, $isExcel = false)
                 }
             }
 
-            // BREAK OUT (Lunch Out)
-            if (!empty($r['break_out'])) {
-                $bOutTs = strtotime($r['break_out']);
-                $amOut = date('g:i', $bOutTs);
-            }
-
-            // BREAK IN (Lunch In)
-            if (!empty($r['break_in'])) {
-                $bInTs = strtotime($r['break_in']);
-                $pmIn = date('g:i', $bInTs);
-            }
-
-            // TIME OUT
-            if (!empty($r['time_out'])) {
-                $outTs = strtotime($r['time_out']);
+            // Determine if break_out should act as final time_out
+            if (!empty($r['break_out']) && empty($r['break_in']) && empty($r['time_out'])) {
+                // break_out is the definitive time_out (2-punch offset scenario)
+                $outTs = strtotime($r['break_out']);
                 $outStr = date('g:i', $outTs);
-                if (date('a', $outTs) === 'am' && empty($amOut)) {
-                    $amOut = $outStr; // Early departure in AM
+                if (date('a', $outTs) === 'am') {
+                    $amOut = $outStr;
                 } else {
                     $pmOut = $outStr;
+                }
+            } else {
+                // Normal 3 or 4 punch mapping
+                // BREAK OUT (Lunch Out)
+                if (!empty($r['break_out'])) {
+                    $bOutTs = strtotime($r['break_out']);
+                    $amOut = date('g:i', $bOutTs);
+                }
+
+                // BREAK IN (Lunch In)
+                if (!empty($r['break_in'])) {
+                    $bInTs = strtotime($r['break_in']);
+                    $pmIn = date('g:i', $bInTs);
+                }
+
+                // TIME OUT
+                if (!empty($r['time_out'])) {
+                    $outTs = strtotime($r['time_out']);
+                    $outStr = date('g:i', $outTs);
+                    if (date('a', $outTs) === 'am' && empty($amOut)) {
+                        $amOut = $outStr; // Early departure in AM
+                    } else {
+                        $pmOut = $outStr;
+                    }
                 }
             }
 
@@ -568,7 +581,7 @@ function getAppliedCtoHours($conn, $employeeId, $dateStr)
 {
     if (!$employeeId || !$conn) return 0;
     $dateOnly = date('Y-m-d', strtotime($dateStr));
-    $stmt = $conn->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'");
+    $stmt = $conn->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')");
     if (!$stmt) return 0;
     $stmt->bind_param("is", $employeeId, $dateOnly);
     $stmt->execute();
@@ -585,7 +598,7 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
 
     if (empty($timeInStr) || empty($effectiveTimeOut)) {
         if ($employeeId && isset($GLOBALS['conn'])) {
-            $ctoStmt = $GLOBALS['conn']->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'");
+            $ctoStmt = $GLOBALS['conn']->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')");
             $dateOnly = date('Y-m-d', strtotime($dateStr));
             $ctoStmt->bind_param("is", $employeeId, $dateOnly);
             $ctoStmt->execute();
@@ -670,8 +683,31 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
             }
         }
 
+        $appliedCtoOrOffset = false;
+        if ($employeeId) {
+            global $conn;
+            $dbConn = isset($conn) ? $conn : (isset($GLOBALS['conn']) ? $GLOBALS['conn'] : null);
+            if ($dbConn) {
+                // Check CTO
+                $dateOnlyCheck = date('Y-m-d', strtotime($dateStr));
+                $chkStmt = $dbConn->prepare("SELECT id FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed') LIMIT 1");
+                $chkStmt->bind_param("is", $employeeId, $dateOnlyCheck);
+                $chkStmt->execute();
+                if ($chkStmt->get_result()->num_rows > 0) $appliedCtoOrOffset = true;
+                $chkStmt->close();
+                
+                if (!$appliedCtoOrOffset) {
+                    $chkStmt2 = $dbConn->prepare("SELECT id FROM offset_schedule_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed') LIMIT 1");
+                    $chkStmt2->bind_param("is", $employeeId, $dateOnlyCheck);
+                    $chkStmt2->execute();
+                    if ($chkStmt2->get_result()->num_rows > 0) $appliedCtoOrOffset = true;
+                    $chkStmt2->close();
+                }
+            }
+        }
+
         $lateSeconds = $tInTs - $schedStartTs;
-        if ($lateSeconds > 0) {
+        if ($lateSeconds > 0 && !$appliedCtoOrOffset) {
             $lateMinutes = $lateSeconds / 60;
             if ($graceSettings['deduct'] == 1) {
                 if ($lateMinutes <= $graceSettings['minutes']) {
@@ -761,8 +797,9 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
     }
 
     // --- CTO Ingestion & Forgiveness ---
-    if ($employeeId && isset($conn)) {
-        $ctoStmt = $conn->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'");
+    $dbConnCTO = isset($conn) ? $conn : (isset($GLOBALS['conn']) ? $GLOBALS['conn'] : null);
+    if ($employeeId && $dbConnCTO) {
+        $ctoStmt = $dbConnCTO->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')");
         $dateOnly = date('Y-m-d', strtotime($dateStr));
         $ctoStmt->bind_param("is", $employeeId, $dateOnly);
         $ctoStmt->execute();

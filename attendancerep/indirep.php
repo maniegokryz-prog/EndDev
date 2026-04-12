@@ -130,6 +130,35 @@ if ($id) {
           continue; // Skip rendering this attendance record in the UI table
       }
 
+      // Recalculate scheduled_hours dynamically if missing
+      if (!isset($row['scheduled_hours']) || $row['scheduled_hours'] === null || $row['scheduled_hours'] == 0) {
+          $phpDow = (int) date('w', strtotime($row['attendance_date']));
+          $dbDow = ($phpDow == 0) ? 6 : $phpDow - 1;
+          $schedMins = 0;
+          
+          // First check offset schedule
+          $stmt_offset = $conn->prepare("SELECT start_time, end_time FROM offset_schedule_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed') ORDER BY id DESC LIMIT 1");
+          $stmt_offset->bind_param("is", $employeeInternalId, $row['attendance_date']);
+          $stmt_offset->execute();
+          $offsetRes = $stmt_offset->get_result()->fetch_assoc();
+          $stmt_offset->close();
+          
+          if ($offsetRes && $offsetRes['start_time'] && $offsetRes['end_time'] && $offsetRes['start_time'] !== 'None') {
+              $sTs = strtotime($offsetRes['start_time']);
+              $eTs = strtotime($offsetRes['end_time']);
+              if ($eTs > $sTs) $schedMins = ($eTs - $sTs) / 60;
+          } elseif (isset($schedule[$dbDow])) {
+              foreach ($schedule[$dbDow] as $sp) {
+                  $sTs = strtotime($sp['start']);
+                  $eTs = strtotime($sp['end']);
+                  if ($eTs > $sTs) {
+                      $schedMins += ($eTs - $sTs) / 60;
+                  }
+              }
+          }
+          $row['scheduled_hours'] = $schedMins > 0 ? $schedMins : null;
+      }
+
       // Recalculate actual_hours for display consistency
       if (!isset($row['actual_hours']) || $row['actual_hours'] === null) {
         $row['actual_hours'] = calculateActualHoursWithClamping(
@@ -489,7 +518,9 @@ if ($id) {
 
                   // Format time_in and time_out
                   $timeIn = $record['time_in'] ? date('h:i A', strtotime($record['time_in'])) : '-';
-                  $timeOut = $record['time_out'] ? date('h:i A', strtotime($record['time_out'])) : '-';
+                  
+                  $effectiveTimeOut = !empty($record['time_out']) ? $record['time_out'] : (!empty($record['break_out']) && empty($record['break_in']) ? $record['break_out'] : null);
+                  $timeOut = $effectiveTimeOut ? date('h:i A', strtotime($effectiveTimeOut)) : '-';
 
                   // Convert minutes to hours for display (scheduled_hours and actual_hours are stored in minutes)
                   $scheduledHours = $record['scheduled_hours'] ? round($record['scheduled_hours'] / 60, 1) : '-';

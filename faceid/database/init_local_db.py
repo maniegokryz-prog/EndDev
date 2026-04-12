@@ -179,6 +179,46 @@ def create_database():
     print("✓ Created table: daily_attendance")
     
     # ========================================================================
+    # Table: offset_schedule_requests
+    # Stores approved and completed offset requests
+    # ========================================================================
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS offset_schedule_requests (
+            id INTEGER PRIMARY KEY,
+            employee_id INTEGER NOT NULL,
+            original_schedule_id INTEGER,
+            original_day_of_week INTEGER,
+            start_time TEXT,
+            end_time TEXT,
+            requested_date TEXT NOT NULL,
+            status TEXT DEFAULT 'pending',
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            last_synced TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+        )
+    """)
+    print("✓ Created table: offset_schedule_requests")
+    
+    # ========================================================================
+    # Table: cto_requests
+    # Stores approved and completed CTO requests
+    # ========================================================================
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS cto_requests (
+            id INTEGER PRIMARY KEY,
+            employee_id INTEGER NOT NULL,
+            requested_date TEXT NOT NULL,
+            hours_used REAL NOT NULL,
+            status TEXT DEFAULT 'pending',
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            last_synced TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+        )
+    """)
+    print("✓ Created table: cto_requests")
+    
+    # ========================================================================
     # Table 7: sync_status
     # Tracks synchronization state with the MySQL server
     # ========================================================================
@@ -198,7 +238,7 @@ def create_database():
     print("✓ Created table: sync_status")
     
     # Initialize sync_status with default entries for each table
-    tables_to_track = ['employees', 'schedules', 'schedule_periods', 'employee_schedules', 'attendance_logs', 'daily_attendance']
+    tables_to_track = ['employees', 'schedules', 'schedule_periods', 'employee_schedules', 'attendance_logs', 'daily_attendance', 'offset_schedule_requests', 'cto_requests']
     for table in tables_to_track:
         cursor.execute("""
             INSERT OR IGNORE INTO sync_status (table_name, last_pull_time, last_push_time)
