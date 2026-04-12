@@ -510,7 +510,7 @@ function renderDTRList(records) {
                 <div class="dtr-date">${record.formatted_date} <span class="dtr-status">${record.status_info.badge_text}</span></div>
                 <div class="dtr-time">
                     <span>In: ${record.time_in_formatted || '--'}</span> • 
-                    <span>Out: ${record.time_out_formatted || '--'}</span>
+                    <span>Out: ${record.time_out_formatted || record.break_out_formatted || '--'}</span>
                     ${record.raw_duration ? ` • <strong>Duration:</strong> ${record.raw_duration}` : ''}
                     ${record.hours_worked !== 'N/A' && record.hours_worked ? ` <span class="text-muted text-nowrap" style="font-size: 0.85em;">(Credited: ${record.hours_worked})</span>` : ''}
                 </div>

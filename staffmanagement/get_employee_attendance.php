@@ -187,6 +187,12 @@ try {
             $time_obj = new DateTime($row['time_out']);
             $time_out_formatted = $time_obj->format('g:i A');
         }
+        
+        $break_out_formatted = null;
+        if (!empty($row['break_out'])) {
+            $time_obj = new DateTime($row['break_out']);
+            $break_out_formatted = $time_obj->format('g:i A');
+        }
 
         // Format hours worked
         // Only dynamically calculate if it's missing from the DB to preserve historical offset/CTO logic
@@ -215,9 +221,10 @@ try {
 
         // Calculate exact raw duration in the establishment based purely on time in / time out
         $raw_duration = null;
-        if (!empty($row['time_in']) && !empty($row['time_out'])) {
+        $effective_t_out_str = !empty($row['time_out']) ? $row['time_out'] : (!empty($row['break_out']) ? $row['break_out'] : null);
+        if (!empty($row['time_in']) && $effective_t_out_str) {
             $t_in = new DateTime($row['time_in']);
-            $t_out = new DateTime($row['time_out']);
+            $t_out = new DateTime($effective_t_out_str);
             if ($t_out < $t_in) {
                 $t_out->modify('+1 day');
             }
@@ -353,6 +360,7 @@ try {
             'time_out' => $row['time_out'],
             'time_out_formatted' => $time_out_formatted,
             'break_out' => $row['break_out'] ?? null,
+            'break_out_formatted' => $break_out_formatted,
             'break_in' => $row['break_in'] ?? null,
             'late_minutes' => $row['late_minutes'] ?? 0,
             'overtime_minutes' => $row['overtime_minutes'] ?? 0,

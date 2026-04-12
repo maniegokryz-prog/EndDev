@@ -581,7 +581,9 @@ function getAppliedCtoHours($conn, $employeeId, $dateStr)
 
 function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $dateStr, $employeeRole = '', $breakOutStr = null, $breakInStr = null, $employeeId = null)
 {
-    if (empty($timeInStr) || empty($timeOutStr)) {
+    $effectiveTimeOut = !empty($timeOutStr) ? $timeOutStr : (!empty($breakOutStr) ? $breakOutStr : null);
+
+    if (empty($timeInStr) || empty($effectiveTimeOut)) {
         if ($employeeId && isset($GLOBALS['conn'])) {
             $ctoStmt = $GLOBALS['conn']->prepare("SELECT hours_used FROM cto_requests WHERE employee_id = ? AND requested_date = ? AND status = 'approved'");
             $dateOnly = date('Y-m-d', strtotime($dateStr));
@@ -599,17 +601,44 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
     $dbDow = ($phpDow == 0) ? 6 : $phpDow - 1;
 
     $totalMinutes = 0;
+    $maxScheduledMinutes = 0;
+
+    $manualBreakMinutesDeducted = 0;
 
     if (empty($schedule) || !isset($schedule[$dbDow])) {
         // No schedule found — compute raw elapsed minutes (no clamping)
         $tIn  = strtotime($timeInStr);
-        $tOut = strtotime($timeOutStr);
-        $totalMinutes = ($tOut - $tIn) / 60;
+        $tOut = strtotime($effectiveTimeOut);
+        
+        $duration = $tOut - $tIn;
+        if ($duration > 0) {
+            if (!empty($breakOutStr) && !empty($breakInStr)) {
+                $bOutTs = strtotime(date('Y-m-d', strtotime($dateStr)) . ' ' . $breakOutStr);
+                $bInTs  = strtotime(date('Y-m-d', strtotime($dateStr)) . ' ' . $breakInStr);
+                $breakStart = max($tIn, $bOutTs);
+                $breakEnd = min($tOut, $bInTs);
+                if ($breakEnd > $breakStart) {
+                     $manualBreakMinutesDeducted += ($breakEnd - $breakStart) / 60;
+                     $duration -= ($breakEnd - $breakStart);
+                }
+            }
+        }
+        $totalMinutes = max(0, $duration) / 60;
     } else {
         $periods = $schedule[$dbDow];
         usort($periods, function ($a, $b) {
             return strtotime($a['start']) - strtotime($b['start']);
         });
+
+        $dateOnly = date('Y-m-d', strtotime($dateStr));
+        
+        foreach ($periods as $period) {
+            $pStartTs = strtotime("$dateOnly " . $period['start']);
+            $pEndTs   = strtotime("$dateOnly " . $period['end']);
+            if ($pEndTs > $pStartTs) {
+                $maxScheduledMinutes += ($pEndTs - $pStartTs) / 60;
+            }
+        }
 
         $firstPeriodStart = $periods[0]['start'];
         $lastPeriodEnd    = end($periods)['end'];
@@ -619,7 +648,7 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
         $schedStartTs = strtotime("$dateOnly $firstPeriodStart");
         $schedEndTs   = strtotime("$dateOnly $lastPeriodEnd");
         $tInTs  = strtotime("$dateOnly " . date('H:i:s', strtotime($timeInStr)));
-        $tOutTs = strtotime("$dateOnly " . date('H:i:s', strtotime($timeOutStr)));
+        $tOutTs = strtotime("$dateOnly " . date('H:i:s', strtotime($effectiveTimeOut)));
 
         // --- Grace Period & Late Deduction Logic ---
         static $graceSettings = null;
@@ -675,6 +704,16 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
             $intEnd   = min($calcEndTs, $pEndTs);
             $duration = $intEnd - $intStart;
             if ($duration > 0) {
+                if (!empty($breakOutStr) && !empty($breakInStr)) {
+                    $bOutTs = strtotime(date('Y-m-d', strtotime($dateStr)) . ' ' . $breakOutStr);
+                    $bInTs  = strtotime(date('Y-m-d', strtotime($dateStr)) . ' ' . $breakInStr);
+                    $breakStart = max($intStart, $bOutTs);
+                    $breakEnd = min($intEnd, $bInTs);
+                    if ($breakEnd > $breakStart) {
+                         $manualBreakMinutesDeducted += ($breakEnd - $breakStart) / 60;
+                         $duration -= ($breakEnd - $breakStart);
+                    }
+                }
                 $totalSeconds += $duration;
             }
         }
@@ -704,18 +743,16 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
     $hasNonTeaching = strpos($roleLower, 'non teaching') !== false;
     $isFacultyExempt = $hasFaculty || ($hasTeaching && !$hasNonTeaching);
 
-    // Calculate manual break time if provided
-    $manualBreakMinutes = 0;
-    if (!empty($breakOutStr) && !empty($breakInStr)) {
-        $bOutTs = strtotime(date('Y-m-d', strtotime($dateStr)) . ' ' . $breakOutStr);
-        $bInTs  = strtotime(date('Y-m-d', strtotime($dateStr)) . ' ' . $breakInStr);
-        if ($bInTs > $bOutTs) {
-            $manualBreakMinutes = ($bInTs - $bOutTs) / 60;
+    // Prevent CTO gap up-fill by netting the Gross Schedule with the same deduction rules
+    if (!$isFacultyExempt && $deductionMinutes > 0) {
+        if ($maxScheduledMinutes >= 300) {
+            $maxScheduledMinutes = max(0, $maxScheduledMinutes - $deductionMinutes);
         }
     }
 
-    if ($manualBreakMinutes > 0) {
-        $totalMinutes = max(0, $totalMinutes - $manualBreakMinutes);
+    // Calculate manual break time if provided
+    if ($manualBreakMinutesDeducted > 0) {
+        // Already deducted perfectly during interval intersections!
     } else if (!$isFacultyExempt && $deductionMinutes > 0) {
         // Applies to admin, staff, non-teaching etc. if worked >= 5 hours
         if ($totalMinutes >= 300) {
@@ -734,10 +771,14 @@ function calculateActualHoursWithClamping($timeInStr, $timeOutStr, $schedule, $d
         if ($ctoRes && floatval($ctoRes['hours_used']) > 0) {
             $ctoMins = floatval($ctoRes['hours_used']) * 60;
             
-            // The employee actually gets credited these CTO hours on top of their worked schedule
-            // Wait, if they arrived late, they lost minutes previously. We just add the CTO back.
-            // Option 1 & 2 perfectly integrated:
-            $totalMinutes += $ctoMins;
+            if ($maxScheduledMinutes > 0) {
+                if ($totalMinutes < $maxScheduledMinutes) {
+                    $availableGap = $maxScheduledMinutes - $totalMinutes;
+                    $totalMinutes += min($ctoMins, $availableGap);
+                }
+            } else {
+                $totalMinutes += $ctoMins;
+            }
         }
         $ctoStmt->close();
     }

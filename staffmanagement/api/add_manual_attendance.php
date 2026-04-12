@@ -283,7 +283,7 @@ function addManualAttendance($conn)
 
             // Calculate actual hours worked (in minutes, stored as decimal)
             $actual_hours = 0;
-            if ($timeOutObj) {
+            if ($timeOutObj || !empty($break_out)) {
                 // Ensure time limits and breaks are respected accurately
                 $formatted_schedule = [];
                 foreach ($schedule_periods as $p) {
@@ -298,8 +298,8 @@ function addManualAttendance($conn)
                 // Debug logging to a custom file
                 file_put_contents(
                     __DIR__ . '/debug_manual_calc.txt',
-                    date('Y-m-d H:i:s') . " - Calc: In=" . $timeInObj->format('Y-m-d H:i:s') .
-                    ", Out=" . $timeOutObj->format('Y-m-d H:i:s') .
+                    date('Y-m-d H:i:s') . " - Calc: In=" . ($timeInObj ? $timeInObj->format('Y-m-d H:i:s') : '') .
+                    ", Out=" . ($timeOutObj ? $timeOutObj->format('Y-m-d H:i:s') : (!empty($break_out) ? $break_out : '')) .
                     ", Val=$actual_hours\n",
                     FILE_APPEND
                 );
@@ -427,15 +427,16 @@ function addManualAttendance($conn)
             if ($stmt->execute()) {
                 $success_count++;
 
-                // If it is an offset day and we have actual_hours (time out provided), credit the Time Bank
-                if ($is_offset_day && $timeOutObj && $actual_hours > 0 && $offset_req_status === 'approved') {
+                // If it is an offset day and we have actual_hours, credit the Time Bank
+                if ($is_offset_day && ($timeOutObj || !empty($break_out)) && $actual_hours > 0 && in_array($offset_req_status, ['approved', 'completed'])) {
                     // Check if already credited
                     $checkLedger = $conn->prepare("SELECT id FROM time_bank_ledger WHERE source_id = ? AND transaction_type = 'earned'");
                     $checkLedger->bind_param("i", $offset_req_id);
                     $checkLedger->execute();
-                    if ($checkLedger->get_result()->num_rows == 0) {
-                        $worked_hours = round($actual_hours / 60, 2);
+                    $ledgerResult = $checkLedger->get_result();
+                    $worked_hours = round($actual_hours / 60, 2);
 
+                    if ($ledgerResult->num_rows == 0) {
                         $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description, reference_date) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule', ?)");
                         $ledgerStmt->bind_param("idis", $employee_id, $worked_hours, $offset_req_id, $date);
                         $ledgerStmt->execute();
@@ -444,6 +445,11 @@ function addManualAttendance($conn)
                         $updateReq->bind_param("i", $offset_req_id);
                         $updateReq->execute();
                         $offset_req_status = 'completed'; // Prevent re-triggering in same request
+                    } else {
+                        $ledgerId = $ledgerResult->fetch_assoc()['id'];
+                        $ledgerStmt = $conn->prepare("UPDATE time_bank_ledger SET hours = ? WHERE id = ?");
+                        $ledgerStmt->bind_param("di", $worked_hours, $ledgerId);
+                        $ledgerStmt->execute();
                     }
                 }
 
@@ -572,7 +578,7 @@ function updateTimeOut($conn)
         $dayOfWeekDb = ($dayOfWeek == 0) ? 6 : ($dayOfWeek - 1); // Convert to 0=Monday format
 
         // Check for offset schedule
-        $sqlOffset = "SELECT r.id as request_id, r.status as req_status, r.original_schedule_id, r.original_day_of_week
+        $sqlOffset = "SELECT r.id as request_id, r.status as req_status, r.original_schedule_id, r.original_day_of_week, r.start_time, r.end_time
                       FROM offset_schedule_requests r 
                       WHERE r.employee_id = ? AND r.requested_date = ? AND r.status IN ('approved', 'completed')";
         $stmtOffset = $conn->prepare($sqlOffset);
@@ -586,17 +592,32 @@ function updateTimeOut($conn)
         $offset_req_status = null;
 
         if ($offset_data) {
-            $source_day_of_week = $offset_data['original_day_of_week'];
-            $sqlOffsetPeriods = "SELECT start_time, end_time, TIMESTAMPDIFF(MINUTE, start_time, end_time) as scheduled_minutes FROM schedule_periods WHERE schedule_id = ? AND is_active = 1 AND day_of_week = ? ORDER BY start_time ASC";
-            $stmtOffsetPeriods = $conn->prepare($sqlOffsetPeriods);
-            $stmtOffsetPeriods->bind_param("ii", $offset_data['original_schedule_id'], $source_day_of_week);
-            $stmtOffsetPeriods->execute();
-            $res_periods = $stmtOffsetPeriods->get_result()->fetch_all(MYSQLI_ASSOC);
+            if (!empty($offset_data['original_schedule_id']) && $offset_data['original_day_of_week'] !== null) {
+                $source_day_of_week = $offset_data['original_day_of_week'];
+                $sqlOffsetPeriods = "SELECT start_time, end_time, TIMESTAMPDIFF(MINUTE, start_time, end_time) as scheduled_minutes FROM schedule_periods WHERE schedule_id = ? AND is_active = 1 AND day_of_week = ? ORDER BY start_time ASC";
+                $stmtOffsetPeriods = $conn->prepare($sqlOffsetPeriods);
+                $stmtOffsetPeriods->bind_param("ii", $offset_data['original_schedule_id'], $source_day_of_week);
+                $stmtOffsetPeriods->execute();
+                $res_periods = $stmtOffsetPeriods->get_result()->fetch_all(MYSQLI_ASSOC);
 
-            if (empty($res_periods)) {
-                throw new Exception('Associated mirrored schedule has no active time periods to offset.');
+                if (empty($res_periods)) {
+                    throw new Exception('Associated mirrored schedule has no active time periods to offset.');
+                } else {
+                    $schedule_data = $res_periods;
+                }
+            } else if (!empty($offset_data['start_time']) && !empty($offset_data['end_time'])) {
+                $start_parts = explode(':', $offset_data['start_time']);
+                $end_parts = explode(':', $offset_data['end_time']);
+                $scheduled_minutes_calc = ($end_parts[0]*60 + $end_parts[1]) - ($start_parts[0]*60 + $start_parts[1]);
+                $schedule_data = [
+                    [
+                        'start_time' => $offset_data['start_time'],
+                        'end_time' => $offset_data['end_time'],
+                        'scheduled_minutes' => $scheduled_minutes_calc
+                    ]
+                ];
             } else {
-                $schedule_data = $res_periods;
+                throw new Exception('Associated mirrored schedule has no active time periods to offset.');
             }
 
             $is_offset_day = true;
@@ -726,12 +747,14 @@ function updateTimeOut($conn)
         }
 
         // Output Time Bank ledger logic for updateTimeOut
-        if ($is_offset_day && $actual_minutes > 0 && $offset_req_status === 'approved') {
+        if ($is_offset_day && $actual_minutes > 0 && in_array($offset_req_status, ['approved', 'completed'])) {
             $checkLedger = $conn->prepare("SELECT id FROM time_bank_ledger WHERE source_id = ? AND transaction_type = 'earned'");
             $checkLedger->bind_param("i", $offset_req_id);
             $checkLedger->execute();
-            if ($checkLedger->get_result()->num_rows == 0) {
-                $worked_hours = round($actual_minutes / 60, 2);
+            $ledgerResult = $checkLedger->get_result();
+            $worked_hours = round($actual_minutes / 60, 2);
+
+            if ($ledgerResult->num_rows == 0) {
                 $ledgerStmt = $conn->prepare("INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description, reference_date) VALUES (?, 'earned', ?, ?, 'Completed Offset Schedule', ?)");
                 $ledgerStmt->bind_param("idis", $employee_id, $worked_hours, $offset_req_id, $date);
                 $ledgerStmt->execute();
@@ -739,6 +762,11 @@ function updateTimeOut($conn)
                 $updateReq = $conn->prepare("UPDATE offset_schedule_requests SET status = 'completed' WHERE id = ?");
                 $updateReq->bind_param("i", $offset_req_id);
                 $updateReq->execute();
+            } else {
+                $ledgerId = $ledgerResult->fetch_assoc()['id'];
+                $ledgerStmt = $conn->prepare("UPDATE time_bank_ledger SET hours = ? WHERE id = ?");
+                $ledgerStmt->bind_param("di", $worked_hours, $ledgerId);
+                $ledgerStmt->execute();
             }
         }
 
