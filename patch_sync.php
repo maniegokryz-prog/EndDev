@@ -44,6 +44,17 @@ if (file_exists(__DIR__ . '/db_connection.php')) {
         echo "<li>✅ Added start_time, end_time, cancel_reason to offset_schedule_requests</li>";
     }
 
+    // Ensure sync_status and last_sync exist on the new sync tables
+    $sync_tables = ['makeup_class_requests', 'offset_schedule_requests', 'cto_requests'];
+    foreach ($sync_tables as $st) {
+        $checkSync = $conn->query("SHOW COLUMNS FROM `$st` LIKE 'sync_status'");
+        if ($checkSync && $checkSync->num_rows == 0) {
+            $conn->query("ALTER TABLE `$st` ADD COLUMN `sync_status` tinyint(4) NOT NULL DEFAULT 0");
+            $conn->query("ALTER TABLE `$st` ADD COLUMN `last_sync` datetime NULL");
+            echo "<li>✅ Added sync_status and last_sync to $st</li>";
+        }
+    }
+
     // Allow NULL for manual overrides in offset
     $conn->query("ALTER TABLE offset_schedule_requests MODIFY original_schedule_id INT NULL");
     $conn->query("ALTER TABLE offset_schedule_requests MODIFY original_day_of_week INT NULL");

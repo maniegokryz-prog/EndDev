@@ -119,6 +119,17 @@ if ($id) {
     $result = $stmt->get_result();
 
     while ($row = $result->fetch_assoc()) {
+      // --- NEW LOGIC: Hide offset logs from Individual Report View ---
+      $stmt_offset_chk = $conn->prepare("SELECT id FROM offset_schedule_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')");
+      $stmt_offset_chk->bind_param("is", $employeeInternalId, $row['attendance_date']);
+      $stmt_offset_chk->execute();
+      $is_offset_hidden = $stmt_offset_chk->get_result()->num_rows > 0;
+      $stmt_offset_chk->close();
+      
+      if ($is_offset_hidden) {
+          continue; // Skip rendering this attendance record in the UI table
+      }
+
       // Recalculate actual_hours for display consistency
       if (!isset($row['actual_hours']) || $row['actual_hours'] === null) {
         $row['actual_hours'] = calculateActualHoursWithClamping(

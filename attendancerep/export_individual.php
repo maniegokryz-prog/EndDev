@@ -96,6 +96,17 @@ foreach ($periods as $key => $period) {
 
     $attendanceMap = [];
     while ($r = $res->fetch_assoc()) {
+        // --- NEW LOGIC: Hide offset logs from Printed DTR ---
+        $stmt_offset_chk = $conn->prepare("SELECT id FROM offset_schedule_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')");
+        $stmt_offset_chk->bind_param("is", $employee['internal_id'], $r['attendance_date']);
+        $stmt_offset_chk->execute();
+        $is_offset_hidden = $stmt_offset_chk->get_result()->num_rows > 0;
+        $stmt_offset_chk->close();
+        
+        if ($is_offset_hidden) {
+            continue; // Skip rendering this attendance record in printed DTR per user request
+        }
+        
         // RECALCULATE ACTUAL HOURS DYNAMICALLY
         // This ensures the "Last Hour" / Clamping rules apply even to historic data
         if (!$rawTime && (!isset($r['actual_hours']) || $r['actual_hours'] === null)) {

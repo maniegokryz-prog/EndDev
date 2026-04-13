@@ -36,27 +36,44 @@ try {
     $dayOfWeekDb = ($dayOfWeek == 0) ? 6 : ($dayOfWeek - 1);
 
     // Check for approved offset schedule first
-    $stmt_offset = $conn->prepare("SELECT original_schedule_id, original_day_of_week FROM offset_schedule_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed') LIMIT 1");
+    $stmt_offset = $conn->prepare("SELECT original_schedule_id, original_day_of_week, start_time, end_time FROM offset_schedule_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed') LIMIT 1");
     $stmt_offset->bind_param("is", $employee_id, $date);
     $stmt_offset->execute();
     $res_offset = $stmt_offset->get_result();
     $offsetRow = $res_offset->fetch_assoc();
     $stmt_offset->close();
 
+    $handled_by_offset = false;
+    $schedule_periods = [];
+
     if ($offsetRow) {
-        // If an offset exists, use its schedule periods
-        $sql = "SELECT start_time, end_time
-                FROM schedule_periods 
-                WHERE schedule_id = ? 
-                  AND day_of_week = ? 
-                  AND is_active = 1
-                ORDER BY start_time ASC";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $offsetRow['original_schedule_id'], $offsetRow['original_day_of_week']);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $schedule_periods = $result->fetch_all(MYSQLI_ASSOC);
-    } else {
+        if (!empty($offsetRow['original_schedule_id']) && $offsetRow['original_day_of_week'] !== null) {
+            // If an offset mirroring a schedule exists, use its schedule periods
+            $sql = "SELECT start_time, end_time
+                    FROM schedule_periods 
+                    WHERE schedule_id = ? 
+                      AND day_of_week = ? 
+                      AND is_active = 1
+                    ORDER BY start_time ASC";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $offsetRow['original_schedule_id'], $offsetRow['original_day_of_week']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $schedule_periods = $result->fetch_all(MYSQLI_ASSOC);
+            $handled_by_offset = true;
+        } else if (!empty($offsetRow['start_time']) && !empty($offsetRow['end_time'])) {
+            // If an offset using a custom time exists, use its manual input times directly
+            $schedule_periods = [
+                [
+                    'start_time' => $offsetRow['start_time'],
+                    'end_time' => $offsetRow['end_time']
+                ]
+            ];
+            $handled_by_offset = true;
+        }
+    }
+
+    if (!$handled_by_offset) {
         // Fallback to normal employee schedule lookup
         $sql = "SELECT sp.start_time, sp.end_time
                 FROM employee_schedules es

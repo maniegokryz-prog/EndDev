@@ -167,6 +167,14 @@ try {
     $attendance_records = [];
 
     while ($row = $result->fetch_assoc()) {
+        // --- NEW LOGIC: Mark offset logs in DTR instead of hiding ---
+        // Verify if this date is part of an approved/completed offset
+        $stmt_offset_chk = $conn->prepare("SELECT id FROM offset_schedule_requests WHERE employee_id = ? AND requested_date = ? AND status IN ('approved', 'completed')");
+        $stmt_offset_chk->bind_param("is", $employee_id, $row['attendance_date']);
+        $stmt_offset_chk->execute();
+        $is_offset = $stmt_offset_chk->get_result()->num_rows > 0;
+        $stmt_offset_chk->close();
+
         // Format times
         $time_in_formatted = null;
         if (!empty($row['time_in'])) {
@@ -238,7 +246,9 @@ try {
         $status_lower = strtolower(trim($row['status']));
 
         $base_status = '';
-        if (strpos($status_lower, 'manual') !== false) {
+        if ($is_offset) {
+            $base_status = 'offset';
+        } elseif (strpos($status_lower, 'manual') !== false) {
             $base_status = 'manual';
         } elseif (strpos($status_lower, 'incomplete') !== false) {
             $base_status = 'incomplete';
@@ -260,11 +270,21 @@ try {
         // fallback inline styles added so it looks exact everywhere including legacy staffinfo.php
         $inject_span_style = '</span><span class="dtr-status" style="background: #edf2f7; color: #718096; padding: 2px 6px; border-radius: 4px; font-weight: 500; display: inline-block; margin-left: 0.5rem; font-size: 0.75rem; white-space: nowrap;">';
 
-        if ($base_status === 'complete') {
+        if ($base_status === 'offset') {
+            $status_info['badge_class'] = 'info text-dark';
+            $status_info['icon_class'] = 'bg-info';
+            $status_info['icon'] = 'bi-arrow-repeat'; // Use repeat/exchange icon for offset
+            $badge_html_parts[] = 'Offset';
+
+            // Add (Banked) suffix to hours worked if not null
+            if ($hours_worked) {
+                $hours_worked = "{$hours_worked} <span style='font-size: 0.75rem; color: #555;'>(Banked)</span>";
+            }
+        } elseif ($base_status === 'complete') {
             $status_info['badge_class'] = 'success';
             $status_info['icon_class'] = 'bg-success';
             $status_info['icon'] = 'bi-check-lg';
-            
+
             if (!$is_late && !$is_undertime) {
                 $badge_html_parts[] = 'On-time';
             } else {
@@ -278,7 +298,7 @@ try {
             $status_info['icon_class'] = 'bg-manual';
             $status_info['icon'] = 'bi-pencil-square';
             $badge_html_parts[] = 'Manual';
-            
+
             if ($is_late || $is_undertime) {
                 $status_info['badge_class'] = 'warning text-dark';
                 $status_info['icon_class'] = 'bg-warning';

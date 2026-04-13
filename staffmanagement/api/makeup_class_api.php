@@ -127,27 +127,59 @@ function submitRequest($conn)
     $attachment_path = null;
     if (!empty($_FILES['attachment']['name'])) {
         $file = $_FILES['attachment'];
+
+        // Check upload error FIRST before inspecting the file
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $upload_errors = [
+                UPLOAD_ERR_INI_SIZE   => 'File exceeds the server upload_max_filesize limit.',
+                UPLOAD_ERR_FORM_SIZE  => 'File exceeds the form MAX_FILE_SIZE limit.',
+                UPLOAD_ERR_PARTIAL    => 'File was only partially uploaded.',
+                UPLOAD_ERR_NO_FILE    => 'No file was uploaded.',
+                UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder on server.',
+                UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+                UPLOAD_ERR_EXTENSION  => 'A PHP extension stopped the file upload.',
+            ];
+            $err_msg = $upload_errors[$file['error']] ?? 'Unknown upload error (code ' . $file['error'] . ').'; 
+            throw new Exception('File upload error: ' . $err_msg);
+        }
+
         $allowed_types = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg',
                           'application/msword',
                           'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
         $allowed_ext  = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'];
 
         $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $mime     = mime_content_type($file['tmp_name']);
+        
+        $mime = '';
+        if (function_exists('mime_content_type')) {
+            $mime = mime_content_type($file['tmp_name']);
+        } elseif (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime  = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+        } else {
+            // Fallback to the browser-provided MIME type if server extensions are disabled
+            $mime = $file['type'];
+        }
 
-        if (!in_array($mime, $allowed_types) || !in_array($file_ext, $allowed_ext)) {
+        if (!in_array($file_ext, $allowed_ext)) {
             throw new Exception('Invalid file type. Allowed: PDF, JPG, PNG, DOC, DOCX.');
+        }
+        if ($mime && !in_array($mime, $allowed_types)) {
+            throw new Exception('Invalid file MIME type. Allowed: PDF, JPG, PNG, DOC, DOCX.');
         }
         if ($file['size'] > 5 * 1024 * 1024) {
             throw new Exception('Attachment must be 5MB or smaller.');
         }
-        if ($file['error'] !== UPLOAD_ERR_OK) {
-            throw new Exception('File upload error. Please try again.');
-        }
 
         $upload_dir = dirname(__DIR__, 2) . '/uploads/makeup_attachments/';
         if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
+            if (!@mkdir($upload_dir, 0755, true)) {
+                throw new Exception('Server configuration error: Cannot create upload directory. Please contact the administrator.');
+            }
+        }
+        if (!is_writable($upload_dir)) {
+            throw new Exception('Server configuration error: Upload directory is not writable. Please contact the administrator.');
         }
         $filename = 'makeup_' . $employee_id . '_' . time() . '.' . $file_ext;
         $dest     = $upload_dir . $filename;

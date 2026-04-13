@@ -246,7 +246,8 @@ function renderDTRForm($employee, $data, $isExcel = false)
                 $hrs = $h > 0 ? $h : '';
                 $mins = $m > 0 ? $m : '';
                 
-                // Add Hybrid CTO string
+                // CTO tags removed per user request
+                /*
                 global $conn;
                 $dbConn = isset($conn) ? $conn : null;
                 if (isset($employee['internal_id'])) {
@@ -259,6 +260,7 @@ function renderDTRForm($employee, $data, $isExcel = false)
                         }
                     }
                 }
+                */
 
                 $totalHours += $h;
                 $totalMinutes += $m;

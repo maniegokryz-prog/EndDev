@@ -151,7 +151,7 @@ function addManualAttendance($conn)
             $dayOfWeekDb = ($dayOfWeek == 0) ? 6 : ($dayOfWeek - 1);
 
             // Check if employee has an approved offset schedule for this date
-            $sqlOffset = "SELECT r.id as request_id, r.status as req_status, r.original_schedule_id, r.original_day_of_week 
+            $sqlOffset = "SELECT r.id as request_id, r.status as req_status, r.original_schedule_id, r.original_day_of_week, r.start_time, r.end_time 
                           FROM offset_schedule_requests r 
                           WHERE r.employee_id = ? AND r.requested_date = ? AND r.status IN ('approved', 'completed')";
             $stmtOffset = $conn->prepare($sqlOffset);
@@ -168,19 +168,32 @@ function addManualAttendance($conn)
             $offset_req_status = null;
 
             if ($offset_data) {
-                // Fetch the detailed periods for the offset schedule for the SPECIFIC day they requested
-                $source_day_of_week = $offset_data['original_day_of_week'];
-                $sqlOffsetPeriods = "SELECT start_time, end_time FROM schedule_periods WHERE schedule_id = ? AND is_active = 1 AND day_of_week = ? ORDER BY start_time ASC";
-                $stmtOffsetPeriods = $conn->prepare($sqlOffsetPeriods);
-                $stmtOffsetPeriods->bind_param("ii", $offset_data['original_schedule_id'], $source_day_of_week);
-                $stmtOffsetPeriods->execute();
-                $res_periods = $stmtOffsetPeriods->get_result()->fetch_all(MYSQLI_ASSOC);
+                if (!empty($offset_data['original_schedule_id']) && $offset_data['original_day_of_week'] !== null) {
+                    // Fetch the detailed periods for the offset schedule for the SPECIFIC day they requested
+                    $source_day_of_week = $offset_data['original_day_of_week'];
+                    $sqlOffsetPeriods = "SELECT start_time, end_time FROM schedule_periods WHERE schedule_id = ? AND is_active = 1 AND day_of_week = ? ORDER BY start_time ASC";
+                    $stmtOffsetPeriods = $conn->prepare($sqlOffsetPeriods);
+                    $stmtOffsetPeriods->bind_param("ii", $offset_data['original_schedule_id'], $source_day_of_week);
+                    $stmtOffsetPeriods->execute();
+                    $res_periods = $stmtOffsetPeriods->get_result()->fetch_all(MYSQLI_ASSOC);
 
-                if (empty($res_periods)) {
+                    if (empty($res_periods)) {
+                        $errors[] = "Record " . ($index + 1) . ": Associated mirrored schedule has no active time periods to offset.";
+                        continue;
+                    } else {
+                        $schedule_periods = $res_periods;
+                    }
+                } else if (!empty($offset_data['start_time']) && !empty($offset_data['end_time'])) {
+                    // Custom time offset
+                    $schedule_periods = [
+                        [
+                            'start_time' => $offset_data['start_time'],
+                            'end_time' => $offset_data['end_time']
+                        ]
+                    ];
+                } else {
                     $errors[] = "Record " . ($index + 1) . ": Associated mirrored schedule has no active time periods to offset.";
                     continue;
-                } else {
-                    $schedule_periods = $res_periods;
                 }
 
                 $is_offset_day = true;

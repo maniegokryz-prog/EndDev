@@ -161,10 +161,12 @@ try {
                     e.position,
                     e.department,
                     da.late_minutes,
-                    da.status as daily_status
+                    da.status as daily_status,
+                    osr.id as offset_id
                 FROM attendance_logs al
                 INNER JOIN employees e ON al.employee_id = e.id
                 LEFT JOIN daily_attendance da ON (al.employee_id = da.employee_id AND al.log_date = da.attendance_date)
+                LEFT JOIN offset_schedule_requests osr ON (al.employee_id = osr.employee_id AND al.log_date = osr.requested_date AND osr.status IN ('approved', 'completed'))
                 WHERE al.log_date = ?
                 ORDER BY al.log_time DESC
                 LIMIT ?";
@@ -207,7 +209,9 @@ try {
             // Status logic
             $status = '';
 
-            if ($log_type === 'visit') {
+            if (!empty($row['offset_id'])) {
+                $status = 'Offset Logs';
+            } elseif ($log_type === 'visit') {
                 $status = 'Visitor';
             } elseif ($log_type === 'time_in') {
                 // For time_in, check late minutes from linked daily_attendance against grace period
@@ -506,9 +510,11 @@ try {
                     e.profile_photo,
                     e.position,
                     e.department,
-                    e.roles
+                    e.roles,
+                    osr.id as offset_id
                 FROM daily_attendance da
                 INNER JOIN employees e ON da.employee_id = e.id
+                LEFT JOIN offset_schedule_requests osr ON (da.employee_id = osr.employee_id AND da.attendance_date = osr.requested_date AND osr.status IN ('approved', 'completed'))
                 WHERE da.attendance_date = ?
                 ORDER BY da.time_in DESC, e.last_name, e.first_name";
 
@@ -565,7 +571,7 @@ try {
                 'early_departure_minutes' => $row['early_departure_minutes'] ?? 0,
                 'actual_hours' => $row['actual_hours'] ?? null,
                 'hours_worked' => $hours_worked,
-                'status' => $row['status'],
+                'status' => !empty($row['offset_id']) ? 'Offset' : $row['status'],
                 'schedule_id' => $row['schedule_id'] ?? null
             ];
         }
