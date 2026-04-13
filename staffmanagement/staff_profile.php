@@ -662,9 +662,9 @@ $profilePhoto .= '?v=' . microtime(true);
                            MAX(sp.end_time) as max_end,
                            SUM(TIMESTAMPDIFF(MINUTE, sp.start_time, sp.end_time)) as total_mins
                     FROM offset_schedule_requests r 
-                    JOIN schedules s ON r.original_schedule_id = s.id 
+                    LEFT JOIN schedules s ON r.original_schedule_id = s.id 
                     LEFT JOIN schedule_periods sp ON (s.id = sp.schedule_id AND r.original_day_of_week = sp.day_of_week AND sp.is_active = 1)
-                    WHERE r.employee_id = ? AND r.status IN ('pending', 'approved') {$offsetFilterQuery}
+                    WHERE r.employee_id = ? AND r.status IN ('pending', 'approved', 'cancelled', 'rejected') {$offsetFilterQuery}
                     GROUP BY r.id
                     ORDER BY r.created_at DESC
                 ");
@@ -2518,6 +2518,7 @@ $profilePhoto .= '?v=' . microtime(true);
             color: white !important;
             transition: all 0.3s ease;
         }
+
         .btn-red-to-gray:hover {
             background-color: #6c757d !important;
             border-color: #6c757d !important;
@@ -2642,6 +2643,19 @@ $profilePhoto .= '?v=' . microtime(true);
                                         ?>
                                     </select>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold opacity-75">Start Time <span class="fw-normal">(Optional)</span></label>
+                                        <input type="time" class="form-control" id="offsetStartTime">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold opacity-75">End Time <span class="fw-normal">(Optional)</span></label>
+                                        <input type="time" class="form-control" id="offsetEndTime">
+                                    </div>
+                                    <div class="col-12 mt-n2 mb-3">
+                                        <small class="text-muted">Leave blank to use the exact time from the selected mirrored schedule above.</small>
+                                    </div>
+                                </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Date of Work (Off-day)</label>
                                     <input type="date" class="form-control" id="offsetRequestedDate"
@@ -2672,12 +2686,18 @@ $profilePhoto .= '?v=' . microtime(true);
                                     <?php foreach ($offsetRequestsList as $offset): ?>
                                         <div class="card border-0 shadow-sm">
                                             <?php
-                                            $reqDayName = $daysArray[$offset['original_day_of_week']] ?? 'Unknown';
+                                            $hasMirrored = !empty($offset['original_schedule_id']);
+                                            $reqDayName = $daysArray[$offset['original_day_of_week']] ?? '';
                                             $statusColor = $offset['status'] === 'approved' ? 'success' : 'warning';
 
                                             // Format times and calculate hours if available
                                             $timeString = "";
-                                            if (!empty($offset['min_start']) && !empty($offset['max_end'])) {
+                                            if (!empty($offset['start_time']) && !empty($offset['end_time'])) {
+                                                $startOut = date("g:i A", strtotime($offset['start_time']));
+                                                $endOut = date("g:i A", strtotime($offset['end_time']));
+                                                $hrsOut = round((strtotime($offset['end_time']) - strtotime($offset['start_time'])) / 3600, 2);
+                                                $timeString = "{$startOut} - {$endOut} ({$hrsOut} hrs)" . ($hasMirrored ? " [Custom Override]" : "");
+                                            } else if (!empty($offset['min_start']) && !empty($offset['max_end'])) {
                                                 $startOut = date("g:i A", strtotime($offset['min_start']));
                                                 $endOut = date("g:i A", strtotime($offset['max_end']));
                                                 $hrsOut = round(($offset['total_mins'] ?? 0) / 60, 2);
@@ -2692,12 +2712,19 @@ $profilePhoto .= '?v=' . microtime(true);
                                                 </h6>
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                                     <p class="mb-0 small text-secondary">
-                                                        <strong>Mirrored Schedule:</strong> <?php echo $reqDayName; ?> Schedule
-                                                        <span>&bull;</span> <?php echo $timeString; ?>
+                                                        <?php if ($hasMirrored): ?>
+                                                            <strong>Mirrored Schedule:</strong> <?php echo $reqDayName; ?> Schedule
+                                                            <span>&bull;</span> <?php echo $timeString; ?>
+                                                        <?php else: ?>
+                                                            <strong>Custom Time Entry:</strong> <?php echo $timeString; ?>
+                                                        <?php endif; ?>
                                                     </p>
                                                     <span
                                                         class="badge bg-<?php echo $statusColor; ?> text-<?php echo $offset['status'] === 'approved' ? 'white' : 'dark'; ?> text-uppercase"><?php echo htmlspecialchars($offset['status']); ?></span>
                                                 </div>
+                                                <?php if (!empty($offset['cancel_reason'])): ?>
+                                                    <p class="mb-3 small text-danger"><i class="bi bi-exclamation-circle me-1"></i><strong>Cancel Reason:</strong> <?php echo htmlspecialchars($offset['cancel_reason']); ?></p>
+                                                <?php endif; ?>
                                                 <div class="d-flex gap-2">
                                                     <?php if ($isAdmin): ?>
                                                         <?php if ($offset['status'] === 'pending'): ?>
@@ -2705,11 +2732,14 @@ $profilePhoto .= '?v=' . microtime(true);
                                                                 onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'approved')">Approve</button>
                                                             <button class="btn btn-danger btn-sm fw-semibold px-3 flex-grow-1"
                                                                 onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'rejected')">Reject</button>
+                                                        <?php elseif ($offset['status'] === 'approved'): ?>
+                                                            <button class="btn btn-outline-danger btn-sm fw-semibold px-3 flex-grow-1"
+                                                                onclick="promptCancelOffsetRequest(<?php echo $offset['id']; ?>)">Cancel</button>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
-                                                    <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id'] && $offset['status'] === 'pending'): ?>
+                                                    <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id'] && in_array($offset['status'], ['pending', 'approved'])): ?>
                                                         <button class="btn btn-outline-danger btn-sm fw-semibold flex-grow-1"
-                                                            onclick="cancelOffsetRequest(<?php echo $offset['id']; ?>)">Cancel
+                                                            onclick="promptCancelOffsetRequest(<?php echo $offset['id']; ?>)">Cancel
                                                             Request</button>
                                                     <?php endif; ?>
                                                 </div>
@@ -2768,8 +2798,9 @@ $profilePhoto .= '?v=' . microtime(true);
         aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header border-0 pb-0 justify-content-center">
-                    <h5 class="modal-title fw-bold">Makeup Class Management</h5>
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold mx-auto">Makeup Class Management</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pt-2">
                     <ul class="nav nav-tabs mb-3" id="makeupTabs" role="tablist">
@@ -2856,8 +2887,15 @@ $profilePhoto .= '?v=' . microtime(true);
                                                     placeholder="e.g. To compensate for missed classes last week."
                                                     required></textarea>
                                             </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Attachment <span class="text-muted fw-normal small">(optional)</span></label>
+                                                <input type="file" class="form-control" id="makeupAttachment"
+                                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                                <small class="text-muted">PDF, Image, or Word document. Max 5MB.</small>
+                                            </div>
                                             <div class="text-center d-flex justify-content-center gap-3">
-                                                <button type="button" class="btn btn-secondary px-5 fw-bold mt-1 btn-red-to-gray"
+                                                <button type="button"
+                                                    class="btn btn-secondary px-5 fw-bold mt-1 btn-red-to-gray"
                                                     data-bs-dismiss="modal">Close</button>
                                                 <button type="button"
                                                     class="btn btn-solid-success btn-gray-hover px-5 fw-bold mt-1"
@@ -2882,8 +2920,8 @@ $profilePhoto .= '?v=' . microtime(true);
                         </div>
                         <!-- History and Status Tab -->
                         <div class="tab-pane fade p-2" id="makeup-history" role="tabpanel">
-                            <div id="makeupHistoryContainer" class="d-flex flex-column gap-3 pt-4"
-                                style="max-height: 510px; overflow-y: auto; overflow-x: hidden; padding-right: 25px;">
+                            <div id="makeupHistoryContainer" class="d-flex flex-column gap-3 pt-2"
+                                style="max-height: 320px; overflow-y: auto; overflow-x: hidden; padding-right: 8px;">
                                 <div class="text-center text-muted p-4">
                                     <i class="bi bi-hourglass fs-1"></i>
                                     <p class="mt-2">Loading Makeup Class History...</p>
@@ -2895,6 +2933,63 @@ $profilePhoto .= '?v=' . microtime(true);
             </div>
         </div>
     </div>
+
+    <!-- Cancel Makeup Class Reason Modal -->
+    <div class="modal fade" id="cancelMakeupReasonModal" tabindex="-1" aria-labelledby="cancelMakeupReasonLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-danger" id="cancelMakeupReasonLabel">
+                        <i class="bi bi-x-circle me-2"></i>Cancel Makeup Class
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <p class="text-muted small mb-3">Please state the reason for cancelling this makeup class request. This will be recorded and visible for admin review.</p>
+                    <input type="hidden" id="cancelMakeupReqId" value="">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Cancellation Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="cancelMakeupReasonText" rows="3" placeholder="e.g. Schedule conflict, class was moved, etc."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex gap-2">
+                    <button type="button" class="btn btn-secondary flex-grow-1 fw-semibold" data-bs-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-danger flex-grow-1 fw-semibold" onclick="submitMakeupCancellation()">
+                        <i class="bi bi-x-circle me-1"></i>Confirm Cancellation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Offset Reason Modal -->
+    <div class="modal fade" id="cancelOffsetReasonModal" tabindex="-1" aria-labelledby="cancelOffsetReasonLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-danger" id="cancelOffsetReasonLabel">
+                        <i class="bi bi-x-circle me-2"></i>Cancel Offset Request
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <p class="text-muted small mb-3">Please state the reason for cancelling this offset request. This will be recorded and visible for admin review.</p>
+                    <input type="hidden" id="cancelOffsetReqId" value="">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Cancellation Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="cancelOffsetReasonText" rows="3" placeholder="e.g. Schedule conflict, no longer needed, etc."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex gap-2">
+                    <button type="button" class="btn btn-secondary flex-grow-1 fw-semibold" data-bs-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-danger flex-grow-1 fw-semibold" onclick="submitOffsetCancellation()">
+                        <i class="bi bi-x-circle me-1"></i>Confirm Cancellation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 <script>
@@ -2985,9 +3080,32 @@ $profilePhoto .= '?v=' . microtime(true);
     function submitOffsetRequest() {
         const selectStr = document.getElementById('offsetScheduleId').value;
         const requestedDate = document.getElementById('offsetRequestedDate').value;
+        const offsetStartTime = document.getElementById('offsetStartTime').value;
+        const offsetEndTime = document.getElementById('offsetEndTime').value;
 
-        if (!selectStr || !requestedDate) {
-            document.getElementById('globalAlertMessage').innerText = "Please fill out all required fields.";
+        if (!requestedDate) {
+            document.getElementById('globalAlertMessage').innerText = "Please select a Date of Work.";
+            const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+            alertModal.show();
+            return;
+        }
+
+        const hasSchedule = selectStr !== "";
+        const hasTime = offsetStartTime !== "" && offsetEndTime !== "";
+
+        if (hasSchedule && hasTime) {
+            document.getElementById('globalAlertMessage').innerText = "Please choose either a schedule to mirror OR enter a custom start and end time. You cannot fill out both options.";
+            const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+            alertModal.show();
+            return;
+        }
+
+        if (!hasSchedule && !hasTime) {
+            if (offsetStartTime !== "" || offsetEndTime !== "") {
+                document.getElementById('globalAlertMessage').innerText = "Please provide both Start and End time.";
+            } else {
+                document.getElementById('globalAlertMessage').innerText = "Please either select a schedule to mirror OR enter a valid start and end time.";
+            }
             const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
             alertModal.show();
             return;
@@ -3001,24 +3119,29 @@ $profilePhoto .= '?v=' . microtime(true);
             return;
         }
 
-        const parts = selectStr.split('-');
-        if (parts.length !== 2) {
-            alert("Invalid schedule selection.");
-            return;
+        let originalScheduleId = '';
+        let dayOfWeek = '';
+
+        if (hasSchedule) {
+            const parts = selectStr.split('-');
+            if (parts.length !== 2) {
+                alert("Invalid schedule selection.");
+                return;
+            }
+            originalScheduleId = parts[0];
+            dayOfWeek = parts[1];
         }
-        const scheduleId = parts[0];
-        const dayOfWeek = parts[1];
 
         const formData = new FormData();
         formData.append('action', 'submit_request');
-
-        // Fallback if employeeInternalId is not exposed globally, we echo the ID
-        const empId = typeof window.employeeInternalId !== 'undefined' ? window.employeeInternalId : <?php echo json_encode($employee['id']); ?>;
-
-        formData.append('employee_id', empId);
-        formData.append('original_schedule_id', scheduleId);
-        formData.append('original_day_of_week', dayOfWeek);
+        formData.append('employee_id', window.employeeInternalId);
+        if (hasSchedule) {
+            formData.append('original_schedule_id', originalScheduleId);
+            formData.append('original_day_of_week', dayOfWeek);
+        }
         formData.append('requested_date', requestedDate);
+        if (offsetStartTime) formData.append('start_time', offsetStartTime);
+        if (offsetEndTime)   formData.append('end_time', offsetEndTime);
 
         fetch('api/offset_schedule_api.php', { method: 'POST', body: formData })
             .then(res => res.json())
@@ -3057,12 +3180,34 @@ $profilePhoto .= '?v=' . microtime(true);
             fd
         );
     }
-    function cancelOffsetRequest(reqId) {
+    function promptCancelOffsetRequest(reqId) {
+        document.getElementById('cancelOffsetReqId').value = reqId;
+        document.getElementById('cancelOffsetReasonText').value = '';
+        const modal = new bootstrap.Modal(document.getElementById('cancelOffsetReasonModal'));
+        modal.show();
+    }
+
+    function submitOffsetCancellation() {
+        const reqId = document.getElementById('cancelOffsetReqId').value;
+        const reason = document.getElementById('cancelOffsetReasonText').value.trim();
+
+        if (!reason) {
+            document.getElementById('globalAlertMessage').innerText = "Please provide a reason for cancelling.";
+            new bootstrap.Modal(document.getElementById('globalAlertModal')).show();
+            return;
+        }
+
         const fd = new FormData();
         fd.append('action', 'cancel_request');
         fd.append('request_id', reqId);
+        fd.append('cancel_reason', reason);
+
+        // Hide cancel modal before showing confirming process
+        const reasonModal = bootstrap.Modal.getInstance(document.getElementById('cancelOffsetReasonModal'));
+        if (reasonModal) reasonModal.hide();
+
         processActionWithConfirmation(
-            "Are you sure you want to cancel this offset request?",
+            "Are you sure you want to cancel this offset request with the provided reason?",
             "Offset request cancelled successfully.",
             'api/offset_schedule_api.php',
             fd
@@ -3264,6 +3409,18 @@ $profilePhoto .= '?v=' . microtime(true);
         fd.append('room_num', makeupRoom);
         fd.append('reason', makeupReason);
 
+        // Attach file if provided
+        const attachmentInput = document.getElementById('makeupAttachment');
+        if (attachmentInput && attachmentInput.files.length > 0) {
+            const file = attachmentInput.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                document.getElementById('globalAlertMessage').innerText = 'Attachment must be 5MB or smaller.';
+                new bootstrap.Modal(document.getElementById('globalAlertModal')).show();
+                return;
+            }
+            fd.append('attachment', file);
+        }
+
         fetch('api/makeup_class_api.php', { method: 'POST', body: fd })
             .then(res => res.json())
             .then(result => {
@@ -3320,11 +3477,24 @@ $profilePhoto .= '?v=' . microtime(true);
                         <button class="btn btn-success btn-sm flex-grow-1" onclick="updateMakeupStatus(${req.id}, 'approved')">Approve</button>
                         <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateMakeupStatus(${req.id}, 'rejected')">Reject</button>
                         `;
+                    } else if (window.isAdmin && req.status === 'approved') {
+                        adminActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="promptCancelMakeupRequest(${req.id})">Cancel</button>`;
                     }
 
                     let userActions = '';
-                    if (!window.isAdmin && req.status === 'pending') {
-                        userActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="cancelMakeupRequest(${req.id})">Cancel</button>`;
+                    if (!window.isAdmin && (req.status === 'pending' || req.status === 'approved')) {
+                        userActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="promptCancelMakeupRequest(${req.id})">Cancel</button>`;
+                    }
+
+                    let cancelReasonStr = '';
+                    if (req.cancel_reason) {
+                        cancelReasonStr = `<p class="mb-1 small text-danger"><i class="bi bi-exclamation-circle me-1"></i><strong>Cancel Reason:</strong> ${req.cancel_reason}</p>`;
+                    }
+
+                    let attachmentStr = '';
+                    if (req.attachment_path) {
+                        const fileName = req.attachment_path.split('/').pop();
+                        attachmentStr = `<p class="mb-1 small"><i class="bi bi-paperclip me-1 text-primary"></i><strong>Attachment:</strong> <a href="/${req.attachment_path}" target="_blank" class="text-primary">${fileName}</a></p>`;
                     }
 
                     html += `
@@ -3343,9 +3513,11 @@ $profilePhoto .= '?v=' . microtime(true);
                         <p class="mb-1 small text-secondary">
                             <strong>Details:</strong> Class: ${req.designate_class || 'N/A'}, Subject: ${req.subject_code || 'N/A'}, Room: ${req.room_num || 'N/A'}
                         </p>
-                        <p class="mb-3 small text-secondary">
+                        <p class="mb-1 small text-secondary">
                             <strong>Reason:</strong> ${req.reason || 'N/A'}
                         </p>
+                        ${attachmentStr}
+                        ${cancelReasonStr}
                         <div class="d-flex gap-2">
                             ${adminActions}
                             ${userActions}
@@ -3373,16 +3545,47 @@ $profilePhoto .= '?v=' . microtime(true);
         );
     }
 
+    function promptCancelMakeupRequest(reqId) {
+        document.getElementById('cancelMakeupReqId').value = reqId;
+        document.getElementById('cancelMakeupReasonText').value = '';
+        const modal = new bootstrap.Modal(document.getElementById('cancelMakeupReasonModal'));
+        modal.show();
+    }
+
     function cancelMakeupRequest(reqId) {
+        promptCancelMakeupRequest(reqId);
+    }
+
+    function submitMakeupCancellation() {
+        const reqId = document.getElementById('cancelMakeupReqId').value;
+        const reason = document.getElementById('cancelMakeupReasonText').value.trim();
+        if (!reason) {
+            document.getElementById('globalAlertMessage').innerText = 'Please provide a reason for cancellation.';
+            new bootstrap.Modal(document.getElementById('globalAlertModal')).show();
+            return;
+        }
         const fd = new FormData();
         fd.append('action', 'cancel_request');
         fd.append('request_id', reqId);
-        processActionWithConfirmation(
-            "Are you sure you want to cancel this Makeup Class request?",
-            "Makeup Class request cancelled successfully.",
-            'api/makeup_class_api.php',
-            fd
-        );
+        fd.append('cancel_reason', reason);
+
+        const reasonModal = bootstrap.Modal.getInstance(document.getElementById('cancelMakeupReasonModal'));
+        if (reasonModal) reasonModal.hide();
+
+        fetch('api/makeup_class_api.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    document.getElementById('globalSuccessMessage').innerText = 'Makeup Class request cancelled successfully.';
+                    new bootstrap.Modal(document.getElementById('globalSuccessModal')).show();
+                } else {
+                    document.getElementById('globalAlertMessage').innerText = 'Error: ' + (d.error || 'Unknown error');
+                    new bootstrap.Modal(document.getElementById('globalAlertModal')).show();
+                }
+            }).catch(() => {
+                document.getElementById('globalAlertMessage').innerText = 'Network error. Please try again.';
+                new bootstrap.Modal(document.getElementById('globalAlertModal')).show();
+            });
     }
 
     function renderMakeupModalCalendar() {

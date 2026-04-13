@@ -201,11 +201,16 @@ createTable($conn, $sql_employee_leaves, "employee_leaves");
 $sql_offset_requests = "CREATE TABLE IF NOT EXISTS offset_schedule_requests (
     id INT AUTO_INCREMENT PRIMARY KEY,
     employee_id INT NOT NULL,
-    original_schedule_id INT NOT NULL,
+    original_schedule_id INT NULL,
     original_day_of_week INT NULL,
+    start_time TIME NULL,
+    end_time TIME NULL,
     requested_date DATE NOT NULL,
     status ENUM('pending', 'approved', 'rejected', 'completed', 'cancelled') DEFAULT 'pending',
+    cancel_reason TEXT NULL,
+    admin_notes TEXT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
     FOREIGN KEY (original_schedule_id) REFERENCES schedules(id) ON DELETE CASCADE
 )";
@@ -316,45 +321,7 @@ $sql_schedule_requests = "CREATE TABLE IF NOT EXISTS schedule_requests (
 )";
 createTable($conn, $sql_schedule_requests, "schedule_requests");
 
-// Offset Schedule Requests table
-$sql_offset_requests = "CREATE TABLE IF NOT EXISTS offset_schedule_requests (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT NOT NULL,
-    original_schedule_id INT NOT NULL,
-    requested_date DATE NOT NULL,
-    status ENUM('pending','approved','rejected','completed','cancelled') DEFAULT 'pending',
-    admin_notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
-    FOREIGN KEY (original_schedule_id) REFERENCES schedules(id) ON DELETE CASCADE
-)";
-createTable($conn, $sql_offset_requests, "offset_schedule_requests");
-
-// CTO Requests table
-$sql_cto_requests = "CREATE TABLE IF NOT EXISTS cto_requests (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT NOT NULL,
-    requested_date DATE NOT NULL,
-    hours_used DECIMAL(5,2) NOT NULL,
-    status ENUM('pending', 'approved', 'rejected', 'completed', 'cancelled') DEFAULT 'pending',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
-)";
-createTable($conn, $sql_cto_requests, "cto_requests");
-
-// Time Bank Ledger table
-$sql_time_bank = "CREATE TABLE IF NOT EXISTS time_bank_ledger (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT NOT NULL,
-    hours DECIMAL(5,2) NOT NULL,
-    transaction_type ENUM('earned','used','expired') NOT NULL,
-    reference_date DATE NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
-)";
-createTable($conn, $sql_time_bank, "time_bank_ledger");
+// (Duplicates for offset_schedule_requests, cto_requests, and time_bank_ledger removed)
 
 // Makeup Class Requests table
 $sql_makeup_classes = "CREATE TABLE IF NOT EXISTS makeup_class_requests (
@@ -367,6 +334,8 @@ $sql_makeup_classes = "CREATE TABLE IF NOT EXISTS makeup_class_requests (
     subject_code VARCHAR(100),
     room_num VARCHAR(100),
     reason TEXT,
+    attachment_path VARCHAR(500) NULL,
+    cancel_reason TEXT NULL,
     status ENUM('pending', 'approved', 'rejected', 'completed', 'cancelled') DEFAULT 'pending',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

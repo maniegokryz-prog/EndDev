@@ -78,12 +78,33 @@ $conn->close();
 function submitRequest($conn)
 {
     $employee_id = $_POST['employee_id'] ?? 0;
-    $schedule_id = $_POST['original_schedule_id'] ?? 0;
+    $schedule_id = $_POST['original_schedule_id'] ?? null;
     $day_of_week = $_POST['original_day_of_week'] ?? null;
     $requested_date = $_POST['requested_date'] ?? '';
+    $start_time = $_POST['start_time'] ?? null;
+    $end_time = $_POST['end_time'] ?? null;
 
-    if (!$employee_id || !$schedule_id || !$requested_date || $day_of_week === null) {
-        throw new Exception('Missing required fields');
+    if ($schedule_id === '') $schedule_id = null;
+    if ($day_of_week === '') $day_of_week = null;
+    if ($start_time === '') $start_time = null;
+    if ($end_time === '') $end_time = null;
+
+    if (!$employee_id || !$requested_date) {
+        throw new Exception('Missing employee ID or requested date');
+    }
+
+    $has_schedule = ($schedule_id !== null && $day_of_week !== null);
+    $has_time = ($start_time !== null && $end_time !== null);
+
+    if ($has_schedule && $has_time) {
+        throw new Exception("Please choose either a schedule to mirror OR enter a custom start and end time. You cannot fill out both options.");
+    }
+    if (!$has_schedule && !$has_time) {
+        throw new Exception("Please either select a schedule to mirror OR enter a valid start and end time.");
+    }
+
+    if ($has_time && strtotime($start_time) >= strtotime($end_time)) {
+        throw new Exception('Start time must be before end time.');
     }
 
     // Check for existing request on the same date
@@ -94,14 +115,12 @@ function submitRequest($conn)
         throw new Exception('You already have a pending or approved offset schedule for this date.');
     }
 
-    $sql = "INSERT INTO offset_schedule_requests (employee_id, original_schedule_id, original_day_of_week, requested_date, status) VALUES (?, ?, ?, ?, 'pending')";
+    $sql = "INSERT INTO offset_schedule_requests (employee_id, original_schedule_id, original_day_of_week, requested_date, status, start_time, end_time) VALUES (?, ?, ?, ?, 'pending', ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iiis", $employee_id, $schedule_id, $day_of_week, $requested_date);
+    $stmt->bind_param("iiisss", $employee_id, $schedule_id, $day_of_week, $requested_date, $start_time, $end_time);
     if (!$stmt->execute()) {
         throw new Exception('Failed to submit request: ' . $stmt->error);
     }
-
-
     $req_id = $conn->insert_id;
 
     // Get employee name
@@ -225,13 +244,35 @@ function adminUpdateStatus($conn)
 function cancelRequest($conn)
 {
     $request_id = $_POST['request_id'] ?? 0;
+    $cancel_reason = trim($_POST['cancel_reason'] ?? '');
     if (!$request_id)
         throw new Exception('Request ID required');
+    if (!$cancel_reason)
+        throw new Exception('Please provide a reason for cancellation.');
 
-    $stmt = $conn->prepare("UPDATE offset_schedule_requests SET status = 'cancelled' WHERE id = ? AND status = 'pending'");
-    $stmt->bind_param("i", $request_id);
+    // Allow cancelling both pending and approved requests
+    $stmt = $conn->prepare("UPDATE offset_schedule_requests SET status = 'cancelled', cancel_reason = ? WHERE id = ? AND status IN ('pending', 'approved')");
+    $stmt->bind_param("si", $cancel_reason, $request_id);
     if (!$stmt->execute()) {
         throw new Exception('Failed to cancel request');
+    }
+    if ($stmt->affected_rows === 0) {
+        throw new Exception('Request not found or cannot be cancelled.');
+    }
+
+    // Notify admin about the cancellation
+    $stmt2 = $conn->prepare("SELECT m.employee_id, m.requested_date, e.first_name, e.last_name, e.employee_id as pub_id FROM offset_schedule_requests m JOIN employees e ON m.employee_id = e.id WHERE m.id = ?");
+    $stmt2->bind_param("i", $request_id);
+    $stmt2->execute();
+    $req = $stmt2->get_result()->fetch_assoc();
+    if ($req) {
+        $emp_name = trim($req['first_name'] . ' ' . $req['last_name']);
+        $msg = "{$emp_name} cancelled their Offset Request for " . date('M d, Y', strtotime($req['requested_date'])) . ". Reason: {$cancel_reason}";
+        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['pub_id']) . "&tab=offset";
+        $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'offset_cancel', ?, ?, 'admin', 0)";
+        $notif_stmt = $conn->prepare($notif_sql);
+        $notif_stmt->bind_param("iss", $req['employee_id'], $msg, $link);
+        $notif_stmt->execute();
     }
 
     if (function_exists('syncToCloud')) {

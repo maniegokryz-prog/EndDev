@@ -43039,3 +43039,1171 @@
 2026-04-08 18:07:00 - Push error on notifications ID 22: Invalid JSON from VPS: 
 2026-04-08 18:07:00 - Push error on notifications ID 23: Invalid JSON from VPS: 
 2026-04-08 18:07:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:51:51 - --- Sync Cycle Started ---
+2026-04-13 07:51:52 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:52:22 - --- Sync Cycle Started ---
+2026-04-13 07:52:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:52:43 - --- Sync Cycle Started ---
+2026-04-13 07:52:43 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:52:47 - --- Sync Cycle Started ---
+2026-04-13 07:52:47 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:53:18 - --- Sync Cycle Started ---
+2026-04-13 07:53:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:53:48 - --- Sync Cycle Started ---
+2026-04-13 07:53:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:54:18 - --- Sync Cycle Started ---
+2026-04-13 07:54:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:54:48 - --- Sync Cycle Started ---
+2026-04-13 07:54:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:55:18 - --- Sync Cycle Started ---
+2026-04-13 07:55:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:55:48 - --- Sync Cycle Started ---
+2026-04-13 07:55:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:56:23 - --- Sync Cycle Started ---
+2026-04-13 07:56:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:57:23 - --- Sync Cycle Started ---
+2026-04-13 07:57:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:58:23 - --- Sync Cycle Started ---
+2026-04-13 07:58:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 07:59:23 - --- Sync Cycle Started ---
+2026-04-13 07:59:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:00:23 - --- Sync Cycle Started ---
+2026-04-13 08:00:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:00:50 - --- Sync Cycle Started ---
+2026-04-13 08:00:51 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:00:52 - --- Sync Cycle Started ---
+2026-04-13 08:00:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:01:22 - --- Sync Cycle Started ---
+2026-04-13 08:01:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:01:53 - --- Sync Cycle Started ---
+2026-04-13 08:01:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:02:23 - --- Sync Cycle Started ---
+2026-04-13 08:02:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:02:53 - --- Sync Cycle Started ---
+2026-04-13 08:02:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:03:23 - --- Sync Cycle Started ---
+2026-04-13 08:03:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:03:53 - --- Sync Cycle Started ---
+2026-04-13 08:03:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:04:23 - --- Sync Cycle Started ---
+2026-04-13 08:04:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:04:53 - --- Sync Cycle Started ---
+2026-04-13 08:04:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:05:23 - --- Sync Cycle Started ---
+2026-04-13 08:05:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:05:53 - --- Sync Cycle Started ---
+2026-04-13 08:05:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:06:23 - --- Sync Cycle Started ---
+2026-04-13 08:06:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:06:53 - --- Sync Cycle Started ---
+2026-04-13 08:06:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:07:23 - --- Sync Cycle Started ---
+2026-04-13 08:07:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:08:23 - --- Sync Cycle Started ---
+2026-04-13 08:08:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:09:23 - --- Sync Cycle Started ---
+2026-04-13 08:09:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:10:23 - --- Sync Cycle Started ---
+2026-04-13 08:10:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:11:23 - --- Sync Cycle Started ---
+2026-04-13 08:11:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:12:23 - --- Sync Cycle Started ---
+2026-04-13 08:12:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:13:23 - --- Sync Cycle Started ---
+2026-04-13 08:13:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:14:23 - --- Sync Cycle Started ---
+2026-04-13 08:14:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:15:23 - --- Sync Cycle Started ---
+2026-04-13 08:15:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:16:23 - --- Sync Cycle Started ---
+2026-04-13 08:16:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:17:23 - --- Sync Cycle Started ---
+2026-04-13 08:17:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:18:23 - --- Sync Cycle Started ---
+2026-04-13 08:18:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:19:23 - --- Sync Cycle Started ---
+2026-04-13 08:19:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:20:23 - --- Sync Cycle Started ---
+2026-04-13 08:20:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:21:23 - --- Sync Cycle Started ---
+2026-04-13 08:21:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:22:23 - --- Sync Cycle Started ---
+2026-04-13 08:22:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:23:23 - --- Sync Cycle Started ---
+2026-04-13 08:23:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:24:23 - --- Sync Cycle Started ---
+2026-04-13 08:24:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:25:23 - --- Sync Cycle Started ---
+2026-04-13 08:25:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:26:23 - --- Sync Cycle Started ---
+2026-04-13 08:26:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:27:23 - --- Sync Cycle Started ---
+2026-04-13 08:27:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:28:23 - --- Sync Cycle Started ---
+2026-04-13 08:28:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:29:23 - --- Sync Cycle Started ---
+2026-04-13 08:29:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:30:23 - --- Sync Cycle Started ---
+2026-04-13 08:30:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:31:23 - --- Sync Cycle Started ---
+2026-04-13 08:31:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:32:23 - --- Sync Cycle Started ---
+2026-04-13 08:32:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:33:23 - --- Sync Cycle Started ---
+2026-04-13 08:33:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:34:23 - --- Sync Cycle Started ---
+2026-04-13 08:34:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:35:23 - --- Sync Cycle Started ---
+2026-04-13 08:35:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:36:23 - --- Sync Cycle Started ---
+2026-04-13 08:36:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:37:23 - --- Sync Cycle Started ---
+2026-04-13 08:37:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:37:54 - --- Sync Cycle Started ---
+2026-04-13 08:37:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:37:56 - --- Sync Cycle Started ---
+2026-04-13 08:37:57 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:37:58 - --- Sync Cycle Started ---
+2026-04-13 08:37:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:38:29 - --- Sync Cycle Started ---
+2026-04-13 08:38:29 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:38:59 - --- Sync Cycle Started ---
+2026-04-13 08:38:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:39:29 - --- Sync Cycle Started ---
+2026-04-13 08:39:29 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:39:59 - --- Sync Cycle Started ---
+2026-04-13 08:39:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:40:29 - --- Sync Cycle Started ---
+2026-04-13 08:40:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:40:59 - --- Sync Cycle Started ---
+2026-04-13 08:40:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:41:28 - --- Sync Cycle Started ---
+2026-04-13 08:41:29 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:41:59 - --- Sync Cycle Started ---
+2026-04-13 08:41:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:42:29 - --- Sync Cycle Started ---
+2026-04-13 08:42:29 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:43:23 - --- Sync Cycle Started ---
+2026-04-13 08:43:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:44:23 - --- Sync Cycle Started ---
+2026-04-13 08:44:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:45:23 - --- Sync Cycle Started ---
+2026-04-13 08:45:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:46:08 - --- Sync Cycle Started ---
+2026-04-13 08:46:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:46:10 - --- Sync Cycle Started ---
+2026-04-13 08:46:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:46:16 - --- Sync Cycle Started ---
+2026-04-13 08:46:17 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:46:47 - --- Sync Cycle Started ---
+2026-04-13 08:46:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:47:16 - --- Sync Cycle Started ---
+2026-04-13 08:47:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:47:46 - --- Sync Cycle Started ---
+2026-04-13 08:47:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:48:17 - --- Sync Cycle Started ---
+2026-04-13 08:48:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:48:47 - --- Sync Cycle Started ---
+2026-04-13 08:48:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:48:57 - --- Sync Cycle Started ---
+2026-04-13 08:48:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:49:27 - --- Sync Cycle Started ---
+2026-04-13 08:49:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:49:37 - --- Sync Cycle Started ---
+2026-04-13 08:49:38 - Successfully pushed to VPS for notifications ID 23
+2026-04-13 08:49:38 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:49:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:50:07 - --- Sync Cycle Started ---
+2026-04-13 08:50:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:50:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:50:38 - --- Sync Cycle Started ---
+2026-04-13 08:50:38 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:50:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:51:08 - --- Sync Cycle Started ---
+2026-04-13 08:51:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:51:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:51:38 - --- Sync Cycle Started ---
+2026-04-13 08:51:38 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:51:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:52:08 - --- Sync Cycle Started ---
+2026-04-13 08:52:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:52:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:52:38 - --- Sync Cycle Started ---
+2026-04-13 08:52:38 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:52:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:53:20 - --- Sync Cycle Started ---
+2026-04-13 08:53:20 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:53:20 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:54:21 - --- Sync Cycle Started ---
+2026-04-13 08:54:21 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:54:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:55:04 - --- Sync Cycle Started ---
+2026-04-13 08:55:04 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:55:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:55:07 - --- Sync Cycle Started ---
+2026-04-13 08:55:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:55:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:55:38 - --- Sync Cycle Started ---
+2026-04-13 08:55:38 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:55:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:56:08 - --- Sync Cycle Started ---
+2026-04-13 08:56:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:56:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:57:23 - --- Sync Cycle Started ---
+2026-04-13 08:57:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:57:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:58:23 - --- Sync Cycle Started ---
+2026-04-13 08:58:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:58:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:59:07 - --- Sync Cycle Started ---
+2026-04-13 08:59:07 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:59:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 08:59:38 - --- Sync Cycle Started ---
+2026-04-13 08:59:38 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 08:59:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:00:08 - --- Sync Cycle Started ---
+2026-04-13 09:00:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:00:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:01:23 - --- Sync Cycle Started ---
+2026-04-13 09:01:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:01:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:02:23 - --- Sync Cycle Started ---
+2026-04-13 09:02:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:02:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:03:23 - --- Sync Cycle Started ---
+2026-04-13 09:03:25 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:03:26 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:04:23 - --- Sync Cycle Started ---
+2026-04-13 09:04:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:04:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:05:23 - --- Sync Cycle Started ---
+2026-04-13 09:05:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:05:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:06:23 - --- Sync Cycle Started ---
+2026-04-13 09:06:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:06:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:07:21 - --- Sync Cycle Started ---
+2026-04-13 09:07:22 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:07:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:07:23 - --- Sync Cycle Started ---
+2026-04-13 09:07:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:07:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:07:52 - --- Sync Cycle Started ---
+2026-04-13 09:07:53 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:07:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:08:23 - --- Sync Cycle Started ---
+2026-04-13 09:08:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:08:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:08:53 - --- Sync Cycle Started ---
+2026-04-13 09:08:53 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:08:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:09:23 - --- Sync Cycle Started ---
+2026-04-13 09:09:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:09:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:09:53 - --- Sync Cycle Started ---
+2026-04-13 09:09:53 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:09:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:10:23 - --- Sync Cycle Started ---
+2026-04-13 09:10:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:10:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:11:23 - --- Sync Cycle Started ---
+2026-04-13 09:11:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:11:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:12:23 - --- Sync Cycle Started ---
+2026-04-13 09:12:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:12:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:13:23 - --- Sync Cycle Started ---
+2026-04-13 09:13:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:13:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:14:23 - --- Sync Cycle Started ---
+2026-04-13 09:14:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:14:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:15:23 - --- Sync Cycle Started ---
+2026-04-13 09:15:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:15:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:16:23 - --- Sync Cycle Started ---
+2026-04-13 09:16:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:16:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:16:49 - --- Sync Cycle Started ---
+2026-04-13 09:16:49 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:16:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:17:20 - --- Sync Cycle Started ---
+2026-04-13 09:17:21 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:17:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:17:50 - --- Sync Cycle Started ---
+2026-04-13 09:17:50 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:17:52 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:18:20 - --- Sync Cycle Started ---
+2026-04-13 09:18:20 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:18:20 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:18:50 - --- Sync Cycle Started ---
+2026-04-13 09:18:50 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:18:51 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:19:20 - --- Sync Cycle Started ---
+2026-04-13 09:19:20 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:19:20 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:19:50 - --- Sync Cycle Started ---
+2026-04-13 09:19:50 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:19:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:20:20 - --- Sync Cycle Started ---
+2026-04-13 09:20:20 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:20:20 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:20:50 - --- Sync Cycle Started ---
+2026-04-13 09:20:50 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:20:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:21:23 - --- Sync Cycle Started ---
+2026-04-13 09:21:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:21:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:22:23 - --- Sync Cycle Started ---
+2026-04-13 09:22:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:22:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:23:23 - --- Sync Cycle Started ---
+2026-04-13 09:23:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:23:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:24:23 - --- Sync Cycle Started ---
+2026-04-13 09:24:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:24:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:25:23 - --- Sync Cycle Started ---
+2026-04-13 09:25:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:25:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:26:23 - --- Sync Cycle Started ---
+2026-04-13 09:26:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:26:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:27:23 - --- Sync Cycle Started ---
+2026-04-13 09:27:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:27:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:28:23 - --- Sync Cycle Started ---
+2026-04-13 09:28:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:28:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:28:57 - --- Sync Cycle Started ---
+2026-04-13 09:28:57 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:28:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:29:19 - --- Sync Cycle Started ---
+2026-04-13 09:29:19 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:29:20 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:29:38 - --- Sync Cycle Started ---
+2026-04-13 09:29:39 - Successfully pushed to VPS for schedule_periods ID 1
+2026-04-13 09:29:39 - Successfully pushed to VPS for schedule_periods ID 2
+2026-04-13 09:29:39 - Successfully pushed to VPS for schedule_periods ID 3
+2026-04-13 09:29:40 - Successfully pushed to VPS for schedule_periods ID 7
+2026-04-13 09:29:40 - Successfully pushed to VPS for schedule_periods ID 8
+2026-04-13 09:29:40 - Successfully pushed to VPS for schedule_periods ID 9
+2026-04-13 09:29:40 - Successfully pushed to VPS for schedule_periods ID 10
+2026-04-13 09:29:40 - Successfully pushed to VPS for employee_assignments ID 1
+2026-04-13 09:29:41 - Successfully pushed to VPS for employee_assignments ID 2
+2026-04-13 09:29:41 - Successfully pushed to VPS for employee_assignments ID 3
+2026-04-13 09:29:41 - Successfully pushed to VPS for employee_assignments ID 7
+2026-04-13 09:29:41 - Successfully pushed to VPS for employee_assignments ID 8
+2026-04-13 09:29:42 - Successfully pushed to VPS for employee_assignments ID 9
+2026-04-13 09:29:42 - Successfully pushed to VPS for notifications ID 24
+2026-04-13 09:29:42 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:29:42 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:30:07 - --- Sync Cycle Started ---
+2026-04-13 09:30:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:30:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:30:38 - --- Sync Cycle Started ---
+2026-04-13 09:30:38 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:30:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:31:08 - --- Sync Cycle Started ---
+2026-04-13 09:31:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:31:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:31:38 - --- Sync Cycle Started ---
+2026-04-13 09:31:39 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:31:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:32:08 - --- Sync Cycle Started ---
+2026-04-13 09:32:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:32:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:32:39 - --- Sync Cycle Started ---
+2026-04-13 09:32:39 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:32:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:33:23 - --- Sync Cycle Started ---
+2026-04-13 09:33:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:33:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:34:23 - --- Sync Cycle Started ---
+2026-04-13 09:34:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:34:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:34:38 - --- Sync Cycle Started ---
+2026-04-13 09:34:38 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:34:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:35:08 - --- Sync Cycle Started ---
+2026-04-13 09:35:08 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:35:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:35:38 - --- Sync Cycle Started ---
+2026-04-13 09:35:38 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:35:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:36:23 - --- Sync Cycle Started ---
+2026-04-13 09:36:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:36:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:37:23 - --- Sync Cycle Started ---
+2026-04-13 09:37:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:37:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:38:23 - --- Sync Cycle Started ---
+2026-04-13 09:38:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:38:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:39:24 - --- Sync Cycle Started ---
+2026-04-13 09:39:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:39:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:40:24 - --- Sync Cycle Started ---
+2026-04-13 09:40:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:40:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:41:23 - --- Sync Cycle Started ---
+2026-04-13 09:41:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:41:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:42:23 - --- Sync Cycle Started ---
+2026-04-13 09:42:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:42:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:43:23 - --- Sync Cycle Started ---
+2026-04-13 09:43:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:43:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:44:23 - --- Sync Cycle Started ---
+2026-04-13 09:44:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:44:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:45:23 - --- Sync Cycle Started ---
+2026-04-13 09:45:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:45:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:46:23 - --- Sync Cycle Started ---
+2026-04-13 09:46:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:46:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:47:23 - --- Sync Cycle Started ---
+2026-04-13 09:47:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:47:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:48:24 - --- Sync Cycle Started ---
+2026-04-13 09:48:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:48:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:49:24 - --- Sync Cycle Started ---
+2026-04-13 09:49:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:49:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:50:23 - --- Sync Cycle Started ---
+2026-04-13 09:50:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:50:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:51:23 - --- Sync Cycle Started ---
+2026-04-13 09:51:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:51:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:51:42 - --- Sync Cycle Started ---
+2026-04-13 09:51:42 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:51:44 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:51:44 - --- Sync Cycle Started ---
+2026-04-13 09:51:44 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:51:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:52:14 - --- Sync Cycle Started ---
+2026-04-13 09:52:14 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:52:15 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:52:44 - --- Sync Cycle Started ---
+2026-04-13 09:52:44 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:52:46 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:53:14 - --- Sync Cycle Started ---
+2026-04-13 09:53:14 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:53:15 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:53:29 - --- Sync Cycle Started ---
+2026-04-13 09:53:29 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:53:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:53:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:54:00 - --- Sync Cycle Started ---
+2026-04-13 09:54:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:54:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:54:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:54:30 - --- Sync Cycle Started ---
+2026-04-13 09:54:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:54:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:54:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:55:00 - --- Sync Cycle Started ---
+2026-04-13 09:55:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:55:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:55:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:55:29 - --- Sync Cycle Started ---
+2026-04-13 09:55:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:55:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:55:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:55:59 - --- Sync Cycle Started ---
+2026-04-13 09:55:59 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:55:59 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:56:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:56:29 - --- Sync Cycle Started ---
+2026-04-13 09:56:29 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:56:29 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:56:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:57:00 - --- Sync Cycle Started ---
+2026-04-13 09:57:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:57:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:57:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:57:30 - --- Sync Cycle Started ---
+2026-04-13 09:57:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:57:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:57:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:57:59 - --- Sync Cycle Started ---
+2026-04-13 09:57:59 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:57:59 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:58:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:58:30 - --- Sync Cycle Started ---
+2026-04-13 09:58:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:58:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:58:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 09:59:23 - --- Sync Cycle Started ---
+2026-04-13 09:59:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 09:59:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 09:59:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:00:24 - --- Sync Cycle Started ---
+2026-04-13 10:00:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:00:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:00:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:01:09 - --- Sync Cycle Started ---
+2026-04-13 10:01:09 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:01:09 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:01:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:01:30 - --- Sync Cycle Started ---
+2026-04-13 10:01:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:01:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:01:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:02:00 - --- Sync Cycle Started ---
+2026-04-13 10:02:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:02:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:02:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:02:30 - --- Sync Cycle Started ---
+2026-04-13 10:02:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:02:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:02:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:03:12 - --- Sync Cycle Started ---
+2026-04-13 10:03:12 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:03:12 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:03:13 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:03:30 - --- Sync Cycle Started ---
+2026-04-13 10:03:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:03:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:03:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:04:01 - --- Sync Cycle Started ---
+2026-04-13 10:04:01 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:04:01 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:04:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:05:12 - --- Sync Cycle Started ---
+2026-04-13 10:05:12 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:05:12 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:05:12 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:05:30 - --- Sync Cycle Started ---
+2026-04-13 10:05:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:05:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:05:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:06:00 - --- Sync Cycle Started ---
+2026-04-13 10:06:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:06:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:06:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:07:23 - --- Sync Cycle Started ---
+2026-04-13 10:07:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:07:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:07:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:08:23 - --- Sync Cycle Started ---
+2026-04-13 10:08:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:08:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:08:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:08:30 - --- Sync Cycle Started ---
+2026-04-13 10:08:31 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:08:31 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:08:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:09:00 - --- Sync Cycle Started ---
+2026-04-13 10:09:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:09:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:09:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:10:21 - --- Sync Cycle Started ---
+2026-04-13 10:10:21 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:10:21 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:10:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:11:22 - --- Sync Cycle Started ---
+2026-04-13 10:11:22 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:11:22 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:11:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:11:47 - --- Sync Cycle Started ---
+2026-04-13 10:11:47 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:11:47 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:11:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:12:00 - --- Sync Cycle Started ---
+2026-04-13 10:12:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:12:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:12:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:12:30 - --- Sync Cycle Started ---
+2026-04-13 10:12:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:12:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:12:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:13:23 - --- Sync Cycle Started ---
+2026-04-13 10:13:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:13:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:13:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:14:09 - --- Sync Cycle Started ---
+2026-04-13 10:14:09 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:14:10 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:14:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:14:30 - --- Sync Cycle Started ---
+2026-04-13 10:14:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:14:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:14:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:15:00 - --- Sync Cycle Started ---
+2026-04-13 10:15:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:15:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:15:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:15:30 - --- Sync Cycle Started ---
+2026-04-13 10:15:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:15:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:15:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:16:00 - --- Sync Cycle Started ---
+2026-04-13 10:16:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:16:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:16:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:16:30 - --- Sync Cycle Started ---
+2026-04-13 10:16:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:16:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:16:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:17:23 - --- Sync Cycle Started ---
+2026-04-13 10:17:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:17:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:17:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:17:30 - --- Sync Cycle Started ---
+2026-04-13 10:17:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:17:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:17:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:18:00 - --- Sync Cycle Started ---
+2026-04-13 10:18:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:18:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:18:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:18:30 - --- Sync Cycle Started ---
+2026-04-13 10:18:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:18:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:18:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:19:00 - --- Sync Cycle Started ---
+2026-04-13 10:19:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:19:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:19:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:19:30 - --- Sync Cycle Started ---
+2026-04-13 10:19:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:19:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:19:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:20:23 - --- Sync Cycle Started ---
+2026-04-13 10:20:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:20:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:20:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:21:23 - --- Sync Cycle Started ---
+2026-04-13 10:21:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:21:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:21:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:22:23 - --- Sync Cycle Started ---
+2026-04-13 10:22:27 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:22:27 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:22:27 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:22:45 - --- Sync Cycle Started ---
+2026-04-13 10:22:47 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:22:47 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:22:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:22:56 - --- Sync Cycle Started ---
+2026-04-13 10:22:56 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:22:56 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:22:56 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:23:26 - --- Sync Cycle Started ---
+2026-04-13 10:23:26 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:23:26 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:23:26 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:23:56 - --- Sync Cycle Started ---
+2026-04-13 10:23:56 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:23:56 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:23:57 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:24:27 - --- Sync Cycle Started ---
+2026-04-13 10:24:27 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:24:27 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:24:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:24:58 - --- Sync Cycle Started ---
+2026-04-13 10:24:58 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:24:58 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:24:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:25:27 - --- Sync Cycle Started ---
+2026-04-13 10:25:27 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:25:27 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:25:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:25:57 - --- Sync Cycle Started ---
+2026-04-13 10:25:57 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:25:57 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:25:57 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:27:11 - --- Sync Cycle Started ---
+2026-04-13 10:27:11 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:27:11 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:27:12 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:27:23 - --- Sync Cycle Started ---
+2026-04-13 10:27:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:27:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:27:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:27:52 - --- Sync Cycle Started ---
+2026-04-13 10:27:53 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:27:53 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:27:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:28:23 - --- Sync Cycle Started ---
+2026-04-13 10:28:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:28:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:28:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:28:53 - --- Sync Cycle Started ---
+2026-04-13 10:28:53 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:28:53 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:28:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:29:23 - --- Sync Cycle Started ---
+2026-04-13 10:29:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:29:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:29:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:29:53 - --- Sync Cycle Started ---
+2026-04-13 10:29:53 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:29:53 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:29:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:30:23 - --- Sync Cycle Started ---
+2026-04-13 10:30:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:30:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:30:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:30:54 - --- Sync Cycle Started ---
+2026-04-13 10:30:54 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:30:54 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:30:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:31:23 - --- Sync Cycle Started ---
+2026-04-13 10:31:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:31:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:31:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:31:53 - --- Sync Cycle Started ---
+2026-04-13 10:31:53 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:31:53 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:31:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:32:23 - --- Sync Cycle Started ---
+2026-04-13 10:32:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:32:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:32:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:33:04 - --- Sync Cycle Started ---
+2026-04-13 10:33:05 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:33:05 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:33:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:33:23 - --- Sync Cycle Started ---
+2026-04-13 10:33:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:33:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:33:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:33:53 - --- Sync Cycle Started ---
+2026-04-13 10:33:53 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:33:53 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:33:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:34:24 - --- Sync Cycle Started ---
+2026-04-13 10:34:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:34:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:34:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:35:23 - --- Sync Cycle Started ---
+2026-04-13 10:35:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:35:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:35:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:36:23 - --- Sync Cycle Started ---
+2026-04-13 10:36:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:36:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:36:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:37:24 - --- Sync Cycle Started ---
+2026-04-13 10:37:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:37:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:37:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:38:24 - --- Sync Cycle Started ---
+2026-04-13 10:38:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:38:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:38:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:38:32 - --- Sync Cycle Started ---
+2026-04-13 10:38:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:38:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:38:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:39:03 - --- Sync Cycle Started ---
+2026-04-13 10:39:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:39:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:39:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:39:33 - --- Sync Cycle Started ---
+2026-04-13 10:39:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:39:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:39:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:40:03 - --- Sync Cycle Started ---
+2026-04-13 10:40:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:40:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:40:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:40:33 - --- Sync Cycle Started ---
+2026-04-13 10:40:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:40:34 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:40:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:41:03 - --- Sync Cycle Started ---
+2026-04-13 10:41:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:41:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:41:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:41:33 - --- Sync Cycle Started ---
+2026-04-13 10:41:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:41:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:41:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:42:03 - --- Sync Cycle Started ---
+2026-04-13 10:42:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:42:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:42:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:42:33 - --- Sync Cycle Started ---
+2026-04-13 10:42:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:42:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:42:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:43:03 - --- Sync Cycle Started ---
+2026-04-13 10:43:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:43:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:43:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:43:32 - --- Sync Cycle Started ---
+2026-04-13 10:43:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:43:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:43:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:44:03 - --- Sync Cycle Started ---
+2026-04-13 10:44:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:44:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:44:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:44:32 - --- Sync Cycle Started ---
+2026-04-13 10:44:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:44:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:44:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:45:03 - --- Sync Cycle Started ---
+2026-04-13 10:45:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:45:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:45:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:45:33 - --- Sync Cycle Started ---
+2026-04-13 10:45:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:45:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:45:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:46:03 - --- Sync Cycle Started ---
+2026-04-13 10:46:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:46:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:46:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:46:35 - --- Sync Cycle Started ---
+2026-04-13 10:46:35 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:46:35 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:46:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:47:03 - --- Sync Cycle Started ---
+2026-04-13 10:47:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:47:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:47:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:47:33 - --- Sync Cycle Started ---
+2026-04-13 10:47:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:47:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:47:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:48:23 - --- Sync Cycle Started ---
+2026-04-13 10:48:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:48:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:48:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:49:26 - --- Sync Cycle Started ---
+2026-04-13 10:49:26 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:49:26 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:49:26 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:50:23 - --- Sync Cycle Started ---
+2026-04-13 10:50:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:50:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:50:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:51:02 - --- Sync Cycle Started ---
+2026-04-13 10:51:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:51:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:51:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:51:33 - --- Sync Cycle Started ---
+2026-04-13 10:51:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:51:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:51:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:52:03 - --- Sync Cycle Started ---
+2026-04-13 10:52:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:52:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:52:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:52:33 - --- Sync Cycle Started ---
+2026-04-13 10:52:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:52:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:52:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:53:03 - --- Sync Cycle Started ---
+2026-04-13 10:53:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:53:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:53:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:53:33 - --- Sync Cycle Started ---
+2026-04-13 10:53:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:53:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:53:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:53:56 - --- Sync Cycle Started ---
+2026-04-13 10:53:56 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:53:56 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:53:56 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:54:24 - --- Sync Cycle Started ---
+2026-04-13 10:54:24 - Successfully pushed to VPS for notifications ID 25
+2026-04-13 10:54:25 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:54:25 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:54:25 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:54:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:54:54 - --- Sync Cycle Started ---
+2026-04-13 10:54:54 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:54:54 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:54:55 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:54:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:55:24 - --- Sync Cycle Started ---
+2026-04-13 10:55:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:55:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:55:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:55:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:55:33 - --- Sync Cycle Started ---
+2026-04-13 10:55:33 - Successfully pushed to VPS for notifications ID 26
+2026-04-13 10:55:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:55:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:55:33 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 10:55:33 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:55:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:56:04 - --- Sync Cycle Started ---
+2026-04-13 10:56:04 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:56:04 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:56:04 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 10:56:04 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:56:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:56:33 - --- Sync Cycle Started ---
+2026-04-13 10:56:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:56:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:56:33 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 10:56:33 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:56:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:57:03 - --- Sync Cycle Started ---
+2026-04-13 10:57:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:57:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:57:03 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 10:57:03 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:57:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:57:32 - --- Sync Cycle Started ---
+2026-04-13 10:57:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:57:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:57:33 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 10:57:33 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:57:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:58:03 - --- Sync Cycle Started ---
+2026-04-13 10:58:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:58:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:58:03 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 10:58:03 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:58:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:58:33 - --- Sync Cycle Started ---
+2026-04-13 10:58:33 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:58:33 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:58:34 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 10:58:34 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:58:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 10:59:03 - --- Sync Cycle Started ---
+2026-04-13 10:59:03 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 10:59:03 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 10:59:03 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 10:59:03 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 10:59:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:00:23 - --- Sync Cycle Started ---
+2026-04-13 11:00:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:00:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:00:24 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:00:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:00:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:01:24 - --- Sync Cycle Started ---
+2026-04-13 11:01:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:01:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:01:25 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:01:25 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:01:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:01:58 - --- Sync Cycle Started ---
+2026-04-13 11:01:58 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:01:58 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:01:58 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:01:58 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:01:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:01:59 - --- Sync Cycle Started ---
+2026-04-13 11:02:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:02:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:02:00 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:02:00 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:02:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:02:30 - --- Sync Cycle Started ---
+2026-04-13 11:02:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:02:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:02:30 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:02:30 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:02:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:03:00 - --- Sync Cycle Started ---
+2026-04-13 11:03:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:03:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:03:00 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:03:00 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:03:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:03:30 - --- Sync Cycle Started ---
+2026-04-13 11:03:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:03:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:03:30 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:03:30 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:03:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:04:00 - --- Sync Cycle Started ---
+2026-04-13 11:04:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:04:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:04:00 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:04:00 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:04:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:04:30 - --- Sync Cycle Started ---
+2026-04-13 11:04:30 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:04:30 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:04:30 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:04:30 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:04:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:05:00 - --- Sync Cycle Started ---
+2026-04-13 11:05:00 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:05:00 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:05:01 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:05:01 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:05:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:06:22 - --- Sync Cycle Started ---
+2026-04-13 11:06:22 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:06:22 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:06:22 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:06:22 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:06:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:07:23 - --- Sync Cycle Started ---
+2026-04-13 11:07:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:07:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:07:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:07:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:07:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:08:23 - --- Sync Cycle Started ---
+2026-04-13 11:08:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:08:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:08:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:08:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:08:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:09:23 - --- Sync Cycle Started ---
+2026-04-13 11:09:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:09:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:09:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:09:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:09:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:10:23 - --- Sync Cycle Started ---
+2026-04-13 11:10:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:10:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:10:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:10:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:10:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:11:23 - --- Sync Cycle Started ---
+2026-04-13 11:11:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:11:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:11:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:11:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:11:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:12:23 - --- Sync Cycle Started ---
+2026-04-13 11:12:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:12:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:12:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:12:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:12:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:13:23 - --- Sync Cycle Started ---
+2026-04-13 11:13:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:13:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:13:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:13:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:13:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:14:24 - --- Sync Cycle Started ---
+2026-04-13 11:14:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:14:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:14:24 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:14:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:14:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:15:23 - --- Sync Cycle Started ---
+2026-04-13 11:15:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:15:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:15:24 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:15:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:15:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:16:24 - --- Sync Cycle Started ---
+2026-04-13 11:16:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:16:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:16:24 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:16:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:16:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:17:23 - --- Sync Cycle Started ---
+2026-04-13 11:17:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:17:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:17:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:17:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:17:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:18:23 - --- Sync Cycle Started ---
+2026-04-13 11:18:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:18:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:18:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:18:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:18:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:19:23 - --- Sync Cycle Started ---
+2026-04-13 11:19:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:19:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:19:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:19:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:19:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:20:23 - --- Sync Cycle Started ---
+2026-04-13 11:20:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:20:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:20:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:20:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:20:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:21:23 - --- Sync Cycle Started ---
+2026-04-13 11:21:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:21:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:21:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:21:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:21:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:22:23 - --- Sync Cycle Started ---
+2026-04-13 11:22:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:22:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:22:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:22:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:22:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:23:23 - --- Sync Cycle Started ---
+2026-04-13 11:23:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:23:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:23:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:23:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:23:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:24:23 - --- Sync Cycle Started ---
+2026-04-13 11:24:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:24:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:24:24 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:24:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:24:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:25:23 - --- Sync Cycle Started ---
+2026-04-13 11:25:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:25:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:25:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:25:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:25:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:26:23 - --- Sync Cycle Started ---
+2026-04-13 11:26:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:26:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:26:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:26:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:26:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:27:24 - --- Sync Cycle Started ---
+2026-04-13 11:27:24 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:27:24 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:27:24 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:27:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:27:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:28:23 - --- Sync Cycle Started ---
+2026-04-13 11:28:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:28:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:28:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:28:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:28:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:29:23 - --- Sync Cycle Started ---
+2026-04-13 11:29:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:29:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:29:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:29:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:29:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:30:23 - --- Sync Cycle Started ---
+2026-04-13 11:30:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:30:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:30:24 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:30:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:30:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:31:23 - --- Sync Cycle Started ---
+2026-04-13 11:31:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:31:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:31:24 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:31:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:31:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:32:23 - --- Sync Cycle Started ---
+2026-04-13 11:32:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:32:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:32:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:32:23 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:32:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 11:33:23 - --- Sync Cycle Started ---
+2026-04-13 11:33:23 - Push error on makeup_class_requests ID 5: Invalid JSON from VPS: 
+2026-04-13 11:33:23 - Push error on makeup_class_requests ID 6: Invalid JSON from VPS: 
+2026-04-13 11:33:23 - Push error on offset_schedule_requests ID 3: Invalid JSON from VPS: 
+2026-04-13 11:33:24 - Push error on offset_schedule_requests ID 10: Invalid JSON from VPS: 
+2026-04-13 11:33:24 - Successfully pulled 4 system_settings from VPS.

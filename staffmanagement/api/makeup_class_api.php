@@ -48,7 +48,8 @@ try {
             throw new Exception('Invalid action');
     }
 } catch (Exception $e) {
-    if (ob_get_length()) ob_end_clean();
+    if (ob_get_length())
+        ob_end_clean();
     http_response_code(400);
     echo json_encode([
         'success' => false,
@@ -59,7 +60,8 @@ try {
 
 $conn->close();
 
-function checkOverlap($conn, $employee_id, $requested_date, $start_time, $end_time) {
+function checkOverlap($conn, $employee_id, $requested_date, $start_time, $end_time)
+{
     $day_of_week = date('N', strtotime($requested_date)) - 1; // 0=Mon, 6=Sun
 
     // 1. Check regular schedules
@@ -96,7 +98,8 @@ function checkOverlap($conn, $employee_id, $requested_date, $start_time, $end_ti
     return null; // No overlap
 }
 
-function submitRequest($conn) {
+function submitRequest($conn)
+{
     $employee_id = $_POST['employee_id'] ?? 0;
     $requested_date = $_POST['requested_date'] ?? '';
     $start_time = $_POST['start_time'] ?? '';
@@ -120,15 +123,49 @@ function submitRequest($conn) {
         throw new Exception($overlapError);
     }
 
+    // Handle optional file attachment
+    $attachment_path = null;
+    if (!empty($_FILES['attachment']['name'])) {
+        $file = $_FILES['attachment'];
+        $allowed_types = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg',
+                          'application/msword',
+                          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        $allowed_ext  = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'];
+
+        $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $mime     = mime_content_type($file['tmp_name']);
+
+        if (!in_array($mime, $allowed_types) || !in_array($file_ext, $allowed_ext)) {
+            throw new Exception('Invalid file type. Allowed: PDF, JPG, PNG, DOC, DOCX.');
+        }
+        if ($file['size'] > 5 * 1024 * 1024) {
+            throw new Exception('Attachment must be 5MB or smaller.');
+        }
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception('File upload error. Please try again.');
+        }
+
+        $upload_dir = dirname(__DIR__, 2) . '/uploads/makeup_attachments/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
+        }
+        $filename = 'makeup_' . $employee_id . '_' . time() . '.' . $file_ext;
+        $dest     = $upload_dir . $filename;
+        if (!move_uploaded_file($file['tmp_name'], $dest)) {
+            throw new Exception('Failed to save attachment. Please try again.');
+        }
+        $attachment_path = 'EndDev/uploads/makeup_attachments/' . $filename;
+    }
+
     // Auto-approve if requested by an admin
     $is_admin = isset($_SESSION['user_role']) && strtolower($_SESSION['user_role']) === 'admin';
     $status = $is_admin ? 'approved' : 'pending';
 
-    $sql = "INSERT INTO makeup_class_requests (employee_id, requested_date, start_time, end_time, designate_class, subject_code, room_num, reason, status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO makeup_class_requests (employee_id, requested_date, start_time, end_time, designate_class, subject_code, room_num, reason, status, attachment_path)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("issssssss", $employee_id, $requested_date, $start_time, $end_time, $designate_class, $subject_code, $room_num, $reason, $status);
-    
+    $stmt->bind_param("isssssssss", $employee_id, $requested_date, $start_time, $end_time, $designate_class, $subject_code, $room_num, $reason, $status, $attachment_path);
+
     if (!$stmt->execute()) {
         throw new Exception('Failed to submit request: ' . $stmt->error);
     }
@@ -142,16 +179,15 @@ function submitRequest($conn) {
     $empStmt->execute();
     $empData = $empStmt->get_result()->fetch_assoc();
     $emp_pub_id = $empData['employee_id'] ?? '';
-    
+
     $emp_name = trim(($empData['first_name'] ?? '') . ' ' . ($empData['last_name'] ?? ''));
-    if (!$emp_name) $emp_name = "A Faculty Member";
+    if (!$emp_name)
+        $emp_name = "A Faculty Member";
 
     // Notify admin only if the request is NOT from an admin
     if (!$is_admin) {
         $msg = "{$emp_name} requested a Makeup Class on " . date('M d, Y', strtotime($requested_date));
-        
         $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($emp_pub_id) . "&tab=makeup&req_id=" . $req_id;
-
         $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'makeup_request', ?, ?, 'admin', 0)";
         $notif_stmt = $conn->prepare($notif_sql);
         $notif_stmt->bind_param("iss", $employee_id, $msg, $link);
@@ -162,9 +198,11 @@ function submitRequest($conn) {
     echo json_encode(['success' => true, 'message' => $success_msg, 'request_id' => $req_id]);
 }
 
-function getEmployeeRequests($conn) {
+function getEmployeeRequests($conn)
+{
     $employee_id = $_GET['employee_id'] ?? 0;
-    if (!$employee_id) throw new Exception('Employee ID required');
+    if (!$employee_id)
+        throw new Exception('Employee ID required');
 
     $sql = "SELECT m.* 
             FROM makeup_class_requests m
@@ -182,25 +220,26 @@ function getEmployeeRequests($conn) {
     echo json_encode(['success' => true, 'data' => $data]);
 }
 
-function adminGetRequests($conn) {
+function adminGetRequests($conn)
+{
     $employee_id = $_GET['employee_id'] ?? 0;
-    
+
     $sql = "SELECT m.*, e.first_name, e.last_name, e.employee_id as emp_code
             FROM makeup_class_requests m
-            JOIN employees e ON m.employee_id = e.id
-            WHERE m.status = 'pending'";
+            JOIN employees e ON m.employee_id = e.id";
 
     if ($employee_id) {
-        $sql .= " AND m.employee_id = ?";
+        $sql .= " WHERE m.employee_id = ?";
         $stmt = $conn->prepare($sql . " ORDER BY m.created_at DESC");
         $stmt->bind_param("i", $employee_id);
         $stmt->execute();
         $res = $stmt->get_result();
     } else {
-        $sql .= " ORDER BY m.created_at DESC";
+        // Fallback for global fetch if needed: show pending and approved so they remain for review
+        $sql .= " WHERE m.status IN ('pending', 'approved') ORDER BY m.created_at DESC";
         $res = $conn->query($sql);
     }
-    
+
     $data = [];
     while ($row = $res->fetch_assoc()) {
         $data[] = $row;
@@ -208,9 +247,11 @@ function adminGetRequests($conn) {
     echo json_encode(['success' => true, 'data' => $data]);
 }
 
-function getSingleRequest($conn) {
+function getSingleRequest($conn)
+{
     $req_id = $_GET['req_id'] ?? 0;
-    if (!$req_id) throw new Exception('Request ID required');
+    if (!$req_id)
+        throw new Exception('Request ID required');
 
     $sql = "SELECT m.*, e.first_name, e.last_name, e.employee_id as emp_code
             FROM makeup_class_requests m
@@ -220,7 +261,7 @@ function getSingleRequest($conn) {
     $stmt->bind_param("i", $req_id);
     $stmt->execute();
     $res = $stmt->get_result()->fetch_assoc();
-    
+
     if ($res) {
         echo json_encode(['success' => true, 'data' => $res]);
     } else {
@@ -228,7 +269,8 @@ function getSingleRequest($conn) {
     }
 }
 
-function adminUpdateStatus($conn) {
+function adminUpdateStatus($conn)
+{
     $request_id = $_POST['request_id'] ?? 0;
     $status = $_POST['status'] ?? '';
 
@@ -264,14 +306,38 @@ function adminUpdateStatus($conn) {
     echo json_encode(['success' => true, 'message' => "Request $status successfully"]);
 }
 
-function cancelRequest($conn) {
+function cancelRequest($conn)
+{
     $request_id = $_POST['request_id'] ?? 0;
-    if (!$request_id) throw new Exception('Request ID required');
+    $cancel_reason = trim($_POST['cancel_reason'] ?? '');
+    if (!$request_id)
+        throw new Exception('Request ID required');
+    if (!$cancel_reason)
+        throw new Exception('Please provide a reason for cancellation.');
 
-    $stmt = $conn->prepare("UPDATE makeup_class_requests SET status = 'cancelled' WHERE id = ? AND status = 'pending'");
-    $stmt->bind_param("i", $request_id);
+    // Allow cancelling both pending and approved requests
+    $stmt = $conn->prepare("UPDATE makeup_class_requests SET status = 'cancelled', cancel_reason = ? WHERE id = ? AND status IN ('pending', 'approved')");
+    $stmt->bind_param("si", $cancel_reason, $request_id);
     if (!$stmt->execute()) {
         throw new Exception('Failed to cancel request');
+    }
+    if ($stmt->affected_rows === 0) {
+        throw new Exception('Request not found or cannot be cancelled.');
+    }
+
+    // Notify admin about the cancellation
+    $stmt2 = $conn->prepare("SELECT m.employee_id, m.requested_date, e.first_name, e.last_name, e.employee_id as pub_id FROM makeup_class_requests m JOIN employees e ON m.employee_id = e.id WHERE m.id = ?");
+    $stmt2->bind_param("i", $request_id);
+    $stmt2->execute();
+    $req = $stmt2->get_result()->fetch_assoc();
+    if ($req) {
+        $emp_name = trim($req['first_name'] . ' ' . $req['last_name']);
+        $msg = "{$emp_name} cancelled their Makeup Class for " . date('M d, Y', strtotime($req['requested_date'])) . ". Reason: {$cancel_reason}";
+        $link = "/EndDev/staffmanagement/staff_profile.php?id=" . urlencode($req['pub_id']) . "&tab=makeup";
+        $notif_sql = "INSERT INTO notifications (employee_id, type, message, link, target, is_read) VALUES (?, 'makeup_cancel', ?, ?, 'admin', 0)";
+        $notif_stmt = $conn->prepare($notif_sql);
+        $notif_stmt->bind_param("iss", $req['employee_id'], $msg, $link);
+        $notif_stmt->execute();
     }
 
     if (function_exists('syncToCloud')) {
