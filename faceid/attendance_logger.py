@@ -799,8 +799,21 @@ class AttendanceLogger:
                         if hours_elapsed >= AUTO_SKIP_BREAK_HOURS:
                             skip_lunch = True
                             print(f"     ⏩ AUTO-SKIP LUNCH: {hours_elapsed:.2f} hours elapsed since Time In ({t_in_str}). Skipping to Day Out.")
-                    except Exception:
-                        pass
+                            
+                        # If offset schedule duration is <= 5 hours, skip lunch
+                        max_sched_minutes = 0
+                        if schedule_periods:
+                            for period in schedule_periods:
+                                try:
+                                    s_sh, s_sm, _ = map(int, str(period[0]).split(':'))
+                                    s_eh, s_em, _ = map(int, str(period[1]).split(':'))
+                                    max_sched_minutes += (s_eh * 60 + s_em) - (s_sh * 60 + s_sm)
+                                except Exception: pass
+                        if max_sched_minutes > 0 and max_sched_minutes <= 300:
+                            skip_lunch = True
+                            print(f"     ⏩ AUTO-SKIP LUNCH: Schedule duration is only {max_sched_minutes/60.0:.2f} hours. Skipping to Day Out.")
+                    except Exception as e:
+                        print(f"     ⚠️  Error checking skip lunch logic: {e}")
                         
                     if not skip_lunch:
                         # Non-Teaching Staff 2nd Punch (Lunch Out)
@@ -969,9 +982,10 @@ class AttendanceLogger:
                         if cto_minutes > 0:
                             print(f"     🔋 CTO applied: {cto_minutes} minutes")
                             actual_minutes_worked += cto_minutes
-                            if actual_minutes_worked > net_scheduled_limit and net_scheduled_limit > 0:
-                                print(f"     ✂️ Capping total hours to scheduled limit ({net_scheduled_limit} min)")
-                                actual_minutes_worked = net_scheduled_limit
+                            
+                        if actual_minutes_worked > net_scheduled_limit and net_scheduled_limit > 0:
+                            print(f"     ✂️ Capping total hours to scheduled limit ({net_scheduled_limit} min)")
+                            actual_minutes_worked = net_scheduled_limit
                         
                         actual_hours = round(actual_minutes_worked, 2)
                         print(f"     ⏱️  Actual hours (Net/Clamped): {actual_hours} min ({actual_hours/60.0:.2f}h)")

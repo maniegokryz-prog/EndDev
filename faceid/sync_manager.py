@@ -417,6 +417,37 @@ class SyncManager:
                         
                         # Local DB is now the source of truth for the background sync engine.
                     
+                    # Offset Time Bank Logging
+                    if 'complete' in (final_status if existing else status) and (final_actual_hours if existing else actual_hours):
+                        hours_in_minutes = final_actual_hours if existing else actual_hours
+                        if hours_in_minutes > 0:
+                            mysql_cursor.execute("""
+                                SELECT id, status 
+                                FROM offset_schedule_requests 
+                                WHERE employee_id = %s AND requested_date = %s 
+                                AND status IN ('approved', 'completed')
+                            """, (employee_id, attendance_date))
+                            offset_req = mysql_cursor.fetchone()
+                            if offset_req:
+                                offset_id = offset_req[0]
+                                worked_hours = round(hours_in_minutes / 60.0, 2)
+                                mysql_cursor.execute("""
+                                    SELECT id FROM time_bank_ledger 
+                                    WHERE source_id = %s AND transaction_type = 'earned'
+                                """, (offset_id,))
+                                ledger_entry = mysql_cursor.fetchone()
+                                if not ledger_entry:
+                                    mysql_cursor.execute("""
+                                        INSERT INTO time_bank_ledger (employee_id, transaction_type, hours, source_id, description, reference_date)
+                                        VALUES (%s, 'earned', %s, %s, 'Completed Offset Schedule', %s)
+                                    """, (employee_id, worked_hours, offset_id, attendance_date))
+                                    mysql_cursor.execute("UPDATE offset_schedule_requests SET status = 'completed' WHERE id = %s", (offset_id,))
+                                    print(f"  💰 Credited {worked_hours} hours to Time Bank for Offset {offset_id}")
+                                else:
+                                    ledger_id = ledger_entry[0]
+                                    mysql_cursor.execute("UPDATE time_bank_ledger SET hours = %s WHERE id = %s", (worked_hours, ledger_id))
+                                    print(f"  💰 Updated Time Bank credit to {worked_hours} hours for Offset {offset_id}")
+
                     mysql_conn.commit()
                     success_count += 1
                     
