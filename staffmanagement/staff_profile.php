@@ -1000,7 +1000,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
                     <!-- Leave Request Section (Restored) -->
                     <?php if (canRequestLeave($employee['roles'])): ?>
-                        <div class="profile-card leave-section-card">
+                        <div class="profile-card leave-section-card" style="display: none;">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="card-title mb-0">Scheduled Leave</h4>
                                 <button class="btn-modern btn-solid-success btn-sm btn-icon-sq" data-bs-toggle="modal"

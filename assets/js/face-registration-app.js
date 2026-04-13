@@ -177,10 +177,12 @@ class FaceRegistrationApp {
             this.elements.guidanceMessage.innerHTML = `✅ <strong>Perfect! Ready to capture ${targetAngle} angle</strong>`;
             this.elements.guidanceMessage.style.color = 'green';
             this.elements.captureBtn.style.backgroundColor = '#28a745';
+            this.elements.captureBtn.disabled = false;
         } else {
             this.elements.guidanceMessage.innerHTML = `➡️ ${this.angles[this.currentStep].instruction}<br><small style="color:#666;">Currently detected: ${detectedAngle}</small>`;
             this.elements.guidanceMessage.style.color = '#333';
             this.elements.captureBtn.style.backgroundColor = '';
+            this.elements.captureBtn.disabled = true;
         }
     }
 
@@ -192,6 +194,7 @@ class FaceRegistrationApp {
 
         this.elements.guidanceMessage.innerHTML = `📷 ${this.angles[this.currentStep].instruction}`;
         this.elements.guidanceMessage.style.color = '#333';
+        this.elements.captureBtn.disabled = false;
     }
 
     updateStatus(message) {
@@ -311,7 +314,7 @@ class FaceRegistrationApp {
             this.elements.currentAngle.textContent = `Step ${this.currentStep + 1} of ${this.angles.length}: ${this.angles[this.currentStep].title}`;
             this.elements.angleInstruction.textContent = this.angles[this.currentStep].instruction;
             this.elements.captureBtn.textContent = 'Capture Photo';
-            this.elements.captureBtn.disabled = false;
+            this.elements.captureBtn.disabled = true;
         } else {
             this.elements.currentAngle.textContent = 'All photos captured!';
             this.elements.angleInstruction.textContent = 'You can now submit the form or retake the last photo.';
