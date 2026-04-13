@@ -926,16 +926,7 @@ $profilePhoto .= '?v=' . microtime(true);
                             <div class="metric-value" id="undertimeValue">0</div>
                             <div class="metric-percentage" id="undertimeCount">0%</div>
                         </div>
-                        <div class="metric-item">
-                            <div class="metric-canvas-container"
-                                style="display:flex;align-items:center;justify-content:center;background:#f8f9fa;border-radius:50%;width:50px;height:50px;margin:0 auto 10px auto;">
-                                <i class="bi bi-bank" style="font-size:24px; color:#198754;"></i>
-                            </div>
-                            <div class="metric-label">Time Bank</div>
-                            <div class="metric-value text-success" id="timeBankValue">0 <small
-                                    style="font-size:12px;">hrs</small></div>
-                            <div class="metric-percentage" style="color:#198754;">Balance</div>
-                        </div>
+
                     </div>
                 </div>
 
@@ -2753,6 +2744,22 @@ $profilePhoto .= '?v=' . microtime(true);
                         <!-- CTO Request Tab -->
                         <div class="tab-pane fade p-2" id="cto-request" role="tabpanel">
                             <form id="requestCtoForm">
+                                <div class="card border-0 shadow-sm mb-4" style="background-color: #f8f9fa; border-left: 4px solid #198754 !important;">
+                                    <div class="card-body d-flex align-items-center justify-content-between p-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #e8f5e9;">
+                                                <i class="bi bi-bank text-success fs-4"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-bold text-dark">Available Time Bank</h6>
+                                                <small class="text-muted">Current offset balance you can use.</small>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <h3 class="mb-0 text-success fw-bold" id="timeBankValue">0 <span class="fs-6 text-muted fw-normal" style="font-size: 14px;">hrs</span></h3>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Date to Apply CTO</label>
                                     <input type="date" class="form-control" id="ctoRequestedDate"
