@@ -1468,39 +1468,41 @@ $profilePhoto .= '?v=' . microtime(true);
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content p-3">
-                <div class="modal-header justify-content-center">
-                    <h5 class="modal-title fw-bold">Manual Attendance Record</h5>
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold w-100 text-center px-5 mt-2 mt-md-0">Manual Attendance Record</h5>
                 </div>
                 <div class="modal-body">
-                    <div id="attendanceContainer">
-                        <div class="attendance-row row mb-3 align-items-end">
-                            <div class="col-md-3">
-                                <label>Date:</label>
-                                <input type="date" class="form-control">
-                                <div class="schedule-error-container" style="min-height: 0;">
-                                    <small class="text-danger schedule-error d-block"
-                                        style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
+                    <div style="max-height: 380px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; margin-bottom: 15px;">
+                        <div id="attendanceContainer">
+                            <div class="attendance-row row mb-3 align-items-end mx-0">
+                                <div class="col-md-3 px-1">
+                                    <label class="small fw-semibold">Date:</label>
+                                    <input type="date" class="form-control">
+                                    <div class="schedule-error-container" style="min-height: 0;">
+                                        <small class="text-danger schedule-error d-block"
+                                            style="display:none; font-size: 0.75rem; margin-top: 4px; line-height: 1.2;"></small>
+                                    </div>
                                 </div>
-                            </div>
-                            <?php if ($isNTP): ?>
-                                <div class="col-md-2"><label>Time In:</label><input type="time" class="form-control"></div>
-                                <div class="col-md-2"><label>Break Out:</label><input type="time" class="form-control">
-                                </div>
-                                <div class="col-md-2"><label>Break In:</label><input type="time" class="form-control"></div>
-                                <div class="col-md-2"><label>Time Out:</label><input type="time" class="form-control"></div>
-                            <?php else: ?>
-                                <div class="col-md-3"><label>Time In:</label><input type="time" class="form-control"></div>
-                                <div class="col-md-3"><label>Time Out:</label><input type="time" class="form-control"></div>
-                            <?php endif; ?>
-                            <div class="col-md-3">
-                                <div class="pb-1 d-flex align-items-center">
-                                    <button type="button" class="btn-modern btn-solid-warning btn-sm me-1 clearRow"
-                                        title="Clear Times"
-                                        style="width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; display: inline-flex; justify-content: center; align-items: center;"><i
-                                            class="bi bi-eraser"></i></button>
-                                    <button type="button" class="btn-modern btn-solid-danger btn-sm removeRow"
-                                        style="display:none; width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; justify-content: center; align-items: center;"
-                                        title="Remove Row"><i class="bi bi-x-lg"></i></button>
+                                <?php if ($isNTP): ?>
+                                    <div class="col-md-2 px-1"><label class="small fw-semibold">Time In:</label><input type="time" class="form-control"></div>
+                                    <div class="col-md-2 px-1"><label class="small fw-semibold">Break Out:</label><input type="time" class="form-control">
+                                    </div>
+                                    <div class="col-md-2 px-1"><label class="small fw-semibold">Break In:</label><input type="time" class="form-control"></div>
+                                    <div class="col-md-2 px-1"><label class="small fw-semibold">Time Out:</label><input type="time" class="form-control"></div>
+                                <?php else: ?>
+                                    <div class="col-md-3 px-1"><label class="small fw-semibold">In:</label><input type="time" class="form-control"></div>
+                                    <div class="col-md-3 px-1"><label class="small fw-semibold">Out:</label><input type="time" class="form-control"></div>
+                                <?php endif; ?>
+                                <div class="col-md-3 px-1">
+                                    <div class="pb-1 d-flex align-items-center justify-content-center">
+                                        <button type="button" class="btn-modern btn-solid-warning btn-sm me-1 clearRow"
+                                            title="Clear Times"
+                                            style="width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; display: inline-flex; justify-content: center; align-items: center;"><i
+                                                class="bi bi-eraser"></i></button>
+                                        <button type="button" class="btn-modern btn-solid-danger btn-sm removeRow"
+                                            style="display:none; width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px; padding: 0 !important; justify-content: center; align-items: center;"
+                                            title="Remove Row"><i class="bi bi-x-lg"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2505,6 +2507,7 @@ $profilePhoto .= '?v=' . microtime(true);
 
         /* Final Close Button: Black X (Hardcoded), red border only on interaction */
         #requestOffsetModal .modal-header .btn-close,
+        #requestMakeupClassModal .modal-header .btn-close,
         #cancelOffsetReasonModal .modal-header .btn-close,
         #cancelMakeupReasonModal .modal-header .btn-close {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") !important;
@@ -2521,6 +2524,8 @@ $profilePhoto .= '?v=' . microtime(true);
 
         #requestOffsetModal .modal-header .btn-close:hover,
         #requestOffsetModal .modal-header .btn-close:active,
+        #requestMakeupClassModal .modal-header .btn-close:hover,
+        #requestMakeupClassModal .modal-header .btn-close:active,
         #cancelOffsetReasonModal .modal-header .btn-close:hover,
         #cancelOffsetReasonModal .modal-header .btn-close:active,
         #cancelMakeupReasonModal .modal-header .btn-close:hover,
@@ -2686,7 +2691,7 @@ $profilePhoto .= '?v=' . microtime(true);
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0 position-relative">
-                    <h5 class="modal-title fw-bold w-100 text-center">Offset & Time Bank Management</h5>
+                    <h5 class="modal-title fw-bold w-100 text-center px-5 mt-2 mt-md-0">Offset & Time Bank Management</h5>
                     <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
@@ -2815,8 +2820,13 @@ $profilePhoto .= '?v=' . microtime(true);
                                             }
                                             ?>
                                             <div class="card-body p-3 pe-md-5">
-                                                <h6 class="mb-2 fw-bold">Date:
-                                                    <?php echo date('F d, Y l', strtotime($offset['requested_date'])); ?>
+                                                <h6 class="mb-2 fw-bold text-dark">
+                                                    <?php if ($isAdmin): ?>
+                                                        <span
+                                                            class="fw-bold"><?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name'] . ' (' . $employee['employee_id'] . ')'); ?></span>
+                                                        <span class="text-secondary mx-2">&bull;</span>
+                                                    <?php endif; ?>
+                                                    Date: <?php echo date('F d, Y l', strtotime($offset['requested_date'])); ?>
                                                 </h6>
                                                 <div
                                                     class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
@@ -2930,9 +2940,9 @@ $profilePhoto .= '?v=' . microtime(true);
         aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold mx-auto">Makeup Class Management</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header border-0 pb-0 position-relative">
+                    <h5 class="modal-title fw-bold w-100 text-center px-5 mt-2 mt-md-0">Makeup Class Management</h5>
+                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pt-2">
                     <ul class="nav nav-tabs mb-3" id="makeupTabs" role="tablist">
@@ -3433,7 +3443,7 @@ $profilePhoto .= '?v=' . microtime(true);
                     const badgeColor = req.status === 'approved' ? 'success' : (req.status === 'pending' ? 'warning' : 'secondary');
                     let adminNameStr = '';
                     if (window.isAdmin) {
-                        adminNameStr = `<h6 class="fw-bold mb-1 text-dark">${req.first_name} ${req.last_name} (${req.emp_code})</h6>`;
+                        adminNameStr = `<span class="fw-bold text-dark me-2">${req.first_name} ${req.last_name} (${req.emp_code})</span><span class="text-secondary me-2">&bull;</span>`;
                     }
 
                     const textColor = req.status === 'approved' ? 'text-white' : 'text-dark';
@@ -3467,8 +3477,10 @@ $profilePhoto .= '?v=' . microtime(true);
                     html += `
                 <div class="card border-0 shadow-sm">
                     <div class="card-body p-3 pe-md-5">
-                        ${adminNameStr}
-                        <h6 class="mb-2 fw-bold">Date: ${requestedDateStr}</h6>
+                        <h6 class="mb-2 fw-bold text-dark">
+                            ${adminNameStr}
+                            Date: ${requestedDateStr}
+                        </h6>
                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
                             <p class="mb-0 small text-secondary">
                                 <strong>Requested Hours:</strong> ${parseFloat(req.hours_used).toFixed(2)} hrs
@@ -3623,12 +3635,12 @@ $profilePhoto .= '?v=' . microtime(true);
                         <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateMakeupStatus(${req.id}, 'rejected')">Reject</button>
                         `;
                     } else if (window.isAdmin && req.status === 'approved') {
-                        adminActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="promptCancelMakeupRequest(${req.id})">Cancel</button>`;
+                        adminActions = `<button class="btn btn-solid-danger btn-gray-hover btn-sm flex-grow-1" onclick="promptCancelMakeupRequest(${req.id})">Cancel</button>`;
                     }
 
                     let userActions = '';
                     if (!window.isAdmin && (req.status === 'pending' || req.status === 'approved')) {
-                        userActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="promptCancelMakeupRequest(${req.id})">Cancel</button>`;
+                        userActions = `<button class="btn btn-solid-danger btn-gray-hover btn-sm flex-grow-1" onclick="promptCancelMakeupRequest(${req.id})">Cancel</button>`;
                     }
 
                     let cancelReasonStr = '';
