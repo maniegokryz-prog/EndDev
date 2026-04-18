@@ -54343,3 +54343,1089 @@
 2026-04-13 12:59:40 - Successfully pulled 4 system_settings from VPS.
 2026-04-13 13:00:10 - --- Sync Cycle Started ---
 2026-04-13 13:00:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:00:40 - --- Sync Cycle Started ---
+2026-04-13 13:00:40 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:01:06 - --- Sync Cycle Started ---
+2026-04-13 13:01:06 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:01:36 - --- Sync Cycle Started ---
+2026-04-13 13:01:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:02:06 - --- Sync Cycle Started ---
+2026-04-13 13:02:06 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:02:36 - --- Sync Cycle Started ---
+2026-04-13 13:02:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:03:06 - --- Sync Cycle Started ---
+2026-04-13 13:03:06 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:03:36 - --- Sync Cycle Started ---
+2026-04-13 13:03:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:04:06 - --- Sync Cycle Started ---
+2026-04-13 13:04:06 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:05:31 - --- Sync Cycle Started ---
+2026-04-13 13:05:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-13 13:05:37 - --- Sync Cycle Started ---
+2026-04-13 13:05:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-14 01:59:27 - --- Sync Cycle Started ---
+2026-04-14 01:59:32 - --- Sync Cycle Started ---
+2026-04-14 01:59:35 - --- Sync Cycle Started ---
+2026-04-14 01:59:39 - --- Sync Cycle Started ---
+2026-04-14 01:59:44 - --- Sync Cycle Started ---
+2026-04-14 01:59:46 - --- Sync Cycle Started ---
+2026-04-14 01:59:52 - --- Sync Cycle Started ---
+2026-04-14 02:00:22 - --- Sync Cycle Started ---
+2026-04-14 03:17:35 - --- Sync Cycle Started ---
+2026-04-14 03:29:58 - --- Sync Cycle Started ---
+2026-04-14 03:30:22 - --- Sync Cycle Started ---
+2026-04-14 03:30:53 - --- Sync Cycle Started ---
+2026-04-14 03:31:22 - --- Sync Cycle Started ---
+2026-04-14 03:31:57 - --- Sync Cycle Started ---
+2026-04-14 03:32:07 - Push error on notifications ID 12: Operation timed out after 10008 milliseconds with 0 bytes received
+2026-04-14 03:32:17 - Push error on offset_schedule_requests ID 4: Connection timed out after 10004 milliseconds
+2026-04-14 03:32:33 - --- Sync Cycle Started ---
+2026-04-14 03:32:34 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:32:34 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:32:36 - --- Sync Cycle Started ---
+2026-04-14 03:32:36 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:32:36 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:32:39 - --- Sync Cycle Started ---
+2026-04-14 03:32:40 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:32:42 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:33:09 - --- Sync Cycle Started ---
+2026-04-14 03:33:13 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:33:13 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:33:25 - --- Sync Cycle Started ---
+2026-04-14 03:33:26 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:33:26 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:33:26 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:33:55 - --- Sync Cycle Started ---
+2026-04-14 03:33:55 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:33:55 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:33:55 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:34:19 - --- Sync Cycle Started ---
+2026-04-14 03:34:19 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:34:20 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:34:20 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:34:20 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:34:20 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:34:32 - --- Sync Cycle Started ---
+2026-04-14 03:34:39 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:34:39 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:34:39 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:34:40 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:34:40 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:34:40 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:34:40 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:34:40 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:35:01 - --- Sync Cycle Started ---
+2026-04-14 03:35:02 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:35:02 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:35:02 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:35:02 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:35:02 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:35:02 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:35:02 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:35:02 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:35:31 - --- Sync Cycle Started ---
+2026-04-14 03:35:32 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:35:32 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:35:32 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:35:32 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:35:32 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:35:32 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:35:32 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:35:32 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:40:27 - --- Sync Cycle Started ---
+2026-04-14 03:40:28 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:40:28 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:40:28 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:40:28 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:40:28 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:40:28 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:40:29 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:40:29 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:40:31 - --- Sync Cycle Started ---
+2026-04-14 03:40:32 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:40:32 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:40:32 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:40:32 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:40:32 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:40:32 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:40:32 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:40:32 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:40:36 - --- Sync Cycle Started ---
+2026-04-14 03:40:36 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:40:36 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:40:36 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:40:36 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:40:36 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:40:36 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:40:36 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:40:36 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:41:06 - --- Sync Cycle Started ---
+2026-04-14 03:41:06 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:41:06 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:41:06 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:41:06 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:41:06 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:41:06 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:41:06 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:41:06 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:41:36 - --- Sync Cycle Started ---
+2026-04-14 03:41:36 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:41:36 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:41:36 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:41:36 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:41:36 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:41:36 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:41:37 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:41:37 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:42:06 - --- Sync Cycle Started ---
+2026-04-14 03:42:06 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:42:06 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:42:06 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:42:06 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:42:06 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:42:06 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:42:06 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:42:06 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:42:36 - --- Sync Cycle Started ---
+2026-04-14 03:42:36 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 03:42:36 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 03:42:36 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 03:42:36 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 03:42:36 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 03:42:36 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 03:42:36 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 03:42:36 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 03:55:21 - --- Sync Cycle Started ---
+2026-04-14 03:55:22 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 03:55:22 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 03:55:22 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 03:55:22 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 03:55:22 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 03:55:22 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 03:55:22 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 03:55:22 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:36 - --- Sync Cycle Started ---
+2026-04-14 04:39:36 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:36 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:36 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:36 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 1 ms: Could not connect to server
+2026-04-14 04:39:36 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:36 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:36 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:36 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:45 - --- Sync Cycle Started ---
+2026-04-14 04:39:45 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:45 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:45 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:45 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:45 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:45 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:45 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:45 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:48 - --- Sync Cycle Started ---
+2026-04-14 04:39:49 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:49 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:49 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:49 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:49 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:49 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:49 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:49 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:52 - --- Sync Cycle Started ---
+2026-04-14 04:39:52 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:52 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:52 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:52 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:52 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:52 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:52 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:39:52 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:22 - --- Sync Cycle Started ---
+2026-04-14 04:40:22 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:22 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:22 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:22 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:22 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:22 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:22 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:22 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:45 - --- Sync Cycle Started ---
+2026-04-14 04:40:45 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:45 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:45 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:45 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:45 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:45 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:45 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:45 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:47 - --- Sync Cycle Started ---
+2026-04-14 04:40:47 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:47 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:47 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:47 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:47 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:48 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:48 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:48 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:51 - --- Sync Cycle Started ---
+2026-04-14 04:40:51 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:51 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:51 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:51 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:51 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:51 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:51 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:40:51 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:21 - --- Sync Cycle Started ---
+2026-04-14 04:41:21 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:21 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:21 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:21 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:21 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:21 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:21 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:21 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:51 - --- Sync Cycle Started ---
+2026-04-14 04:41:52 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:52 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:52 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:52 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:52 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:52 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:52 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:41:52 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:42:07 - --- Sync Cycle Started ---
+2026-04-14 04:42:07 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:42:08 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:42:08 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:42:08 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:42:08 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:42:08 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:42:08 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 1 ms: Could not connect to server
+2026-04-14 04:42:08 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:50:14 - --- Sync Cycle Started ---
+2026-04-14 04:50:14 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 04:50:14 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 04:50:14 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 04:50:14 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 04:50:14 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 04:50:14 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 04:50:14 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 04:50:14 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 04:50:17 - --- Sync Cycle Started ---
+2026-04-14 04:50:17 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 04:50:17 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 04:50:17 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 04:50:17 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 04:50:17 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 04:50:17 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 04:50:17 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 04:50:17 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 04:50:21 - --- Sync Cycle Started ---
+2026-04-14 04:50:21 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 04:50:21 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 04:50:21 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 04:50:21 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 04:50:21 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 04:50:21 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 04:50:21 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 04:50:21 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 04:50:44 - --- Sync Cycle Started ---
+2026-04-14 04:50:44 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 04:50:44 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 04:50:44 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 04:50:44 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 04:50:44 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 04:50:44 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 04:50:44 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 04:50:45 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 04:51:14 - --- Sync Cycle Started ---
+2026-04-14 04:51:16 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 2348 ms: Could not connect to server
+2026-04-14 04:51:16 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:16 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:16 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:16 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:16 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:16 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:16 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:44 - --- Sync Cycle Started ---
+2026-04-14 04:51:44 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:44 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:44 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:44 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:44 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:44 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:44 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:51:44 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:14 - --- Sync Cycle Started ---
+2026-04-14 04:52:14 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:14 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:14 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:14 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:14 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:14 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:14 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:14 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:44 - --- Sync Cycle Started ---
+2026-04-14 04:52:44 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:44 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:44 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:44 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:44 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:44 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:44 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:44 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:55 - --- Sync Cycle Started ---
+2026-04-14 04:52:55 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:55 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:55 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:55 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:55 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:55 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:55 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:52:55 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:53:13 - --- Sync Cycle Started ---
+2026-04-14 04:53:13 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:53:13 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:53:13 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:53:13 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:53:13 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:53:13 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:53:13 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 04:53:13 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:01:10 - --- Sync Cycle Started ---
+2026-04-14 05:01:20 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 05:01:30 - Push error on notifications ID 12: Connection timed out after 10007 milliseconds
+2026-04-14 05:01:34 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 05:01:37 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 05:01:38 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 05:01:38 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 05:01:40 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 05:01:40 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 05:01:41 - --- Sync Cycle Started ---
+2026-04-14 05:01:42 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 05:01:42 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 05:01:43 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 05:01:45 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 05:01:47 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 05:01:48 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 05:01:48 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 05:01:49 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 05:01:51 - --- Sync Cycle Started ---
+2026-04-14 05:01:52 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 05:01:52 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 05:01:52 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 05:01:52 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 05:01:53 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 05:01:55 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 05:01:56 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 05:01:58 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 05:01:58 - --- Sync Cycle Started ---
+2026-04-14 05:01:58 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 05:01:58 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 05:01:59 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 05:02:01 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 05:02:02 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 05:02:02 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 05:02:02 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 05:02:07 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 05:02:08 - --- Sync Cycle Started ---
+2026-04-14 05:02:10 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 05:02:10 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 05:02:11 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 05:02:12 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 05:02:12 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 05:02:12 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 05:02:13 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 05:02:14 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 05:02:38 - --- Sync Cycle Started ---
+2026-04-14 05:02:41 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 05:02:41 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 05:02:42 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 05:02:46 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 05:02:50 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 05:02:50 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 05:02:51 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 05:02:51 - Push error on time_bank_ledger ID 4: Empty reply from server
+2026-04-14 05:03:08 - --- Sync Cycle Started ---
+2026-04-14 05:03:12 - Push error on daily_attendance ID 4: Empty reply from server
+2026-04-14 05:03:13 - Push error on notifications ID 12: Empty reply from server
+2026-04-14 05:03:13 - Push error on notifications ID 13: Empty reply from server
+2026-04-14 05:03:13 - Push error on notifications ID 14: Empty reply from server
+2026-04-14 05:03:17 - Push error on notifications ID 15: Empty reply from server
+2026-04-14 05:03:18 - Push error on offset_schedule_requests ID 4: Empty reply from server
+2026-04-14 05:03:20 - Push error on cto_requests ID 2: Empty reply from server
+2026-04-14 05:03:30 - Push error on time_bank_ledger ID 4: Connection timed out after 10014 milliseconds
+2026-04-14 05:03:40 - --- Sync Cycle Started ---
+2026-04-14 05:03:50 - Push error on daily_attendance ID 4: Connection timed out after 10011 milliseconds
+2026-04-14 05:04:00 - Push error on notifications ID 12: Connection timed out after 10006 milliseconds
+2026-04-14 05:04:10 - --- Sync Cycle Started ---
+2026-04-14 05:04:20 - Push error on daily_attendance ID 4: Connection timed out after 10014 milliseconds
+2026-04-14 05:04:31 - Push error on notifications ID 12: Connection timed out after 10007 milliseconds
+2026-04-14 05:04:41 - --- Sync Cycle Started ---
+2026-04-14 05:04:41 - --- Sync Cycle Started ---
+2026-04-14 05:04:51 - Push error on daily_attendance ID 4: Connection timed out after 10012 milliseconds
+2026-04-14 05:05:01 - Push error on notifications ID 12: Connection timed out after 10003 milliseconds
+2026-04-14 05:05:11 - --- Sync Cycle Started ---
+2026-04-14 05:05:21 - Push error on daily_attendance ID 4: Connection timed out after 10029 milliseconds
+2026-04-14 05:05:21 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:21 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 3 ms: Could not connect to server
+2026-04-14 05:05:21 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:21 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:21 - Failed to upload attachment_path: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:21 - Push error on makeup_class_requests ID 1: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:21 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:21 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:21 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - --- Sync Cycle Started ---
+2026-04-14 05:05:25 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - Failed to upload attachment_path: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - Push error on makeup_class_requests ID 1: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:25 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - --- Sync Cycle Started ---
+2026-04-14 05:05:35 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - Failed to upload attachment_path: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - Push error on makeup_class_requests ID 1: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:05:35 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:08 - --- Sync Cycle Started ---
+2026-04-14 05:06:09 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:09 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:09 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:09 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:09 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:09 - Failed to upload attachment_path: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:09 - Push error on makeup_class_requests ID 1: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:09 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:09 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:09 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - --- Sync Cycle Started ---
+2026-04-14 05:06:35 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - Failed to upload attachment_path: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - Push error on makeup_class_requests ID 1: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:06:35 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - --- Sync Cycle Started ---
+2026-04-14 05:07:05 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - Failed to upload attachment_path: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - Push error on makeup_class_requests ID 1: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:07:05 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - --- Sync Cycle Started ---
+2026-04-14 05:10:36 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - Failed to upload attachment_path: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - Push error on makeup_class_requests ID 1: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 05:10:36 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 11:42:07 - --- Sync Cycle Started ---
+2026-04-14 11:42:08 - Push error on daily_attendance ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 11:42:08 - Push error on notifications ID 12: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 11:42:08 - Push error on notifications ID 13: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 11:42:08 - Push error on notifications ID 14: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 11:42:08 - Push error on notifications ID 15: Failed to connect to 76.13.210.68 port 80 after 1 ms: Could not connect to server
+2026-04-14 11:42:08 - Failed to upload attachment_path: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 11:42:08 - Push error on makeup_class_requests ID 1: Failed to connect to 76.13.210.68 port 80 after 5 ms: Could not connect to server
+2026-04-14 11:42:08 - Push error on offset_schedule_requests ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 11:42:08 - Push error on cto_requests ID 2: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-14 11:42:08 - Push error on time_bank_ledger ID 4: Failed to connect to 76.13.210.68 port 80 after 0 ms: Could not connect to server
+2026-04-18 14:28:43 - --- Sync Cycle Started ---
+2026-04-18 14:28:44 - Successfully pushed to VPS for daily_attendance ID 4
+2026-04-18 14:28:44 - Successfully pushed to VPS for notifications ID 12
+2026-04-18 14:28:44 - Successfully pushed to VPS for notifications ID 13
+2026-04-18 14:28:45 - Successfully pushed to VPS for notifications ID 14
+2026-04-18 14:28:45 - Successfully pushed to VPS for notifications ID 15
+2026-04-18 14:28:45 - Successfully uploaded attachment_path to VPS: uploads/makeup_attachments/makeup_1_1776143050.jpg
+2026-04-18 14:28:45 - Successfully pushed to VPS for makeup_class_requests ID 1
+2026-04-18 14:28:46 - Successfully pushed to VPS for offset_schedule_requests ID 4
+2026-04-18 14:28:46 - Successfully pushed to VPS for cto_requests ID 2
+2026-04-18 14:28:46 - Successfully pushed to VPS for time_bank_ledger ID 4
+2026-04-18 14:28:46 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:29:00 - --- Sync Cycle Started ---
+2026-04-18 14:29:01 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:29:03 - --- Sync Cycle Started ---
+2026-04-18 14:29:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:29:09 - --- Sync Cycle Started ---
+2026-04-18 14:29:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:29:39 - --- Sync Cycle Started ---
+2026-04-18 14:29:40 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:29:50 - --- Sync Cycle Started ---
+2026-04-18 14:29:51 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:29:53 - --- Sync Cycle Started ---
+2026-04-18 14:29:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:30:23 - --- Sync Cycle Started ---
+2026-04-18 14:30:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:30:53 - --- Sync Cycle Started ---
+2026-04-18 14:30:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:31:23 - --- Sync Cycle Started ---
+2026-04-18 14:31:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:31:53 - --- Sync Cycle Started ---
+2026-04-18 14:31:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:32:23 - --- Sync Cycle Started ---
+2026-04-18 14:32:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:32:53 - --- Sync Cycle Started ---
+2026-04-18 14:32:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:33:23 - --- Sync Cycle Started ---
+2026-04-18 14:33:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:33:53 - --- Sync Cycle Started ---
+2026-04-18 14:33:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:34:23 - --- Sync Cycle Started ---
+2026-04-18 14:34:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:34:53 - --- Sync Cycle Started ---
+2026-04-18 14:34:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:35:23 - --- Sync Cycle Started ---
+2026-04-18 14:35:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:36:42 - --- Sync Cycle Started ---
+2026-04-18 14:36:43 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:36:53 - --- Sync Cycle Started ---
+2026-04-18 14:36:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:37:23 - --- Sync Cycle Started ---
+2026-04-18 14:37:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:37:53 - --- Sync Cycle Started ---
+2026-04-18 14:37:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:38:04 - --- Sync Cycle Started ---
+2026-04-18 14:38:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:38:34 - --- Sync Cycle Started ---
+2026-04-18 14:38:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:39:04 - --- Sync Cycle Started ---
+2026-04-18 14:39:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:39:34 - --- Sync Cycle Started ---
+2026-04-18 14:39:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:40:04 - --- Sync Cycle Started ---
+2026-04-18 14:40:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:40:34 - --- Sync Cycle Started ---
+2026-04-18 14:40:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:41:04 - --- Sync Cycle Started ---
+2026-04-18 14:41:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:41:49 - --- Sync Cycle Started ---
+2026-04-18 14:41:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:42:33 - --- Sync Cycle Started ---
+2026-04-18 14:42:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:43:04 - --- Sync Cycle Started ---
+2026-04-18 14:43:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:43:34 - --- Sync Cycle Started ---
+2026-04-18 14:43:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:44:04 - --- Sync Cycle Started ---
+2026-04-18 14:44:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:44:34 - --- Sync Cycle Started ---
+2026-04-18 14:44:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:45:04 - --- Sync Cycle Started ---
+2026-04-18 14:45:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:45:34 - --- Sync Cycle Started ---
+2026-04-18 14:45:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:46:04 - --- Sync Cycle Started ---
+2026-04-18 14:46:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:46:34 - --- Sync Cycle Started ---
+2026-04-18 14:46:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:47:04 - --- Sync Cycle Started ---
+2026-04-18 14:47:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:47:42 - --- Sync Cycle Started ---
+2026-04-18 14:47:43 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:48:04 - --- Sync Cycle Started ---
+2026-04-18 14:48:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:48:34 - --- Sync Cycle Started ---
+2026-04-18 14:48:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:49:49 - --- Sync Cycle Started ---
+2026-04-18 14:49:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:50:36 - --- Sync Cycle Started ---
+2026-04-18 14:50:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:50:38 - --- Sync Cycle Started ---
+2026-04-18 14:50:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:51:08 - --- Sync Cycle Started ---
+2026-04-18 14:51:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:51:38 - --- Sync Cycle Started ---
+2026-04-18 14:51:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:52:07 - --- Sync Cycle Started ---
+2026-04-18 14:52:07 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:52:37 - --- Sync Cycle Started ---
+2026-04-18 14:52:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:52:53 - --- Sync Cycle Started ---
+2026-04-18 14:52:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:53:23 - --- Sync Cycle Started ---
+2026-04-18 14:53:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:53:53 - --- Sync Cycle Started ---
+2026-04-18 14:53:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:54:23 - --- Sync Cycle Started ---
+2026-04-18 14:54:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:54:53 - --- Sync Cycle Started ---
+2026-04-18 14:54:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:55:23 - --- Sync Cycle Started ---
+2026-04-18 14:55:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:55:53 - --- Sync Cycle Started ---
+2026-04-18 14:55:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:56:24 - --- Sync Cycle Started ---
+2026-04-18 14:56:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:56:26 - --- Sync Cycle Started ---
+2026-04-18 14:56:27 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:56:56 - --- Sync Cycle Started ---
+2026-04-18 14:56:57 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:57:21 - --- Sync Cycle Started ---
+2026-04-18 14:57:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:57:51 - --- Sync Cycle Started ---
+2026-04-18 14:57:52 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:58:21 - --- Sync Cycle Started ---
+2026-04-18 14:58:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:58:51 - --- Sync Cycle Started ---
+2026-04-18 14:58:52 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:59:21 - --- Sync Cycle Started ---
+2026-04-18 14:59:22 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 14:59:47 - --- Sync Cycle Started ---
+2026-04-18 14:59:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:00:05 - --- Sync Cycle Started ---
+2026-04-18 15:00:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:00:35 - --- Sync Cycle Started ---
+2026-04-18 15:00:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:01:05 - --- Sync Cycle Started ---
+2026-04-18 15:01:06 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:01:24 - --- Sync Cycle Started ---
+2026-04-18 15:01:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:01:54 - --- Sync Cycle Started ---
+2026-04-18 15:01:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:02:24 - --- Sync Cycle Started ---
+2026-04-18 15:02:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:02:54 - --- Sync Cycle Started ---
+2026-04-18 15:02:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:03:01 - --- Sync Cycle Started ---
+2026-04-18 15:03:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:03:13 - --- Sync Cycle Started ---
+2026-04-18 15:03:14 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:03:15 - --- Sync Cycle Started ---
+2026-04-18 15:03:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:03:18 - --- Sync Cycle Started ---
+2026-04-18 15:03:18 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:03:24 - --- Sync Cycle Started ---
+2026-04-18 15:03:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:03:27 - --- Sync Cycle Started ---
+2026-04-18 15:03:27 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:03:57 - --- Sync Cycle Started ---
+2026-04-18 15:03:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:04:27 - --- Sync Cycle Started ---
+2026-04-18 15:04:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:04:57 - --- Sync Cycle Started ---
+2026-04-18 15:04:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:05:27 - --- Sync Cycle Started ---
+2026-04-18 15:05:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:05:57 - --- Sync Cycle Started ---
+2026-04-18 15:05:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:06:27 - --- Sync Cycle Started ---
+2026-04-18 15:06:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:06:32 - --- Sync Cycle Started ---
+2026-04-18 15:06:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:07:02 - --- Sync Cycle Started ---
+2026-04-18 15:07:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:07:32 - --- Sync Cycle Started ---
+2026-04-18 15:07:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:08:02 - --- Sync Cycle Started ---
+2026-04-18 15:08:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:08:32 - --- Sync Cycle Started ---
+2026-04-18 15:08:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:08:36 - --- Sync Cycle Started ---
+2026-04-18 15:08:36 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:09:06 - --- Sync Cycle Started ---
+2026-04-18 15:09:06 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:09:36 - --- Sync Cycle Started ---
+2026-04-18 15:09:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:10:06 - --- Sync Cycle Started ---
+2026-04-18 15:10:07 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:10:36 - --- Sync Cycle Started ---
+2026-04-18 15:10:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:10:52 - --- Sync Cycle Started ---
+2026-04-18 15:10:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:11:22 - --- Sync Cycle Started ---
+2026-04-18 15:11:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:11:52 - --- Sync Cycle Started ---
+2026-04-18 15:11:53 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:12:22 - --- Sync Cycle Started ---
+2026-04-18 15:12:23 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:12:24 - --- Sync Cycle Started ---
+2026-04-18 15:12:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:12:48 - --- Sync Cycle Started ---
+2026-04-18 15:12:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:13:18 - --- Sync Cycle Started ---
+2026-04-18 15:13:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:13:48 - --- Sync Cycle Started ---
+2026-04-18 15:13:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:14:18 - --- Sync Cycle Started ---
+2026-04-18 15:14:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:14:48 - --- Sync Cycle Started ---
+2026-04-18 15:14:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:15:18 - --- Sync Cycle Started ---
+2026-04-18 15:15:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:15:48 - --- Sync Cycle Started ---
+2026-04-18 15:15:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:16:18 - --- Sync Cycle Started ---
+2026-04-18 15:16:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:16:45 - --- Sync Cycle Started ---
+2026-04-18 15:16:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:17:15 - --- Sync Cycle Started ---
+2026-04-18 15:17:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:17:45 - --- Sync Cycle Started ---
+2026-04-18 15:17:46 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:18:15 - --- Sync Cycle Started ---
+2026-04-18 15:18:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:18:45 - --- Sync Cycle Started ---
+2026-04-18 15:18:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:19:15 - --- Sync Cycle Started ---
+2026-04-18 15:19:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:19:45 - --- Sync Cycle Started ---
+2026-04-18 15:19:45 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:20:15 - --- Sync Cycle Started ---
+2026-04-18 15:20:15 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:20:36 - --- Sync Cycle Started ---
+2026-04-18 15:20:37 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:20:39 - --- Sync Cycle Started ---
+2026-04-18 15:20:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:21:09 - --- Sync Cycle Started ---
+2026-04-18 15:21:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:21:39 - --- Sync Cycle Started ---
+2026-04-18 15:21:40 - Failed to upload profile_photo: Failed to save uploaded file
+2026-04-18 15:21:40 - Successfully pushed to VPS for employees ID 3
+2026-04-18 15:21:40 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:22:09 - --- Sync Cycle Started ---
+2026-04-18 15:22:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:22:39 - --- Sync Cycle Started ---
+2026-04-18 15:22:40 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:22:58 - --- Sync Cycle Started ---
+2026-04-18 15:22:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:23:03 - --- Sync Cycle Started ---
+2026-04-18 15:23:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:23:33 - --- Sync Cycle Started ---
+2026-04-18 15:23:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:24:03 - --- Sync Cycle Started ---
+2026-04-18 15:24:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:24:33 - --- Sync Cycle Started ---
+2026-04-18 15:24:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:25:03 - --- Sync Cycle Started ---
+2026-04-18 15:25:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:25:33 - --- Sync Cycle Started ---
+2026-04-18 15:25:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:26:03 - --- Sync Cycle Started ---
+2026-04-18 15:26:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:26:49 - --- Sync Cycle Started ---
+2026-04-18 15:26:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:27:49 - --- Sync Cycle Started ---
+2026-04-18 15:27:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:28:49 - --- Sync Cycle Started ---
+2026-04-18 15:28:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:29:49 - --- Sync Cycle Started ---
+2026-04-18 15:29:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:30:49 - --- Sync Cycle Started ---
+2026-04-18 15:30:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:34:58 - --- Sync Cycle Started ---
+2026-04-18 15:34:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:35:46 - --- Sync Cycle Started ---
+2026-04-18 15:35:46 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:36:03 - --- Sync Cycle Started ---
+2026-04-18 15:36:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:36:33 - --- Sync Cycle Started ---
+2026-04-18 15:36:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:36:54 - --- Sync Cycle Started ---
+2026-04-18 15:36:54 - Successfully pushed to VPS for schedules ID 3
+2026-04-18 15:36:55 - Successfully pushed to VPS for schedule_periods ID 12
+2026-04-18 15:36:55 - Successfully pushed to VPS for employee_schedules ID 3
+2026-04-18 15:36:55 - Successfully pushed to VPS for notifications ID 16
+2026-04-18 15:36:56 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:37:20 - --- Sync Cycle Started ---
+2026-04-18 15:37:20 - Successfully pushed to VPS for notifications ID 17
+2026-04-18 15:37:20 - Successfully pushed to VPS for offset_schedule_requests ID 5
+2026-04-18 15:37:20 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:37:50 - --- Sync Cycle Started ---
+2026-04-18 15:37:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:37:54 - --- Sync Cycle Started ---
+2026-04-18 15:37:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:37:57 - --- Sync Cycle Started ---
+2026-04-18 15:37:57 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:38:05 - --- Sync Cycle Started ---
+2026-04-18 15:38:06 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:38:08 - --- Sync Cycle Started ---
+2026-04-18 15:38:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:38:38 - --- Sync Cycle Started ---
+2026-04-18 15:38:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:39:08 - --- Sync Cycle Started ---
+2026-04-18 15:39:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:39:38 - --- Sync Cycle Started ---
+2026-04-18 15:39:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:40:08 - --- Sync Cycle Started ---
+2026-04-18 15:40:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:40:38 - --- Sync Cycle Started ---
+2026-04-18 15:40:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:41:08 - --- Sync Cycle Started ---
+2026-04-18 15:41:09 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:41:10 - --- Sync Cycle Started ---
+2026-04-18 15:41:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:41:40 - --- Sync Cycle Started ---
+2026-04-18 15:41:41 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:41:41 - --- Sync Cycle Started ---
+2026-04-18 15:41:42 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:41:55 - --- Sync Cycle Started ---
+2026-04-18 15:41:56 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:42:25 - --- Sync Cycle Started ---
+2026-04-18 15:42:26 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:42:55 - --- Sync Cycle Started ---
+2026-04-18 15:42:56 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:43:25 - --- Sync Cycle Started ---
+2026-04-18 15:43:26 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:43:47 - --- Sync Cycle Started ---
+2026-04-18 15:43:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:44:08 - --- Sync Cycle Started ---
+2026-04-18 15:44:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:44:38 - --- Sync Cycle Started ---
+2026-04-18 15:44:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:44:51 - --- Sync Cycle Started ---
+2026-04-18 15:44:52 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:45:04 - --- Sync Cycle Started ---
+2026-04-18 15:45:04 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:45:34 - --- Sync Cycle Started ---
+2026-04-18 15:45:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:45:46 - --- Sync Cycle Started ---
+2026-04-18 15:45:47 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:46:04 - --- Sync Cycle Started ---
+2026-04-18 15:46:05 - Successfully pushed to VPS for notifications ID 18
+2026-04-18 15:46:05 - Successfully pushed to VPS for offset_schedule_requests ID 5
+2026-04-18 15:46:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:46:32 - --- Sync Cycle Started ---
+2026-04-18 15:46:32 - Successfully pushed to VPS for daily_attendance ID 5
+2026-04-18 15:46:33 - Successfully pushed to VPS for time_bank_ledger ID 5
+2026-04-18 15:46:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:47:02 - --- Sync Cycle Started ---
+2026-04-18 15:47:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:47:07 - --- Sync Cycle Started ---
+2026-04-18 15:47:08 - Successfully pushed to VPS for notifications ID 19
+2026-04-18 15:47:08 - Successfully pushed to VPS for cto_requests ID 3
+2026-04-18 15:47:08 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:47:13 - --- Sync Cycle Started ---
+2026-04-18 15:47:13 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:47:30 - --- Sync Cycle Started ---
+2026-04-18 15:47:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:47:32 - --- Sync Cycle Started ---
+2026-04-18 15:47:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:48:02 - --- Sync Cycle Started ---
+2026-04-18 15:48:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:48:32 - --- Sync Cycle Started ---
+2026-04-18 15:48:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:49:02 - --- Sync Cycle Started ---
+2026-04-18 15:49:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:49:32 - --- Sync Cycle Started ---
+2026-04-18 15:49:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:50:02 - --- Sync Cycle Started ---
+2026-04-18 15:50:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:50:32 - --- Sync Cycle Started ---
+2026-04-18 15:50:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:51:32 - --- Sync Cycle Started ---
+2026-04-18 15:51:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:51:35 - --- Sync Cycle Started ---
+2026-04-18 15:51:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:51:55 - --- Sync Cycle Started ---
+2026-04-18 15:51:55 - Successfully pushed to VPS for daily_attendance ID 6
+2026-04-18 15:51:55 - Successfully pushed to VPS for notifications ID 20
+2026-04-18 15:51:55 - Successfully pushed to VPS for cto_requests ID 3
+2026-04-18 15:51:56 - Successfully pushed to VPS for time_bank_ledger ID 6
+2026-04-18 15:51:56 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:51:59 - --- Sync Cycle Started ---
+2026-04-18 15:52:00 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:52:11 - --- Sync Cycle Started ---
+2026-04-18 15:52:11 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:52:15 - --- Sync Cycle Started ---
+2026-04-18 15:52:16 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:52:30 - --- Sync Cycle Started ---
+2026-04-18 15:52:31 - Successfully pushed to VPS for daily_attendance ID 7
+2026-04-18 15:52:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:52:37 - --- Sync Cycle Started ---
+2026-04-18 15:52:38 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:53:21 - --- Sync Cycle Started ---
+2026-04-18 15:53:21 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:53:24 - --- Sync Cycle Started ---
+2026-04-18 15:53:25 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:53:55 - --- Sync Cycle Started ---
+2026-04-18 15:53:56 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:53:57 - --- Sync Cycle Started ---
+2026-04-18 15:53:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:54:27 - --- Sync Cycle Started ---
+2026-04-18 15:54:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:54:57 - --- Sync Cycle Started ---
+2026-04-18 15:54:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:55:30 - --- Sync Cycle Started ---
+2026-04-18 15:55:30 - Successfully pushed to VPS for notifications ID 21
+2026-04-18 15:55:31 - Successfully pushed to VPS for offset_schedule_requests ID 6
+2026-04-18 15:55:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:55:57 - --- Sync Cycle Started ---
+2026-04-18 15:55:57 - Successfully pushed to VPS for notifications ID 22
+2026-04-18 15:55:57 - Successfully pushed to VPS for offset_schedule_requests ID 6
+2026-04-18 15:55:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:56:27 - --- Sync Cycle Started ---
+2026-04-18 15:56:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:56:57 - --- Sync Cycle Started ---
+2026-04-18 15:56:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:57:27 - --- Sync Cycle Started ---
+2026-04-18 15:57:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:57:57 - --- Sync Cycle Started ---
+2026-04-18 15:57:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:58:27 - --- Sync Cycle Started ---
+2026-04-18 15:58:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:58:57 - --- Sync Cycle Started ---
+2026-04-18 15:58:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 15:59:32 - --- Sync Cycle Started ---
+2026-04-18 15:59:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:00:02 - --- Sync Cycle Started ---
+2026-04-18 16:00:03 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:00:32 - --- Sync Cycle Started ---
+2026-04-18 16:00:33 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:00:40 - --- Sync Cycle Started ---
+2026-04-18 16:00:40 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:01:01 - --- Sync Cycle Started ---
+2026-04-18 16:01:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:01:31 - --- Sync Cycle Started ---
+2026-04-18 16:01:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:02:01 - --- Sync Cycle Started ---
+2026-04-18 16:02:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:02:31 - --- Sync Cycle Started ---
+2026-04-18 16:02:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:03:01 - --- Sync Cycle Started ---
+2026-04-18 16:03:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:03:31 - --- Sync Cycle Started ---
+2026-04-18 16:03:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:04:01 - --- Sync Cycle Started ---
+2026-04-18 16:04:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:04:49 - --- Sync Cycle Started ---
+2026-04-18 16:04:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:05:29 - --- Sync Cycle Started ---
+2026-04-18 16:05:30 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:05:30 - --- Sync Cycle Started ---
+2026-04-18 16:05:31 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:06:01 - --- Sync Cycle Started ---
+2026-04-18 16:06:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:06:31 - --- Sync Cycle Started ---
+2026-04-18 16:06:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:06:42 - --- Sync Cycle Started ---
+2026-04-18 16:06:42 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:07:12 - --- Sync Cycle Started ---
+2026-04-18 16:07:12 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:07:42 - --- Sync Cycle Started ---
+2026-04-18 16:07:43 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:08:12 - --- Sync Cycle Started ---
+2026-04-18 16:08:13 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:08:42 - --- Sync Cycle Started ---
+2026-04-18 16:08:43 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:09:12 - --- Sync Cycle Started ---
+2026-04-18 16:09:13 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:09:42 - --- Sync Cycle Started ---
+2026-04-18 16:09:43 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:10:31 - --- Sync Cycle Started ---
+2026-04-18 16:10:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:10:39 - --- Sync Cycle Started ---
+2026-04-18 16:10:39 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:11:09 - --- Sync Cycle Started ---
+2026-04-18 16:11:10 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:11:24 - --- Sync Cycle Started ---
+2026-04-18 16:11:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:11:54 - --- Sync Cycle Started ---
+2026-04-18 16:11:54 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:12:24 - --- Sync Cycle Started ---
+2026-04-18 16:12:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:12:54 - --- Sync Cycle Started ---
+2026-04-18 16:12:55 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:13:24 - --- Sync Cycle Started ---
+2026-04-18 16:13:24 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:13:34 - --- Sync Cycle Started ---
+2026-04-18 16:13:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:14:04 - --- Sync Cycle Started ---
+2026-04-18 16:14:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:14:34 - --- Sync Cycle Started ---
+2026-04-18 16:14:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:15:04 - --- Sync Cycle Started ---
+2026-04-18 16:15:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:15:34 - --- Sync Cycle Started ---
+2026-04-18 16:15:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:16:04 - --- Sync Cycle Started ---
+2026-04-18 16:16:05 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:16:34 - --- Sync Cycle Started ---
+2026-04-18 16:16:35 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:17:49 - --- Sync Cycle Started ---
+2026-04-18 16:17:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:20:53 - --- Sync Cycle Started ---
+2026-04-18 16:27:17 - --- Sync Cycle Started ---
+2026-04-18 16:27:33 - --- Sync Cycle Started ---
+2026-04-18 16:27:34 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:27:58 - --- Sync Cycle Started ---
+2026-04-18 16:27:58 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:28:28 - --- Sync Cycle Started ---
+2026-04-18 16:28:28 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:28:58 - --- Sync Cycle Started ---
+2026-04-18 16:28:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:29:28 - --- Sync Cycle Started ---
+2026-04-18 16:29:29 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:29:58 - --- Sync Cycle Started ---
+2026-04-18 16:29:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:30:28 - --- Sync Cycle Started ---
+2026-04-18 16:30:29 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:30:58 - --- Sync Cycle Started ---
+2026-04-18 16:30:59 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:31:49 - --- Sync Cycle Started ---
+2026-04-18 16:31:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:32:49 - --- Sync Cycle Started ---
+2026-04-18 16:32:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:33:49 - --- Sync Cycle Started ---
+2026-04-18 16:33:50 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:34:02 - --- Sync Cycle Started ---
+2026-04-18 16:34:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:34:32 - --- Sync Cycle Started ---
+2026-04-18 16:34:32 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:35:02 - --- Sync Cycle Started ---
+2026-04-18 16:35:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:35:18 - --- Sync Cycle Started ---
+2026-04-18 16:35:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:35:48 - --- Sync Cycle Started ---
+2026-04-18 16:35:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:36:18 - --- Sync Cycle Started ---
+2026-04-18 16:36:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:36:48 - --- Sync Cycle Started ---
+2026-04-18 16:36:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:37:18 - --- Sync Cycle Started ---
+2026-04-18 16:37:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:37:48 - --- Sync Cycle Started ---
+2026-04-18 16:37:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:38:18 - --- Sync Cycle Started ---
+2026-04-18 16:38:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:38:48 - --- Sync Cycle Started ---
+2026-04-18 16:38:48 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:39:18 - --- Sync Cycle Started ---
+2026-04-18 16:39:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:39:48 - --- Sync Cycle Started ---
+2026-04-18 16:39:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:40:18 - --- Sync Cycle Started ---
+2026-04-18 16:40:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:40:48 - --- Sync Cycle Started ---
+2026-04-18 16:40:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:41:18 - --- Sync Cycle Started ---
+2026-04-18 16:41:19 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:41:48 - --- Sync Cycle Started ---
+2026-04-18 16:41:49 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:42:02 - --- Sync Cycle Started ---
+2026-04-18 16:42:02 - Successfully pulled 4 system_settings from VPS.
+2026-04-18 16:42:32 - --- Sync Cycle Started ---
+2026-04-18 16:42:33 - Successfully pulled 4 system_settings from VPS.

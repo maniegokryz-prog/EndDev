@@ -1010,7 +1010,8 @@ $profilePhoto .= '?v=' . microtime(true);
                 <div class="profile-card schedule-section-card">
                     <div class="card-header-custom">
                         <h3 class="card-title">Schedule</h3>
-                        <div class="d-flex gap-2">
+                        <div
+                            class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-end w-100 w-md-auto">
                             <button class="btn-modern btn-solid-warning btn-sm btn-gray-hover" data-bs-toggle="modal"
                                 data-bs-target="#requestOffsetModal">
                                 <i class="bi bi-clock-history"></i> Request / Use Offset
@@ -2502,6 +2503,119 @@ $profilePhoto .= '?v=' . microtime(true);
             vertical-align: middle;
         }
 
+        /* Final Close Button: Black X (Hardcoded), red border only on interaction */
+        #requestOffsetModal .modal-header .btn-close,
+        #cancelOffsetReasonModal .modal-header .btn-close,
+        #cancelMakeupReasonModal .modal-header .btn-close {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-size: 13px !important;
+            background-color: transparent !important;
+            border: 1px solid transparent !important;
+            opacity: 1 !important;
+            padding: 0.6rem !important;
+            box-shadow: none !important;
+            transition: none !important;
+        }
+
+        #requestOffsetModal .modal-header .btn-close:hover,
+        #requestOffsetModal .modal-header .btn-close:active,
+        #cancelOffsetReasonModal .modal-header .btn-close:hover,
+        #cancelOffsetReasonModal .modal-header .btn-close:active,
+        #cancelMakeupReasonModal .modal-header .btn-close:hover,
+        #cancelMakeupReasonModal .modal-header .btn-close:active {
+            border-color: #dc3545 !important;
+            background-color: transparent !important;
+        }
+
+        /* Responsive Modal & Tab Adjustments */
+        #offsetTabs,
+        #makeupTabs {
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            border-bottom: 1px solid #dee2e6;
+            gap: 5px;
+        }
+
+        #offsetTabs::-webkit-scrollbar,
+        #makeupTabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        #offsetTabs .nav-item,
+        #makeupTabs .nav-item {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 576px) {
+
+            #requestOffsetModal .modal-content,
+            #requestMakeupClassModal .modal-content {
+                border-radius: 0;
+            }
+
+            #requestOffsetModal .card-body,
+            #ctoHistoryContainer .card-body {
+                padding: 1.25rem !important;
+                overflow-x: hidden !important;
+            }
+
+            #requestOffsetModal .modal-header h5 {
+                font-size: 1rem !important;
+                padding-right: 25px;
+                /* Space for X */
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.5rem 0.8rem !important;
+                font-size: 0.85rem !important;
+            }
+
+            /* Better Sidebar for Mobile */
+            #sidebar {
+                width: 250px !important;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2) !important;
+            }
+
+            /* Schedule Header Buttons Stacking */
+            .schedule-section-card .card-header-custom {
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+
+            .schedule-section-card .card-header-custom>div {
+                flex-direction: column !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .schedule-section-card .card-header-custom .btn-modern {
+                width: 100% !important;
+                justify-content: center !important;
+                margin: 0 !important;
+            }
+        }
+        }
+
+        /* Light Gray Hover for Action Buttons */
+        .btn-light-gray-hover:hover {
+            background-color: #818181ff !important;
+            border-color: #818181ff !important;
+            color: #212529 !important;
+            background-image: none !important;
+        }
+
+
+
+
+
+
+
+
         /* Custom Red to Gray Close Button */
         .btn-red-to-gray {
             background-color: #dc3545 !important;
@@ -2571,8 +2685,10 @@ $profilePhoto .= '?v=' . microtime(true);
         aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header border-0 pb-0 justify-content-center">
-                    <h5 class="modal-title fw-bold">Offset & Time Bank Management</h5>
+                <div class="modal-header border-0 pb-0 position-relative">
+                    <h5 class="modal-title fw-bold w-100 text-center">Offset & Time Bank Management</h5>
+                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body pt-2">
                     <ul class="nav nav-tabs mb-3" id="offsetTabs" role="tablist">
@@ -2636,15 +2752,18 @@ $profilePhoto .= '?v=' . microtime(true);
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-bold opacity-75">Start Time <span class="fw-normal">(Optional)</span></label>
+                                        <label class="form-label fw-bold opacity-75">Start Time <span
+                                                class="fw-normal">(Optional)</span></label>
                                         <input type="time" class="form-control" id="offsetStartTime">
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-bold opacity-75">End Time <span class="fw-normal">(Optional)</span></label>
+                                        <label class="form-label fw-bold opacity-75">End Time <span
+                                                class="fw-normal">(Optional)</span></label>
                                         <input type="time" class="form-control" id="offsetEndTime">
                                     </div>
                                     <div class="col-12 mt-n2 mb-3">
-                                        <small class="text-muted">Leave blank to use the exact time from the selected mirrored schedule above.</small>
+                                        <small class="text-muted">Leave blank to use the exact time from the selected
+                                            mirrored schedule above.</small>
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -2654,10 +2773,8 @@ $profilePhoto .= '?v=' . microtime(true);
                                     <small class="text-muted">Pick the future day you intend to work on this mirrored
                                         schedule.</small>
                                 </div>
-                                <div class="text-center d-flex justify-content-center gap-3">
-                                    <button type="button" class="btn btn-secondary px-5 fw-bold mt-2 btn-red-to-gray"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-solid-success btn-gray-hover px-5 fw-bold mt-2"
+                                <div class="text-center d-flex justify-content-center mt-2">
+                                    <button type="button" class="btn btn-solid-success btn-gray-hover px-5 fw-bold"
                                         onclick="submitOffsetRequest()">Submit Request</button>
                                 </div>
                             </form>
@@ -2697,11 +2814,12 @@ $profilePhoto .= '?v=' . microtime(true);
                                                 $timeString = "Time unspecified";
                                             }
                                             ?>
-                                            <div class="card-body pe-5">
+                                            <div class="card-body p-3 pe-md-5">
                                                 <h6 class="mb-2 fw-bold">Date:
                                                     <?php echo date('F d, Y l', strtotime($offset['requested_date'])); ?>
                                                 </h6>
-                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div
+                                                    class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
                                                     <p class="mb-0 small text-secondary">
                                                         <?php if ($hasMirrored): ?>
                                                             <strong>Mirrored Schedule:</strong> <?php echo $reqDayName; ?> Schedule
@@ -2711,25 +2829,30 @@ $profilePhoto .= '?v=' . microtime(true);
                                                         <?php endif; ?>
                                                     </p>
                                                     <span
-                                                        class="badge bg-<?php echo $statusColor; ?> text-<?php echo $offset['status'] === 'approved' ? 'white' : 'dark'; ?> text-uppercase"><?php echo htmlspecialchars($offset['status']); ?></span>
+                                                        class="badge bg-<?php echo $statusColor; ?> text-<?php echo $offset['status'] === 'approved' ? 'white' : 'dark'; ?> text-uppercase align-self-start align-self-md-center"><?php echo htmlspecialchars($offset['status']); ?></span>
                                                 </div>
                                                 <?php if (!empty($offset['cancel_reason'])): ?>
-                                                    <p class="mb-3 small text-danger"><i class="bi bi-exclamation-circle me-1"></i><strong>Cancel Reason:</strong> <?php echo htmlspecialchars($offset['cancel_reason']); ?></p>
+                                                    <p class="mb-3 small text-danger"><i
+                                                            class="bi bi-exclamation-circle me-1"></i><strong>Cancel
+                                                            Reason:</strong>
+                                                        <?php echo htmlspecialchars($offset['cancel_reason']); ?></p>
                                                 <?php endif; ?>
                                                 <div class="d-flex gap-2">
                                                     <?php if ($isAdmin): ?>
                                                         <?php if ($offset['status'] === 'pending'): ?>
-                                                            <button class="btn btn-success btn-sm fw-semibold px-3 flex-grow-1"
+                                                            <button
+                                                                class="btn btn-success btn-light-gray-hover btn-sm fw-semibold px-3 flex-grow-1"
                                                                 onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'approved')">Approve</button>
-                                                            <button class="btn btn-danger btn-sm fw-semibold px-3 flex-grow-1"
+                                                            <button
+                                                                class="btn btn-danger btn-light-gray-hover btn-sm fw-semibold px-3 flex-grow-1"
                                                                 onclick="updateOffsetStatus(<?php echo $offset['id']; ?>, 'rejected')">Reject</button>
                                                         <?php elseif ($offset['status'] === 'approved'): ?>
-                                                            <button class="btn btn-outline-danger btn-sm fw-semibold px-3 flex-grow-1"
+                                                            <button class="btn btn-solid-danger btn-gray-hover fw-semibold px-4"
                                                                 onclick="promptCancelOffsetRequest(<?php echo $offset['id']; ?>)">Cancel</button>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
                                                     <?php if (isset($currentUser['employee_id']) && $currentUser['employee_id'] === $employee['employee_id'] && in_array($offset['status'], ['pending', 'approved'])): ?>
-                                                        <button class="btn btn-outline-danger btn-sm fw-semibold flex-grow-1"
+                                                        <button class="btn btn-solid-danger btn-gray-hover fw-semibold px-4"
                                                             onclick="promptCancelOffsetRequest(<?php echo $offset['id']; ?>)">Cancel
                                                             Request</button>
                                                     <?php endif; ?>
@@ -2744,10 +2867,12 @@ $profilePhoto .= '?v=' . microtime(true);
                         <!-- CTO Request Tab -->
                         <div class="tab-pane fade p-2" id="cto-request" role="tabpanel">
                             <form id="requestCtoForm">
-                                <div class="card border-0 shadow-sm mb-4" style="background-color: #f8f9fa; border-left: 4px solid #198754 !important;">
+                                <div class="card border-0 shadow-sm mb-4"
+                                    style="background-color: #f8f9fa; border-left: 4px solid #198754 !important;">
                                     <div class="card-body d-flex align-items-center justify-content-between p-3">
                                         <div class="d-flex align-items-center gap-3">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #e8f5e9;">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width: 50px; height: 50px; background-color: #e8f5e9;">
                                                 <i class="bi bi-bank text-success fs-4"></i>
                                             </div>
                                             <div>
@@ -2756,7 +2881,9 @@ $profilePhoto .= '?v=' . microtime(true);
                                             </div>
                                         </div>
                                         <div class="text-end">
-                                            <h3 class="mb-0 text-success fw-bold" id="timeBankValue">0 <span class="fs-6 text-muted fw-normal" style="font-size: 14px;">hrs</span></h3>
+                                            <h3 class="mb-0 text-success fw-bold" id="timeBankValue">0 <span
+                                                    class="fs-6 text-muted fw-normal"
+                                                    style="font-size: 14px;">hrs</span></h3>
                                         </div>
                                     </div>
                                 </div>
@@ -2772,10 +2899,8 @@ $profilePhoto .= '?v=' . microtime(true);
                                         required>
                                     <small class="text-muted">Minimum 0.5 hours. Example: 1.0, 1.5, 2.0</small>
                                 </div>
-                                <div class="text-center d-flex justify-content-center gap-3">
-                                    <button type="button" class="btn btn-secondary px-5 fw-bold mt-2 btn-red-to-gray"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-solid-success btn-gray-hover px-5 fw-bold mt-2"
+                                <div class="text-center d-flex justify-content-center mt-2">
+                                    <button type="button" class="btn btn-solid-success btn-gray-hover px-5 fw-bold"
                                         onclick="submitCtoRequest()">Submit CTO</button>
                                 </div>
                             </form>
@@ -2895,7 +3020,8 @@ $profilePhoto .= '?v=' . microtime(true);
                                                     required></textarea>
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label fw-bold">Attachment <span class="text-muted fw-normal small">(optional)</span></label>
+                                                <label class="form-label fw-bold">Attachment <span
+                                                        class="text-muted fw-normal small">(optional)</span></label>
                                                 <input type="file" class="form-control" id="makeupAttachment"
                                                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
                                                 <small class="text-muted">PDF, Image, or Word document. Max 5MB.</small>
@@ -2942,7 +3068,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Cancel Makeup Class Reason Modal -->
-    <div class="modal fade" id="cancelMakeupReasonModal" tabindex="-1" aria-labelledby="cancelMakeupReasonLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="cancelMakeupReasonModal" tabindex="-1" aria-labelledby="cancelMakeupReasonLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
@@ -2952,16 +3079,21 @@ $profilePhoto .= '?v=' . microtime(true);
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-2">
-                    <p class="text-muted small mb-3">Please state the reason for cancelling this makeup class request. This will be recorded and visible for admin review.</p>
+                    <p class="text-muted small mb-3">Please state the reason for cancelling this makeup class request.
+                        This will be recorded and visible for admin review.</p>
                     <input type="hidden" id="cancelMakeupReqId" value="">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Cancellation Reason <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="cancelMakeupReasonText" rows="3" placeholder="e.g. Schedule conflict, class was moved, etc."></textarea>
+                        <label class="form-label fw-semibold">Cancellation Reason <span
+                                class="text-danger">*</span></label>
+                        <textarea class="form-control" id="cancelMakeupReasonText" rows="3"
+                            placeholder="e.g. Schedule conflict, class was moved, etc."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0 d-flex gap-2">
-                    <button type="button" class="btn btn-secondary flex-grow-1 fw-semibold" data-bs-dismiss="modal">Back</button>
-                    <button type="button" class="btn btn-danger flex-grow-1 fw-semibold" onclick="submitMakeupCancellation()">
+                    <button type="button" class="btn btn-secondary btn-gray-hover flex-grow-1 fw-semibold"
+                        data-bs-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-danger btn-gray-hover flex-grow-1 fw-semibold"
+                        onclick="submitMakeupCancellation()">
                         <i class="bi bi-x-circle me-1"></i>Confirm Cancellation
                     </button>
                 </div>
@@ -2970,7 +3102,8 @@ $profilePhoto .= '?v=' . microtime(true);
     </div>
 
     <!-- Cancel Offset Reason Modal -->
-    <div class="modal fade" id="cancelOffsetReasonModal" tabindex="-1" aria-labelledby="cancelOffsetReasonLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="cancelOffsetReasonModal" tabindex="-1" aria-labelledby="cancelOffsetReasonLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
@@ -2980,16 +3113,21 @@ $profilePhoto .= '?v=' . microtime(true);
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-2">
-                    <p class="text-muted small mb-3">Please state the reason for cancelling this offset request. This will be recorded and visible for admin review.</p>
+                    <p class="text-muted small mb-3">Please state the reason for cancelling this offset request. This
+                        will be recorded and visible for admin review.</p>
                     <input type="hidden" id="cancelOffsetReqId" value="">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Cancellation Reason <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="cancelOffsetReasonText" rows="3" placeholder="e.g. Schedule conflict, no longer needed, etc."></textarea>
+                        <label class="form-label fw-semibold">Cancellation Reason <span
+                                class="text-danger">*</span></label>
+                        <textarea class="form-control" id="cancelOffsetReasonText" rows="3"
+                            placeholder="e.g. Schedule conflict, no longer needed, etc."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0 d-flex gap-2">
-                    <button type="button" class="btn btn-secondary flex-grow-1 fw-semibold" data-bs-dismiss="modal">Back</button>
-                    <button type="button" class="btn btn-danger flex-grow-1 fw-semibold" onclick="submitOffsetCancellation()">
+                    <button type="button" class="btn btn-secondary btn-gray-hover flex-grow-1 fw-semibold"
+                        data-bs-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-danger btn-gray-hover flex-grow-1 fw-semibold"
+                        onclick="submitOffsetCancellation()">
                         <i class="bi bi-x-circle me-1"></i>Confirm Cancellation
                     </button>
                 </div>
@@ -3148,7 +3286,7 @@ $profilePhoto .= '?v=' . microtime(true);
         }
         formData.append('requested_date', requestedDate);
         if (offsetStartTime) formData.append('start_time', offsetStartTime);
-        if (offsetEndTime)   formData.append('end_time', offsetEndTime);
+        if (offsetEndTime) formData.append('end_time', offsetEndTime);
 
         fetch('api/offset_schedule_api.php', { method: 'POST', body: formData })
             .then(res => res.json())
@@ -3316,26 +3454,26 @@ $profilePhoto .= '?v=' . microtime(true);
                     let adminActions = '';
                     if (window.isAdmin && req.status === 'pending') {
                         adminActions = `
-                        <button class="btn btn-success btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'approved')">Approve</button>
-                        <button class="btn btn-danger btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'rejected')">Reject</button>
+                        <button class="btn btn-success btn-light-gray-hover btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'approved')">Approve</button>
+                        <button class="btn btn-danger btn-light-gray-hover btn-sm flex-grow-1" onclick="updateCtoStatus(${req.id}, 'rejected')">Reject</button>
                     `;
                     }
 
                     let userActions = '';
                     if (!window.isAdmin && req.status === 'pending') {
-                        userActions = `<button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="cancelCtoRequest(${req.id})">Cancel</button>`;
+                        userActions = `<button class="btn btn-solid-danger btn-gray-hover fw-semibold px-4" onclick="cancelCtoRequest(${req.id})">Cancel</button>`;
                     }
 
                     html += `
                 <div class="card border-0 shadow-sm">
-                    <div class="card-body pe-5">
+                    <div class="card-body p-3 pe-md-5">
                         ${adminNameStr}
                         <h6 class="mb-2 fw-bold">Date: ${requestedDateStr}</h6>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
                             <p class="mb-0 small text-secondary">
                                 <strong>Requested Hours:</strong> ${parseFloat(req.hours_used).toFixed(2)} hrs
                             </p>
-                            <span class="badge bg-${badgeColor} ${textColor} text-uppercase">${req.status}</span>
+                            <span class="badge bg-${badgeColor} ${textColor} text-uppercase align-self-start align-self-md-center">${req.status}</span>
                         </div>
                         <div class="d-flex gap-2">
                             ${adminActions}
