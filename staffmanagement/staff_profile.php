@@ -3555,6 +3555,23 @@ $profilePhoto .= '?v=' . microtime(true);
             return;
         }
 
+        // Validate: end time must not exceed 9:00 PM (21:00)
+        const MAX_TIME = '21:00';
+        if (makeupEndTime > MAX_TIME) {
+            document.getElementById('globalAlertMessage').innerText = "The makeup class End Time cannot exceed 9:00 PM. Please adjust your schedule.";
+            const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+            alertModal.show();
+            return;
+        }
+
+        // Validate: end time must be after start time
+        if (makeupEndTime <= makeupStartTime) {
+            document.getElementById('globalAlertMessage').innerText = "End Time must be later than Start Time.";
+            const alertModal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+            alertModal.show();
+            return;
+        }
+
         const fd = new FormData();
         fd.append('action', 'submit_request');
         fd.append('employee_id', window.employeeInternalId);

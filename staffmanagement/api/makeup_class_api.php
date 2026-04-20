@@ -117,6 +117,12 @@ function submitRequest($conn)
         throw new Exception('Start time must be before end time.');
     }
 
+    // Enforce 9:00 PM maximum end time
+    $maxEndTime = '21:00:00';
+    if (strtotime(date('H:i:s', strtotime($end_time))) > strtotime($maxEndTime)) {
+        throw new Exception('Makeup class End Time cannot exceed 9:00 PM.');
+    }
+
     // Verify it's a vacant time
     $overlapError = checkOverlap($conn, $employee_id, $requested_date, $start_time, $end_time);
     if ($overlapError) {

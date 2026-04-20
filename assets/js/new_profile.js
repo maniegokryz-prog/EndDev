@@ -766,6 +766,13 @@ function renderVisualSchedule(container, schedules, isPendingRequest = false) {
     container.innerHTML = gridHtml;
     container.style.display = 'grid';
     container.style.gridTemplateColumns = '85px repeat(7, 1fr)';
+    // Ensure the 'visual-schedule' class is present so the CSS scoping rule
+    // (.visual-schedule .schedule-grid-cell { height: 32px }) applies.
+    // Without it the global fallback (height: 40px) is used, causing blocks
+    // placed with the JS 32px calculation to be misaligned with the time labels.
+    if (!container.classList.contains('visual-schedule')) {
+        container.classList.add('visual-schedule');
+    }
 
     schedules.forEach(sched => {
         placeScheduleBlock(container, sched, days, timeStart, interval, isPendingRequest);
