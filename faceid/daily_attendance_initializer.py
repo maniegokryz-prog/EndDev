@@ -113,16 +113,17 @@ def initialize_daily_attendance_records():
         
         print(f"  📅 Date: {now.strftime('%A, %B %d, %Y')} (day_of_week={day_of_week})")
         
-        # Find all employees scheduled for today, either by normal schedule or an approved offset
+        # Find all employees scheduled for today, either by normal schedule, approved offset, or approved makeup class
         cursor.execute("""
             SELECT DISTINCT e.id, e.employee_id, e.first_name, e.last_name
             FROM employees e
             LEFT JOIN employee_schedules es ON e.id = es.employee_id AND es.is_active = 1 AND (es.end_date IS NULL OR es.end_date >= ?)
             LEFT JOIN schedule_periods sp ON es.schedule_id = sp.schedule_id AND sp.is_active = 1 AND sp.day_of_week = ?
             LEFT JOIN offset_schedule_requests osr ON e.id = osr.employee_id AND osr.requested_date = ? AND osr.status IN ('approved', 'completed')
+            LEFT JOIN makeup_class_requests mcr ON e.id = mcr.employee_id AND mcr.requested_date = ? AND mcr.status = 'approved'
             WHERE LOWER(e.status) = 'active'
-              AND (sp.id IS NOT NULL OR osr.id IS NOT NULL)
-        """, (today, day_of_week, today))
+              AND (sp.id IS NOT NULL OR osr.id IS NOT NULL OR mcr.id IS NOT NULL)
+        """, (today, day_of_week, today, today))
         
         scheduled_employees = cursor.fetchall()
         
@@ -206,6 +207,27 @@ def initialize_daily_attendance_records():
                     sh, sm, _ = map(int, str(period[0]).split(':'))
                     eh, em, _ = map(int, str(period[1]).split(':'))
                     scheduled_hours += (eh * 60 + em) - (sh * 60 + sm)
+            
+            # --- Check for approved makeup class additions ---
+            cursor.execute("""
+                SELECT start_time, end_time
+                FROM makeup_class_requests
+                WHERE employee_id = ? AND requested_date = ? AND status = 'approved'
+            """, (emp_id, today))
+            
+            makeup_classes = cursor.fetchall()
+            if makeup_classes:
+                print(f"     ➕ Employee has {len(makeup_classes)} makeup class segment(s). Adding to scheduled hours...")
+                for period in makeup_classes:
+                    s_time = str(period[0])
+                    e_time = str(period[1])
+                    if s_time and e_time and s_time != 'None' and e_time != 'None':
+                        # Guard against incorrectly formatted nulls
+                        try:
+                            sh, sm, _ = map(int, s_time.split(':'))
+                            eh, em, _ = map(int, e_time.split(':'))
+                            scheduled_hours += (eh * 60 + em) - (sh * 60 + sm)
+                        except: pass
             
             # Create new daily_attendance record with scheduled_hours
             cursor.execute("""

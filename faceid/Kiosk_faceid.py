@@ -99,6 +99,18 @@ def check_employee_schedule(employee_db_id):
         if cursor.fetchone():
             conn.close()
             return True
+            
+        # 4. Check makeup class request
+        cursor.execute("""
+            SELECT 1
+            FROM makeup_class_requests
+            WHERE employee_id = ? AND requested_date = ? AND status = 'approved'
+            LIMIT 1
+        """, (employee_db_id, today_str))
+        
+        if cursor.fetchone():
+            conn.close()
+            return True
         
         conn.close()
         return False

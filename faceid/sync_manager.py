@@ -1059,6 +1059,70 @@ class SyncManager:
             print(f"❌ Error pulling CTO requests: {e}")
             self._update_sync_status('cto_requests', 'pull', False, str(e))
             return {'added': 0, 'updated': 0}
+
+    def pull_makeup_class_requests(self):
+        """
+        Pull approved makeup class requests from MySQL to local SQLite.
+        """
+        try:
+            print("\n📥 Pulling Makeup Class requests from MySQL...")
+            
+            mysql_conn = pymysql.connect(**MYSQL_CONFIG)
+            mysql_cursor = mysql_conn.cursor(pymysql.cursors.DictCursor)
+            
+            local_conn = get_db_connection()
+            local_cursor = local_conn.cursor()
+            
+            mysql_cursor.execute("""
+                SELECT id, employee_id, requested_date, start_time, end_time, status, created_at
+                FROM makeup_class_requests
+                WHERE status = 'approved'
+            """)
+            
+            makeups = mysql_cursor.fetchall()
+            added_count = 0
+            updated_count = 0
+            
+            for m in makeups:
+                local_cursor.execute("SELECT id FROM makeup_class_requests WHERE id = ?", (m['id'],))
+                exists = local_cursor.fetchone()
+                
+                # Convert TIME objects to string
+                s_time = str(m['start_time']) if m['start_time'] is not None else None
+                e_time = str(m['end_time']) if m['end_time'] is not None else None
+                
+                if exists:
+                    local_cursor.execute("""
+                        UPDATE makeup_class_requests
+                        SET employee_id = ?, requested_date = ?, start_time = ?, end_time = ?, status = ?,
+                            last_synced = ?
+                        WHERE id = ?
+                    """, (m['employee_id'], m['requested_date'], s_time, e_time, m['status'],
+                          datetime.now().strftime('%Y-%m-%d %H:%M:%S'), m['id']))
+                    updated_count += 1
+                else:
+                    local_cursor.execute("""
+                        INSERT INTO makeup_class_requests
+                        (id, employee_id, requested_date, start_time, end_time, status, created_at, last_synced)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (m['id'], m['employee_id'], m['requested_date'], s_time, e_time, 
+                          m['status'], m['created_at'], datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                    added_count += 1
+            
+            local_conn.commit()
+            
+            self._update_sync_status('makeup_class_requests', 'pull', True)
+            
+            mysql_conn.close()
+            local_conn.close()
+            
+            print(f"✅ Makeup Class sync complete: {added_count} added, {updated_count} updated")
+            return {'added': added_count, 'updated': updated_count}
+            
+        except Exception as e:
+            print(f"❌ Error pulling Makeup Class requests: {e}")
+            self._update_sync_status('makeup_class_requests', 'pull', False, str(e))
+            return {'added': 0, 'updated': 0}
             
     def pull_all_updates(self):
         """
@@ -1084,6 +1148,10 @@ class SyncManager:
         # Pull CTOs
         cto_result = self.pull_cto_requests()
         results['ctos'] = cto_result
+        
+        # Pull Makeup Classes
+        makeup_result = self.pull_makeup_class_requests()
+        results['makeups'] = makeup_result
         
         # Pull daily attendance
         daily_result = self.pull_daily_attendance()

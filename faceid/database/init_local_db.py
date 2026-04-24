@@ -219,6 +219,25 @@ def create_database():
     print("✓ Created table: cto_requests")
     
     # ========================================================================
+    # Table: makeup_class_requests
+    # Stores approved makeup class blocks
+    # ========================================================================
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS makeup_class_requests (
+            id INTEGER PRIMARY KEY,
+            employee_id INTEGER NOT NULL,
+            requested_date TEXT NOT NULL,
+            start_time TEXT NOT NULL,
+            end_time TEXT NOT NULL,
+            status TEXT DEFAULT 'pending',
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            last_synced TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+        )
+    """)
+    print("✓ Created table: makeup_class_requests")
+    
+    # ========================================================================
     # Table 7: sync_status
     # Tracks synchronization state with the MySQL server
     # ========================================================================
@@ -238,7 +257,7 @@ def create_database():
     print("✓ Created table: sync_status")
     
     # Initialize sync_status with default entries for each table
-    tables_to_track = ['employees', 'schedules', 'schedule_periods', 'employee_schedules', 'attendance_logs', 'daily_attendance', 'offset_schedule_requests', 'cto_requests']
+    tables_to_track = ['employees', 'schedules', 'schedule_periods', 'employee_schedules', 'attendance_logs', 'daily_attendance', 'offset_schedule_requests', 'cto_requests', 'makeup_class_requests']
     for table in tables_to_track:
         cursor.execute("""
             INSERT OR IGNORE INTO sync_status (table_name, last_pull_time, last_push_time)

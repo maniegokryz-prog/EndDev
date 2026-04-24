@@ -636,6 +636,20 @@ class AttendanceLogger:
                 
                 schedule_periods = cursor.fetchall()
 
+            # 3. Inject makeup class requests
+            cursor.execute("""
+                SELECT start_time, end_time
+                FROM makeup_class_requests
+                WHERE employee_id = ? AND requested_date = ? AND status = 'approved'
+            """, (employee_db_id, log_date))
+            
+            makeup_classes = cursor.fetchall()
+            if makeup_classes:
+                print(f"     ➕ Found {len(makeup_classes)} approved makeup class block(s). Merging into schedule.")
+                schedule_periods.extend(makeup_classes)
+                # Sort chronologically by start_time
+                schedule_periods.sort(key=lambda x: str(x[0]))
+
             if log_type == 'visit':
                 # Handle VISIT
                 if not existing_record:
