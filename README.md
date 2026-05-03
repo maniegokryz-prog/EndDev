@@ -1,4 +1,4 @@
-# Automated Face Recognition Attendance System
+# Automated Face Recognition Attendance System for Bulacan Colleges
 This repository contains the source code for the Automated Face Recognition Attendance System, a capstone project designed to streamline and modernize attendance tracking for faculty and staff at Bulacan Colleges.
 
 ## Project Overview
