@@ -13,5 +13,16 @@ Automated Logging: Instant data sync with the backend database for time-in and t
 
 Web Dashboard: An intuitive interface for administrators to manage records and generate reports.
 
+## Project Team
+The following members contributed to the development and implementation of this capstone project:
+
+Justine Paul J. Alianza – System Analyst / Backend Devoleper
+
+Lord Gabriel D. Castro – Backend Developer
+
+Kryztian Ben S. Maniego – Frontend Developer
+
+Ronnel P. Borlongan  – Technical Writer
+
 ## License
 This project is for academic purposes as part of a Bachelor of Science in Information Systems capstone requirement.
